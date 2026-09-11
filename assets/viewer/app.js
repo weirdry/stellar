@@ -10,6 +10,20 @@ const esc = (s) =>
         c
       ],
   );
+const messages = JSON.parse(document.getElementById('messages').textContent);
+function tr(key, values = {}) {
+  const template = messages[key];
+  if (typeof template !== 'string')
+    throw new Error(`Missing UI message: ${key}`);
+  return template.replace(/\{(\w+)\}/g, (_, name) => {
+    if (!Object.hasOwn(values, name))
+      throw new Error(`Missing UI value: ${key}.${name}`);
+    return String(values[name]);
+  });
+}
+const htmlTr = (key, values) => esc(tr(key, values));
+const multiline = (key) => htmlTr(key).replace(/\n/g, '<br>');
+const stellarTitle = document.title;
 const domainById = new Map(R.domains.map((d) => [d.id, d]));
 const categoryById = new Map(R.categories.map((c) => [c.id, c]));
 R.items = R.issues.filter((i) => i.scope === 'assigned');
@@ -68,7 +82,7 @@ const statusRank = {
 };
 const sortIssues = (a, b) =>
   (statusRank[a.statusType] ?? 9) - (statusRank[b.statusType] ?? 9) ||
-  a.id.localeCompare(b.id, undefined, { numeric: true });
+  a.id.localeCompare(b.id, R.locale, { numeric: true });
 const blocked = (i) =>
   R.edges.filter(
     (e) =>
@@ -112,20 +126,26 @@ try {
 function syncTheme() {
   const light = document.body.classList.contains('light');
   $('#theme').textContent = light ? '☾' : '☀';
-  $('#theme').title = light ? '다크 모드' : '라이트 모드';
+  $('#theme').title = tr(light ? 'theme.dark' : 'theme.light');
   $('#theme').setAttribute('aria-label', $('#theme').title);
 }
 syncTheme();
-$('#brand-title').textContent = R.title;
-$('#brand-subtitle').textContent = R.source.name + ' · ' + R.owner;
-$('#snapshot').textContent = R.source.snapshotAt + ' 스냅샷';
-$('#taxonomy-count').textContent =
-  R.domains.length + '개 영역 · ' + R.categories.length + '개 세부 묶음';
+$('#brand-title').textContent = stellarTitle;
+$('#brand-title').title = stellarTitle;
+$('#brand-subtitle').textContent = R.source.name;
+$('#snapshot').textContent = tr('snapshot', { timestamp: R.source.snapshotAt });
+$('#taxonomy-count').textContent = tr('taxonomy.count', {
+  domains: R.domains.length,
+  categories: R.categories.length,
+});
 $('#maps-open').hidden = !R.attachments?.length;
-$('#maps-open').textContent = '참고 자료 ' + (R.attachments?.length || 0);
+$('#maps-open').textContent = tr('references.count', {
+  count: R.attachments?.length || 0,
+});
+$('#maps-open').dataset.shortLabel = tr('references.short');
 $('#scope').value = state.scope;
 $('#target').innerHTML += [...new Set(R.items.flatMap((i) => i.targets))]
-  .sort((a, b) => a.localeCompare(b))
+  .sort((a, b) => a.localeCompare(b, R.locale))
   .map((t) => `<option>${esc(t)}</option>`)
   .join('');
 function scoped(i) {
@@ -302,7 +322,10 @@ function globalScene() {
       x,
       y,
       label: d.label,
-      subtitle: `${items.length}개 · ${new Set(items.map((i) => i.category)).size}묶음`,
+      subtitle: tr('node.summary', {
+        count: items.length,
+        groups: new Set(items.map((i) => i.category)).size,
+      }),
       count: items.length,
     };
     nodes.push(dn);
@@ -326,7 +349,7 @@ function globalScene() {
           x: cx,
           y: cy,
           label: c.label,
-          subtitle: ci.length + '개',
+          subtitle: tr('node.count', { count: ci.length }),
           count: ci.length,
         };
       nodes.push(cn);
@@ -415,7 +438,7 @@ function targetScene() {
         x: 350,
         y: cy,
         label: c.label,
-        subtitle: xs.length + '개',
+        subtitle: tr('node.count', { count: xs.length }),
         count: xs.length,
       };
       nodes.push(cn);
@@ -448,7 +471,7 @@ function targetScene() {
       x: 0,
       y: (first + yCursor - 50) / 2,
       label: d.label,
-      subtitle: ds.length + '개 · 대상 일치',
+      subtitle: tr('node.target', { count: ds.length }),
       count: ds.length,
     });
     yCursor += 100;
@@ -475,7 +498,8 @@ function localScene() {
     const da = all.get(a).domain || 'z',
       db = all.get(b).domain || 'z';
     return (
-      da.localeCompare(db) || a.localeCompare(b, undefined, { numeric: true })
+      da.localeCompare(db, R.locale) ||
+      a.localeCompare(b, R.locale, { numeric: true })
     );
   });
   const nodes = [makeIssueNode(id, 0, 0, true)],
@@ -508,7 +532,7 @@ function localScene() {
       x: dx,
       y: dy,
       label: domains.get(i.domain).label,
-      subtitle: '작업 영역',
+      subtitle: tr('area'),
       count: null,
     });
     nodes.push({
@@ -520,7 +544,7 @@ function localScene() {
       x: catx,
       y: dy,
       label: categories.get(i.category).label,
-      subtitle: '보고서용 분류',
+      subtitle: tr('classification'),
       count: null,
     });
     edges.push(
@@ -572,7 +596,7 @@ function renderTree() {
         const opened = state.treeDomains.has(d.id),
           sel = state.selected?.type === 'domain' && state.selected.id === d.id,
           dim = state.target && !items.some(isTarget);
-        let h = `<div class="tree-domain"><div class="tree-row ${sel ? 'selected' : ''} ${dim ? 'dim' : ''}" data-tree-domain="${esc(d.id)}"><button class="tree-toggle" data-tree-toggle-domain="${esc(d.id)}" aria-label="${esc(d.label)} ${opened ? '접기' : '펼치기'}" aria-expanded="${opened}">${opened ? '⌄' : '›'}</button><button class="tree-title" data-domain="${esc(d.id)}"><i class="domain-dot" style="--dc:${domainColor(d.id)}"></i><span>${esc(d.label)}</span></button><span class="count">${base.filter((i) => i.domain === d.id).length}</span></div>`;
+        let h = `<div class="tree-domain"><div class="tree-row ${sel ? 'selected' : ''} ${dim ? 'dim' : ''}" data-tree-domain="${esc(d.id)}"><button class="tree-toggle" data-tree-toggle-domain="${esc(d.id)}" aria-label="${esc(d.label)} ${htmlTr(opened ? 'collapse' : 'expand')}" aria-expanded="${opened}">${opened ? '⌄' : '›'}</button><button class="tree-title" data-domain="${esc(d.id)}"><i class="domain-dot" style="--dc:${domainColor(d.id)}"></i><span>${esc(d.label)}</span></button><span class="count">${base.filter((i) => i.domain === d.id).length}</span></div>`;
         if (opened)
           h +=
             '<div class="tree-children">' +
@@ -590,14 +614,14 @@ function renderTree() {
                     state.selected?.type === 'category' &&
                     state.selected.id === c.id,
                   cd = state.target && !xs.some(isTarget);
-                let s = `<div class="tree-category"><div class="tree-row ${cs ? 'selected' : ''} ${cd ? 'dim' : ''}"><button class="tree-toggle" data-tree-toggle-category="${esc(c.id)}" aria-label="${esc(c.label)} ${op ? '접기' : '펼치기'}" aria-expanded="${op}">${op ? '⌄' : '›'}</button><button class="tree-title" data-category="${esc(c.id)}"><span>${esc(c.label)}</span></button><span class="count">${xs.filter((i) => baseIds.has(i.id)).length}</span></div>`;
+                let s = `<div class="tree-category"><div class="tree-row ${cs ? 'selected' : ''} ${cd ? 'dim' : ''}"><button class="tree-toggle" data-tree-toggle-category="${esc(c.id)}" aria-label="${esc(c.label)} ${htmlTr(op ? 'collapse' : 'expand')}" aria-expanded="${op}">${op ? '⌄' : '›'}</button><button class="tree-title" data-category="${esc(c.id)}"><span>${esc(c.label)}</span></button><span class="count">${xs.filter((i) => baseIds.has(i.id)).length}</span></div>`;
                 if (op)
                   s +=
                     '<div class="tree-children">' +
                     xs
                       .map(
                         (i) =>
-                          `<div class="tree-row tree-issue ${selected?.id === i.id ? 'selected' : ''} ${state.target && !isTarget(i) ? 'dim' : ''}"><i class="status-dot ${esc(i.statusType)}"></i><button class="tree-title" data-issue="${esc(i.id)}" title="${esc(i.title)}"><b>${esc(i.id)}${!baseIds.has(i.id) ? ' · 맥락' : ''}</b><span>${esc(i.title)}</span></button></div>`,
+                          `<div class="tree-row tree-issue ${selected?.id === i.id ? 'selected' : ''} ${state.target && !isTarget(i) ? 'dim' : ''}"><i class="status-dot ${esc(i.statusType)}"></i><button class="tree-title" data-issue="${esc(i.id)}" title="${esc(i.title)}"><b>${esc(i.id)}${!baseIds.has(i.id) ? ' · ' + htmlTr('context') : ''}</b><span>${esc(i.title)}</span></button></div>`,
                       )
                       .join('') +
                     '</div>';
@@ -608,17 +632,20 @@ function renderTree() {
         return h + '</div>';
       })
       .join('') ||
-    '<div class="empty-note" style="padding:15px">표시할 이슈가 없습니다.</div>';
+    `<div class="empty-note" style="padding:15px">${htmlTr('empty')}</div>`;
 }
 function pill(i) {
   return `<span class="pill ${esc(i.statusType)}"><i class="status-dot ${esc(i.statusType)}"></i>${esc(i.status)}</span>`;
 }
 function relationLabel(e, id) {
   if (e.kind === 'blocks')
-    return e.source === id ? '후행 · blocks' : '선행 · blockedBy';
-  if (e.kind === 'parent') return e.source === id ? '하위 이슈' : '상위 이슈';
-  if (e.kind === 'related') return '연관';
-  return e.source === id ? '중복 원본' : '중복 이슈';
+    return tr(
+      e.source === id ? 'relation.dependents' : 'relation.prerequisites',
+    );
+  if (e.kind === 'parent')
+    return tr(e.source === id ? 'relation.children' : 'relation.parent');
+  if (e.kind === 'related') return tr('relation.related');
+  return tr(e.source === id ? 'relation.original' : 'relation.duplicates');
 }
 function targetTags(i) {
   return (i.targets || [])
@@ -630,7 +657,7 @@ function targetTags(i) {
 }
 function relationRow(otherId, label = '') {
   const x = all.get(otherId);
-  return `<button class="relation-row" data-issue="${esc(otherId)}"><i class="status-dot ${esc(x.statusType)}"></i><div><b>${esc(otherId)}</b><span class="title">${esc(x.title)}</span><small>${esc(x.status)}${!baseIds.has(otherId) ? ' · 범위 밖 맥락' : ''}</small></div>${label ? `<span class="rel-kind">${esc(label)}</span>` : ''}</button>`;
+  return `<button class="relation-row" data-issue="${esc(otherId)}"><i class="status-dot ${esc(x.statusType)}"></i><div><b>${esc(otherId)}</b><span class="title">${esc(x.title)}</span><small>${esc(x.status)}${!baseIds.has(otherId) ? ' · ' + htmlTr('context.outside') : ''}</small></div>${label ? `<span class="rel-kind">${esc(label)}</span>` : ''}</button>`;
 }
 function summaryCounts(items) {
   return Object.entries(
@@ -646,13 +673,13 @@ function renderInspector() {
   const p = $('#inspector');
   if (state.edgeSelection) {
     const e = state.edgeSelection;
-    const kind = {
-      blocks: '선행 관계',
-      related: '연관 관계',
-      parent: '원본 상하위',
-      duplicate: '중복 관계',
+    const key = {
+      blocks: 'relation.blocks',
+      related: 'relation.related',
+      parent: 'relation.parentKind',
+      duplicate: 'relation.duplicate',
     }[e.kind];
-    p.innerHTML = `<div class="section-label">RELATIONSHIP</div><h2>${kind} ${e.actual.length}건</h2><p>접힌 노드 사이의 선은 아래 실제 이슈 관계를 모은 것입니다. 영역 전체가 서로 의존한다는 뜻은 아닙니다.</p>${e.actual.map((a) => `<div class="info-note"><p>${esc(a.source)} ${e.kind === 'related' ? '↔' : '→'} ${esc(a.target)}</p></div>${relationRow(a.source)}${relationRow(a.target)}`).join('')}`;
+    p.innerHTML = `<div class="section-label">${htmlTr('section.relation')}</div><h2>${htmlTr('relations.heading', { kind: tr(key), count: e.actual.length })}</h2><p>${htmlTr('relations.explain')}</p>${e.actual.map((a) => `<div class="info-note"><p>${esc(a.source)} ${e.kind === 'related' ? '↔' : '→'} ${esc(a.target)}</p></div>${relationRow(a.source)}${relationRow(a.target)}`).join('')}`;
     return;
   }
   const selected = state.selected;
@@ -660,7 +687,7 @@ function renderInspector() {
     const matches = base.filter(isTarget),
       every = R.items.filter(isTarget),
       ds = R.domains.filter((d) => matches.some((i) => i.domain === d.id));
-    p.innerHTML = `<div class="section-label">TARGET OVERLAY</div><span class="tag target">보고서용 영향 대상</span><h1>${esc(state.target)}</h1><p>영역을 가로질러 같은 제품·연구에 영향을 주는 작업을 강조했습니다.</p><div class="overview-count"><div><strong>${matches.length}</strong><span>현재 범위</span></div><div><strong>${ds.length}</strong><span>걸쳐 있는 영역</span></div><div><strong>${every.length}</strong><span>전체 이력</span></div></div>${
+    p.innerHTML = `<div class="section-label">${htmlTr('section.target')}</div><span class="tag target">${htmlTr('target.interpreted')}</span><h1>${esc(state.target)}</h1><p>${htmlTr('target.explain')}</p><div class="overview-count"><div><strong>${matches.length}</strong><span>${htmlTr('current.scope')}</span></div><div><strong>${ds.length}</strong><span>${htmlTr('spanning.areas')}</span></div><div><strong>${every.length}</strong><span>${htmlTr('scope.all')}</span></div></div>${
       ds
         .map(
           (d) =>
@@ -669,13 +696,12 @@ function renderInspector() {
               .map((i) => relationRow(i.id))
               .join('')}`,
         )
-        .join('') ||
-      '<p class="empty-note">현재 상태 범위에 해당하는 이슈가 없습니다.</p>'
-    }<div class="info-note"><p>대상은 보고서의 해석입니다. 대상이 같다는 이유로 관계선을 추가하지 않습니다.</p></div><button class="primary-button wide" data-target="">강조 해제</button>`;
+        .join('') || `<p class="empty-note">${htmlTr('empty.scope')}</p>`
+    }<div class="info-note"><p>${htmlTr('target.boundary')}</p></div><button class="primary-button wide" data-target="">${htmlTr('highlight.clear')}</button>`;
     return;
   }
   if (!selected) {
-    p.innerHTML = `<div class="section-label">YOUR WORK, CONNECTED</div><h1>작업의 위치와<br>연결을 함께.</h1><p class="intro">영역을 누르면 세부 묶음으로,<br>이슈를 누르면 주변 관계로 들어갑니다.</p><div class="overview-count"><div><strong>${base.length}</strong><span>${esc(scopeName())}</span></div><div><strong>${base.filter((i) => blocked(i).length && active(i)).length}</strong><span>미완료 선행 있음</span></div><div><strong>${R.domains.length}</strong><span>작업 영역</span></div></div><h3>여기서 시작해 보세요</h3><div class="quicklinks">${R.domains
+    p.innerHTML = `<div class="section-label">${htmlTr('brand.tagline')}</div><h1>${multiline('overview.heading')}</h1><p class="intro">${multiline('overview.intro')}</p><div class="overview-count"><div><strong>${base.length}</strong><span>${esc(scopeName())}</span></div><div><strong>${base.filter((i) => blocked(i).length && active(i)).length}</strong><span>${htmlTr('blocked.count')}</span></div><div><strong>${R.domains.length}</strong><span>${htmlTr('area')}</span></div></div><h3>${htmlTr('start')}</h3><div class="quicklinks">${R.domains
       .filter((d) => base.some((i) => i.domain === d.id))
       .slice(0, 4)
       .map(
@@ -684,7 +710,7 @@ function renderInspector() {
       )
       .join(
         '',
-      )}</div><div class="info-note"><p><b>두 종류의 연결</b><br>분류선은 보고서가 정한 묶음입니다. 선행·연관·상하위 선은 원본에 등록된 관계입니다.</p></div><p class="empty-note">노드 위치는 탐색 중 고정됩니다. 자유롭게 이동·확대하고 F로 화면에 맞춰 보세요.</p>`;
+      )}</div><div class="info-note"><p><b>${htmlTr('connections.two')}</b><br>${htmlTr('connections.explain')}</p></div><p class="empty-note">${htmlTr('positions.hint')}</p>`;
     return;
   }
   if (selected.type === 'domain' || selected.type === 'category') {
@@ -696,26 +722,26 @@ function renderInspector() {
     const every = c ? catItems(c.id) : domainItems(domain.id),
       items = every.filter(scoped),
       cs = c ? [c] : R.categories.filter((x) => x.domain === domain.id);
-    p.innerHTML = `<div class="section-label">${c ? 'SUBGROUP' : 'WORK AREA'}</div><span class="domain-dot" style="--dc:${domainColor(domain.id)};width:11px;height:11px"></span><h2>${esc(c ? c.label : domain.label)}</h2><p>${esc(c ? c.basis : domain.description)}</p><div class="overview-count"><div><strong>${items.length}</strong><span>현재 범위</span></div><div><strong>${every.filter(active).length}</strong><span>전체 미완료</span></div><div><strong>${every.length}</strong><span>전체 이력</span></div></div>${summaryCounts(items)}${c ? `<h3>분류 경로</h3><div class="path-line"><button data-domain="${esc(domain.id)}">${esc(domain.label)}</button> › ${esc(c.label)}</div><h3>이슈 ${items.length}개</h3>${items.map((i) => relationRow(i.id)).join('')}` : `<h3>세부 묶음 ${cs.length}개</h3>${cs.map((x) => `<button class="category-row" data-category="${esc(x.id)}"><span>${esc(x.label)}</span><b>${items.filter((i) => i.category === x.id).length}</b><i>›</i></button>`).join('')}`}<div class="info-note"><p>숫자는 ${esc(scopeName())} 범위입니다. 선을 누르면 묶음 사이의 실제 이슈 관계를 확인할 수 있습니다.</p></div>`;
+    p.innerHTML = `<div class="section-label">${htmlTr(c ? 'section.group' : 'section.area')}</div><span class="domain-dot" style="--dc:${domainColor(domain.id)};width:11px;height:11px"></span><h2>${esc(c ? c.label : domain.label)}</h2><p>${esc(c ? c.basis : domain.description)}</p><div class="overview-count"><div><strong>${items.length}</strong><span>${htmlTr('current.scope')}</span></div><div><strong>${every.filter(active).length}</strong><span>${htmlTr('active.all')}</span></div><div><strong>${every.length}</strong><span>${htmlTr('scope.all')}</span></div></div>${summaryCounts(items)}${c ? `<h3>${htmlTr('path')}</h3><div class="path-line"><button data-domain="${esc(domain.id)}">${esc(domain.label)}</button> › ${esc(c.label)}</div><h3>${htmlTr('issues.count', { count: items.length })}</h3>${items.map((i) => relationRow(i.id)).join('')}` : `<h3>${htmlTr('groups.count', { count: cs.length })}</h3>${cs.map((x) => `<button class="category-row" data-category="${esc(x.id)}"><span>${esc(x.label)}</span><b>${items.filter((i) => i.category === x.id).length}</b><i>›</i></button>`).join('')}`}<div class="info-note"><p>${htmlTr('counts.explain', { scope: scopeName() })}</p></div>`;
     return;
   }
   const i = all.get(selected.id),
     rels = incident(i.id),
-    byKind = {};
+    byKind = Object.create(null);
   for (const e of rels) {
     const k = relationLabel(e, i.id);
     (byKind[k] ??= []).push(e);
   }
-  const completedParent =
-    i.parentId && all.get(i.parentId)?.statusType === 'completed' && active(i);
-  p.innerHTML = `<div class="section-label">ISSUE NEIGHBORHOOD</div><span class="id-label">${esc(i.id)}</span><h2>${esc(i.title)}</h2>${pill(i)}${i.detail === 'unqueried' ? '<span class="tag">상세 미조회</span>' : ''}${!baseIds.has(i.id) ? '<span class="tag">범위 밖 맥락</span>' : ''}${blocked(i).length && active(i) ? `<div class="info-note" style="border-color:var(--blocks)"><p>미완료 선행 <b>${blocked(i).length}개</b>가 등록되어 있습니다.</p></div>` : ''}${completedParent ? `<div class="info-note"><p>상위 ${esc(i.parentId)}는 ${esc(all.get(i.parentId).status)}이며, 이 이슈는 미완료입니다.</p></div>` : ''}<h3>작업 목적별 위치</h3><div class="path-line">${domains.has(i.domain) ? `<button data-domain="${esc(i.domain)}">${esc(i.domainLabel)}</button><br>↳ <button data-category="${esc(i.category)}">${esc(i.group)}</button>` : '집계 범위 밖의 연결 이슈'}</div><p>${esc(i.classificationBasis || '기존 이슈와의 관계 맥락으로 표시합니다.')}</p>${i.targets?.length ? `<h3>영향 대상 · 보고서 분류</h3>${targetTags(i)}` : ''}<dl class="kv"><dt>담당자</dt><dd>${esc(i.assignee || '미조회')}</dd><dt>최근 수정</dt><dd>${i.updatedAt ? new Date(i.updatedAt).toLocaleDateString('ko-KR', { timeZone: 'Asia/Seoul' }) : '미조회'}</dd><dt>우선순위</dt><dd>${esc(i.priority || '미조회')}</dd></dl>${i.url ? `<a class="primary-button wide" href="${esc(i.url)}" target="_blank" rel="noopener">원본에서 열기 ↗</a>` : '<p class="empty-note">원본 링크가 제공되지 않았습니다.</p>'}<h3>이번 조회에서 확인된 관계 ${rels.length}건</h3><p class="empty-note">아래 이슈를 선택해 연결을 따라갈 수 있습니다. 현재 상태 범위 밖 이슈도 맥락으로 표시합니다.</p>${
+  const parent = all.get(i.parentId),
+    completedParent = parent?.statusType === 'completed' && active(i);
+  p.innerHTML = `<div class="section-label">${htmlTr('section.issue')}</div><span class="id-label">${esc(i.id)}</span><h2>${esc(i.title)}</h2>${pill(i)}${i.detail === 'unqueried' ? `<span class="tag">${htmlTr('detail.unknown')}</span>` : ''}${!baseIds.has(i.id) ? `<span class="tag">${htmlTr('context.outside')}</span>` : ''}${blocked(i).length && active(i) ? `<div class="info-note" style="border-color:var(--blocks)"><p>${htmlTr('prerequisites.note', { count: blocked(i).length })}</p></div>` : ''}${completedParent ? `<div class="info-note"><p>${htmlTr('parent.note', { id: i.parentId, status: parent.status })}</p></div>` : ''}<h3>${htmlTr('purpose')}</h3><div class="path-line">${domains.has(i.domain) ? `<button data-domain="${esc(i.domain)}">${esc(i.domainLabel)}</button><br>↳ <button data-category="${esc(i.category)}">${esc(i.group)}</button>` : htmlTr('context.unclassified')}</div><p>${esc(i.classificationBasis || tr('context.reason'))}</p>${i.targets?.length ? `<h3>${htmlTr('targets.interpreted')}</h3>${targetTags(i)}` : ''}<dl class="kv"><dt>${htmlTr('assignee')}</dt><dd>${esc(i.assignee || tr('scope.unknown'))}</dd><dt>${htmlTr('updated')}</dt><dd title="${esc(i.updatedAt || '')}">${i.updatedAt ? esc(new Date(i.updatedAt).toLocaleDateString(R.locale, { timeZone: 'UTC' })) : htmlTr('scope.unknown')}</dd><dt>${htmlTr('priority')}</dt><dd>${esc(i.priority || tr('scope.unknown'))}</dd></dl>${i.url ? `<a class="primary-button wide" href="${esc(i.url)}" target="_blank" rel="noopener">${htmlTr('source.open')}</a>` : `<p class="empty-note">${htmlTr('source.noLink')}</p>`}<h3>${htmlTr('relations.count', { count: rels.length })}</h3><p class="empty-note">${htmlTr('relations.follow')}</p>${
     Object.entries(byKind)
       .map(
         ([name, es]) =>
           `<h3>${esc(name)} · ${es.length}</h3>${es.map((e) => relationRow(e.source === i.id ? e.target : e.source)).join('')}`,
       )
-      .join('') || '<p class="empty-note">등록된 직접 관계가 없습니다.</p>'
-  }<hr class="info-divider"><p class="empty-note">관계·완료는 원본 스냅샷 기준입니다. 코드·CI·배포 완료를 별도 검증한 결과는 아닙니다.</p>`;
+      .join('') || `<p class="empty-note">${htmlTr('relations.empty')}</p>`
+  }<hr class="info-divider"><p class="empty-note">${htmlTr('source.boundary')}</p>`;
 }
 function renderCaption() {
   let crumb = '',
@@ -724,24 +750,24 @@ function renderCaption() {
     const i = selectedIssue(),
       others = state.scene.nodes.filter((n) => n.type === 'issue' && !n.center),
       ghosts = others.filter((n) => n.ghost).length;
-    crumb = `› <span>${esc(i.id)} 주변</span>`;
-    caption = `<b>${others.length}개 이슈와 직접 연결</b> · 분류 경로 함께 표시${ghosts ? ` · 범위 밖 맥락 ${ghosts}개` : ''}`;
+    crumb = `› <span>${htmlTr('caption.neighborhood', { id: i.id })}</span>`;
+    caption = `<b>${htmlTr('caption.neighbors', { count: others.length })}</b> · ${htmlTr('caption.path')}${ghosts ? ' · ' + htmlTr('caption.context', { count: ghosts }) : ''}`;
   } else if (state.selected?.type === 'domain') {
     const d = domains.get(state.selected.id);
     crumb = `› <span>${esc(d.label)}</span>`;
-    caption = `<b>${esc(d.description)}</b> · 세부 묶음을 눌러 이슈 펼치기`;
+    caption = `<b>${esc(d.description)}</b> · ${htmlTr('caption.expand')}`;
   } else if (state.selected?.type === 'category') {
     const c = categories.get(state.selected.id);
     crumb = `› <span>${esc(c.label)}</span>`;
-    caption = `<b>${esc(domains.get(c.domain).label)}</b> · 이슈를 눌러 주변 관계 탐색`;
+    caption = `<b>${esc(domains.get(c.domain).label)}</b> · ${htmlTr('caption.explore')}`;
   } else
-    caption = `<b>${base.length}개 ${esc(scopeName())}</b> · 영역을 눌러 확대하고, 이슈의 연결을 따라가세요`;
+    caption = `<b>${htmlTr('caption.scope', { count: base.length, scope: scopeName() })}</b> · ${htmlTr('caption.navigate')}`;
   if (state.target && !state.selected) {
     crumb = `› <span>${esc(state.target)}</span>`;
-    caption = `<b>${base.filter(isTarget).length}개 대상 작업</b> · ${new Set(base.filter(isTarget).map((i) => i.domain)).size}개 영역에서 모아보기`;
+    caption = `<b>${htmlTr('caption.target', { count: base.filter(isTarget).length })}</b> · ${htmlTr('caption.areas', { count: new Set(base.filter(isTarget).map((i) => i.domain)).size })}`;
   }
   if (state.target)
-    caption += ` <span class="target-note">· ${esc(state.target)} ${base.filter(isTarget).length}개 강조</span>`;
+    caption += ` <span class="target-note">· ${htmlTr('caption.highlight', { target: state.target, count: base.filter(isTarget).length })}</span>`;
   $('#breadcrumbs').innerHTML = crumb;
   $('#canvas-caption').innerHTML = caption;
 }
@@ -897,15 +923,17 @@ function applyTransform(geometry = false) {
       label.setAttribute('y', g.ly - 7 / k);
       label.setAttribute('font-size', 10 / k);
       label.style.display = show ? '' : 'none';
-      label.textContent =
-        e.actual.length > 1
-          ? `${{ blocks: '선행', parent: '상하위', related: '연관' }[e.kind] || '관계'} ${e.actual.length}건`
-          : {
-              blocks: '선행 →',
-              parent: '상하위 →',
-              related: '연관',
-              duplicate: '중복 원본 →',
-            }[e.kind] || '';
+      const labelKey = {
+        blocks: 'edge.blocks',
+        parent: 'edge.parentShort',
+        related: 'edge.related',
+        duplicate: 'edge.original',
+      }[e.kind];
+      label.textContent = !labelKey
+        ? ''
+        : e.actual.length > 1
+          ? tr('edge.count', { kind: tr(labelKey), count: e.actual.length })
+          : tr(labelKey);
     });
     const nodeEls = $$('#nodes .graph-node');
     state.scene.nodes.forEach((n, j) => {
@@ -1097,7 +1125,9 @@ function setTarget(target) {
   if (target) {
     const matched = state.scene.nodes.filter(targetMatch);
     if (matched.length) fitScene(matched);
-    notify(`${target} · 현재 범위 ${base.filter(isTarget).length}개 강조`);
+    notify(
+      tr('notice.target', { target, count: base.filter(isTarget).length }),
+    );
   }
 }
 function notify(msg) {
@@ -1133,13 +1163,13 @@ function showSearch() {
       .slice(0, 30)
       .map(
         (i) =>
-          `<button class="search-result" data-issue="${esc(i.id)}"><b>${esc(i.id)} · ${esc(i.status)}</b><span>${esc(i.title)}</span><small>${esc(i.domainLabel)} › ${esc(i.group)}${!baseIds.has(i.id) ? ' · 현재 범위 밖' : ''}</small></button>`,
+          `<button class="search-result" data-issue="${esc(i.id)}"><b>${esc(i.id)} · ${esc(i.status)}</b><span>${esc(i.title)}</span><small>${esc(i.domainLabel)} › ${esc(i.group)}${!baseIds.has(i.id) ? ' · ' + htmlTr('scope.outside') : ''}</small></button>`,
       )
       .join('') +
       (results.length > 30
-        ? `<p class="empty-note" style="padding:8px 12px">${results.length}개 중 앞 30개 표시 · 검색어를 더 입력해 주세요.</p>`
+        ? `<p class="empty-note" style="padding:8px 12px">${htmlTr('search.more', { count: results.length })}</p>`
         : '') ||
-    '<p class="empty-note" style="padding:12px">검색 결과가 없습니다.</p>';
+    `<p class="empty-note" style="padding:12px">${htmlTr('search.empty')}</p>`;
 }
 function openModal(title, html) {
   lastModalFocus = document.activeElement;
@@ -1154,14 +1184,14 @@ function closeModal() {
 }
 function mapsModal() {
   openModal(
-    '참고 자료',
-    `<p class="modal-note">보고서와 함께 제공된 자료입니다. 선택하면 별도 페이지에서 열립니다.</p><div class="mapgrid">${(R.attachments || []).map((m) => `<a class="mapcard" href="${esc(m.href)}" target="_blank" rel="noopener noreferrer"><b>${esc(m.title)} ↗</b><p>${esc(m.note)}</p></a>`).join('')}</div>`,
+    tr('references'),
+    `<p class="modal-note">${htmlTr('references.note')}</p><div class="mapgrid">${(R.attachments || []).map((m) => `<a class="mapcard" href="${esc(m.href)}" target="_blank" rel="noopener noreferrer"><b>${esc(m.title)} ↗</b><p>${esc(m.note)}</p></a>`).join('')}</div>`,
   );
 }
 function helpModal() {
   openModal(
-    '캔버스 읽는 방법',
-    `<div class="help-grid"><div><h3>트리에서 위치를 잡고, 그래프로 연결을 따라갑니다</h3><ul><li>영역 선택: 세부 묶음이 있는 군집으로 확대합니다.</li><li>세부 묶음 선택: 이슈 노드를 펼칩니다.</li><li>이슈 선택: 분류 경로와 직접 연결된 이슈를 함께 보여줍니다.</li><li>이전 버튼으로 탐색을 되돌립니다. 전체 지도는 군집을 접어 한눈에 보여줍니다.</li></ul><p>드래그: 이동 · 휠: 확대/축소 · Shift+휠: 이동<br>F: 화면에 맞춤 · /: 검색 · Esc: 닫기<br>SVG 저장: 현재 보이는 캔버스를 이미지로 저장합니다.</p></div><div><h3>연결의 의미</h3><p>분류선은 이슈의 작업 목적을 나타냅니다. 원본의 상하위 관계와 별개입니다.</p><p>선행 화살표는 선행 이슈에서 후행 이슈를 향합니다. 연관선은 방향이 없습니다. 접힌 묶음의 선을 누르면 실제 이슈 관계를 확인할 수 있습니다.</p><p>대상 강조는 다른 영역에 흩어진 같은 제품·연구의 작업을 함께 강조합니다. 대상이 같다는 이유로 의존 관계를 만들지 않습니다.</p><p>선택 이슈의 주변에는 현재 상태 범위 밖 이슈도 나타납니다. 점선 테두리로 구별하며 집계에 더하지 않습니다.</p><p>분류의 근거는 영역·묶음·이슈를 선택하면 상세 패널에 표시됩니다.</p><p>목록 기준: ${esc(R.source.snapshotAt)}. 실시간 갱신하지 않습니다.</p><p>${esc(R.source.notes)}</p></div></div>`,
+    tr('help.title'),
+    `<div class="help-grid"><div><h3>${htmlTr('help.explore')}</h3><ul>${['domain', 'group', 'issue', 'history'].map((k) => `<li>${htmlTr('help.' + k)}</li>`).join('')}</ul><p>${multiline('help.controls')}</p></div><div><h3>${htmlTr('help.connections')}</h3>${['classification', 'direction', 'targets', 'context', 'rationale'].map((k) => `<p>${htmlTr('help.' + k)}</p>`).join('')}<p>${htmlTr('help.snapshot', { timestamp: R.source.snapshotAt })}</p><p>${esc(R.source.notes)}</p></div></div>`,
   );
 }
 function exportSVG() {
@@ -1204,7 +1234,7 @@ function exportSVG() {
   bg.setAttribute('fill', palette.getPropertyValue('--canvas').trim());
   clone.insertBefore(bg, clone.querySelector('defs'));
   const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
-  title.textContent = `${R.title} · ${state.selected?.id || '전체'} · ${R.source.snapshotAt}`;
+  title.textContent = `${stellarTitle} · ${state.selected?.id || tr('overview')} · ${R.source.snapshotAt}`;
   clone.prepend(title);
   const blob = new Blob([new XMLSerializer().serializeToString(clone)], {
       type: 'image/svg+xml;charset=utf-8',
@@ -1215,7 +1245,7 @@ function exportSVG() {
   a.download = `${R.view.exportName}-${(state.selected?.id || 'overview').replace(/[^A-Za-z0-9._-]/g, '-')}.svg`;
   a.click();
   setTimeout(() => URL.revokeObjectURL(url), 5000);
-  notify('현재 캔버스를 SVG로 저장했습니다.');
+  notify(tr('export.saved'));
 }
 // Pointer interaction keeps world positions stable. A click selects; dragging changes the camera only.
 $('#graph').addEventListener('pointerdown', (e) => {
@@ -1305,8 +1335,8 @@ $('#graph').addEventListener('pointermove', (e) => {
     box = $('#stage').getBoundingClientRect();
   $('#tooltip').innerHTML =
     n.type === 'issue'
-      ? `<b>${esc(n.key)} · ${esc(n.issue.status)}</b>${esc(n.subtitle)}<span>${esc(n.issue.domainLabel || '맥락 이슈')}${n.ghost ? ' · 범위 밖 맥락' : ''}</span>`
-      : `<b>${esc(n.label)}</b>${esc(n.subtitle)}<span>${n.type === 'domain' ? '선택해서 세부 묶음 확대' : '선택해서 이슈 펼치기'}</span>`;
+      ? `<b>${esc(n.key)} · ${esc(n.issue.status)}</b>${esc(n.subtitle)}<span>${esc(n.issue.domainLabel || tr('context.issue'))}${n.ghost ? ' · ' + htmlTr('context.outside') : ''}</span>`
+      : `<b>${esc(n.label)}</b>${esc(n.subtitle)}<span>${htmlTr(n.type === 'domain' ? 'hint.area' : 'hint.group')}</span>`;
   $('#tooltip').hidden = false;
   $('#tooltip').style.left =
     Math.min(

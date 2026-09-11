@@ -17,3 +17,12 @@ dependency. Record uncertainty instead of inventing a source relationship.
 
 The exact persistent representation and refresh merge rules remain
 [Open](../docs/architecture/11-risks-technical-debt.md).
+
+## Authoring language
+
+Select the supported UI locale from the user's explicit output-language request,
+or otherwise the conversation language. Record `ko` or `en` in the work map.
+Write your classification labels, rationale, and source-scope notes in the
+requested language. Preserve original issue titles, status labels and identifiers.
+The runner owns the owner-based Stellar name and fixed translated UI. Do not
+supply a custom report title or generate translated CSS, HTML, or controls.

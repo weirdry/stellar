@@ -10,8 +10,9 @@ consumes no source credentials or query mechanism.
 
 Node-native ESM JavaScript retains the prototype's HTML/CSS/SVG implementation.
 The agent supplies classifications and evidence; it does not regenerate CSS or
-layout code. Titles, owner, timestamps, taxonomy, source facts, and optional
-references are data. Source links and reference documents are opened only by
+layout code. Owner, locale, timestamps, taxonomy, source facts, and optional
+references are data. The renderer derives the Stellar title from the owner and
+selects bundled UI messages from the explicit locale. Source links and reference documents are opened only by
 user action. The first HTML generation path requires no Archify installation.
 
 Archify remains a reference for typed authoring, fixed visual implementation,

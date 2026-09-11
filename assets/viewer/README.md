@@ -2,7 +2,8 @@
 
 State: **As-built**
 
-[shell.html](shell.html), [style.css](style.css), and [app.js](app.js) own the
+[shell.html](shell.html), [style.css](style.css), [app.js](app.js), and the
+[ko](locales/ko.json)/[en](locales/en.json) message catalogs own the
 fixed interface. The renderer embeds these resources and the validated input
 in one HTML file. There is no browser framework, external font request,
 Archify runtime, server, or dynamic code generation by the host agent.
@@ -19,7 +20,13 @@ Search, synchronized tree/graph selection, status and target filters, relationsh
 toggles, history, pan/zoom/fit, minimap, themes, keyboard controls, mobile drawers,
 and standalone SVG export are implemented. Local storage keeps only a theme
 preference. Navigation history is bounded in memory and is not a saved edit.
-The fixed UI is Korean. Authored content and taxonomy are data-driven.
+Fixed UI language is selected by the input's required `locale` (`ko` or `en`).
+The renderer derives the document name from `owner` using the catalog's
+`brand.title`; the header and SVG title reuse that same name. Catalogs supply
+text, while the shell and script own markup. Interpolated data is escaped at
+the markup boundary. Browser language is not a fallback or override. The map
+loads only its chosen catalog, embedded in the HTML. Source titles/status labels
+are preserved. Updated dates use the selected locale with an explicit UTC zone.
 
 Context issues stay outside totals. Missing details must be explicitly declared
 in input. Source relations and classification lines remain visually distinct;

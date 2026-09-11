@@ -8,11 +8,6 @@
     "schemaVersion": {
       "const": 1
     },
-    "title": {
-      "type": "string",
-      "minLength": 1,
-      "pattern": "\\S"
-    },
     "owner": {
       "type": "string",
       "minLength": 1,
@@ -359,11 +354,15 @@
         },
         "required": ["title", "href", "note"]
       }
+    },
+    "locale": {
+      "enum": ["ko", "en"],
+      "description": "Fixed viewer language, chosen explicitly by the authoring agent or caller."
     }
   },
   "required": [
     "schemaVersion",
-    "title",
+    "locale",
     "owner",
     "source",
     "view",

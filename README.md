@@ -1,6 +1,6 @@
 # Stellar
 
-Stellar turns issue data into an interactive work map: a classification tree,
+Stellar presents a person's work as a constellation of connected issues: a classification tree,
 a relationship graph, and an issue inspector. The agent interprets and
 classifies work; bundled code owns typography, colors, layout, and interaction.
 
@@ -44,8 +44,12 @@ The tree locates work by purpose. Selecting an issue reveals its direct
 neighbors, including explicitly declared context outside the counting scope.
 Search, status and target filters, relationship switches, history, pan/zoom,
 minimap, light/dark themes, mobile drawers, and SVG export are included.
-The viewer's fixed interface is currently Korean; authored labels may use any
-language. Use [the input guide](schemas/README.md) to author a different map.
+Each map is named `{owner}의 Stellar` in Korean or `{owner}’s Stellar` in
+English. Set the input `locale` to `ko` or `en`; the renderer applies bundled
+UI copy to the header, controls, help, graph labels, and SVG export. The agent
+chooses the language and writes classification explanations; source issue titles
+and status labels remain unchanged. Browser language never overrides the input.
+Use [the input guide](schemas/README.md) to author a different map.
 
 ## Verify
 

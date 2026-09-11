@@ -1430,7 +1430,7 @@ body.light {
     padding: 5px;
   }
   .quiet:before {
-    content: '자료';
+    content: attr(data-short-label);
     font-size: 10px;
   }
   .quiet span {

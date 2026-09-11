@@ -4,6 +4,7 @@ Dated records identify the source or artifact, commands, observed result, and
 untested scope. They support the architecture without silently changing its
 meaning.
 
+- [2026-09-12 owner branding and localization](2026-09-12-owner-branding-and-localization.md)
 - [2026-09-12 rendering core validation](2026-09-12-rendering-core.md)
 - [2026-09-12 foundation validation](2026-09-12-foundation.md)
 

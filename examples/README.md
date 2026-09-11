@@ -3,7 +3,9 @@
 [museum.json](museum.json) describes an invented exhibition with multiple
 purpose groups, cross-cutting targets, registered relations, completed work,
 and known/unknown context. [seed-library.json](seed-library.json) uses another
-owner, taxonomy, and count distribution with no attachments.
+owner, taxonomy, and count distribution with no attachments. The museum renders
+as **Mira의 Stellar** with Korean UI; the seed library renders as **Rowan’s Stellar**
+with English UI. These scenario names describe fixture content, not viewer titles.
 
 Both datasets were authored from scratch. Neither is an anonymized or renamed
 copy of real work. Generate them using the same renderer without viewer edits:

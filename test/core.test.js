@@ -36,7 +36,7 @@ test('both independent examples validate and render deterministically without al
     const html = await renderWorkMap(data);
     assert.equal(html, await renderWorkMap(data));
     assert.deepEqual(data, before);
-    assert.ok(html.includes('id="graph"') && html.includes(data.title));
+    assert.ok(html.includes('id="graph"') && html.includes(data.owner));
     assert.ok(!/<script[^>]+src=|<link[^>]+stylesheet/.test(html));
   }
 });
@@ -171,13 +171,13 @@ test('authored text stays literal across HTML embedding and template substitutio
   const data = fresh();
   const attack =
     '</script><script>window.pwned=true</script><!-- __CSS__ $& <img src=x onerror=alert(1)>';
-  data.title = attack;
+  data.owner = attack;
   data.issues[0].title = attack;
   const html = await renderWorkMap(data);
   const embedded = html.match(
     /<script type="application\/json" id="data">([\s\S]*?)<\/script>/,
   )[1];
-  assert.equal(JSON.parse(embedded).title, attack);
+  assert.equal(JSON.parse(embedded).owner, attack);
   assert.ok(!embedded.includes('<'));
   assert.ok(!html.includes('<script>window.pwned'));
   assert.ok(html.includes('&lt;/script&gt;'));
@@ -268,4 +268,83 @@ test('CLI works outside the checkout, reports JSON diagnostics and preserves pre
   const alias = join(dir, 'alias.json');
   await symlink(input, alias);
   await assert.rejects(renderFile(input, alias), /different files/);
+});
+
+test('locale is explicit, supported, and determines the branded document title', async () => {
+  for (const [locale, title] of [
+    ['ko', 'Mira의 Stellar'],
+    ['en', 'Mira’s Stellar'],
+  ]) {
+    const data = fresh();
+    data.locale = locale;
+    const html = await renderWorkMap(data);
+    assert.ok(html.includes(`<title>${title}</title>`));
+    assert.ok(html.includes(`<html lang="${locale}">`));
+    assert.ok(!/\{\{ui\.[\w.]+\}\}/.test(html));
+    const embedded = JSON.parse(
+      html.match(
+        /<script type="application\/json" id="data">([\s\S]*?)<\/script>/,
+      )[1],
+    );
+    assert.deepEqual(
+      embedded.issues,
+      data.issues,
+      'locale does not translate or rewrite source facts',
+    );
+  }
+  invalid(
+    (d) => {
+      delete d.locale;
+    },
+    'schema',
+    '/locale',
+  );
+  invalid(
+    (d) => {
+      d.locale = 'fr';
+    },
+    'schema',
+    '/locale',
+  );
+  invalid(
+    (d) => {
+      d.title = 'An arbitrary report title';
+    },
+    'schema',
+    '/title',
+  );
+});
+
+test('bundled locale catalogs have the same keys and interpolation parameters', async () => {
+  const catalogs = await Promise.all(
+    ['ko', 'en'].map(async (locale) =>
+      JSON.parse(
+        await readFile(
+          new URL(`../assets/viewer/locales/${locale}.json`, import.meta.url),
+          'utf8',
+        ),
+      ),
+    ),
+  );
+  assert.deepEqual(
+    Object.keys(catalogs[0]).sort(),
+    Object.keys(catalogs[1]).sort(),
+  );
+  const params = (value) =>
+    [...value.matchAll(/\{(\w+)\}/g)].map((m) => m[1]).sort();
+  for (const key of Object.keys(catalogs[0])) {
+    for (const catalog of catalogs)
+      assert.ok(typeof catalog[key] === 'string' && catalog[key].trim(), key);
+    assert.deepEqual(params(catalogs[0][key]), params(catalogs[1][key]), key);
+  }
+  for (const path of ['app.js', 'shell.html', 'style.css']) {
+    const source = await readFile(
+      new URL(`../assets/viewer/${path}`, import.meta.url),
+      'utf8',
+    );
+    assert.ok(
+      !/[가-힣]/u.test(source),
+      `Fixed Korean UI copy belongs in the catalog, not ${path}`,
+    );
+  }
 });
