@@ -143,8 +143,8 @@ Stage only the intended change. Do not force-push `dev` or `main`.
 3. Rebase onto updated `origin/dev` when necessary, resolve conflicts, and rerun
    the complete applicable gate.
 4. Push the work branch and open a PR targeting `dev`.
-5. Complete the repository PR template with the problem, resulting behavior,
-   scope, significant decisions, and actual verification evidence.
+5. Complete [.github/pull_request_template.md](.github/pull_request_template.md)
+   in English, following the template requirements below.
 6. Finish review and all applicable required checks before integration.
 7. Integrate with rebase merge.
 
@@ -168,6 +168,37 @@ acceptance separately. Unperformed checks must not be described as passed.
 The GitHub repository permits rebase merge and disables merge-commit and squash
 integration. Local hooks and passing CI do not by themselves establish remote
 branch protection or required-check enforcement.
+
+### Pull request template requirements
+
+Every new or substantially updated PR must use the repository-local
+[PR template](.github/pull_request_template.md), copied from the organization
+template. Use its applicable headings and checklists rather than a substitute
+summary format. The local file is the source for PR authoring; its copied
+revision is recorded in [standard adoption](docs/development/standards.md).
+
+- Write the title and body in English. Use a Conventional Commit title and
+  keep tracker identifiers in the optional history section, not the title.
+- Explain the problem and resulting behavior in Summary. State scope and
+  non-goals, select the applicable change types, and summarize changes by area.
+  Record significant decisions when they help review.
+- In Verification, list actual commands and outcomes. Check only completed
+  applicable items. Mark an inapplicable item `N/A` with a short reason or
+  remove it; do not check it as passed. Keep local, hosted CI, visual, and
+  publication evidence distinct. UI evidence must use synthetic data in this
+  public repository; private reports and screenshots stay local.
+- Follow the template's instructions for optional sections. Remove Risks &
+  rollback for documentation, maintenance, or test-only PRs. Otherwise describe
+  the actual affected boundary and recovery, breaking changes, data, and
+  configuration impact. An unreleased local artifact does not imply a
+  production deployment, migration, or compatibility obligation.
+- Complete the applicable pre-integration checklist. The ECS delivery item
+  applies only to actual ECS delivery-boundary changes; it is `N/A` for the
+  current local renderer. Link repository-owned contracts and evidence in the
+  optional authority/history section when useful.
+
+Remove instructional comments and empty placeholders from the submitted body.
+When scope changes, rewrite the title and body to describe the final change.
 
 ## Promoting dev to main
 
