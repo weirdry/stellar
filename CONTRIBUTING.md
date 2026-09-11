@@ -1,0 +1,243 @@
+# Contributing to Stellar
+
+This document defines Stellar's commit, branch, review, validation, and release
+rules. Contributors can follow the complete workflow from this repository.
+
+## Branch strategy
+
+Stellar uses a simplified Gitflow model with linear integration and release
+history.
+
+| Branch | Role |
+| --- | --- |
+| `main` | Validated release branch and the only source for eventual publication or production deployment |
+| `dev` | Development and integration branch for the next release; no deployment target |
+| Work branches | Isolated feature, fix, refactoring, documentation, test, or maintenance work |
+
+All changes reach `main` through promotion from `dev`. Do not implement changes
+directly on `main`, including hotfixes, unless the maintainer explicitly directs
+an exception. CI triggers and path filters do not redefine branch roles.
+
+During initial local bootstrap, prepare the first changes on `dev`. Creating a
+remote or the first commit is a separate maintainer action. The remote commands
+below apply only after `origin` and the referenced branches actually exist;
+do not invent an empty commit, remote, or deployment to follow an example.
+
+## Direct development or a pull request
+
+Direct commits to `dev` are allowed. They are often appropriate for small fixes,
+documentation, and routine maintenance, but are not restricted to those types.
+
+Use a dedicated work branch and pull request when a change is substantial,
+risky, benefits from review, or should be discussed independently. Start work
+branches from the latest `origin/dev` and target `dev` for integration PRs.
+
+Use descriptive, purpose-based branch names. Recommended prefixes include:
+
+- `feature/...`
+- `fix/...`
+- `refactoring/...`
+- `docs/...`
+- `test/...`
+- `chore/...`
+
+For example, `feature/work-map-renderer` describes the work. Do not include
+Linear or other tracker identifiers in branch names; put planning context in
+the PR body.
+
+## Commit messages
+
+Every commit follows Conventional Commits:
+
+```text
+type(scope): imperative summary
+
+- Explain the resulting behavior and why it is needed.
+- Add relevant details that the diff does not explain.
+```
+
+The scope is optional. When present, use a short, lowercase, kebab-case name
+such as `viewer`, `schema`, `repo`, or `docs`. Write an imperative summary that
+describes the outcome. Separate the body from the subject with a blank line;
+use a body for non-trivial rationale, consequences, or follow-up details.
+
+| Type | Use |
+| --- | --- |
+| `feat` | New user- or consumer-facing capability |
+| `fix` | Bug fix |
+| `docs` | Documentation-only change |
+| `refactor` | Internal restructuring without a behavior change |
+| `test` | Test-only change |
+| `build` | Build system, dependency, or packaging change |
+| `ci` | CI/CD configuration change |
+| `chore` | Repository maintenance not covered by another type |
+| `perf` | Performance improvement |
+| `revert` | Reversion of an earlier commit |
+
+Examples:
+
+```text
+chore(repo): establish the development foundation
+docs: explain the classification authority
+fix(viewer): preserve selection when filters change
+```
+
+For an actual breaking contract change, use `!` after the type or scope and
+explain the break in a `BREAKING CHANGE:` footer. A development refactor does
+not imply that a released compatibility boundary exists.
+
+Do not put Linear or other tracker identifiers in the commit subject. Link
+issues, decisions, and related PRs in the PR body. Keep commits focused and
+independently understandable so that rebase integration preserves useful history.
+
+## Development setup and quality gates
+
+After cloning or creating a worktree, install the repository-pinned tools and
+dependencies and enable repository-managed hooks through `just init`. The README
+contains first-time mise setup instructions.
+
+- `just init` prepares locked development tools, dependencies when present, and
+  local hooks. It does not mutate production/shared state or require production
+  secrets.
+- `just check` is the complete local, non-mutating quality gate.
+- `just ci` uses the same checking path and adds applicable build, package, or
+  generated-artifact validation when those capabilities exist.
+
+Exact tool selectors and locks belong to this repository. Dependency installation
+in CI must use locked or frozen mode. Formatting writes, generation, publication,
+and deployment are separate explicit operations, not side effects of a quality
+gate. Do not add successful placeholder commands for capabilities that do not
+exist.
+
+Run `just ci` after a rebase and before handing off a change or opening/updating
+a multi-commit PR. The pre-commit hook invokes the same gate; the commit-message
+hook validates the subject. Do not bypass hooks with `git commit --no-verify`.
+
+The current foundation gate validates documentation and repository tooling.
+Product tests, browser checks, and package checks are added with their actual
+implementation. A green foundation gate does not prove those capabilities.
+
+## Direct commits to dev
+
+Synchronize `dev`, make the change, and run the required gate before committing:
+
+```sh
+git switch dev
+git pull --ff-only origin dev
+
+# Make the scoped change.
+just ci
+git add <changed-paths>
+git commit
+git push origin dev
+```
+
+Stage only the intended change. Do not force-push `dev` or `main`.
+
+## Pull request workflow
+
+1. Fetch the current remote state and create a work branch from `origin/dev`.
+2. Make focused changes with Conventional Commits.
+3. Rebase onto updated `origin/dev` when necessary, resolve conflicts, and rerun
+   the complete applicable gate.
+4. Push the work branch and open a PR targeting `dev`.
+5. Complete the repository PR template with the problem, resulting behavior,
+   scope, significant decisions, and actual verification evidence.
+6. Finish review and all applicable required checks before integration.
+7. Integrate with rebase merge.
+
+```sh
+git fetch origin
+git switch -c feature/work-map-renderer origin/dev
+
+# Later, on the same work branch, synchronize before review.
+git fetch origin
+git rebase origin/dev
+just ci
+```
+
+Do not merge `dev` into a work branch. Do not use merge commits or squash merge.
+When an already-pushed work branch needs rewritten history, coordinate with its
+collaborators and use `--force-with-lease` rather than an unconditional force push.
+This does not permit rewriting shared `dev` or `main` history.
+
+Report local checks, hosted CI, browser/visual review, publication, and runtime
+acceptance separately. Unperformed checks must not be described as passed.
+The GitHub repository permits rebase merge and disables merge-commit and squash
+integration. Local hooks and passing CI do not by themselves establish remote
+branch protection or required-check enforcement.
+
+## Promoting dev to main
+
+Promotion is fast-forward-only. Validate the development revision, then advance
+`main` to that history without creating a merge commit:
+
+```sh
+git switch dev
+git pull --ff-only origin dev
+just ci
+
+git switch main
+git pull --ff-only origin main
+git merge --ff-only dev
+git push origin main
+
+git switch dev
+```
+
+If fast-forward promotion fails, stop and resolve the divergence deliberately.
+Do not replace `--ff-only` with a merge commit or force push. A passing check on
+`dev` is not itself a release or deployment. Configure publication only when
+the real artifact, destination, and validation path have been defined.
+
+## Canonical documentation and evidence
+
+The `docs/architecture/` corpus is the canonical engineering current view.
+Update it in the same change when responsibilities, contracts, invariants,
+runtime behavior, deployment, security, or quality expectations change.
+
+Use explicit implementation states:
+
+- **As-built:** verified implemented or observed behavior.
+- **Target:** accepted direction that is not fully implemented.
+- **Open:** undecided or unverified.
+- **Deprecated:** historical behavior with an identified replacement or retention rule.
+
+Code, schemas, tests, and configuration own executable facts. Validation records
+own dated observations. Architecture explains the current system and points to
+those owners. Issues, PR discussions, and agent conversations provide context;
+they are not substitutes for canonical documentation.
+
+Record consequential decisions in indexed ADRs. Update the current view and add
+a replacement decision when an accepted decision changes. Move Target claims to
+As-built only after verifying their owning evidence. Add runbooks when actual
+operations and recovery procedures exist.
+
+Use Archify by default for new or substantively revised canonical engineering
+diagrams. Keep source and generated views together and record the reproducible
+generation path and applicable structural, semantic, browser, and visual review.
+Mermaid is allowed when Archify is unavailable, execution is constrained, or the
+required meaning or notation cannot be adequately represented; record a brief
+reason in the change description. Existing diagrams do not require wholesale
+conversion. This documentation rule does not make Archify a product dependency.
+
+## Release boundaries and user data
+
+Publish only from validated `main` through the repository's defined release
+workflow. Published tags, versions, and artifacts are immutable; corrections use
+a new version rather than moving a tag or overwriting an existing artifact.
+
+No Stellar artifact or input contract has been released. Evolve development
+contracts in place until concrete evidence identifies a released consumer,
+non-disposable stored data, or a real deployment interval requiring compatibility.
+Do not introduce speculative version chains, dual readers, or migrations.
+Preserve correctness identities and ordering rules for their actual purpose.
+
+Never delete, reset, or rewrite user data merely to simplify development. Keep
+real issue data and generated user reports in ignored `local/` and `outputs/`
+directories. Use synthetic examples in tracked fixtures. Do not commit secrets,
+credentials, or machine-specific paths.
+
+License, skill distribution, and artifact-publication configuration remain Open.
+Exceptions to this workflow require explicit maintainer direction and a durable
+record of their scope, reason, risk, owner, review condition, and exit condition.

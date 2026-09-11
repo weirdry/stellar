@@ -1,0 +1,44 @@
+# Stellar documentation
+
+This is the repository-local entry point for Stellar's engineering knowledge.
+
+## Authority map
+
+| Concern | Owner |
+| --- | --- |
+| Architecture current view and accepted Target | [Architecture](architecture/README.md) |
+| Implemented behavior and exact tool versions | Repository scripts, configuration, and locks |
+| Work-map input shape | Future repository-owned schema; currently Open |
+| Original issue facts | Source snapshot and source system; neither classification nor prose rewrites them |
+| Classification decisions | Future work-map data, rationale, and user overrides |
+| Consequential decisions | [ADR history](decisions/README.md) |
+| Commit, branch, review, and release rules | [Stellar contribution policy](../CONTRIBUTING.md) |
+| Contributor setup and command procedures | [Development guide](development/README.md) |
+| Dated results and limitations | [Validation records](validation/README.md) |
+| Engineering standards and adoption provenance | [Standard adoption](development/standards.md) |
+
+Chat, Linear, and pull requests are planning provenance. The architecture must
+remain understandable without them. When sources disagree, identify the concern,
+verify its owner, and correct that owner rather than creating duplicate truths.
+
+## State vocabulary
+
+- **As-built:** behavior verified against repository or observed evidence.
+- **Target:** accepted direction with implementation still remaining.
+- **Open:** undecided or unverified.
+- **Deprecated:** historical behavior with an identified replacement or retention rule.
+
+Canonical describes authority, not implementation status. ADR lifecycle is
+separate: Proposed, Accepted, Superseded, Deprecated, or Rejected.
+
+## Documentation completion
+
+Update affected architecture in the same change as a responsibility, boundary,
+invariant, runtime, deployment, or quality change. Add or supersede an ADR for
+consequential decisions. Add runbooks only when real operations exist. Keep
+generated contracts and their owning sources aligned. Dated verification belongs
+in validation records; only verified claims move from Target to As-built.
+
+`just docs-check` enforces structure, state vocabulary, indexes, local link
+targets, scaffold-token removal, and whitespace. It does not prove semantic
+accuracy, browser behavior, or release readiness.

@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+subject="$(sed -n '1p' "$1")"
+pattern='^(feat|fix|docs|refactor|test|build|ci|chore|perf|revert)(\([a-z0-9]+(-[a-z0-9]+)*\))?!?: .+'
+if [[ ! "$subject" =~ $pattern ]]; then
+    echo 'error: use a Conventional Commit: type(scope): imperative summary' >&2
+    exit 1
+fi
+if [[ "$subject" =~ (^|[^A-Z0-9])[A-Z][A-Z0-9]*-[0-9]+([^A-Z0-9]|$) ]]; then
+    echo 'error: put tracker identifiers in planning context, not the commit subject' >&2
+    exit 1
+fi
