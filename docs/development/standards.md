@@ -52,7 +52,11 @@ distribution remain **Open**. Publishing obligations will be revisited with the 
   checks that all L0 chapters appear in the architecture index. The common
   minimum remains intact. Link checking verifies local file targets; fragment
   meaning and factual correctness require review.
-- The local PR template is a concise adaptation of the organization template.
+- [.github/pull_request_template.md](../../.github/pull_request_template.md)
+  is copied without content changes from the organization's
+  [template at the reviewed commit](https://github.com/5010-dev/.github/blob/9411f3ee4adc5cbb7f7a951e4cee1a1602fffc39/pull_request_template.md).
+  Root CONTRIBUTING.md requires this local template for PR authoring, including
+  its applicable sections and checklists. No automatic upstream sync is used.
 - Canonical CI follows the organization example. Its action tags and the mise
   Linux release asset were checked at adoption; exact pins live in the workflow.
 
