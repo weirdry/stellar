@@ -1,25 +1,25 @@
 # 5. Building-block view
 
-State: **Target**
-
-| Building block | Owns | Planned repository home |
-| --- | --- | --- |
-| Skill instructions | Collection/authoring sequence, decision criteria, repair procedure | Root SKILL.md, added with executable capability |
-| Classification guidance | Purpose-based grouping and inference boundaries | [references/classification.md](../../references/classification.md) |
-| Work-map contract | Input structure and referential rules | [schemas](../../schemas/README.md) |
-| Renderer and validator | Input checking and deterministic artifact generation | Repository-owned scripts, added with the viewer |
-| Viewer | Visual tokens, node shapes, layout, navigation, details, export | [assets/viewer](../../assets/viewer/README.md) |
-| Examples | Synthetic reusable inputs | [examples](../../examples/README.md) |
-
-## Implemented foundation
-
 State: **As-built**
 
-[justfile](../../justfile) composes the development gate. Initialization and
-syntax checking live in `scripts/`; the arc42 checker lives in
-`scripts/docs/`. `.githooks/` supplies local commit checks and
-[CI](../../.github/workflows/ci.yml) defines the repository-owned hosted caller.
+| Building block      | Owns                                                                                    | Evidence                                                                                                                        |
+| ------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| CLI                 | Argument handling, validation diagnostics, render invocation                            | [bin/stellar.js](../../bin/stellar.js)                                                                                          |
+| Work-map schema     | Report, issue, classification, relation and reference shape                             | [schemas](../../schemas/README.md)                                                                                              |
+| Validator           | Unique identities, references, primary classification, source-parent and URL invariants | [validate.js](../../lib/validate.js)                                                                                            |
+| Renderer            | Safe HTML embedding and preservation of previous output on failure                      | [render.js](../../lib/render.js)                                                                                                |
+| Viewer              | Styling, SVG components, layout, navigation, inspector and export                       | [assets/viewer](../../assets/viewer/README.md)                                                                                  |
+| Examples and tests  | Public reuse and behavior evidence using invented data                                  | [examples](../../examples/README.md), [core tests](../../test/core.test.js), [browser tests](../../test/browser/viewer.test.js) |
+| Development tooling | Locked native dependencies, Just gates, hooks and CI caller                             | [development](../development/README.md)                                                                                         |
 
-There are no independently deployed subsystems or separate native dependency
-roots. Add architecture depth only when real responsibility or failure
-boundaries need independent review.
+The single native root is the repository's Node package. The viewer is bundled
+source, not an independently deployed service. No L1 boundary or multi-package
+workspace is necessary for these directories.
+
+## Agent workflow
+
+State: **Target**
+
+A root skill entry point will own collection, authoring, and repair guidance.
+[Classification guidance](../../references/classification.md) records the
+purpose-based grouping boundary, but no installed/callable skill exists yet.

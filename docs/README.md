@@ -4,18 +4,18 @@ This is the repository-local entry point for Stellar's engineering knowledge.
 
 ## Authority map
 
-| Concern | Owner |
-| --- | --- |
-| Architecture current view and accepted Target | [Architecture](architecture/README.md) |
-| Implemented behavior and exact tool versions | Repository scripts, configuration, and locks |
-| Work-map input shape | Future repository-owned schema; currently Open |
-| Original issue facts | Source snapshot and source system; neither classification nor prose rewrites them |
-| Classification decisions | Future work-map data, rationale, and user overrides |
-| Consequential decisions | [ADR history](decisions/README.md) |
-| Commit, branch, review, and release rules | [Stellar contribution policy](../CONTRIBUTING.md) |
-| Contributor setup and command procedures | [Development guide](development/README.md) |
-| Dated results and limitations | [Validation records](validation/README.md) |
-| Engineering standards and adoption provenance | [Standard adoption](development/standards.md) |
+| Concern                                       | Owner                                                                             |
+| --------------------------------------------- | --------------------------------------------------------------------------------- |
+| Architecture current view and accepted Target | [Architecture](architecture/README.md)                                            |
+| Implemented behavior and exact tool versions  | Repository scripts, configuration, and locks                                      |
+| Work-map input shape                          | [Work-map schema and semantic contract](../schemas/README.md)                     |
+| Original issue facts                          | Source snapshot and source system; neither classification nor prose rewrites them |
+| Classification decisions                      | Work-map classification rationale and origin; saved overrides remain Target       |
+| Consequential decisions                       | [ADR history](decisions/README.md)                                                |
+| Commit, branch, review, and release rules     | [Stellar contribution policy](../CONTRIBUTING.md)                                 |
+| Contributor setup and command procedures      | [Development guide](development/README.md)                                        |
+| Dated results and limitations                 | [Validation records](validation/README.md)                                        |
+| Engineering standards and adoption provenance | [Standard adoption](development/standards.md)                                     |
 
 Chat, Linear, and pull requests are planning provenance. The architecture must
 remain understandable without them. When sources disagree, identify the concern,

@@ -19,15 +19,15 @@ Linux release asset were also verified. See [source provenance](../development/s
 
 ## Evidence
 
-| Check | Observed result |
-| --- | --- |
-| `mise lock --platform macos-arm64,linux-x64` | Six platform entries recorded with download checksums |
-| `just init`, repeated twice | Passed; three tools already installed, selectors/lock unchanged, hooks enabled |
-| `just ci` | Passed documentation, Just formatting, Bash, ShellCheck, actionlint, and whitespace checks |
-| Clean temporary repository copy, `just ci` | Passed without source-checkout or sibling-checkout dependencies |
-| Documentation negative cases | Rejected a missing chapter, unknown state, unindexed ADR, broken root link, unresolved token, and trailing whitespace |
-| Commit-message hook | Accepted two valid subjects; rejected a malformed subject, tracker identifier, and invalid scope |
-| Repository configuration | Unborn `dev`, `core.hooksPath=.githooks`, no remote and no commits |
+| Check                                        | Observed result                                                                                                       |
+| -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `mise lock --platform macos-arm64,linux-x64` | Six platform entries recorded with download checksums                                                                 |
+| `just init`, repeated twice                  | Passed; three tools already installed, selectors/lock unchanged, hooks enabled                                        |
+| `just ci`                                    | Passed documentation, Just formatting, Bash, ShellCheck, actionlint, and whitespace checks                            |
+| Clean temporary repository copy, `just ci`   | Passed without source-checkout or sibling-checkout dependencies                                                       |
+| Documentation negative cases                 | Rejected a missing chapter, unknown state, unindexed ADR, broken root link, unresolved token, and trailing whitespace |
+| Commit-message hook                          | Accepted two valid subjects; rejected a malformed subject, tracker identifier, and invalid scope                      |
+| Repository configuration                     | Unborn `dev`, `core.hooksPath=.githooks`, no remote and no commits                                                    |
 
 The clean-copy and negative checks used disposable temporary directories. The
 source repository was not committed or modified by those checks. Negative cases

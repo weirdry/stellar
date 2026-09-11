@@ -15,8 +15,9 @@ State: **Target**
 State: **As-built**
 
 Stellar adopts the linked [organization standards](../development/standards.md)
-through repository-owned configuration. This foundation has no application
-manifest, deployed environment, or released input contract. Source is hosted in
+through repository-owned configuration. The Node-native application
+manifest and locks are implemented; no deployed environment or released input
+contract exists. Source is hosted in
 the public `weirdry/stellar` GitHub repository.
 
 `dev` is the integration branch and has no deployment target. Promotion to

@@ -1,27 +1,20 @@
 # Stellar
 
-Stellar is an agent skill project that turns issue data into an
-interactive work map: a classification tree, a relationship graph, and an issue
-inspector. The agent interprets and classifies work; a bundled viewer owns the
-visual components, layout rules, and interactions.
+Stellar turns issue data into an interactive work map: a classification tree,
+a relationship graph, and an issue inspector. The agent interprets and
+classifies work; bundled code owns typography, colors, layout, and interaction.
 
 ## Current stage
 
-This repository contains the development and documentation foundation. The
-prototype viewer, issue snapshots, rendering command, data schema, and callable
-skill have not been imported or implemented here. The accepted product direction
-is documented as **Target**, not as working functionality.
-
-Stellar maintains its contribution rules in this repository, based on the
-5010-dev commit and branch conventions. It also follows the repository-owned
-Golden Path and canonical engineering documentation profile.
+The rendering core is implemented: a work-map JSON contract, validator,
+standalone HTML generator, reusable SVG viewer, and synthetic examples.
+A callable agent skill, source collection, saved edits, and synchronization
+remain **Target**. There is no backend or published package.
 
 ## Start development
 
-The public repository is `weirdry/stellar` on GitHub. Use `dev` for development;
-`main` is the validated baseline for promotion.
-
-Install mise 2026.9.4 or a compatible newer release. From the repository root:
+Install mise 2026.9.4 or a compatible newer release. With Bash, Git, and Perl
+available, run from the repository root:
 
 ```sh
 mise trust mise.toml
@@ -30,37 +23,68 @@ mise exec --locked just -- just init
 mise exec --locked just -- just ci
 ```
 
-With mise activated in your shell, use `just init`, `just check`, and `just ci`
-directly. Initialization installs the locked support tools and enables the
-repository-managed Git hooks. It does not create a commit or a remote.
+With mise activated, use Just directly. `just init` installs locked tools and
+frozen pnpm dependencies and enables local hooks. Node 24 is pinned in mise;
+pnpm is selected from `package.json` through the bundled Corepack. Tool locks
+cover macOS arm64 and Linux x64.
 
-The current tooling supports macOS arm64 and Linux x64 with Bash, Git, and Perl
-available. The committed mise lock covers both platforms. Product/browser
-support will be defined when the viewer is imported.
+## Generate a map
+
+```sh
+just validate examples/museum.json
+just render examples/museum.json outputs/museum.html
+just render examples/seed-library.json outputs/seed-library.html
+```
+
+Open the generated HTML in a browser. No server, credentials, or network access
+is needed to explore it. Reference links and source links navigate only when
+selected. Each HTML contains its input data: treat a real report as private.
+
+The tree locates work by purpose. Selecting an issue reveals its direct
+neighbors, including explicitly declared context outside the counting scope.
+Search, status and target filters, relationship switches, history, pan/zoom,
+minimap, light/dark themes, mobile drawers, and SVG export are included.
+The viewer's fixed interface is currently Korean; authored labels may use any
+language. Use [the input guide](schemas/README.md) to author a different map.
+
+## Verify
+
+```sh
+just ci
+just browser-install
+just browser-check
+```
+
+`ci` checks documentation, formatting, lint, and Node tests. Browser installation
+is an explicit network operation. `browser-check` runs a separate Chromium suite;
+GitHub CI runs both gates. Screenshots are optional local evidence; neither a
+passing test nor a screenshot alone establishes visual acceptance.
 
 ## Navigation
 
 - [Contributing](CONTRIBUTING.md)
-- [Canonical documentation entry point](docs/README.md)
-- [Development commands and tooling](docs/development/README.md)
-- [Organization standard adoption and source provenance](docs/development/standards.md)
-- [Accepted architecture](docs/architecture/README.md)
+- [Canonical documentation](docs/README.md)
+- [Development commands](docs/development/README.md)
+- [Standard adoption](docs/development/standards.md)
+- [Architecture](docs/architecture/README.md)
 - [Validation evidence](docs/validation/README.md)
 
 ## Repository boundaries
 
-| Path | Responsibility |
-| --- | --- |
-| `docs/architecture/` | Canonical current view and accepted Target |
-| `docs/decisions/` | Consequential decision history |
-| `scripts/`, `justfile`, `mise.toml`, `mise.lock` | Repository-owned development tooling |
-| `.githooks/`, `.github/` | Local contribution checks and repository-owned hosted CI |
-| `assets/viewer/` | Reserved home for the reusable viewer |
-| `schemas/` | Reserved home for the work-map input contract |
-| `references/` | Agent-facing classification guidance |
-| `examples/` | Synthetic, shareable examples |
-| `local/`, `outputs/` | Ignored user input and generated reports |
+| Path                                   | Responsibility                                        |
+| -------------------------------------- | ----------------------------------------------------- |
+| `bin/`, `lib/`                         | Validation and HTML generation                        |
+| `schemas/`                             | Authoritative input contract and semantic rules       |
+| `assets/viewer/`                       | Fixed HTML/CSS/JavaScript/SVG viewer                  |
+| `examples/`, `test/`                   | Entirely synthetic inputs and tests                   |
+| `references/`                          | Classification guidance                               |
+| `docs/`                                | Canonical architecture, decisions, and dated evidence |
+| `scripts/`, `justfile`, tool manifests | Repository-owned development tooling                  |
+| `.githooks/`, `.github/`               | Contribution checks and hosted CI                     |
+| `local/`, `outputs/`                   | Ignored private inputs and generated artifacts        |
 
-The first product implementation should reproduce the existing prototype from
-its snapshot, then render a different synthetic dataset without editing viewer
-code. See the [quality scenarios](docs/architecture/10-quality.md).
+Source hosting is public under `weirdry/stellar`. Follow the local contribution
+policy: integration through `dev`, review branches for substantial work, and
+validated promotion to `main`. Real snapshots, classifications, reports,
+screenshots, and logs must never enter Git or public CI. Public fixtures are
+invented from scratch, not anonymized copies of actual work.

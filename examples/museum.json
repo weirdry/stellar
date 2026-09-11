@@ -1,0 +1,396 @@
+{
+  "schemaVersion": 1,
+  "title": "밤의 박물관 · 작업 지도",
+  "owner": "Mira",
+  "source": {
+    "name": "Exhibit tracker (synthetic)",
+    "snapshotAt": "2026-08-02T09:00:00Z",
+    "notes": "가상의 박물관 전시 준비 예제입니다. 모든 이슈와 관계는 제품 검증을 위해 새로 작성했습니다."
+  },
+  "view": {
+    "initialScope": "active",
+    "exportName": "museum-work-map"
+  },
+  "domains": [
+    {
+      "id": "exhibits",
+      "label": "전시 경험",
+      "description": "전시 스토리와 공간을 관람 경험으로 만듭니다."
+    },
+    {
+      "id": "visitor",
+      "label": "관람객 서비스",
+      "description": "예약부터 현장 안내까지 방문을 돕습니다."
+    },
+    {
+      "id": "operations",
+      "label": "운영 준비",
+      "description": "설비, 접근성, 현장 운영을 준비합니다."
+    }
+  ],
+  "categories": [
+    {
+      "id": "story",
+      "domain": "exhibits",
+      "label": "전시 스토리",
+      "basis": "전시 내용과 설명 문구의 작성·검토"
+    },
+    {
+      "id": "lighting",
+      "domain": "exhibits",
+      "label": "조명 연출",
+      "basis": "공간의 조도와 연출을 위한 작업"
+    },
+    {
+      "id": "booking",
+      "domain": "visitor",
+      "label": "예약 경험",
+      "basis": "온라인 예약과 방문 시간 선택"
+    },
+    {
+      "id": "guide",
+      "domain": "visitor",
+      "label": "현장 안내",
+      "basis": "방문 동선과 안내물"
+    },
+    {
+      "id": "safety",
+      "domain": "operations",
+      "label": "안전 점검",
+      "basis": "설비 검수와 현장 안전"
+    },
+    {
+      "id": "volunteers",
+      "domain": "operations",
+      "label": "안내 인력",
+      "basis": "안내 인력 교육과 일정"
+    }
+  ],
+  "issues": [
+    {
+      "id": "MUS-1",
+      "title": "전시 해설 원고 작성",
+      "scope": "assigned",
+      "detail": "full",
+      "status": {
+        "type": "started",
+        "label": "In Progress"
+      },
+      "targets": ["야간 개장"],
+      "classification": {
+        "category": "story",
+        "rationale": "이 작업의 직접 산출물과 검토 책임에 따라 분류했습니다.",
+        "origin": "agent"
+      },
+      "assignee": "Mira",
+      "priority": "Normal",
+      "url": "https://example.com/issues/MUS-1",
+      "updatedAt": "2026-08-01T09:00:00Z"
+    },
+    {
+      "id": "MUS-2",
+      "title": "해설 원고 접근성 검토",
+      "scope": "assigned",
+      "detail": "full",
+      "status": {
+        "type": "unstarted",
+        "label": "Todo"
+      },
+      "targets": ["야간 개장", "접근성"],
+      "classification": {
+        "category": "story",
+        "rationale": "이 작업의 직접 산출물과 검토 책임에 따라 분류했습니다.",
+        "origin": "agent"
+      },
+      "assignee": "Mira",
+      "priority": "Normal",
+      "url": "https://example.com/issues/MUS-2",
+      "updatedAt": "2026-08-01T09:00:00Z"
+    },
+    {
+      "id": "MUS-3",
+      "title": "진열장 조도 측정",
+      "scope": "assigned",
+      "detail": "full",
+      "status": {
+        "type": "started",
+        "label": "In Progress"
+      },
+      "targets": ["야간 개장"],
+      "classification": {
+        "category": "lighting",
+        "rationale": "이 작업의 직접 산출물과 검토 책임에 따라 분류했습니다.",
+        "origin": "agent"
+      },
+      "assignee": "Mira",
+      "priority": "Normal",
+      "url": "https://example.com/issues/MUS-3",
+      "updatedAt": "2026-08-01T09:00:00Z"
+    },
+    {
+      "id": "MUS-4",
+      "title": "빛 반사 테스트",
+      "scope": "assigned",
+      "detail": "full",
+      "status": {
+        "type": "backlog",
+        "label": "Backlog"
+      },
+      "targets": [],
+      "classification": {
+        "category": "lighting",
+        "rationale": "이 작업의 직접 산출물과 검토 책임에 따라 분류했습니다.",
+        "origin": "agent"
+      },
+      "assignee": "Mira",
+      "priority": "Normal",
+      "url": "https://example.com/issues/MUS-4",
+      "updatedAt": "2026-08-01T09:00:00Z"
+    },
+    {
+      "id": "MUS-5",
+      "title": "관람 시간 예약 화면",
+      "scope": "assigned",
+      "detail": "full",
+      "status": {
+        "type": "started",
+        "label": "In Progress"
+      },
+      "targets": ["야간 개장"],
+      "classification": {
+        "category": "booking",
+        "rationale": "이 작업의 직접 산출물과 검토 책임에 따라 분류했습니다.",
+        "origin": "agent"
+      },
+      "assignee": "Mira",
+      "priority": "Normal",
+      "url": "https://example.com/issues/MUS-5",
+      "updatedAt": "2026-08-01T09:00:00Z"
+    },
+    {
+      "id": "MUS-6",
+      "title": "예약 확인 안내 문구",
+      "scope": "assigned",
+      "detail": "full",
+      "status": {
+        "type": "unstarted",
+        "label": "Todo"
+      },
+      "targets": [],
+      "classification": {
+        "category": "booking",
+        "rationale": "이 작업의 직접 산출물과 검토 책임에 따라 분류했습니다.",
+        "origin": "agent"
+      },
+      "assignee": "Mira",
+      "priority": "Normal",
+      "url": "https://example.com/issues/MUS-6",
+      "updatedAt": "2026-08-01T09:00:00Z"
+    },
+    {
+      "id": "MUS-7",
+      "title": "쉬운 길찾기 표지 제작",
+      "scope": "assigned",
+      "detail": "full",
+      "status": {
+        "type": "backlog",
+        "label": "Backlog"
+      },
+      "targets": ["접근성"],
+      "classification": {
+        "category": "guide",
+        "rationale": "이 작업의 직접 산출물과 검토 책임에 따라 분류했습니다.",
+        "origin": "agent"
+      },
+      "assignee": "Mira",
+      "priority": "Normal",
+      "url": "https://example.com/issues/MUS-7",
+      "updatedAt": "2026-08-01T09:00:00Z"
+    },
+    {
+      "id": "MUS-8",
+      "title": "출입구 안전 점검",
+      "scope": "assigned",
+      "detail": "full",
+      "status": {
+        "type": "started",
+        "label": "In Progress"
+      },
+      "targets": ["야간 개장"],
+      "classification": {
+        "category": "safety",
+        "rationale": "이 작업의 직접 산출물과 검토 책임에 따라 분류했습니다.",
+        "origin": "agent"
+      },
+      "assignee": "Mira",
+      "priority": "Normal",
+      "url": "https://example.com/issues/MUS-8",
+      "updatedAt": "2026-08-01T09:00:00Z"
+    },
+    {
+      "id": "MUS-9",
+      "title": "안내 인력 교육 자료",
+      "scope": "assigned",
+      "detail": "full",
+      "status": {
+        "type": "unstarted",
+        "label": "Todo"
+      },
+      "targets": ["접근성"],
+      "classification": {
+        "category": "volunteers",
+        "rationale": "이 작업의 직접 산출물과 검토 책임에 따라 분류했습니다.",
+        "origin": "agent"
+      },
+      "assignee": "Mira",
+      "priority": "Normal",
+      "url": "https://example.com/issues/MUS-9",
+      "updatedAt": "2026-08-01T09:00:00Z"
+    },
+    {
+      "id": "MUS-10",
+      "title": "전시 준비 계획 승인",
+      "scope": "assigned",
+      "detail": "full",
+      "status": {
+        "type": "completed",
+        "label": "Done"
+      },
+      "targets": [],
+      "classification": {
+        "category": "story",
+        "rationale": "이 작업의 직접 산출물과 검토 책임에 따라 분류했습니다.",
+        "origin": "agent"
+      },
+      "assignee": "Mira",
+      "priority": "Normal",
+      "url": "https://example.com/issues/MUS-10",
+      "updatedAt": "2026-08-01T09:00:00Z"
+    },
+    {
+      "id": "MUS-11",
+      "title": "종이 예약권 시안",
+      "scope": "assigned",
+      "detail": "full",
+      "status": {
+        "type": "canceled",
+        "label": "Canceled"
+      },
+      "targets": [],
+      "classification": {
+        "category": "booking",
+        "rationale": "이 작업의 직접 산출물과 검토 책임에 따라 분류했습니다.",
+        "origin": "agent"
+      },
+      "assignee": "Mira",
+      "priority": "Normal",
+      "url": "https://example.com/issues/MUS-11",
+      "updatedAt": "2026-08-01T09:00:00Z"
+    },
+    {
+      "id": "MUS-12",
+      "title": "이전 안내 문구 초안",
+      "scope": "assigned",
+      "detail": "full",
+      "status": {
+        "type": "duplicate",
+        "label": "Duplicate"
+      },
+      "targets": [],
+      "classification": {
+        "category": "guide",
+        "rationale": "이 작업의 직접 산출물과 검토 책임에 따라 분류했습니다.",
+        "origin": "agent"
+      },
+      "assignee": "Mira",
+      "priority": "Normal",
+      "url": "https://example.com/issues/MUS-12",
+      "updatedAt": "2026-08-01T09:00:00Z"
+    },
+    {
+      "id": "CTX-1",
+      "title": "건물 시설 검수",
+      "scope": "context",
+      "detail": "full",
+      "status": {
+        "type": "completed",
+        "label": "Done"
+      },
+      "targets": [],
+      "assignee": "Mira",
+      "priority": "Normal",
+      "url": "https://example.com/issues/CTX-1",
+      "updatedAt": "2026-08-01T09:00:00Z"
+    },
+    {
+      "id": "CTX-2",
+      "title": "아직 조회하지 않은 연결 작업",
+      "scope": "context",
+      "detail": "unqueried",
+      "status": {
+        "type": "unknown",
+        "label": "미조회"
+      },
+      "targets": []
+    }
+  ],
+  "relations": [
+    {
+      "kind": "parent",
+      "source": "MUS-10",
+      "target": "MUS-1"
+    },
+    {
+      "kind": "parent",
+      "source": "MUS-10",
+      "target": "MUS-3"
+    },
+    {
+      "kind": "blocks",
+      "source": "MUS-1",
+      "target": "MUS-2"
+    },
+    {
+      "kind": "blocks",
+      "source": "MUS-2",
+      "target": "MUS-7"
+    },
+    {
+      "kind": "blocks",
+      "source": "CTX-2",
+      "target": "MUS-1"
+    },
+    {
+      "kind": "parent",
+      "source": "CTX-1",
+      "target": "MUS-8"
+    },
+    {
+      "kind": "related",
+      "source": "MUS-1",
+      "target": "MUS-5"
+    },
+    {
+      "kind": "related",
+      "source": "MUS-3",
+      "target": "MUS-8"
+    },
+    {
+      "kind": "related",
+      "source": "MUS-7",
+      "target": "MUS-9"
+    },
+    {
+      "kind": "duplicate",
+      "source": "MUS-12",
+      "target": "MUS-7"
+    }
+  ],
+  "attachments": [
+    {
+      "title": "전시 자료 예시",
+      "href": "https://example.com/exhibit",
+      "note": "참고 링크의 표시를 검증하는 합성 예제입니다."
+    }
+  ]
+}

@@ -1,74 +1,68 @@
 # Development
 
-The current executable surface is repository and documentation tooling, using
-Bash and standard platform utilities. There is no Node/Python application
-dependency graph yet. Add the applicable native manifest, lock, runtime pin,
-and quality commands when importing actual product code.
+The product is a Node-native JavaScript CLI with an HTML/CSS/JavaScript/SVG
+viewer. `package.json` and `pnpm-lock.yaml` own one dependency graph. No
+TypeScript artifact, compiler build, published library, or backend exists.
+Node's built-in test runner covers the small native CLI; Playwright drives
+separately named browser verification.
 
 ## Initialization
 
-From the repository root, use the [README setup commands](../../README.md).
-The mise configuration pins Just, ShellCheck, and actionlint. The lock covers
-macOS arm64 and Linux x64; CI also selects the exact mise executable.
+Follow [the root setup instructions](../../README.md). `just init` installs
+exact tools through the committed mise lock, installs dependencies with frozen
+pnpm resolution, and enables `.githooks`. It verifies that selectors and locks
+were not rewritten. Corepack from the pinned Node selects `packageManager`;
+pnpm does not select or install Node. Browser installation is separate.
 
-`just init` installs from the committed lock, verifies that selectors and lock
-were not rewritten, and sets repository-local `core.hooksPath` to `.githooks`.
-It can be repeated. It changes only local development-tool installation and
-repository hook configuration. Bash, Git, and Perl are platform prerequisites.
-There are no package dependencies or production secrets to install.
-
-Project recipes exclude the user-global mise configuration from tool installation.
-Machine-specific overrides remain untracked. The bootstrap and checks require
-no sibling checkout, editor, agent runtime, or machine-specific absolute path.
+Project commands exclude global mise tool configuration and user npm config.
+These public dependencies require no credentials or sibling checkout. Tool
+locks cover macOS arm64 and Linux x64. Bash, Git, and Perl are prerequisites.
+The pnpm configuration applies a one-day minimum release age and allows no
+dependency build scripts.
 
 ## Commands
 
-| Command | Behavior |
-| --- | --- |
-| `just` | List commands |
-| `just init` | Install locked support tools and enable hooks |
-| `just docs-check` | Validate the arc42 corpus, ADR indexing, and local Markdown links |
-| `just lint` | Just formatting, Bash syntax, ShellCheck, actionlint, and Git whitespace checks |
-| `just check` | Run documentation and tooling validation |
-| `just ci` | Run the same complete gate for the current foundation |
+| Command                    | Behavior                                                                                   |
+| -------------------------- | ------------------------------------------------------------------------------------------ |
+| `just init`                | Locked tools, frozen dependencies, local hooks                                             |
+| `just format`              | Explicit Prettier write                                                                    |
+| `just format-check`        | Read-only repository-local Prettier check                                                  |
+| `just docs-check`          | Canonical structure, indexes, local links, whitespace                                      |
+| `just lint`                | ESLint, Just format, Bash syntax, ShellCheck, actionlint, Git whitespace                   |
+| `just test`                | Deterministic Node unit and CLI integration tests                                          |
+| `just check` / `just ci`   | Complete local gate above, without dependency installation or persistent generated outputs |
+| `just browser-install`     | Explicit Chromium download using pinned Playwright                                         |
+| `just browser-check`       | Chromium interaction, reuse, safety, viewport and export tests with synthetic inputs       |
+| `just validate INPUT`      | Validate input without writing it                                                          |
+| `just render INPUT OUTPUT` | Validate and generate a standalone HTML artifact                                           |
 
-There is no product build, test runner, packaging command, or rendering command
-yet. Those commands will be added alongside their real capability, without
-successful placeholder recipes. In this stage `ci` has no additional artifact
-step beyond `check`.
+Tests create temporary artifacts and remove them. Gates do not rewrite source,
+format files, collect data, commit, or publish. No empty build or typecheck
+recipe is provided for plain JavaScript. Generation is an explicit product
+operation, not a compiler build or package release.
 
-Checks do not install dependencies, reformat source, regenerate documents,
-commit, publish, or contact Linear. `just lint` uses the locked tools through
-mise; initialize before running it.
-
-## Tool changes
-
-Edit exact selectors and regenerate the lock explicitly:
+For optional visual evidence:
 
 ```sh
-mise lock --platform macos-arm64,linux-x64
-just init
-just ci
+STELLAR_QA_DIR=outputs/qa just browser-check
 ```
 
-Review both selector and lock changes. When changing mise itself, align the
-workflow's exact `with.version` with the supported configuration floor and
-verify the release asset for the CI platform. Action references use immutable
-commits. Do not manually invent lock contents or follow moving versions in CI.
+Screenshots in this mode contain only the suite's synthetic fixtures. The
+`STELLAR_CHROME` environment variable can select an installed Chromium executable
+for constrained local environments; default checks use Playwright's pinned
+browser. The browser gate fails if Chromium is unavailable; it does not skip.
+Private regression inputs and scripts must remain in ignored local locations.
 
-## Hooks and CI
+## Changes and delivery
 
-The pre-commit hook runs `just ci`; the commit-message hook checks Conventional
-Commit syntax and rejects tracker identifiers in the subject. No commit is
-created by initialization. Hooks are local feedback, not remote enforcement.
+Runtime selectors belong in `mise.toml`, with a real lock regenerated using
+`mise lock --platform macos-arm64,linux-x64`. Direct package versions are exact;
+change `package.json` and regenerate the pnpm lock deliberately. `just init`
+and hosted CI use frozen resolution. Repository Prettier and flat ESLint config
+are shared by local checks and CI.
 
-The [CI workflow](../../.github/workflows/ci.yml) installs the locked environment
-and calls `just ci` once per job for PRs into `dev` and pushes to `dev` or `main`.
-The public GitHub remote is `weirdry/stellar`; `main` is the default branch and
-`dev` is the integration branch. PR integration uses rebase merge only.
-
-Inspect [GitHub Actions](https://github.com/weirdry/stellar/actions/workflows/ci.yml)
-for actual run results. Branch protection and required-check enforcement are
-separate from workflow execution and are not implied by this setup. Dependency
-visibility and security-update routing must be evaluated when a native dependency
-graph is introduced. Skill distribution and publication remain undefined.
+The pre-commit hook runs `just ci`; the commit-message hook enforces Conventional
+Commits. The hosted workflow invokes the same gate, explicitly installs browser
+system dependencies, and runs `just browser-check`. It never loads `local/`.
+Local success, hosted results, visual review, review/merge, and publication are
+separate evidence. Workflow configuration alone does not prove a successful run.

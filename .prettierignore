@@ -1,0 +1,8 @@
+local/
+outputs/
+dist/
+coverage/
+.cache/
+node_modules/
+mise.lock
+pnpm-lock.yaml
