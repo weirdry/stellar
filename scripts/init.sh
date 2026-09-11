@@ -4,9 +4,11 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 export MISE_IGNORED_CONFIG_PATHS="${MISE_GLOBAL_CONFIG_FILE:-${XDG_CONFIG_HOME:-$HOME/.config}/mise/config.toml}"
 
-before="$(git hash-object mise.toml mise.lock)"
+before="$(git hash-object mise.toml mise.lock package.json pnpm-lock.yaml)"
 mise install --locked
-after="$(git hash-object mise.toml mise.lock)"
+export npm_config_userconfig=/dev/null
+mise exec --locked -- corepack pnpm install --frozen-lockfile
+after="$(git hash-object mise.toml mise.lock package.json pnpm-lock.yaml)"
 if [[ "$before" != "$after" ]]; then
     echo 'error: tool installation changed the committed selectors or lock' >&2
     exit 1

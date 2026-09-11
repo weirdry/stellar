@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "title": "Community seed library",
+  "owner": "Rowan",
+  "source": {
+    "name": "Garden notebook (synthetic)",
+    "snapshotAt": "2026-07-10T10:00:00Z",
+    "notes": "Invented seed-library work with a different owner, taxonomy, and status distribution."
+  },
+  "view": {
+    "initialScope": "all",
+    "exportName": "seed-library"
+  },
+  "domains": [
+    {
+      "id": "seeds",
+      "label": "Seed exchange",
+      "description": "Prepare the community seed library."
+    }
+  ],
+  "categories": [
+    {
+      "id": "catalogue",
+      "domain": "seeds",
+      "label": "Catalogue",
+      "basis": "Inventory and descriptions"
+    },
+    {
+      "id": "packing",
+      "domain": "seeds",
+      "label": "Packing",
+      "basis": "Prepare take-home packets"
+    }
+  ],
+  "issues": [
+    {
+      "id": "SEED-1",
+      "title": "Catalogue donated seeds",
+      "scope": "assigned",
+      "detail": "full",
+      "status": {
+        "type": "completed",
+        "label": "Done"
+      },
+      "targets": [],
+      "classification": {
+        "category": "catalogue",
+        "rationale": "Grouped by the immediate output of this task.",
+        "origin": "agent"
+      },
+      "assignee": "Rowan",
+      "priority": "Normal",
+      "url": "https://example.com/issues/SEED-1",
+      "updatedAt": "2026-08-01T09:00:00Z"
+    },
+    {
+      "id": "SEED-2",
+      "title": "Print packet instructions",
+      "scope": "assigned",
+      "detail": "full",
+      "status": {
+        "type": "unstarted",
+        "label": "Todo"
+      },
+      "targets": ["Spring exchange"],
+      "classification": {
+        "category": "packing",
+        "rationale": "Grouped by the immediate output of this task.",
+        "origin": "agent"
+      },
+      "assignee": "Rowan",
+      "priority": "Normal",
+      "url": "https://example.com/issues/SEED-2",
+      "updatedAt": "2026-08-01T09:00:00Z"
+    },
+    {
+      "id": "SEED-3",
+      "title": "Pack the first batch",
+      "scope": "assigned",
+      "detail": "full",
+      "status": {
+        "type": "backlog",
+        "label": "Backlog"
+      },
+      "targets": ["Spring exchange"],
+      "classification": {
+        "category": "packing",
+        "rationale": "Grouped by the immediate output of this task.",
+        "origin": "agent"
+      },
+      "assignee": "Rowan",
+      "priority": "Normal",
+      "url": "https://example.com/issues/SEED-3",
+      "updatedAt": "2026-08-01T09:00:00Z"
+    }
+  ],
+  "relations": [
+    {
+      "kind": "blocks",
+      "source": "SEED-2",
+      "target": "SEED-3"
+    }
+  ]
+}

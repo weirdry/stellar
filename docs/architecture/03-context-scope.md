@@ -2,13 +2,18 @@
 
 State: **Target**
 
-| Participant | Responsibility and boundary |
-| --- | --- |
-| User | Defines scope and preferences, reviews grouping, owns corrections |
-| Host agent | Uses available source access, interprets work, authors work-map data |
-| Source system | Owns issue facts, original identifiers, statuses, and registered relations |
-| Stellar tooling | Validates input and creates an interactive artifact |
-| Local browser | Displays the bundled viewer and supports exploration/export |
+| Participant     | Responsibility and boundary                                                |
+| --------------- | -------------------------------------------------------------------------- |
+| User            | Defines scope and preferences, reviews grouping, owns corrections          |
+| Host agent      | Uses available source access, interprets work, authors work-map data       |
+| Source system   | Owns issue facts, original identifiers, statuses, and registered relations |
+| Stellar tooling | Validates input and creates an interactive artifact                        |
+| Local browser   | Displays the bundled viewer and supports exploration/export                |
+
+State: **As-built**
+
+Stellar tooling and browser exploration are implemented. The host collection
+workflow and source adapters remain Target.
 
 Linear is the first intended source. Its authentication belongs to the user's
 existing host tools or connection. Exact collection adapters are Open; a

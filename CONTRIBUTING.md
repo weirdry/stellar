@@ -8,11 +8,11 @@ rules. Contributors can follow the complete workflow from this repository.
 Stellar uses a simplified Gitflow model with linear integration and release
 history.
 
-| Branch | Role |
-| --- | --- |
-| `main` | Validated release branch and the only source for eventual publication or production deployment |
-| `dev` | Development and integration branch for the next release; no deployment target |
-| Work branches | Isolated feature, fix, refactoring, documentation, test, or maintenance work |
+| Branch        | Role                                                                                           |
+| ------------- | ---------------------------------------------------------------------------------------------- |
+| `main`        | Validated release branch and the only source for eventual publication or production deployment |
+| `dev`         | Development and integration branch for the next release; no deployment target                  |
+| Work branches | Isolated feature, fix, refactoring, documentation, test, or maintenance work                   |
 
 All changes reach `main` through promotion from `dev`. Do not implement changes
 directly on `main`, including hotfixes, unless the maintainer explicitly directs
@@ -61,18 +61,18 @@ such as `viewer`, `schema`, `repo`, or `docs`. Write an imperative summary that
 describes the outcome. Separate the body from the subject with a blank line;
 use a body for non-trivial rationale, consequences, or follow-up details.
 
-| Type | Use |
-| --- | --- |
-| `feat` | New user- or consumer-facing capability |
-| `fix` | Bug fix |
-| `docs` | Documentation-only change |
-| `refactor` | Internal restructuring without a behavior change |
-| `test` | Test-only change |
-| `build` | Build system, dependency, or packaging change |
-| `ci` | CI/CD configuration change |
-| `chore` | Repository maintenance not covered by another type |
-| `perf` | Performance improvement |
-| `revert` | Reversion of an earlier commit |
+| Type       | Use                                                |
+| ---------- | -------------------------------------------------- |
+| `feat`     | New user- or consumer-facing capability            |
+| `fix`      | Bug fix                                            |
+| `docs`     | Documentation-only change                          |
+| `refactor` | Internal restructuring without a behavior change   |
+| `test`     | Test-only change                                   |
+| `build`    | Build system, dependency, or packaging change      |
+| `ci`       | CI/CD configuration change                         |
+| `chore`    | Repository maintenance not covered by another type |
+| `perf`     | Performance improvement                            |
+| `revert`   | Reversion of an earlier commit                     |
 
 Examples:
 
@@ -113,9 +113,11 @@ Run `just ci` after a rebase and before handing off a change or opening/updating
 a multi-commit PR. The pre-commit hook invokes the same gate; the commit-message
 hook validates the subject. Do not bypass hooks with `git commit --no-verify`.
 
-The current foundation gate validates documentation and repository tooling.
-Product tests, browser checks, and package checks are added with their actual
-implementation. A green foundation gate does not prove those capabilities.
+The current local gate validates documentation, formatting, JavaScript and
+repository tooling, and Node unit/CLI tests. Run `just browser-check` for changes
+to viewer behavior, rendering, or its input contract; install Chromium explicitly
+with `just browser-install` first. Hosted CI runs both gates on synthetic inputs.
+Neither gate proves live source access, skill installation, or publication.
 
 ## Direct commits to dev
 
@@ -235,7 +237,10 @@ Preserve correctness identities and ordering rules for their actual purpose.
 
 Never delete, reset, or rewrite user data merely to simplify development. Keep
 real issue data and generated user reports in ignored `local/` and `outputs/`
-directories. Use synthetic examples in tracked fixtures. Do not commit secrets,
+directories. Use entirely invented synthetic examples in tracked fixtures, not renamed or
+anonymized copies of real work. Keep real-data derivatives, including HTML, SVG,
+screenshots and logs, out of Git and public CI. Inspect staged paths and contents
+before committing; do not rely only on ignore rules. Do not commit secrets,
 credentials, or machine-specific paths.
 
 License, skill distribution, and artifact-publication configuration remain Open.

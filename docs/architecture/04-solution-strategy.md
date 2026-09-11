@@ -1,28 +1,28 @@
 # 4. Solution strategy
 
+State: **As-built**
+
+The working vertical path is work-map JSON → input validation → standalone HTML
+→ browser exploration. The [schema](../../schemas/work-map.schema.json) defines
+the shape, [validator](../../lib/validate.js) checks semantic references, and
+[renderer](../../lib/render.js) embeds the bundled viewer and input. The viewer
+consumes no source credentials or query mechanism.
+
+Node-native ESM JavaScript retains the prototype's HTML/CSS/SVG implementation.
+The agent supplies classifications and evidence; it does not regenerate CSS or
+layout code. Titles, owner, timestamps, taxonomy, source facts, and optional
+references are data. Source links and reference documents are opened only by
+user action. The first HTML generation path requires no Archify installation.
+
+Archify remains a reference for typed authoring, fixed visual implementation,
+and actionable diagnostics, rather than a product runtime dependency.
+See [ADR-0002](../decisions/0002-use-a-canonical-work-map-and-bundled-viewer.md).
+
+## Skill and refresh
+
 State: **Target**
 
-The reusable unit is a skill package containing execution guidance, a work-map
-input contract, rendering/validation tools, and a bundled viewer. The agent
-authors the data consumed by those tools. It does not redesign the interface
-during each generation.
-
-The dependency direction is source facts to interpreted work-map data to
-validated rendering to the browser artifact. The viewer must consume the
-work-map contract without depending on Linear credentials or the source query
-mechanism.
-
-Archify provides a reference for this separation: typed authoring, reusable
-visual implementation, concrete diagnostics, and verified output. Stellar does
-not acquire Archify's renderer as a product dependency through that reference.
-
-## First implementation sequence
-
-1. Import the prototype's viewer source and generation inputs deliberately.
-2. Move report-specific titles, timestamps, counts, and attachments into data.
-3. Define the smallest contract that renders the existing snapshot correctly.
-4. Verify reuse with a distinct synthetic example.
-5. Add callable skill guidance around the functioning tools and repair path.
-
-Classification continuity and user overrides must be designed alongside the
-first refresh behavior, not claimed from deterministic rendering alone.
+Package the functioning tools with collection/authoring guidance and bounded
+repair instructions. Source collection adapters, classification continuity,
+user overrides, and refresh merge rules still need implementation. Deterministic
+rendering does not by itself preserve user decisions across newly authored inputs.

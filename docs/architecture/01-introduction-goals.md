@@ -18,11 +18,12 @@ The goal is repeatable artifact generation through an agent skill.
 3. Complete in-scope classification without inflating counts with context.
 4. Local, inspectable output with reproducible generation.
 
-## Current foundation
+## Current implementation
 
 State: **As-built**
 
-The repository contains contribution guidance, locked development tools,
-documentation checking, Git hooks, and a CI workflow definition. The product
-has not been imported. See [development](../development/README.md) and
+The repository implements a validated work-map JSON to standalone HTML path,
+a reusable SVG viewer, synthetic examples, Node tests, and browser checks.
+Contribution guidance, locked tooling, documentation checking, hooks and hosted
+CI support development. Collection and a callable skill remain Target. See [development](../development/README.md) and
 [validation](../validation/README.md).

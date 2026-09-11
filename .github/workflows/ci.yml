@@ -21,15 +21,21 @@ jobs:
       - name: Install locked tooling
         uses: jdx/mise-action@7e36c90d9ab29c415a2384db3006f3ec8a8cc654 # v4.2.4
         with:
-          version: "2026.9.4"
-          install_args: "--locked"
+          version: '2026.9.4'
+          install_args: '--locked'
           cache: true
 
       - name: Initialize repository
         run: just init
 
       - name: Verify selector and lock integrity
-        run: git diff --exit-code -- mise.toml mise.lock
+        run: git diff --exit-code -- mise.toml mise.lock package.json pnpm-lock.yaml
 
       - name: Run canonical CI
         run: just ci
+
+      - name: Install Chromium and system libraries
+        run: mise exec --locked -- corepack pnpm exec playwright install --with-deps chromium
+
+      - name: Check browser behavior with synthetic data
+        run: just browser-check
