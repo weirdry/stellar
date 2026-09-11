@@ -1,6 +1,5 @@
 {
   "schemaVersion": 1,
-  "title": "밤의 박물관 · 작업 지도",
   "owner": "Mira",
   "source": {
     "name": "Exhibit tracker (synthetic)",
@@ -392,5 +391,6 @@
       "href": "https://example.com/exhibit",
       "note": "참고 링크의 표시를 검증하는 합성 예제입니다."
     }
-  ]
+  ],
+  "locale": "ko"
 }

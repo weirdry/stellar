@@ -9,6 +9,7 @@ This is the repository-local entry point for Stellar's engineering knowledge.
 | Architecture current view and accepted Target | [Architecture](architecture/README.md)                                            |
 | Implemented behavior and exact tool versions  | Repository scripts, configuration, and locks                                      |
 | Work-map input shape                          | [Work-map schema and semantic contract](../schemas/README.md)                     |
+| Fixed UI language and owner-derived naming    | [Bundled viewer and locale catalogs](../assets/viewer/README.md)                  |
 | Original issue facts                          | Source snapshot and source system; neither classification nor prose rewrites them |
 | Classification decisions                      | Work-map classification rationale and origin; saved overrides remain Target       |
 | Consequential decisions                       | [ADR history](decisions/README.md)                                                |

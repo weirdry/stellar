@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko">
+<html lang="__LOCALE__">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -14,8 +14,8 @@
       <button
         class="icon mobile-only"
         id="tree-toggle"
-        title="트리 열기"
-        aria-label="트리 열기"
+        title="{{ui.open.tree}}"
+        aria-label="{{ui.open.tree}}"
       >
         ☰</button
       ><a class="brand" href="#" id="brand"
@@ -28,42 +28,42 @@
       <div class="top-divider"></div>
       <span class="snapshot" id="snapshot"></span>
       <div class="top-actions">
-        <button class="quiet" id="maps-open">참고 자료</button
+        <button class="quiet" id="maps-open">{{ui.references}}</button
         ><button
           class="icon"
           id="theme"
-          title="라이트 모드"
-          aria-label="라이트 모드"
+          title="{{ui.theme.light}}"
+          aria-label="{{ui.theme.light}}"
         >
           ☀</button
         ><button
           class="icon"
           id="help-open"
-          title="사용 안내"
-          aria-label="사용 안내"
+          title="{{ui.open.help}}"
+          aria-label="{{ui.open.help}}"
         >
           ?</button
         ><button
           class="icon mobile-only"
           id="info-toggle"
-          title="상세 열기"
-          aria-label="상세 열기"
+          title="{{ui.open.info}}"
+          aria-label="{{ui.open.info}}"
         >
           ⓘ
         </button>
       </div>
     </header>
     <div class="workspace">
-      <aside class="sidebar" id="sidebar" aria-label="이슈 트리">
+      <aside class="sidebar" id="sidebar" aria-label="{{ui.aria.tree}}">
         <div class="sidebar-top">
           <div class="section-label">
-            EXPLORER
+            {{ui.section.explorer}}
             <button
               class="text-button"
               id="tree-collapse"
-              title="트리 모두 접기"
+              title="{{ui.collapse.all}}"
             >
-              접기
+              {{ui.collapse}}
             </button>
           </div>
           <label class="searchbox"
@@ -71,28 +71,28 @@
             ><input
               id="search"
               autocomplete="off"
-              placeholder="이슈 ID · 제목 검색"
-              aria-label="이슈 검색"
+              placeholder="{{ui.search.placeholder}}"
+              aria-label="{{ui.search.label}}"
             /><kbd>/</kbd></label
           >
           <div id="search-results" class="search-results" hidden></div>
           <div class="scope-row">
-            <select id="scope" aria-label="상태 범위">
-              <option value="active">미완료 작업</option>
-              <option value="all">전체 이력</option>
-              <option value="started">In Progress</option>
-              <option value="unstarted">Todo</option>
-              <option value="backlog">Backlog</option>
-              <option value="completed">Done</option>
-              <option value="unknown">미조회</option>
-              <option value="closed">Canceled · Duplicate</option></select
+            <select id="scope" aria-label="{{ui.scope.label}}">
+              <option value="active">{{ui.scope.active}}</option>
+              <option value="all">{{ui.scope.all}}</option>
+              <option value="started">{{ui.scope.started}}</option>
+              <option value="unstarted">{{ui.scope.unstarted}}</option>
+              <option value="backlog">{{ui.scope.backlog}}</option>
+              <option value="completed">{{ui.scope.completed}}</option>
+              <option value="unknown">{{ui.scope.unknown}}</option>
+              <option value="closed">{{ui.scope.closed}}</option></select
             ><span id="scope-count" class="count"></span>
           </div>
         </div>
-        <nav class="tree" id="tree" aria-label="작업 영역과 세부 묶음"></nav>
+        <nav class="tree" id="tree" aria-label="{{ui.aria.groups}}"></nav>
         <div class="sidebar-bottom">
           <b id="taxonomy-count"></b>
-          <p>작업 목적별 분류 · 이슈마다 주분류 1개</p>
+          <p>{{ui.classification.rule}}</p>
         </div>
       </aside>
       <main class="stage" id="stage">
@@ -101,23 +101,23 @@
             <button
               class="icon"
               id="back"
-              aria-label="이전 탐색"
-              title="이전 탐색"
+              aria-label="{{ui.back}}"
+              title="{{ui.back}}"
               disabled
             >
               ←</button
-            ><button class="crumb-home" id="overview">전체 지도</button
+            ><button class="crumb-home" id="overview">{{ui.overview}}</button
             ><span id="breadcrumbs"></span>
           </div>
           <div class="target-wrap">
-            <span class="target-label">대상 강조</span
-            ><select id="target" aria-label="영향 대상 강조">
-              <option value="">모든 대상</option></select
+            <span class="target-label">{{ui.target.label}}</span
+            ><select id="target" aria-label="{{ui.aria.target}}">
+              <option value="">{{ui.target.all}}</option></select
             ><button
               id="target-clear"
               class="text-button"
               hidden
-              aria-label="대상 강조 해제"
+              aria-label="{{ui.target.clear}}"
             >
               ×
             </button>
@@ -128,7 +128,7 @@
           id="graph"
           xmlns="http://www.w3.org/2000/svg"
           role="img"
-          aria-label="작업 분류와 이슈 관계를 탐색하는 그래프"
+          aria-label="{{ui.aria.graph}}"
         >
           <defs>
             <marker
@@ -188,68 +188,83 @@
           </g>
         </svg>
         <div class="empty-state" id="empty" hidden>
-          <b>이 상태에 해당하는 이슈가 없습니다</b
-          ><span>왼쪽 상태 범위를 바꿔 주세요.</span>
+          <b>{{ui.empty.title}}</b><span>{{ui.empty.hint}}</span>
         </div>
         <div class="canvas-bottom">
           <div class="legend-panel">
-            <div class="edge-toggles" aria-label="관계 표시">
+            <div class="edge-toggles" aria-label="{{ui.aria.relations}}">
               <label
                 ><input
                   type="checkbox"
                   data-edge-toggle="classification"
                   checked
-                /><i class="line-sample classification"></i>분류</label
+                /><i class="line-sample classification"></i
+                >{{ui.edge.classification}}</label
               ><label
                 ><input type="checkbox" data-edge-toggle="blocks" checked /><i
                   class="line-sample blocks"
                 ></i
-                >선행 →</label
+                >{{ui.edge.blocks}}</label
               ><label
                 ><input type="checkbox" data-edge-toggle="related" checked /><i
                   class="line-sample related"
                 ></i
-                >연관</label
+                >{{ui.edge.related}}</label
               ><label
                 ><input type="checkbox" data-edge-toggle="parent" checked /><i
                   class="line-sample parent"
                 ></i
-                >원본 상하위</label
+                >{{ui.edge.parent}}</label
               ><label
                 ><input
                   type="checkbox"
                   data-edge-toggle="duplicate"
                   checked
-                /><i class="line-sample parent"></i>중복 →</label
+                /><i class="line-sample parent"></i>{{ui.edge.duplicate}}</label
               >
             </div>
             <div class="status-legend">
-              <span><i class="status-dot started"></i>In Progress</span
-              ><span><i class="status-dot unstarted"></i>Todo</span
-              ><span><i class="status-dot backlog"></i>Backlog</span
-              ><span><i class="status-dot completed"></i>Done</span
-              ><span class="ghost-key">◌ 맥락</span>
+              <span><i class="status-dot started"></i>{{ui.scope.started}}</span
+              ><span
+                ><i class="status-dot unstarted"></i
+                >{{ui.scope.unstarted}}</span
+              ><span
+                ><i class="status-dot backlog"></i>{{ui.scope.backlog}}</span
+              ><span
+                ><i class="status-dot completed"></i
+                >{{ui.scope.completed}}</span
+              ><span class="ghost-key">◌ {{ui.context}}</span>
             </div>
           </div>
           <div class="viewport-tools">
-            <button class="icon" id="zoom-out" title="축소" aria-label="축소">
+            <button
+              class="icon"
+              id="zoom-out"
+              title="{{ui.zoom.out}}"
+              aria-label="{{ui.zoom.out}}"
+            >
               −</button
             ><span id="zoom-label">100%</span
-            ><button class="icon" id="zoom-in" title="확대" aria-label="확대">
+            ><button
+              class="icon"
+              id="zoom-in"
+              title="{{ui.zoom.in}}"
+              aria-label="{{ui.zoom.in}}"
+            >
               +</button
             ><span class="tool-divider"></span
             ><button
               class="icon"
               id="fit"
-              title="화면에 맞춤 · F"
-              aria-label="화면에 맞춤"
+              title="{{ui.fit.key}}"
+              aria-label="{{ui.fit}}"
             >
               ⛶</button
             ><button
               class="icon"
               id="export"
-              title="현재 화면 SVG 저장"
-              aria-label="현재 화면 SVG 저장"
+              title="{{ui.export}}"
+              aria-label="{{ui.export}}"
             >
               ↓
             </button>
@@ -260,17 +275,17 @@
             id="minimap"
             viewBox="0 0 160 96"
             role="img"
-            aria-label="현재 그래프 미니맵"
+            aria-label="{{ui.aria.minimap}}"
           ></svg>
         </div>
-        <div class="gesture-hint">드래그로 이동 · 휠로 확대 · F 맞춤</div>
+        <div class="gesture-hint">{{ui.gesture}}</div>
         <div id="tooltip" class="graph-tooltip" hidden></div>
         <div id="toast" class="toast" role="status" hidden></div>
       </main>
       <aside
         class="inspector"
         id="inspector"
-        aria-label="선택한 항목 상세"
+        aria-label="{{ui.aria.inspector}}"
       ></aside>
     </div>
     <div
@@ -278,19 +293,24 @@
       class="modal"
       role="dialog"
       aria-modal="true"
-      aria-label="참고 보기"
+      aria-label="{{ui.aria.references}}"
       hidden
     >
       <div class="modal-card">
         <header>
           <h2 id="modal-title"></h2>
-          <button class="icon" id="modal-close" aria-label="닫기">×</button>
+          <button class="icon" id="modal-close" aria-label="{{ui.close}}">
+            ×
+          </button>
         </header>
         <div id="modal-content"></div>
       </div>
     </div>
     <script type="application/json" id="data">
       __DATA__
+    </script>
+    <script type="application/json" id="messages">
+      __MESSAGES__
     </script>
     <script>
       __JS__;

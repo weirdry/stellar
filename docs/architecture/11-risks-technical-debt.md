@@ -7,7 +7,7 @@ State: **Open**
 | Callable skill and source collection           | Guidance and source access complete a real invocation with freshness/lookup evidence             | Stellar maintainer |
 | Classification drift and saved edits           | Explicit override persistence and refresh rules are implemented and tested                       | Stellar maintainer |
 | Dense graphs and very long labels              | Continued visual review against actual datasets; current layout is not a general graph optimizer | Stellar maintainer |
-| Internationalized interface                    | Locale ownership and translated fixed controls are implemented; current fixed UI is Korean       | Stellar maintainer |
+| Additional UI languages                        | Add reviewed catalogs and browser evidence beyond the implemented Korean and English             | Stellar maintainer |
 | License and distribution                       | Choose the package/channel and verify installation/use                                           | Stellar maintainer |
 | Hosting enforcement and dependency remediation | Configure applicable branch rules and ownership at the actual delivery boundary                  | Stellar maintainer |
 

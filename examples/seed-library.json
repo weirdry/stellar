@@ -1,6 +1,5 @@
 {
   "schemaVersion": 1,
-  "title": "Community seed library",
   "owner": "Rowan",
   "source": {
     "name": "Garden notebook (synthetic)",
@@ -100,5 +99,6 @@
       "source": "SEED-2",
       "target": "SEED-3"
     }
-  ]
+  ],
+  "locale": "en"
 }

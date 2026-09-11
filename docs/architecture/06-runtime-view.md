@@ -7,8 +7,10 @@ State: **As-built**
 1. The caller supplies a work-map JSON file and an output HTML path.
 2. The CLI parses JSON and validates shape, identities, references, classification,
    relation semantics and URLs. Errors identify the field and repair.
-3. The renderer reads its own shell, style and script relative to its module.
-4. It escapes the title and embedded JSON, then replaces the template slots once.
+3. The renderer reads its own shell, style, script, and selected locale catalog
+   relative to its module.
+4. It derives the owner’s Stellar name, escapes the title and embedded JSON,
+   and replaces structural and localized text slots once.
 5. It writes a uniquely named temporary file beside the output and renames it
    after successful generation. Validation or write failure preserves the previous
    usable report. The input or its symlink alias cannot be the output.

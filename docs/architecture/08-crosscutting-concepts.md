@@ -22,9 +22,21 @@ cycles are retained rather than concealed.
 The renderer produces identical HTML bytes for the same ordered input and
 viewer revision. The viewer uses fixed tokens, components and layout formulas;
 domain order selects palette order. Browser fonts, viewport, and navigation
-state can affect pixels. Authored labels are not constrained to one language;
-the fixed UI is currently Korean. Classification is agent/user interpretation,
-not a deterministic inference made by the renderer.
+state can affect pixels. Classification is agent/user interpretation, not a
+deterministic inference made by the renderer.
+
+The agent selects a supported `locale` (`ko` or `en`) from the user's requested
+language or conversation language and authors classification text accordingly.
+The runner selects a bundled message catalog for fixed UI and derives the
+name from `owner`: `{owner}의 Stellar` or `{owner}’s Stellar`. HTML title, header,
+and SVG title use the same derived name. There is no arbitrary report-title
+override. Source titles, status labels, and identities remain untouched.
+
+Browser language does not override the artifact. Updated dates use explicit
+UTC with locale-specific formatting; source snapshot timestamps retain their
+provided offset. Missing/unsupported locale fails input validation. Locale
+catalogs contain plain text, not model-authored HTML. See
+[ADR-0003](../decisions/0003-bind-viewer-language-to-the-work-map.md).
 
 ## Local data and security
 
