@@ -25,6 +25,8 @@ State: **As-built**
 handoff guidance. Source-specific references define host retrieval and capture
 boundaries. [normalize.js](../../lib/normalize.js) translates native facts into
 one canonical work-map draft; [classification guidance](../../references/classification.md)
-keeps judgment with the agent. [link-skill.js](../../scripts/link-skill.js) safely
+keeps judgment with the agent. [continuity.js](../../lib/continuity.js) owns
+saved choices, refresh matching and actor-specific updates; its state contains
+a current work map plus private remembered interpretation. [link-skill.js](../../scripts/link-skill.js) safely
 registers this checkout in the user's local discovery directory. It does not
 publish a package or replace another installation.

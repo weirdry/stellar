@@ -148,3 +148,19 @@ and rename. Rendering over the input path or its symlink alias is rejected.
 
 Real snapshots and their derived input JSON remain local. Public examples and
 CI must use independent synthetic work rather than renamed source data.
+
+## Saved state and choices
+
+[State](state.schema.json) reuses the canonical work-map contract and may contain
+a draft whose only map validation failures are missing assigned classifications.
+Its `memory` stores source identities, display identifiers, classifications,
+targets with independent origin, and last full title/body evidence. Taxonomy lives
+in `map.domains` and `map.categories` and retains groups used by absent decisions.
+`changes` describes new, returned, updated, not-observed and review-needed work.
+It is a snapshot comparison, not source activity history.
+
+[Choices](choices.schema.json) contains optional domain/category upserts and issue
+updates selected by the current map's internal `issueId`. The command determines
+agent/user origin; source fields cannot be supplied as choice fields. Neither
+contract is a replacement viewer format. Only `state.map`, emitted as
+`work-map.json`, enters HTML. See [continuity](../references/continuity.md).

@@ -95,8 +95,17 @@ an authentication or multi-user service.
 
 ## Contracts and future edits
 
-State: **Target**
+State: **As-built**
 
-Schema version 1 is unreleased and evolves in place. Saved overrides and refresh
-merge rules are not implemented. Concrete distributed-consumer or durable-state
-evidence would be required before adding compatibility machinery.
+The [state schema](../../schemas/state.schema.json) keeps current observations
+separate from remembered classification and target ownership. Matching uses
+provider/namespace/nativeId, not report-local IDs. User choices are protected
+field by field; agent choices cannot redefine existing taxonomy. A pending agent
+classification retains its old full-text evidence until reconsidered, including
+across missing observations. [Continuity rules](../../references/continuity.md)
+define scope, unknown-detail behavior and the change summary. State is private
+and is never embedded automatically in HTML.
+
+Work-map and state version 1 are unreleased. Existing user files remain untouched.
+Concrete distributed-consumer or durable-state evidence would be required before
+adding compatibility machinery; there is no migration for an intermediate shape.

@@ -6,6 +6,7 @@
 | [0002: Use a canonical work map and bundled viewer](0002-use-a-canonical-work-map-and-bundled-viewer.md) | Accepted | 2026-09-12 |
 | [0003: Bind viewer language to the work map](0003-bind-viewer-language-to-the-work-map.md)               | Accepted | 2026-09-12 |
 | [0004: Bundle a source-aware agent skill](0004-bundle-a-source-aware-agent-skill.md)                     | Accepted | 2026-09-12 |
+| [0005: Preserve classification through local state](0005-preserve-classification-on-refresh.md)          | Accepted | 2026-09-13 |
 
 Accepted decisions are historical rationale. Add a new decision when changing a
 consequential choice and update the [current-view index](../architecture/09-architecture-decisions.md).

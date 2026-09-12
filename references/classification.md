@@ -45,6 +45,7 @@ objective to avoid uncertainty. Unqueried context can stay unclassified and neve
 inflates assigned counts.
 
 Use `origin: user` only for an explicit user categorization; retain that choice
-when authoring this report. Other choices use `agent`. Persistent saved overrides
-and automatic refresh merging remain unimplemented. Shared categories/targets,
+when authoring this report. Other choices use `agent`. The
+[continuity workflow](continuity.md) persists choices and applies them during
+requested refreshes. Shared categories/targets,
 similar wording, and URL mentions alone never establish dependency edges.

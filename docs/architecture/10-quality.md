@@ -35,10 +35,15 @@ Source capture and mixed identity behavior are covered by
 [mixed-source browser tests](../../test/browser/sources.test.js). Host collection
 evidence and lookup limitations belong in the dated validation record.
 
+Saved-choice tests cover user ownership, current facts, absent/reappearing issues,
+renamed local source keys, pending classification and new-run output protection.
+See [continuity tests](../../test/continuity.test.js) and the
+[dated validation](../validation/2026-09-13-classification-refresh.md).
+
 ## Remaining quality outcomes
 
 State: **Target**
 
-Saved editing/refresh must preserve explicit user decisions. Distribution must
-prove installation and actual skill invocation when a package exists. These
-are future capabilities, not separate gates for internal renderer layers.
+Distribution must prove installation and actual skill invocation when a package
+exists. Automatic refresh, concurrent state reconciliation and identity rebinding
+are not implemented.

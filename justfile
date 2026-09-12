@@ -42,6 +42,19 @@ validate input:
 normalize input output:
     mise exec --locked -- node bin/stellar.js normalize {{ quote(input) }} {{ quote(output) }}
 
+# Continuity commands write a new private run directory and never replace one.
+remember input run:
+    mise exec --locked -- node bin/stellar.js remember {{ quote(input) }} {{ quote(run) }}
+
+refresh state capture run:
+    mise exec --locked -- node bin/stellar.js refresh {{ quote(state) }} {{ quote(capture) }} {{ quote(run) }}
+
+classify state choices run:
+    mise exec --locked -- node bin/stellar.js classify {{ quote(state) }} {{ quote(choices) }} {{ quote(run) }}
+
+revise state choices run:
+    mise exec --locked -- node bin/stellar.js revise {{ quote(state) }} {{ quote(choices) }} {{ quote(run) }}
+
 render input output:
     mise exec --locked -- node bin/stellar.js render {{ quote(input) }} {{ quote(output) }}
 

@@ -33,8 +33,12 @@ The viewer derives source labels and coverage from input. See
 
 ## Saved edits and refresh
 
-State: **Target**
+State: **As-built**
 
-Classification continuity, saved overrides and refresh merge rules remain
-unimplemented. Deterministic rendering does not preserve user decisions across
-newly authored inputs. Packaged distribution and licensing remain Open.
+[Continuity](../../references/continuity.md) uses a private saved state and fresh
+run directories. The runner preserves explicit user grouping, retains absent
+decisions outside the current map, and requires reconsideration of agent
+classification when full issue text changes. Current facts come exclusively from
+new normalization. [ADR-0005](../decisions/0005-preserve-classification-on-refresh.md)
+records this separation. Background synchronization, packaged distribution and
+licensing remain Open.
