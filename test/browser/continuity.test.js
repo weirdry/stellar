@@ -19,7 +19,15 @@ test(
   async (t) => {
     const dir = await mkdtemp(join(tmpdir(), 'stellar-refresh-browser-'));
     t.after(() => rm(dir, { recursive: true, force: true }));
-    const saved = rememberMap(mixedMap());
+    const map = mixedMap();
+    map.attachments = [
+      {
+        title: 'Work context',
+        note: 'Web reference',
+        href: 'https://example.com/context.html',
+      },
+    ];
+    const saved = rememberMap(map);
     const revised = applyChoices(
       saved,
       {
@@ -94,7 +102,55 @@ test(
     );
     await page.locator('#search').fill(saved.map.issues[4].title);
     assert.equal(await page.locator('.search-result').count(), 0);
+    await page.locator('#maps-open').click();
+    assert.equal(
+      await page.locator('.mapcard').getAttribute('href'),
+      map.attachments[0].href,
+    );
     assert.deepEqual(errors, []);
     assert.deepEqual(requests, []);
+  },
+);
+
+test(
+  'unqueried context does not display an unresolved classification after repeated refreshes',
+  { timeout: 60000 },
+  async (t) => {
+    const dir = await mkdtemp(join(tmpdir(), 'stellar-pending-browser-'));
+    t.after(() => rm(dir, { recursive: true, force: true }));
+    const saved = rememberMap(mixedMap()),
+      capture = mixedCapture();
+    capture.records[3].data.body =
+      'A changed research objective awaiting classification.';
+    const pending = refreshState(saved, capture);
+    capture.records.splice(3, 1);
+    const state = refreshState(refreshState(pending, capture), capture);
+    assert.deepEqual(
+      state.changes.review.map((r) => r.reason),
+      ['purpose-text-changed'],
+    );
+    const file = join(dir, 'pending.html');
+    await writeFile(file, await renderWorkMap(state.map));
+    const browser = await chromium.launch({
+      headless: true,
+      ...(process.env.STELLAR_CHROME
+        ? { executablePath: process.env.STELLAR_CHROME }
+        : {}),
+    });
+    t.after(() => browser.close());
+    const page = await browser.newPage({
+      viewport: { width: 1600, height: 1000 },
+    });
+    const errors = [];
+    page.on('pageerror', (e) => errors.push(e.message));
+    await page.goto(pathToFileURL(file).href);
+    await page.waitForFunction(() => window.stellar);
+    await page.locator('#search').fill('example/delivery#7');
+    await page.locator('.search-result').click();
+    const inspector = await page.locator('#inspector').textContent();
+    assert.ok(inspector.includes('Not queried'));
+    assert.ok(!inspector.includes('Delivery operations'));
+    assert.ok(!inspector.includes('Shared delivery infrastructure'));
+    assert.deepEqual(errors, []);
   },
 );

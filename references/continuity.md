@@ -23,6 +23,14 @@ When bootstrapping an existing map, classification origin also sets initial
 ownership of targets because the map has no separate target-origin field.
 `revise` records independent target choices, including an intentionally empty list.
 
+Continuity runs support HTTP(S) document references and retain them during
+refresh. Report-relative references are refused before writing because a new
+run does not include their files. Keep the original map/state and its reference
+files intact. Use the standalone renderer beside those files when local
+references are required, or use verified web links when available. Do not drop
+references or upload private documents just to pass validation. Local reference
+bundling is not implemented.
+
 ## Apply a user's correction
 
 Resolve the requested issue using the current map and source provenance. Write
@@ -96,7 +104,8 @@ Inspect `changes.json`:
 - `returned`: remembered identities observed again after absence from the last map.
 - `updated`: changes in observed issue fields, not a source activity log.
 - `notObserved`: remembered identities missing from this capture, not deletions.
-- `review`: new/uncertain identities or changed full title/body needing classification.
+- `review`: currently observed issues with unresolved saved review reasons,
+  including context. Absent issues retain their reasons in state memory.
 - `preservedUser`: current issues whose user classification was reapplied.
 
 Read new/changed issues in the context of the existing taxonomy. Reuse groups when
@@ -109,6 +118,15 @@ Unqueried observations do not replace full-text evidence. Pending assigned
 classifications block rendering. This is a text-change heuristic, not a semantic
 judgment by the runner.
 
+Review reasons belong to remembered source identities, so repeated refreshes,
+context-only observations, temporary absence, and report-local ID changes do not
+clear them or change `identity-uncertain` into `new-issue`. Inspect pending context
+when its detail is available; otherwise leave it unclassified and report the
+lookup limit. A context review does not block rendering. A classification supplied
+through `classify` or `revise` resolves that review; target-only and taxonomy
+changes do not. Even text reverting to its earlier value keeps the pending review
+until an explicit decision is recorded.
+
 Write agent decisions in the same choices format:
 
 ```sh
@@ -117,7 +135,8 @@ just validate "$OUT/classified-04/work-map.json"
 just render "$OUT/classified-04/work-map.json" "$OUT/classified-04/stellar.html"
 ```
 
-If no decisions are pending, render the refreshed work map directly. Do not edit
+If no assigned classifications are pending, the refreshed map can be rendered
+with unresolved context reviews disclosed. Do not edit
 state or patch the generated work map by hand; the commands keep saved choices
 and current output consistent. State and summaries may contain historical work
 outside the current query, so pass only `work-map.json` to the viewer.

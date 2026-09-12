@@ -73,10 +73,20 @@ full text withholds an agent classification until reconsidered; user decisions
 are reapplied. `classify` protects user-owned fields; `revise` applies explicit
 user corrections. Both update state and map together.
 
+Pending review reasons live with saved source identities, including while an
+issue is absent or appears only as context. Current review summaries are derived
+from those saved reasons. Only an explicit classification clears a reason;
+target-only changes do not. Context may remain unclassified and renderable while
+its lookup/review limit is disclosed.
+
 All four commands validate their result before creating a new run directory with
 owner-only access. Existing paths are refused. On write failure, cleanup targets
 only files created by that operation. Each run contains `state.json`,
 `work-map.json`, and `changes.json`; the renderer consumes only the work map.
+Continuity rejects report-relative document references at the input field before
+writing because reference files are not bundled into the new directory. HTTP(S)
+references are retained through refresh. The standalone renderer still supports
+relative references when the caller supplies their colocated files.
 [continuity.js](../../lib/continuity.js), [its tests](../../test/continuity.test.js)
 and [the skill workflow](../../references/continuity.md) own this behavior. No
 background worker, continuous sync, or persistent service exists.

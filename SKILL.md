@@ -20,6 +20,8 @@ For a saved map, a user correction, or a requested refresh, read
 than restarting classification or manually editing a saved map. The collection
 and delivery boundaries below still apply. A first report can become the starting
 state through `just remember` after validation.
+Continuity refuses report-relative references before writing; follow its guide
+to retain the original artifact and disclose this limitation.
 
 Use the requested person, source accounts/repositories, scope, language, and
 output directory. Infer these from the conversation when established. If an

@@ -43,6 +43,9 @@
           "targetsOrigin": {
             "enum": ["agent", "user"]
           },
+          "reviewReason": {
+            "$ref": "#/$defs/reviewReason"
+          },
           "evidence": {
             "type": "object",
             "additionalProperties": false,
@@ -141,11 +144,7 @@
                 "$ref": "work-map.schema.json#/properties/issues/items/properties/id"
               },
               "reason": {
-                "enum": [
-                  "new-issue",
-                  "purpose-text-changed",
-                  "identity-uncertain"
-                ]
+                "$ref": "#/$defs/reviewReason"
               }
             },
             "required": ["issueId", "reason"]
@@ -169,6 +168,11 @@
     }
   },
   "required": ["schemaVersion", "map", "memory", "changes"],
+  "$defs": {
+    "reviewReason": {
+      "enum": ["new-issue", "purpose-text-changed", "identity-uncertain"]
+    }
+  },
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Stellar saved classification state",
   "description": "Private state for manual refresh. Only map is sent to the viewer; memory retains absent choices."
