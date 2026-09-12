@@ -61,6 +61,12 @@ Browser language does not override the artifact. Updated dates use explicit
 UTC with locale-specific formatting; source snapshot timestamps retain their
 provided offset. Fixed normalized status controls use the selected catalog;
 Korean controls are translated without changing source status labels.
+Unqueried context has no source status label: the viewer displays its placeholder
+using the current locale catalog, including when the final work-map locale differs
+from the capture locale. Full-detail labels remain literal even if their text
+matches a placeholder. The header uses a neutral incomplete-coverage label when
+any source has partial or unavailable lookup coverage; help retains each exact
+coverage state.
 Missing/unsupported locale fails input validation. Locale
 catalogs contain plain text, not model-authored HTML. See
 [ADR-0003](../decisions/0003-bind-viewer-language-to-the-work-map.md).

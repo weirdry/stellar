@@ -57,7 +57,7 @@ R.edges = R.relations;
 for (const i of R.issues) {
   const c = categoryById.get(i.classification?.category);
   i.statusType = i.status.type;
-  i.status = i.status.label;
+  i.status = i.detail === 'unqueried' ? tr('status.unqueried') : i.status.label;
   i.category = c?.id;
   i.domain = c?.domain;
   i.domainLabel = domainById.get(c?.domain)?.label;
@@ -160,7 +160,7 @@ $('#brand-title').textContent = stellarTitle;
 $('#brand-title').title = stellarTitle;
 $('#brand-subtitle').textContent = sourceSummary;
 $('#brand-subtitle').title = R.sources.map(sourceName).join(' + ');
-const partial = R.sources.some(
+const incomplete = R.sources.some(
   (source) =>
     source.coverage.issues !== 'complete' ||
     source.coverage.relations !== 'complete',
@@ -169,7 +169,7 @@ $('#snapshot').textContent =
   (R.sources.length === 1
     ? tr('snapshot', { timestamp: R.sources[0].snapshotAt })
     : tr('snapshot.sources', { count: R.sources.length })) +
-  (partial ? ' · ' + tr('coverage.partial') : '');
+  (incomplete ? ' · ' + tr('coverage.incomplete') : '');
 $('#snapshot').title = snapshotSummary;
 $('#taxonomy-count').textContent = tr('taxonomy.count', {
   domains: R.domains.length,

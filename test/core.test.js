@@ -134,7 +134,7 @@ test('source relation invariants preserve direction and reject duplicate or impo
       d.relations.push({ kind: 'parent', source: 'MUS-1', target: 'MUS-10' });
     },
     'parent-cycle',
-    '/relations',
+    '/relations/0',
   );
   const d = fresh();
   d.relations.push({ kind: 'blocks', source: 'MUS-2', target: 'MUS-1' });

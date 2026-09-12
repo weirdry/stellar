@@ -48,7 +48,10 @@ resolves aliases before emitting full issues, unknown context and deduplicated
 relations in their original direction. An unfetched context referenced by UUID
 and display identifier has one identity regardless of observation order.
 Missing classifications are expected in the draft; other semantic failures stop
-before output is written. The agent edits only taxonomy/classification/targets,
+before output is written. Normalization diagnostics point back to captured fields
+and relationship observations, including the native field supplying selected
+context metadata and a parent observation within a cycle.
+The agent edits only taxonomy/classification/targets,
 then invokes validation and rendering. Normalization shares the renderer's atomic
 writer and input-alias protection. Source-specific freshness and coverage remain
 visible in the header/help; no source access occurs when opening the artifact.

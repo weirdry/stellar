@@ -99,6 +99,7 @@
   "groups.count": "Groups · {count}",
   "counts.explain": "Counts use the {scope} scope. Select an edge to inspect the actual issue relations between groups.",
   "detail.unknown": "Details not fetched",
+  "status.unqueried": "Not queried",
   "prerequisites.note": "Registered active prerequisites: {count}.",
   "parent.note": "Parent {id} is {status}; this issue is still active.",
   "purpose": "Position by work purpose",
@@ -160,5 +161,6 @@
   "coverage.relations": "Relation lookup",
   "coverage.complete": "Complete within scope",
   "coverage.partial": "Partial",
+  "coverage.incomplete": "Incomplete coverage",
   "coverage.unavailable": "Unavailable"
 }

@@ -153,7 +153,9 @@ for (const locale of ['ko', 'en'])
       await page.locator('#inspector [data-issue="CTX-2"]').click();
       await neighbors('CTX-2');
       assert.ok(
-        (await page.locator('#inspector').textContent()).includes('미조회'),
+        (await page.locator('#inspector').textContent()).includes(
+          locale === 'ko' ? '미조회' : 'Not queried',
+        ),
       );
       await page.locator('#back').click();
       assert.equal((await state()).selected.id, 'MUS-1');

@@ -275,6 +275,100 @@ test('source contract rejects missing sources, repeated native identities and du
     assert.ok(validateWorkMap(map).diagnostics.some((d) => d.code === code));
   }
 });
+test('normalization diagnostics identify captured fields and parent observations before a draft exists', () => {
+  for (const [modify, code, path] of [
+    [
+      (c) => {
+        c.records[0].data.url = 'javascript:private-probe-text';
+      },
+      'schema',
+      '/records/0/data/url',
+    ],
+    [
+      (c) => {
+        c.records[2].data.updated_at = 'tomorrow';
+      },
+      'schema',
+      '/records/2/data/updated_at',
+    ],
+    [
+      (c) => {
+        c.records[0].data.relations.relatedTo = [{ id: 'EXT-99' }];
+        c.records[1].links = {
+          children: [
+            {
+              id: 'EXT-99',
+              uuid: 'external-99',
+              url: 'javascript:private-probe-text',
+            },
+          ],
+        };
+      },
+      'schema',
+      '/records/1/links/children/0/url',
+    ],
+    [
+      (c) => {
+        c.records[2].links.blockedBy[0] = {
+          node_id: 'I_external_99',
+          number: 99,
+          html_url:
+            'https://user:private-probe-text@github.com/example/delivery/issues/99',
+        };
+      },
+      'unsafe-url',
+      '/records/2/links/blockedBy/0/html_url',
+    ],
+    [
+      (c) => {
+        c.records[0].links = { children: [{ id: 'EXT-99' }] };
+        c.records[1].links = { children: [{ id: 'EXT-99' }] };
+      },
+      'multiple-parents',
+      '/records/1/links/children/0',
+    ],
+    [
+      (c) => {
+        c.records[0].data.parentId = c.records[1].data.uuid;
+        c.records[0].data.relations.relatedTo = [{ id: 'EXT-99' }];
+      },
+      'parent-cycle',
+      '/records/0/data/parentId',
+    ],
+    [
+      (c) => {
+        c.sources[1].namespace = 'GitHub.com/Example/Control';
+      },
+      'source-namespace',
+      '/sources/1/namespace',
+    ],
+  ]) {
+    const capture = mixedCapture();
+    modify(capture);
+    const before = structuredClone(capture);
+    assert.throws(
+      () => normalizeCapture(capture),
+      (error) => {
+        assert.ok(
+          error.diagnostics.some((d) => d.code === code && d.path === path),
+          JSON.stringify(error.diagnostics),
+        );
+        assert.ok(
+          !JSON.stringify(error.diagnostics).includes('private-probe-text'),
+        );
+        assert.notEqual(
+          path
+            .slice(1)
+            .split('/')
+            .reduce((at, part) => at?.[part], capture),
+          undefined,
+        );
+        return true;
+      },
+    );
+    assert.deepEqual(capture, before);
+  }
+});
 test('normalize CLI writes a private draft, protects captures and preserves earlier output on failure', async (t) => {
   const dir = await mkdtemp(join(tmpdir(), 'stellar-normalize-'));
   t.after(() => rm(dir, { recursive: true, force: true }));
@@ -299,6 +393,22 @@ test('normalize CLI writes a private draft, protects captures and preserves earl
   const conflict = mixedCapture();
   conflict.records[2].links.blockedBy[0].node_id = 'I_distinct_unfetched_issue';
   await writeFile(input, JSON.stringify(conflict));
+  assert.equal(run().status, 1);
+  assert.equal(await readFile(output, 'utf8'), before);
+  const invalid = mixedCapture();
+  invalid.records[0].data.relations.relatedTo = [
+    { id: 'EXT-99', url: 'javascript:private-probe-text' },
+  ];
+  await writeFile(input, JSON.stringify(invalid));
+  const unwritten = join(dir, 'unwritten.json'),
+    failure = run(unwritten);
+  assert.equal(failure.status, 1);
+  assert.equal(
+    JSON.parse(failure.stderr).diagnostics[0].path,
+    '/records/0/data/relations/relatedTo/0/url',
+  );
+  assert.ok(!failure.stderr.includes('private-probe-text'));
+  await assert.rejects(readFile(unwritten), { code: 'ENOENT' });
   assert.equal(run().status, 1);
   assert.equal(await readFile(output, 'utf8'), before);
   await writeFile(input, '{"private-sensitive-title":');
