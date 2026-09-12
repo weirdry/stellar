@@ -48,11 +48,22 @@ repository in `sources` if a relation points there. Do not infer completion,
 duplicate status, or dependency from prose or labels.
 
 The normalizer uses source-qualified opaque keys and preserves display
-identifiers separately. Linear UUIDs are preferred when supplied; references
-using identifiers resolve to fetched records through an alias index. Unfetched
-references without a UUID retain their supplied identifier as a provisional
-native identity. This is a snapshot contract, not a saved refresh identity rule.
-GitHub uses `node_id`, independent of repeated issue numbers across repositories.
+identifiers separately. It indexes explicit native/identifier pairs from all
+detail records and relationship references before building issues and edges.
+Linear UUIDs are preferred when observed anywhere in the capture, including for
+unfetched context; identifier-only and UUID-only references then resolve to the
+same issue regardless of record or reference order. References with no observed
+UUID association retain their supplied identifier as a provisional native
+identity. Conflicting explicit UUIDs or GitHub `node_id` values for one identifier
+within a source are rejected, even if one endpoint has not been fetched. GitHub
+issue numbers may still repeat across repositories. This is a snapshot contract,
+not a saved refresh identity rule.
+
+Unqueried context prefers an observed display identifier over a bare native ID.
+When repeated references supply different display labels, titles, or URLs for
+that identity, the normalizer selects each field in lexical order to keep the
+context metadata independent of capture order. This selection does not claim
+which observation is newer. Full detail takes precedence over reference metadata.
 
 Missing endpoint detail becomes an explicit unqueried context issue with unknown
 status. It is not silently discarded or counted as assigned. Registered duplicate

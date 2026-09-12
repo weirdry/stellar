@@ -14,6 +14,13 @@ with source-specific scope and freshness in help. Every assigned issue has exact
 category, and each category belongs to one domain. Source projects and labels
 remain optional metadata. Targets may overlap but never establish dependencies.
 
+Native normalization resolves explicit UUID/identifier associations across the
+whole capture before emitting graph identities. This includes unfetched context
+and prevents input order from splitting one issue into separate nodes. Different
+explicit native IDs sharing one display identifier within a source are rejected;
+a matching display label alone cannot override a contradictory native identity.
+The [normalizer tests](../../test/normalize.test.js) own these invariants.
+
 The sole registered relation list uses stable issue identities. Parent, blocker,
 related and duplicate meanings retain their documented directions. Parent copies
 and per-issue relation copies are rejected. Missing endpoints fail validation;

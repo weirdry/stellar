@@ -6,7 +6,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { renderWorkMap } from '../../lib/render.js';
-import { mixedMap } from '../fixtures.js';
+import { mixedCapture, mixedMap } from '../fixtures.js';
 
 for (const locale of ['ko', 'en'])
   test(
@@ -31,7 +31,10 @@ for (const locale of ['ko', 'en'])
       page.on('request', (r) => {
         if (/^https?:/.test(r.url())) requests.push(r.url());
       });
-      const data = mixedMap();
+      const capture = mixedCapture();
+      capture.records[2].data.state = 'closed';
+      capture.records[2].data.state_reason = 'duplicate';
+      const data = mixedMap(capture);
       data.locale = locale;
       data.issues[0].status = { type: 'backlog', label: 'Queued' };
       data.issues[1].title = 'Follow up on OBS-1';
@@ -106,6 +109,20 @@ for (const locale of ['ko', 'en'])
         data.issues[0].id,
       );
       await page.locator('#search').fill('');
+      await page.locator('#scope').selectOption('closed');
+      assert.equal(
+        await page.evaluate(() => window.stellar.getState().baseCount),
+        1,
+      );
+      await page.locator('#search').fill('example/control#7');
+      await page.locator('.search-result').click();
+      assert.ok(
+        (await page.locator('#inspector').textContent()).includes(
+          'closed · duplicate',
+        ),
+      );
+      await page.locator('#search').fill('');
+      await page.locator('#scope').selectOption('all');
       await page.locator('#help-open').click();
       assert.equal(await page.locator('.source-card').count(), 3);
       for (const source of data.sources)

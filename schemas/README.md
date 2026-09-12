@@ -75,14 +75,17 @@ records using [normalize.js](../lib/normalize.js). The
 The output uses this same work-map shape, with empty taxonomy and unclassified
 issues. Only missing classifications are allowed at that stage. Author domains,
 categories, rationales and targets, then validate and render. Normalization
-preserves original facts, translates relation direction, resolves aliases, and
-creates explicit unknown context for unfetched endpoints. It does not authenticate,
+preserves original facts, translates relation direction, and resolves aliases
+from all detail and endpoint observations before creating issues and relations.
+Unfetched UUID/identifier aliases share one unknown context regardless of input
+order. Different explicit native IDs cannot share one identifier within a source;
+normalization rejects that conflict instead of redirecting an edge. It does not authenticate,
 fetch, interpret prose, infer dependencies, or silently choose a category.
 
 Linear normalized status uses recognized `statusType` values, retaining the
 original label; absent or unsupported types remain unknown. GitHub `open` maps
 to unstarted, `closed/completed` to completed, `closed/not_planned` to canceled,
-and other closed reasons to unknown. The native normalizer does not use project
+`closed/duplicate` to duplicate, and other closed reasons to unknown. The native normalizer does not use project
 columns or labels to guess progress. Coverage is declared by the collecting host;
 structural checks cannot independently prove pagination or source permissions.
 

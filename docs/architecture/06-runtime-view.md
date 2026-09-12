@@ -42,8 +42,11 @@ State: **As-built**
 The host follows [the skill](../../SKILL.md), exhausts the requested source query
 or records partial coverage, retrieves descriptions and supported relations, and
 writes native [capture JSON](../../references/capture.md). `just normalize`
-resolves source-qualified identities and aliases, preserves relation direction,
-deduplicates repeated relation observations, and materializes unknown context.
+first indexes source-qualified native/identifier pairs from all detail and
+relationship observations. It rejects conflicting explicit native IDs, then
+resolves aliases before emitting full issues, unknown context and deduplicated
+relations in their original direction. An unfetched context referenced by UUID
+and display identifier has one identity regardless of observation order.
 Missing classifications are expected in the draft; other semantic failures stop
 before output is written. The agent edits only taxonomy/classification/targets,
 then invokes validation and rendering. Normalization shares the renderer's atomic

@@ -7,8 +7,8 @@ export const mixedCapture = () =>
       'utf8',
     ),
   );
-export function mixedMap() {
-  const map = normalizeCapture(mixedCapture());
+export function mixedMap(capture = mixedCapture()) {
+  const map = normalizeCapture(capture);
   map.domains = [
     {
       id: 'research',
