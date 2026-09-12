@@ -50,6 +50,11 @@ source status labels remain unchanged.
 For unqueried context, the displayed status placeholder comes from the current
 locale catalog. Changing the report locale relocalizes this UI text without
 rewriting embedded input or translating full-detail source status labels.
+For `classificationEvidence: previous-observation`, the inspector labels the
+classification as based on an earlier observation in the selected locale. It uses
+the runner's explicit notice, not an inference from unknown status; the rationale,
+source status and detail remain separate. Current context classifications without
+that notice do not acquire a historical label.
 
 The header joins source display names (for example, Linear + GitHub). Each
 source retains its own timestamp, query scope and coverage in help. Incomplete

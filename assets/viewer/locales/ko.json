@@ -61,6 +61,7 @@
   "area": "작업 영역",
   "group": "세부 묶음",
   "classification": "보고서용 분류",
+  "classification.previous": "이전 조회에 근거한 분류",
   "empty": "표시할 이슈가 없습니다.",
   "relation.dependents": "후행 · blocks",
   "relation.prerequisites": "선행 · blockedBy",

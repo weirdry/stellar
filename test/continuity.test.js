@@ -48,6 +48,7 @@ const facts = (map) => {
   result.categories = [];
   for (const issue of result.issues) {
     delete issue.classification;
+    delete issue.classificationEvidence;
     issue.targets = [];
   }
   return result;

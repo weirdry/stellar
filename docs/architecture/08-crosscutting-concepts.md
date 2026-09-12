@@ -113,6 +113,17 @@ matches saved reasons. Neither missing detail nor a repeated snapshot clears an
 identity warning. Authored HTTP(S) reference links are remembered report metadata,
 not source facts; continuity refuses relative links before writing a new run.
 
+Identifier-only Linear context later fetched with a UUID may represent the same
+real issue under two stored identities. There is no automatic rebinding: the old
+entry and its choices stay in memory as not observed, and the current entry needs
+explicit classification. The host discloses unresolved identity correspondence
+instead of claiming separate work or deletion. See the continuity guide.
+
+`classificationEvidence` marks retained interpretation on unqueried context when
+earlier full-text evidence is remembered. The localized inspector notice does not
+change the current source detail or classification origin. The runner owns this
+notice; it is separate from the rationale and cannot be supplied in choices.
+
 Work-map and state version 1 are unreleased. Existing user files remain untouched.
 Concrete distributed-consumer or durable-state evidence would be required before
 adding compatibility machinery; there is no migration for an intermediate shape.

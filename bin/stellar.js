@@ -26,15 +26,18 @@ try {
     output &&
     extra.length === 1
   ) {
-    const previous = await readWorkMap(input),
-      next = await readWorkMap(output);
+    const previous = await readWorkMap(input, 'state'),
+      next = await readWorkMap(
+        output,
+        command === 'refresh' ? 'capture' : 'choices',
+      );
     const state =
       command === 'refresh'
         ? refreshState(previous, next)
         : applyChoices(previous, next, command === 'revise' ? 'user' : 'agent');
     console.log(JSON.stringify(await writeRun(state, extra[0])));
   } else if (command === 'normalize' && input && output && !extra.length) {
-    const data = normalizeCapture(await readWorkMap(input));
+    const data = normalizeCapture(await readWorkMap(input, 'capture'));
     await writeArtifact(input, output, JSON.stringify(data, null, 2) + '\n');
     console.log(
       JSON.stringify({

@@ -61,6 +61,7 @@
   "area": "Work areas",
   "group": "Group",
   "classification": "Map classification",
+  "classification.previous": "Classification based on a previous observation",
   "empty": "No issues to display.",
   "relation.dependents": "Dependents · blocks",
   "relation.prerequisites": "Prerequisites · blocked by",

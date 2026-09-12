@@ -151,6 +151,10 @@
             },
             "required": ["category", "rationale", "origin"]
           },
+          "classificationEvidence": {
+            "const": "previous-observation",
+            "description": "Runner-set notice for a classification retained on unqueried context while earlier full-text evidence is remembered."
+          },
           "targets": {
             "type": "array",
             "items": {
