@@ -1540,3 +1540,13 @@ body.light {
   word-break: keep-all;
   overflow-wrap: anywhere;
 }
+
+.issue-source,
+.source-card {
+  overflow-wrap: anywhere;
+}
+.source-card {
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+  margin-top: 12px;
+}

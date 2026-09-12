@@ -22,19 +22,21 @@ dependency build scripts.
 
 ## Commands
 
-| Command                    | Behavior                                                                                   |
-| -------------------------- | ------------------------------------------------------------------------------------------ |
-| `just init`                | Locked tools, frozen dependencies, local hooks                                             |
-| `just format`              | Explicit Prettier write                                                                    |
-| `just format-check`        | Read-only repository-local Prettier check                                                  |
-| `just docs-check`          | Canonical structure, indexes, local links, whitespace                                      |
-| `just lint`                | ESLint, Just format, Bash syntax, ShellCheck, actionlint, Git whitespace                   |
-| `just test`                | Deterministic Node unit and CLI integration tests                                          |
-| `just check` / `just ci`   | Complete local gate above, without dependency installation or persistent generated outputs |
-| `just browser-install`     | Explicit Chromium download using pinned Playwright                                         |
-| `just browser-check`       | Chromium interaction, reuse, safety, viewport and export tests with synthetic inputs       |
-| `just validate INPUT`      | Validate input without writing it                                                          |
-| `just render INPUT OUTPUT` | Validate and generate a standalone HTML artifact                                           |
+| Command                       | Behavior                                                                                   |
+| ----------------------------- | ------------------------------------------------------------------------------------------ |
+| `just init`                   | Locked tools, frozen dependencies, local hooks                                             |
+| `just format`                 | Explicit Prettier write                                                                    |
+| `just format-check`           | Read-only repository-local Prettier check                                                  |
+| `just docs-check`             | Canonical structure, indexes, local links, whitespace                                      |
+| `just lint`                   | ESLint, Just format, Bash syntax, ShellCheck, actionlint, Git whitespace                   |
+| `just test`                   | Deterministic Node unit and CLI integration tests                                          |
+| `just check` / `just ci`      | Complete local gate above, without dependency installation or persistent generated outputs |
+| `just browser-install`        | Explicit Chromium download using pinned Playwright                                         |
+| `just browser-check`          | Chromium interaction, reuse, safety, viewport and export tests with synthetic inputs       |
+| `just normalize INPUT OUTPUT` | Convert native capture to an unclassified work-map draft                                   |
+| `just skill-link`             | Register this checkout as a local user skill; refuse conflicting installs                  |
+| `just validate INPUT`         | Validate input without writing it                                                          |
+| `just render INPUT OUTPUT`    | Validate and generate a standalone HTML artifact                                           |
 
 Tests create temporary artifacts and remove them. Gates do not rewrite source,
 format files, collect data, commit, or publish. No empty build or typecheck

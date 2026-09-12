@@ -35,12 +35,25 @@ is in memory; repeated selection of the same node does not add another entry.
 Local storage retains only the theme preference. Hidden search results cannot
 be selected with Enter, and viewer shortcuts leave browser modifier keys alone.
 
-## Source collection and refresh
+## Source collection
+
+State: **As-built**
+
+The host follows [the skill](../../SKILL.md), exhausts the requested source query
+or records partial coverage, retrieves descriptions and supported relations, and
+writes native [capture JSON](../../references/capture.md). `just normalize`
+resolves source-qualified identities and aliases, preserves relation direction,
+deduplicates repeated relation observations, and materializes unknown context.
+Missing classifications are expected in the draft; other semantic failures stop
+before output is written. The agent edits only taxonomy/classification/targets,
+then invokes validation and rendering. Normalization shares the renderer's atomic
+writer and input-alias protection. Source-specific freshness and coverage remain
+visible in the header/help; no source access occurs when opening the artifact.
+
+## Saved classification and refresh
 
 State: **Target**
 
-The host agent will collect source facts and relevant context, record freshness
-and lookup limits, classify the work, and invoke the validated generation path.
-Collection and saved classification edits are not implemented. Refresh must
-preserve explicit user decisions according to an eventual declared merge rule.
-No background worker, continuous sync, or persistent service exists.
+Saved edits and refresh merging are not implemented. A future refresh must
+preserve explicit user decisions through a declared rule. No background worker,
+continuous sync, or persistent service exists.

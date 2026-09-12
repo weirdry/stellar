@@ -1,13 +1,26 @@
 #!/usr/bin/env node
-import { readWorkMap, renderFile } from '../lib/render.js';
+import { readWorkMap, renderFile, writeArtifact } from '../lib/render.js';
 import { validateWorkMap, WorkMapError } from '../lib/validate.js';
+import { normalizeCapture } from '../lib/normalize.js';
 
 const usage =
-  'Usage: stellar validate INPUT.json | stellar render INPUT.json OUTPUT.html';
+  'Usage: stellar normalize CAPTURE.json DRAFT.json | stellar validate INPUT.json | stellar render INPUT.json OUTPUT.html';
 const [command, input, output, ...extra] = process.argv.slice(2);
 try {
   if (command === '--help' && !input) console.log(usage);
-  else if (command === 'validate' && input && !output) {
+  else if (command === 'normalize' && input && output && !extra.length) {
+    const data = normalizeCapture(await readWorkMap(input));
+    await writeArtifact(input, output, JSON.stringify(data, null, 2) + '\n');
+    console.log(
+      JSON.stringify({
+        normalized: true,
+        issues: data.issues.length,
+        relations: data.relations.length,
+        needsClassification: data.issues.filter((i) => i.scope === 'assigned')
+          .length,
+      }),
+    );
+  } else if (command === 'validate' && input && !output) {
     const result = validateWorkMap(await readWorkMap(input));
     console.log(JSON.stringify(result, null, 2));
     if (!result.valid) process.exitCode = 1;

@@ -212,7 +212,7 @@ for (const locale of ['ko', 'en'])
       await page.locator('#help-open').click();
       assert.ok(
         (await page.locator('#modal').textContent()).includes(
-          data.source.notes,
+          data.sources[0].notes,
         ),
       );
       await page.keyboard.press('Escape');
@@ -259,7 +259,7 @@ for (const locale of ['ko', 'en'])
       assert.equal(await page.locator('#maps-open').isVisible(), false);
       assert.equal(
         await page.locator('#brand-subtitle').textContent(),
-        other.source.name,
+        other.sources[0].name,
       );
       await shot('seed-library');
       await page.locator('#help-open').click();

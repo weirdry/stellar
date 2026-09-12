@@ -153,5 +153,12 @@
   "hint.group": "Select to expand issues",
   "section.explorer": "EXPLORER",
   "caption.filtered": "Outside status filter: {count}",
-  "target.contextOnly": "This target occurs only on context issues. There is no assigned work to highlight."
+  "target.contextOnly": "This target occurs only on context issues. There is no assigned work to highlight.",
+  "snapshot.sources": "Snapshots · {count} sources",
+  "source.heading": "Sources and coverage",
+  "coverage.issues": "Issue query",
+  "coverage.relations": "Relation lookup",
+  "coverage.complete": "Complete within scope",
+  "coverage.partial": "Partial",
+  "coverage.unavailable": "Unavailable"
 }

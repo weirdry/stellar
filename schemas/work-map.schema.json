@@ -13,27 +13,6 @@
       "minLength": 1,
       "pattern": "\\S"
     },
-    "source": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "name": {
-          "type": "string",
-          "minLength": 1,
-          "pattern": "\\S"
-        },
-        "snapshotAt": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "notes": {
-          "type": "string",
-          "minLength": 1,
-          "pattern": "\\S"
-        }
-      },
-      "required": ["name", "snapshotAt", "notes"]
-    },
     "view": {
       "type": "object",
       "additionalProperties": false,
@@ -306,9 +285,36 @@
               "minLength": 1,
               "pattern": "\\S"
             }
+          },
+          "sourceId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "nativeId": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "identifier": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "description": {
+            "type": ["string", "null"]
           }
         },
-        "required": ["id", "title", "scope", "detail", "status", "targets"]
+        "required": [
+          "id",
+          "title",
+          "scope",
+          "detail",
+          "status",
+          "targets",
+          "sourceId",
+          "nativeId",
+          "identifier"
+        ]
       }
     },
     "relations": {
@@ -358,13 +364,20 @@
     "locale": {
       "enum": ["ko", "en"],
       "description": "Fixed viewer language, chosen explicitly by the authoring agent or caller."
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/source"
+      }
     }
   },
   "required": [
     "schemaVersion",
     "locale",
     "owner",
-    "source",
+    "sources",
     "view",
     "domains",
     "categories",
@@ -380,6 +393,68 @@
     "attachmentUrl": {
       "type": "string",
       "minLength": 1
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "snapshotAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "notes": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "provider": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "namespace": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "scope": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "coverage": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "issues": {
+              "enum": ["complete", "partial"]
+            },
+            "relations": {
+              "enum": ["complete", "partial", "unavailable"]
+            }
+          },
+          "required": ["issues", "relations"]
+        }
+      },
+      "required": [
+        "id",
+        "provider",
+        "name",
+        "namespace",
+        "scope",
+        "snapshotAt",
+        "coverage",
+        "notes"
+      ]
     }
   }
 }

@@ -25,5 +25,7 @@ State: **As-built**
 The repository implements a validated work-map JSON to standalone HTML path,
 a reusable SVG viewer, synthetic examples, Node tests, and browser checks.
 Contribution guidance, locked tooling, documentation checking, hooks and hosted
-CI support development. Collection and a callable skill remain Target. See [development](../development/README.md) and
+CI support development. The local skill guides collection through host tools;
+Linear and GitHub native captures normalize into one source-aware contract.
+Saved edits, synchronization and packaged distribution remain Target/Open. See [development](../development/README.md) and
 [validation](../validation/README.md).

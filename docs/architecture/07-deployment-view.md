@@ -14,14 +14,23 @@ workflow configuration is not proof of a successful run or merge enforcement.
 There is no published skill package, deployed service, or runtime data store.
 See [development](../development/README.md).
 
+## Local skill use
+
+State: **As-built**
+
+After locked checkout setup, `just skill-link` creates a user-level `stellar`
+skill symlink to this checkout. Existing different installations are not replaced.
+The checkout, Node runtime and installed dependencies must remain available. The
+skill resolves bundled resources relative to its root; it can render artifacts
+outside the checkout. Discovery/caching belongs to the host. Local invocation
+and fixture/live evidence are recorded in [validation](../validation/2026-09-12-source-aware-skill.md).
+
 ## Intended distribution
 
 State: **Target**
 
-A host agent will use an installed skill package containing its guidance and
-viewer/tooling resources. Generated HTML will be opened in a local browser.
-The exact package layout, installer, license, and distribution channel remain
-Open until a functioning vertical path is ready for packaging.
+A distributable package/channel, license and release automation remain Open.
+A local development symlink is not a published artifact.
 
 `dev` accumulates unreleased work; validated fast-forward promotion to `main`
 is the intended release boundary. Add release automation only after identifying

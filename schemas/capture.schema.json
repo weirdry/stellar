@@ -1,0 +1,67 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Stellar host capture",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "owner": {
+      "$ref": "work-map.schema.json#/properties/owner"
+    },
+    "locale": {
+      "$ref": "work-map.schema.json#/properties/locale"
+    },
+    "view": {
+      "$ref": "work-map.schema.json#/properties/view"
+    },
+    "sources": {
+      "$ref": "work-map.schema.json#/properties/sources"
+    },
+    "records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["sourceId", "scope", "data"],
+        "properties": {
+          "sourceId": {
+            "type": "string"
+          },
+          "scope": {
+            "enum": ["assigned", "context"]
+          },
+          "data": {
+            "type": "object"
+          },
+          "links": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "parent": {
+                "type": ["object", "null"]
+              },
+              "children": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              },
+              "blocks": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              },
+              "blockedBy": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": ["owner", "locale", "view", "sources", "records"]
+}

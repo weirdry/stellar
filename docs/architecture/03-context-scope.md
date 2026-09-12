@@ -12,12 +12,13 @@ State: **Target**
 
 State: **As-built**
 
-Stellar tooling and browser exploration are implemented. The host collection
-workflow and source adapters remain Target.
-
-Linear is the first intended source. Its authentication belongs to the user's
-existing host tools or connection. Exact collection adapters are Open; a
-standalone OAuth service is not part of the initial skill.
+[The local skill](../../SKILL.md) guides source collection, normalization,
+classification, validation and rendering. [Native normalizers](../../lib/normalize.js)
+accept Linear connector and GitHub REST captures, including mixed-source reports.
+Authentication, pagination and actual API availability belong to the host's
+existing tools. Stellar has no standalone OAuth service or network client.
+The [validation record](../validation/2026-09-12-source-aware-skill.md) distinguishes
+local fixture coverage, explicit skill use, live source sampling, and publication.
 
 The initial scope is read-oriented collection, classification, generation, and
 exploration. Source writeback, continuous background synchronization, hosted
