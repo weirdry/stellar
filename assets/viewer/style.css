@@ -728,6 +728,10 @@ kbd {
   border-color: var(--parent);
   border-top-style: dotted;
 }
+.line-sample.duplicate {
+  border-color: var(--muted);
+  border-top-style: dashed;
+}
 .status-legend {
   display: flex;
   gap: 11px;

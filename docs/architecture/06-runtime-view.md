@@ -24,11 +24,16 @@ The renderer does not modify input files or copy referenced attachments.
 ## Browser exploration
 
 Status filters count assigned issues only. Domain/category selection expands
-purpose-based work. Issue selection shows its direct registered neighbors and
-classification path; filtered-out and context issues are marked as context.
+purpose-based work. Search includes assigned and context issues. Issue selection
+shows its direct registered neighbors and classification path. Assigned work
+outside the current status filter is labeled separately from source-declared
+context; neither enters the current count. Context-only target tags are descriptive
+and cannot activate a filter with no assigned target membership.
 Collapsed edges retain actual source issue pairs for inspection. Target overlays
 combine existing classifications without inventing relations. Navigation history
-is in memory; local storage retains only the theme preference.
+is in memory; repeated selection of the same node does not add another entry.
+Local storage retains only the theme preference. Hidden search results cannot
+be selected with Enter, and viewer shortcuts leave browser modifier keys alone.
 
 ## Source collection and refresh
 

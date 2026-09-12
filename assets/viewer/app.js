@@ -23,7 +23,7 @@ function tr(key, values = {}) {
 }
 const htmlTr = (key, values) => esc(tr(key, values));
 const multiline = (key) => htmlTr(key).replace(/\n/g, '<br>');
-const stellarTitle = document.title;
+const stellarTitle = tr('brand.title', { owner: R.owner });
 const domainById = new Map(R.domains.map((d) => [d.id, d]));
 const categoryById = new Map(R.categories.map((c) => [c.id, c]));
 R.items = R.issues.filter((i) => i.scope === 'assigned');
@@ -144,8 +144,9 @@ $('#maps-open').textContent = tr('references.count', {
 });
 $('#maps-open').dataset.shortLabel = tr('references.short');
 $('#scope').value = state.scope;
-for (const target of [...new Set(R.items.flatMap((i) => i.targets))].sort(
-  (a, b) => a.localeCompare(b, R.locale),
+const selectableTargets = new Set(R.items.flatMap((i) => i.targets));
+for (const target of [...selectableTargets].sort((a, b) =>
+  a.localeCompare(b, R.locale),
 ))
   $('#target').add(new Option(target, target));
 function scoped(i) {
@@ -161,6 +162,13 @@ function updateBase() {
   base = R.items.filter(scoped).sort(sortIssues);
   baseIds = new Set(base.map((i) => i.id));
   $('#scope-count').textContent = base.length;
+}
+function outsideScopeKey(issue) {
+  return issue.scope === 'context'
+    ? 'context.outside'
+    : !baseIds.has(issue.id)
+      ? 'scope.outside'
+      : null;
 }
 function scopeName() {
   return $('#scope').selectedOptions[0].textContent;
@@ -203,6 +211,9 @@ function remember() {
   if (state.history.length > 60) state.history.shift();
   $('#back').disabled = false;
 }
+function rememberSelection(type, id) {
+  if (state.selected?.type !== type || state.selected?.id !== id) remember();
+}
 function restorePrevious() {
   if (!state.history.length) return;
   const s = state.history.pop();
@@ -220,7 +231,7 @@ function closeMobileTree() {
 }
 function selectDomain(id, push = true) {
   if (!domains.has(id)) return;
-  if (push) remember();
+  if (push) rememberSelection('domain', id);
   state.mode = 'global';
   state.selected = { type: 'domain', id };
   state.edgeSelection = null;
@@ -233,7 +244,7 @@ function selectDomain(id, push = true) {
 function selectCategory(id, push = true) {
   const c = categories.get(id);
   if (!c) return;
-  if (push) remember();
+  if (push) rememberSelection('category', id);
   state.mode = 'global';
   state.selected = { type: 'category', id };
   state.edgeSelection = null;
@@ -252,7 +263,7 @@ function selectCategory(id, push = true) {
 }
 function selectIssue(id, push = true) {
   if (!all.has(id)) return;
-  if (push) remember();
+  if (push) rememberSelection('issue', id);
   state.mode = 'local';
   state.selected = { type: 'issue', id };
   state.edgeSelection = null;
@@ -262,6 +273,7 @@ function selectIssue(id, push = true) {
     state.treeCats.add(i.category);
   }
   $('#search').value = '';
+  $('#search-results').innerHTML = '';
   $('#search-results').hidden = true;
   render(true);
   closeMobileTree();
@@ -649,15 +661,16 @@ function relationLabel(e, id) {
 }
 function targetTags(i) {
   return (i.targets || [])
-    .map(
-      (t) =>
-        `<button class="tag target" data-target="${esc(t)}">${esc(t)}</button>`,
+    .map((t) =>
+      selectableTargets.has(t)
+        ? `<button class="tag target" data-target="${esc(t)}">${esc(t)}</button>`
+        : `<span class="tag target" title="${htmlTr('target.contextOnly')}">${esc(t)}</span>`,
     )
     .join('');
 }
 function relationRow(otherId, label = '') {
   const x = all.get(otherId);
-  return `<button class="relation-row" data-issue="${esc(otherId)}"><i class="status-dot ${esc(x.statusType)}"></i><div><b>${esc(otherId)}</b><span class="title">${esc(x.title)}</span><small>${esc(x.status)}${!baseIds.has(otherId) ? ' · ' + htmlTr('context.outside') : ''}</small></div>${label ? `<span class="rel-kind">${esc(label)}</span>` : ''}</button>`;
+  return `<button class="relation-row" data-issue="${esc(otherId)}"><i class="status-dot ${esc(x.statusType)}"></i><div><b>${esc(otherId)}</b><span class="title">${esc(x.title)}</span><small>${esc(x.status)}${outsideScopeKey(x) ? ' · ' + htmlTr(outsideScopeKey(x)) : ''}</small></div>${label ? `<span class="rel-kind">${esc(label)}</span>` : ''}</button>`;
 }
 function summaryCounts(items) {
   return Object.entries(
@@ -734,7 +747,7 @@ function renderInspector() {
   }
   const parent = all.get(i.parentId),
     completedParent = parent?.statusType === 'completed' && active(i);
-  p.innerHTML = `<div class="section-label">${htmlTr('section.issue')}</div><span class="id-label">${esc(i.id)}</span><h2>${esc(i.title)}</h2>${pill(i)}${i.detail === 'unqueried' ? `<span class="tag">${htmlTr('detail.unknown')}</span>` : ''}${!baseIds.has(i.id) ? `<span class="tag">${htmlTr('context.outside')}</span>` : ''}${blocked(i).length && active(i) ? `<div class="info-note" style="border-color:var(--blocks)"><p>${htmlTr('prerequisites.note', { count: blocked(i).length })}</p></div>` : ''}${completedParent ? `<div class="info-note"><p>${htmlTr('parent.note', { id: i.parentId, status: parent.status })}</p></div>` : ''}<h3>${htmlTr('purpose')}</h3><div class="path-line">${domains.has(i.domain) ? `<button data-domain="${esc(i.domain)}">${esc(i.domainLabel)}</button><br>↳ <button data-category="${esc(i.category)}">${esc(i.group)}</button>` : htmlTr('context.unclassified')}</div><p>${esc(i.classificationBasis || tr('context.reason'))}</p>${i.targets?.length ? `<h3>${htmlTr('targets.interpreted')}</h3>${targetTags(i)}` : ''}<dl class="kv"><dt>${htmlTr('assignee')}</dt><dd>${esc(i.assignee || tr('scope.unknown'))}</dd><dt>${htmlTr('updated')}</dt><dd title="${esc(i.updatedAt || '')}">${i.updatedAt ? esc(new Date(i.updatedAt).toLocaleDateString(R.locale, { timeZone: 'UTC' })) : htmlTr('scope.unknown')}</dd><dt>${htmlTr('priority')}</dt><dd>${esc(i.priority || tr('scope.unknown'))}</dd></dl>${i.url ? `<a class="primary-button wide" href="${esc(i.url)}" target="_blank" rel="noopener">${htmlTr('source.open')}</a>` : `<p class="empty-note">${htmlTr('source.noLink')}</p>`}<h3>${htmlTr('relations.count', { count: rels.length })}</h3><p class="empty-note">${htmlTr('relations.follow')}</p>${
+  p.innerHTML = `<div class="section-label">${htmlTr('section.issue')}</div><span class="id-label">${esc(i.id)}</span><h2>${esc(i.title)}</h2>${pill(i)}${i.detail === 'unqueried' ? `<span class="tag">${htmlTr('detail.unknown')}</span>` : ''}${outsideScopeKey(i) ? `<span class="tag">${htmlTr(outsideScopeKey(i))}</span>` : ''}${blocked(i).length && active(i) ? `<div class="info-note" style="border-color:var(--blocks)"><p>${htmlTr('prerequisites.note', { count: blocked(i).length })}</p></div>` : ''}${completedParent ? `<div class="info-note"><p>${htmlTr('parent.note', { id: i.parentId, status: parent.status })}</p></div>` : ''}<h3>${htmlTr('purpose')}</h3><div class="path-line">${domains.has(i.domain) ? `<button data-domain="${esc(i.domain)}">${esc(i.domainLabel)}</button><br>↳ <button data-category="${esc(i.category)}">${esc(i.group)}</button>` : htmlTr('context.unclassified')}</div><p>${esc(i.classificationBasis || tr('context.reason'))}</p>${i.targets?.length ? `<h3>${htmlTr('targets.interpreted')}</h3>${targetTags(i)}` : ''}<dl class="kv"><dt>${htmlTr('assignee')}</dt><dd>${esc(i.assignee || tr('scope.unknown'))}</dd><dt>${htmlTr('updated')}</dt><dd title="${esc(i.updatedAt || '')}">${i.updatedAt ? esc(new Date(i.updatedAt).toLocaleDateString(R.locale, { timeZone: 'UTC' })) : htmlTr('scope.unknown')}</dd><dt>${htmlTr('priority')}</dt><dd>${esc(i.priority || tr('scope.unknown'))}</dd></dl>${i.url ? `<a class="primary-button wide" href="${esc(i.url)}" target="_blank" rel="noopener">${htmlTr('source.open')}</a>` : `<p class="empty-note">${htmlTr('source.noLink')}</p>`}<h3>${htmlTr('relations.count', { count: rels.length })}</h3><p class="empty-note">${htmlTr('relations.follow')}</p>${
     Object.entries(byKind)
       .map(
         ([name, es]) =>
@@ -749,9 +762,12 @@ function renderCaption() {
   if (state.mode === 'local') {
     const i = selectedIssue(),
       others = state.scene.nodes.filter((n) => n.type === 'issue' && !n.center),
-      ghosts = others.filter((n) => n.ghost).length;
+      contexts = others.filter((n) => n.issue.scope === 'context').length,
+      filtered = others.filter(
+        (n) => n.issue.scope === 'assigned' && n.ghost,
+      ).length;
     crumb = `› <span>${htmlTr('caption.neighborhood', { id: i.id })}</span>`;
-    caption = `<b>${htmlTr('caption.neighbors', { count: others.length })}</b> · ${htmlTr('caption.path')}${ghosts ? ' · ' + htmlTr('caption.context', { count: ghosts }) : ''}`;
+    caption = `<b>${htmlTr('caption.neighbors', { count: others.length })}</b> · ${htmlTr('caption.path')}${contexts ? ' · ' + htmlTr('caption.context', { count: contexts }) : ''}${filtered ? ' · ' + htmlTr('caption.filtered', { count: filtered }) : ''}`;
   } else if (state.selected?.type === 'domain') {
     const d = domains.get(state.selected.id);
     crumb = `› <span>${esc(d.label)}</span>`;
@@ -901,9 +917,11 @@ function applyTransform(geometry = false) {
         order = parallels.indexOf(e.id),
         // Reverse edges share the pair's curvature orientation.
         direction = e.source < e.target ? 1 : -1,
+        // Keep the fixed-size pointer targets apart when zoomed out.
+        spacing = Math.max(70, 40 / k),
         offset =
           parallels.length > 1
-            ? (order - (parallels.length - 1) / 2) * 70 * direction
+            ? (order - (parallels.length - 1) / 2) * spacing * direction
             : state.mode === 'local' && e.kind !== 'classification'
               ? 25
               : 0,
@@ -1004,6 +1022,37 @@ function applyTransform(geometry = false) {
         bl.setAttribute('r', 3.5 / k);
       }
     });
+    // Prefer node identities over relation text. Hidden relation labels are
+    // reconsidered on zoom; their paths and inspector details remain available.
+    const occupied = state.scene.nodes.flatMap((node, index) =>
+      [...nodeEls[index].querySelectorAll('.node-label, .node-dot')]
+        .filter((el) => el.style.display !== 'none')
+        .map((el) => {
+          const box = el.getBBox();
+          return {
+            x: node.x + box.x,
+            y: node.y + box.y,
+            width: box.width,
+            height: box.height,
+          };
+        }),
+    );
+    const padding = 3 / k;
+    for (const label of $$('#edge-labels .edge-label')) {
+      if (label.style.display === 'none') continue;
+      const box = label.getBBox();
+      if (
+        occupied.some(
+          (other) =>
+            box.x < other.x + other.width + padding &&
+            other.x < box.x + box.width + padding &&
+            box.y < other.y + other.height + padding &&
+            other.y < box.y + box.height + padding,
+        )
+      )
+        label.style.display = 'none';
+      else occupied.push(box);
+    }
   }
   updateMinimapViewport();
 }
@@ -1113,6 +1162,7 @@ function updateMinimapViewport() {
   el.setAttribute('height', (h / t.k) * b.s);
 }
 function setTarget(target) {
+  if (target && !selectableTargets.has(target)) return;
   remember();
   state.target = target;
   $('#target').value = target;
@@ -1142,10 +1192,11 @@ function showSearch() {
   const q = $('#search').value.trim().toLocaleLowerCase(),
     panel = $('#search-results');
   if (!q) {
+    panel.innerHTML = '';
     panel.hidden = true;
     return;
   }
-  const results = R.items
+  const results = R.issues
     .filter((i) =>
       [i.id, i.title, i.domainLabel, i.group, ...i.targets]
         .join(' ')
@@ -1165,7 +1216,7 @@ function showSearch() {
       .slice(0, 30)
       .map(
         (i) =>
-          `<button class="search-result" data-issue="${esc(i.id)}"><b>${esc(i.id)} · ${esc(i.status)}</b><span>${esc(i.title)}</span><small>${esc(i.domainLabel)} › ${esc(i.group)}${!baseIds.has(i.id) ? ' · ' + htmlTr('scope.outside') : ''}</small></button>`,
+          `<button class="search-result" data-issue="${esc(i.id)}"><b>${esc(i.id)} · ${esc(i.status)}</b><span>${esc(i.title)}</span><small>${i.category ? `${esc(i.domainLabel)} › ${esc(i.group)}` : htmlTr('context.unclassified')}${outsideScopeKey(i) ? ' · ' + htmlTr(outsideScopeKey(i)) : ''}</small></button>`,
       )
       .join('') +
       (results.length > 30
@@ -1337,7 +1388,7 @@ $('#graph').addEventListener('pointermove', (e) => {
     box = $('#stage').getBoundingClientRect();
   $('#tooltip').innerHTML =
     n.type === 'issue'
-      ? `<b>${esc(n.key)} · ${esc(n.issue.status)}</b>${esc(n.subtitle)}<span>${esc(n.issue.domainLabel || tr('context.issue'))}${n.ghost ? ' · ' + htmlTr('context.outside') : ''}</span>`
+      ? `<b>${esc(n.key)} · ${esc(n.issue.status)}</b>${esc(n.subtitle)}<span>${esc(n.issue.domainLabel || tr('context.issue'))}${outsideScopeKey(n.issue) ? ' · ' + htmlTr(outsideScopeKey(n.issue)) : ''}</span>`
       : `<b>${esc(n.label)}</b>${esc(n.subtitle)}<span>${htmlTr(n.type === 'domain' ? 'hint.area' : 'hint.group')}</span>`;
   $('#tooltip').hidden = false;
   $('#tooltip').style.left =
@@ -1406,7 +1457,14 @@ document.addEventListener('click', (e) => {
 });
 $('#search').addEventListener('input', showSearch);
 $('#search').addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') {
+  if (
+    e.key === 'Enter' &&
+    !e.isComposing &&
+    !e.metaKey &&
+    !e.ctrlKey &&
+    !e.altKey &&
+    !$('#search-results').hidden
+  ) {
     const first = $('#search-results [data-issue]');
     if (first) selectIssue(first.dataset.issue);
   }
@@ -1472,6 +1530,7 @@ $('#modal').onclick = (e) => {
   if (e.target === $('#modal')) closeModal();
 };
 document.addEventListener('keydown', (e) => {
+  if (e.isComposing || e.metaKey || e.ctrlKey || e.altKey) return;
   if (!$('#modal').hidden) {
     if (e.key === 'Escape') closeModal();
     if (e.key === 'Tab') {
