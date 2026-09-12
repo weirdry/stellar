@@ -154,3 +154,99 @@ test(
     assert.deepEqual(errors, []);
   },
 );
+
+for (const [locale, label, unknown] of [
+  ['ko', '이전 조회에 근거한 분류', '상세 미조회'],
+  [
+    'en',
+    'Classification based on a previous observation',
+    'Details not fetched',
+  ],
+]) {
+  test(
+    `the ${locale} inspector distinguishes retained evidence from current context classification`,
+    { timeout: 60000 },
+    async (t) => {
+      const dir = await mkdtemp(join(tmpdir(), 'stellar-evidence-browser-'));
+      t.after(() => rm(dir, { recursive: true, force: true }));
+      const map = mixedMap(),
+        capture = mixedCapture();
+      map.locale = locale;
+      capture.locale = locale;
+      capture.records.splice(3, 1);
+      const state = refreshState(rememberMap(map), capture);
+      const issue = state.map.issues.find(
+        (i) => i.nativeId === 'I_invented_delivery_7',
+      );
+      const current = applyChoices(
+        state,
+        {
+          issues: [
+            {
+              issueId: issue.id,
+              classification: {
+                category: 'delivery',
+                rationale: 'Current decision from available context',
+              },
+            },
+          ],
+        },
+        'agent',
+      );
+      const browser = await chromium.launch({
+        headless: true,
+        ...(process.env.STELLAR_CHROME
+          ? { executablePath: process.env.STELLAR_CHROME }
+          : {}),
+      });
+      t.after(() => browser.close());
+      const page = await browser.newPage({
+        viewport: { width: 1600, height: 1000 },
+      });
+      const errors = [],
+        requests = [];
+      page.on('pageerror', (e) => errors.push(e.message));
+      page.on('request', (r) => {
+        if (/^https?:/.test(r.url())) requests.push(r.url());
+      });
+      for (const [name, data, retained] of [
+        ['retained', state.map, true],
+        ['current', current.map, false],
+      ]) {
+        const file = join(dir, name + '.html');
+        await writeFile(file, await renderWorkMap(data));
+        await page.goto(pathToFileURL(file).href);
+        await page.waitForFunction(() => window.stellar);
+        await page.locator('#search').fill('example/delivery#7');
+        await page.locator('.search-result').click();
+        const inspector = await page.locator('#inspector').textContent();
+        assert.ok(inspector.includes(unknown));
+        assert.ok(inspector.includes('Delivery operations'));
+        assert.equal(inspector.includes(label), retained);
+        assert.equal(
+          await page.locator('.classification-evidence').count(),
+          retained ? 1 : 0,
+        );
+        if (retained) {
+          const box = await page
+            .locator('.classification-evidence')
+            .boundingBox();
+          const panel = await page.locator('#inspector').boundingBox();
+          assert.ok(
+            box.x >= panel.x && box.x + box.width <= panel.x + panel.width + 1,
+          );
+          assert.ok(inspector.includes(issue.classification.rationale));
+        } else
+          assert.ok(
+            inspector.includes('Current decision from available context'),
+          );
+        assert.equal(
+          (await page.evaluate(() => window.stellar.getState())).baseCount,
+          3,
+        );
+      }
+      assert.deepEqual(errors, []);
+      assert.deepEqual(requests, []);
+    },
+  );
+}

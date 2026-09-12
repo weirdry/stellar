@@ -80,3 +80,46 @@ were refused as expected. The final map contained 4 assigned issues, 1 context
 issue, 3 relations and 5 remembered identities. This invocation established
 command behavior and static artifact evidence; repository Chromium checks were
 separate. Hosted results for the follow-up commit are recorded in the PR handoff.
+
+## Independent-review follow-up
+
+The four diagnostic/false-positive findings are corrected: JSON syntax failures
+identify their input role; continuity schema errors point to extra properties and
+explain choices alternatives; null and omitted descriptions are equivalent purpose
+evidence without changing source facts; output refusals have structured repair
+information. Cleanup failures do not mask the original write error, and possible
+leftovers are disclosed.
+
+The identity guide now distinguishes two stored identities from two real issues.
+Identifier-only Linear context later fetched with a UUID is an unresolved
+correspondence with retained prior choices; automatic rebinding remains outside
+the implementation. The runner marks retained classifications with earlier
+full-text evidence on unqueried context, and the inspector labels that basis in
+Korean and English while keeping current detail/status unknown.
+
+`just ci` passed with 40 Node tests and `just browser-check` passed with 18
+Chromium tests. The new checks exercise input identity, precise alternatives,
+source-text confidentiality, null/omission in both providers and directions,
+existing paths/aliases/permissions, injected write/close/cleanup failures, and
+classification notice lifecycle. Skill-creator quick validation passed.
+
+The lead explicitly invoked the updated skill with a newly invented Korean
+mixed-source capture in a separate directory, running 14 root Just commands.
+Normalization first identified missing source notes, which were repaired in the
+synthetic capture. The completed sequence exercised first-map classification,
+remember, user revision, repeated refresh, agent reconsideration, validation and
+rendering, plus malformed-capture, misspelled-choices and existing-run refusals.
+The final artifact had 2 assigned issues, 1 unqueried context, 1 registered relation
+and 3 remembered identities, with no pending review. The user's classification and
+target survived a current completed status. Null-to-omitted body preserved agent
+classification, while actual new body text required reconsideration.
+
+State, emitted map and embedded HTML data matched. Separate Chromium inspection
+of Korean and English artifacts confirmed the prior-observation notice beside the
+retained rationale, unknown current status/detail, and assigned counts. Both
+screenshots were visually inspected; no page errors or external requests occurred.
+The English artifact changed only fixed UI language, retaining authored Korean
+classification text. This is local synthetic invocation and browser evidence;
+no live source collection, private report reuse, skill relinking, automatic
+discovery or publication occurred. Exact-commit clean-checkout and hosted CI
+results are recorded in the PR handoff.

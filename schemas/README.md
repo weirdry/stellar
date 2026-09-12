@@ -34,6 +34,14 @@ reference their domain, so issue data does not repeat the domain or labels.
 Targets are overlapping interpretation, not source relations. Source project
 and labels are optional metadata, not taxonomy authority.
 
+`classificationEvidence: previous-observation` is an optional runner-owned
+interpretation notice for a classified, unqueried issue. Refresh sets it when
+reapplying a saved classification with remembered full-text evidence. The viewer
+labels the earlier observation separately from current detail/status; it never
+infers this notice merely from `unqueried`. A current classification decision or
+full observation clears it. It does not change classification origin or source
+facts and is not an accepted choices field.
+
 `detail: unqueried` requires `status.type: unknown`. Explicitly declare all
 relation endpoints, even when only an identifier or title was available.
 `full` means a source detail lookup was available, not that every optional
@@ -164,9 +172,18 @@ context; absent identities retain reasons only in memory. A pending classificati
 cannot appear in the current map, and an unclassified assigned issue must have a
 saved reason. State validation checks this consistency. Continuity accepts only
 HTTP(S) attachments; the standalone renderer still supports report-relative links.
+Purpose-text comparison treats null and omitted descriptions as equivalent while
+preserving their observed representation in the map. Actual text remains distinct.
 
 [Choices](choices.schema.json) contains optional domain/category upserts and issue
 updates selected by the current map's internal `issueId`. The command determines
 agent/user origin; source fields cannot be supplied as choice fields. Neither
 contract is a replacement viewer format. Only `state.map`, emitted as
 `work-map.json`, enters HTML. See [continuity](../references/continuity.md).
+
+JSON syntax and continuity-schema diagnostics identify the input role separately
+from its document-relative JSON pointer. Extra-property paths use JSON pointer
+escaping; choices alternatives are explained as alternatives. Run output failures
+identify the `/run` argument and provide fresh-path/permission repair guidance.
+Cleanup failures disclose possible leftovers without masking the original write
+error; the CLI does not print source excerpts or raw filesystem error paths.

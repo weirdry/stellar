@@ -41,6 +41,11 @@ Repeated context/absence transitions and identity-review reasons have explicit
 regressions. CLI checks prove relative references fail before output while web
 references survive every continuity command; the browser checks pending context
 and the retained reference link.
+[Continuity diagnostic tests](../../test/continuity-diagnostics.test.js) cover
+input roles, escaped extra-property paths, choices alternatives, null/omitted
+evidence equivalence, output refusals and cleanup failure. Both locale browser
+cases distinguish retained classification evidence from current context choices
+without changing source status or assigned counts.
 See [continuity tests](../../test/continuity.test.js) and the
 [dated validation](../validation/2026-09-13-classification-refresh.md).
 

@@ -19,6 +19,14 @@ Use the latest successful `state.json` for the next operation. Branches of saved
 state are not automatically reconciled. Subsequent runs use state, not another
 `remember` of a rendered map, which would drop absent decisions.
 
+JSON syntax and continuity-schema diagnostics identify the input role in `input`
+(`state`, `capture`, `choices`, or `work-map` for syntax), with a document-relative
+JSON pointer and repair guidance. A choices file needs at least one nonempty
+domains/categories/issues array; an issue choice needs classification, targets,
+or both. Output failures use `/run` to identify the run-directory argument.
+Choose a fresh writable path while keeping earlier runs. If cleanup reports
+leftovers, inspect that failed directory and do not use it as saved state.
+
 When bootstrapping an existing map, classification origin also sets initial
 ownership of targets because the map has no separate target-origin field.
 `revise` records independent target choices, including an intentionally empty list.
@@ -88,8 +96,16 @@ Matching uses `(provider, namespace, nativeId)`, independent of report-local IDs
 Titles and visible numbers never establish identity. The runner does not infer
 repository moves or bind an old identifier-only record to a new UUID. A different
 native identity with the same remembered display identifier is flagged for
-review; check source evidence and retain distinct identities. A different owner
-is rejected; use a separate state for another person.
+review. This may be one real Linear issue first seen as an identifier-only
+context and later fetched with a UUID, rather than two distinct pieces of work.
+Check the source evidence and disclose the unresolved identity correspondence.
+The runner has no rebinding operation: the provisional entry and its choices
+remain in memory and `notObserved` on subsequent refreshes; they are not
+automatically transferred to the UUID entry. Keep the prior state and resolve
+the current entry's classification explicitly, respecting any confirmed user
+choice. Do not infer deletion or a second real issue from the two stored entries,
+or edit/prune state to hide the limitation. A different owner is rejected; use
+a separate state for another person.
 
 Fresh normalization alone supplies source facts, statuses, scope and relations.
 Unknown endpoints stay unknown context. Missing issues stay in memory and are
@@ -114,9 +130,20 @@ classification. User choices remain authoritative; explain tension with new
 facts rather than silently replacing them. Changed full text with an agent
 classification withholds that classification until reconsidered; the prior choice
 stays in memory for context. A status change alone does not trigger regrouping.
+Null and omitted descriptions are equivalent for this comparison; source fields
+remain as observed. Empty strings and other actual text remain distinct.
 Unqueried observations do not replace full-text evidence. Pending assigned
 classifications block rendering. This is a text-change heuristic, not a semantic
 judgment by the runner.
+
+An unqueried context may retain a classification from an earlier observation.
+When remembered full-text evidence exists, refresh sets the interpretation
+notice `classificationEvidence: previous-observation`; the inspector labels that
+basis separately from the current unknown detail/status. This is not proof of a
+fresh lookup. A current explicit classification or a return to full detail removes
+the notice; target-only changes and an agent's unchanged echo of a user choice
+do not. The agent does not author this runner-owned notice in choices or infer it
+from unknown status. A first classification of unqueried context has no notice.
 
 Review reasons belong to remembered source identities, so repeated refreshes,
 context-only observations, temporary absence, and report-local ID changes do not

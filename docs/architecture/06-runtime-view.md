@@ -72,12 +72,20 @@ state without restoring old issues or relations to the current report. Changed
 full text withholds an agent classification until reconsidered; user decisions
 are reapplied. `classify` protects user-owned fields; `revise` applies explicit
 user corrections. Both update state and map together.
+Null and omitted descriptions are equivalent purpose evidence, while current
+source fields retain their original representation. Syntax errors identify the
+input role; continuity-schema errors point to the offending field and explain
+choices alternatives without presenting every branch as required.
 
 Pending review reasons live with saved source identities, including while an
 issue is absent or appears only as context. Current review summaries are derived
 from those saved reasons. Only an explicit classification clears a reason;
 target-only changes do not. Context may remain unclassified and renderable while
 its lookup/review limit is disclosed.
+When an unqueried issue retains a classification with remembered full-text
+evidence, refresh adds a previous-observation notice for the inspector. Current
+source status/detail remain unknown. Explicit reconsideration or full detail
+clears the notice; target-only changes do not.
 
 All four commands validate their result before creating a new run directory with
 owner-only access. Existing paths are refused. On write failure, cleanup targets
@@ -87,6 +95,9 @@ Continuity rejects report-relative document references at the input field before
 writing because reference files are not bundled into the new directory. HTTP(S)
 references are retained through refresh. The standalone renderer still supports
 relative references when the caller supplies their colocated files.
+Output failures identify `/run` with repair guidance. Best-effort cleanup cannot
+replace the original failure, and possible leftovers are disclosed. The CLI
+does not echo raw filesystem errors or JSON source excerpts.
 [continuity.js](../../lib/continuity.js), [its tests](../../test/continuity.test.js)
 and [the skill workflow](../../references/continuity.md) own this behavior. No
 background worker, continuous sync, or persistent service exists.
