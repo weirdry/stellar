@@ -217,7 +217,7 @@ test('GitHub metadata arrays and elements have actionable diagnostics while vali
   assert.equal(issue.assignee, 'invented-ada, invented-ren');
   assert.deepEqual(issue.labels, ['Invented tooling', 'Invented research']);
 });
-test('missing or malformed GitHub URLs identify the field before repository resolution', () => {
+test('missing, malformed or non-HTTP GitHub URLs identify the field before repository resolution', () => {
   for (const endpoint of [false, true]) {
     for (const value of [
       undefined,
@@ -227,6 +227,10 @@ test('missing or malformed GitHub URLs identify the field before repository reso
       7,
       {},
       'private-probe-text',
+      'javascript:private-probe-text',
+      'data:text/plain,private-probe-text',
+      'ftp://github.com/example/control/issues/7',
+      'ftp://github.com/example/delivery/issues/7',
     ]) {
       const capture = mixedCapture();
       const raw = endpoint
@@ -244,7 +248,7 @@ test('missing or malformed GitHub URLs identify the field before repository reso
             `/records/2/${endpoint ? 'links/blockedBy/0' : 'data'}/html_url`,
           );
           assert.match(diagnostic.message, /html_url is missing or malformed/);
-          assert.ok(diagnostic.fix);
+          assert.match(diagnostic.fix, /HTTP\(S\)/);
           assert.ok(
             !JSON.stringify(error.diagnostics).includes('private-probe-text'),
           );
@@ -252,6 +256,17 @@ test('missing or malformed GitHub URLs identify the field before repository reso
         },
       );
     }
+  }
+  for (const protocol of ['http:', 'https:']) {
+    const capture = mixedCapture();
+    for (const raw of [
+      capture.records[2].data,
+      capture.records[2].links.blockedBy[0],
+    ])
+      raw.html_url = raw.html_url.replace('https:', protocol);
+    const map = normalizeCapture(capture);
+    assert.equal(map.issues[2].url, capture.records[2].data.html_url);
+    assert.equal(map.relations.length, 3);
   }
 });
 test('status mapping preserves native duplicate closure and keeps unknown reasons unknown', () => {
@@ -589,6 +604,19 @@ test('normalize CLI writes a private draft, protects captures and preserves earl
     [
       (c) => {
         delete c.records[2].links.blockedBy[0].html_url;
+      },
+      '/records/2/links/blockedBy/0/html_url',
+    ],
+    [
+      (c) => {
+        c.records[2].data.html_url = 'javascript:private-probe-text';
+      },
+      '/records/2/data/html_url',
+    ],
+    [
+      (c) => {
+        c.records[2].links.blockedBy[0].html_url =
+          'javascript:private-probe-text';
       },
       '/records/2/links/blockedBy/0/html_url',
     ],

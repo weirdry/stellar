@@ -49,8 +49,8 @@ Assignees must be user objects with nonblank `login` strings; labels may be
 nonblank strings or objects with nonblank `name` strings. Omitted metadata stays
 unavailable; null or malformed collections and elements are rejected at their
 capture path. Full records and endpoint references require a parseable, absolute
-`html_url` before repository resolution; a missing or malformed URL is reported
-at that field rather than as a repository mismatch.
+HTTP(S) `html_url` before repository resolution; a missing, malformed or non-HTTP
+URL is reported at that field rather than as a repository mismatch.
 Save additional REST results as `links.parent` (issue or null), `links.children`,
 `links.blocks`, and `links.blockedBy` (arrays). Omit a lookup on failure and mark
 partial/unavailable coverage. Endpoint references must retain `node_id`, `number`

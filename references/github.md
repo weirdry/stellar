@@ -29,8 +29,8 @@ Preserve the full native endpoint objects, including `node_id`, `number`, and
 `html_url`. Register additional context repositories when needed. Fetch direct
 context details when available; do not recursively crawl unrelated work.
 
-Full records and relationship endpoints require a parseable, absolute `html_url`
-for repository resolution. Preserve `assignees` as an array of user objects with
+Full records and relationship endpoints require a parseable, absolute HTTP(S)
+`html_url` for repository resolution. Preserve `assignees` as an array of user objects with
 nonblank `login` strings and `labels` as an array of nonblank strings or objects
 with nonblank `name` strings. Empty arrays are valid; omit unavailable metadata.
 Null or malformed collections and elements produce a diagnostic at their capture

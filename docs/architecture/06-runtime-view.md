@@ -53,8 +53,8 @@ Missing classifications are expected in the draft; other semantic failures stop
 before output is written. Normalization diagnostics point back to captured fields
 and relationship observations, including the native field supplying selected
 context metadata and a parent observation within a cycle.
-Missing or malformed GitHub URLs fail at `html_url` before repository resolution;
-malformed assignee/label arrays and elements identify the corresponding capture
+Missing, malformed or non-HTTP GitHub URLs fail at `html_url` before repository
+resolution; malformed assignee/label arrays and elements identify the corresponding capture
 field with repair guidance instead of throwing an unstructured JavaScript error.
 The agent edits only taxonomy/classification/targets,
 then invokes validation and rendering. Normalization shares the renderer's atomic
