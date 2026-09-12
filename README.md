@@ -9,8 +9,9 @@ classifies work; bundled code owns typography, colors, layout, and interaction.
 The local agent skill, Linear/GitHub capture normalizers, work-map contract,
 validator, and standalone tree/graph viewer are implemented. A report can combine
 multiple workspaces and repositories. The host agent collects and classifies;
-Stellar code normalizes facts and renders the fixed interface. Saved edits and
-synchronization remain **Target**. There is no backend or published package.
+Stellar code normalizes facts and renders the fixed interface. Local saved choices
+and requested refreshes preserve user grouping while updating source facts.
+Background synchronization remains **Target**. There is no backend or published package.
 
 ## Start development
 
@@ -69,6 +70,16 @@ UI copy to the header, controls, help, graph labels, and SVG export. The agent
 chooses the language and writes classification explanations; source issue titles
 and status labels remain unchanged. Browser language never overrides the input.
 Use [the input guide](schemas/README.md) to author a different map.
+
+## Remember and refresh
+
+After classifying a first map, `just remember MAP.json NEW_RUN` saves its state.
+Use `just revise STATE.json CHOICES.json NEW_RUN` for a user correction and
+`just refresh STATE.json CAPTURE.json NEW_RUN` for a fresh source snapshot.
+`just classify STATE.json CHOICES.json NEW_RUN` applies agent decisions while
+protecting user choices. Each command writes a new private run directory; render
+its `work-map.json` and keep its `state.json` for the next run. See the
+[continuity workflow](references/continuity.md) for rules and choices examples.
 
 ## Verify
 

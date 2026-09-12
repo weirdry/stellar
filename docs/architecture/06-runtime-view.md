@@ -63,8 +63,20 @@ visible in the header/help; no source access occurs when opening the artifact.
 
 ## Saved classification and refresh
 
-State: **Target**
+State: **As-built**
 
-Saved edits and refresh merging are not implemented. A future refresh must
-preserve explicit user decisions through a declared rule. No background worker,
-continuous sync, or persistent service exists.
+`remember` initializes a saved state from a valid map. `refresh` accepts that
+state and a native capture, normalizes current facts, and matches remembered
+choices by provider/namespace/native identity. It retains missing choices in
+state without restoring old issues or relations to the current report. Changed
+full text withholds an agent classification until reconsidered; user decisions
+are reapplied. `classify` protects user-owned fields; `revise` applies explicit
+user corrections. Both update state and map together.
+
+All four commands validate their result before creating a new run directory with
+owner-only access. Existing paths are refused. On write failure, cleanup targets
+only files created by that operation. Each run contains `state.json`,
+`work-map.json`, and `changes.json`; the renderer consumes only the work map.
+[continuity.js](../../lib/continuity.js), [its tests](../../test/continuity.test.js)
+and [the skill workflow](../../references/continuity.md) own this behavior. No
+background worker, continuous sync, or persistent service exists.

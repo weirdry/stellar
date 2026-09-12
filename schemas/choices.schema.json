@@ -1,0 +1,89 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "domains": {
+      "$ref": "work-map.schema.json#/properties/domains"
+    },
+    "categories": {
+      "$ref": "work-map.schema.json#/properties/categories"
+    },
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "issueId": {
+            "$ref": "work-map.schema.json#/properties/issues/items/properties/id"
+          },
+          "classification": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "category": {
+                "$ref": "work-map.schema.json#/properties/issues/items/properties/classification/properties/category"
+              },
+              "rationale": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              }
+            },
+            "required": ["category", "rationale"]
+          },
+          "targets": {
+            "$ref": "work-map.schema.json#/properties/issues/items/properties/targets"
+          }
+        },
+        "required": ["issueId"],
+        "anyOf": [
+          {
+            "required": ["classification"],
+            "properties": {
+              "classification": {}
+            }
+          },
+          {
+            "required": ["targets"],
+            "properties": {
+              "targets": {}
+            }
+          }
+        ]
+      }
+    }
+  },
+  "required": [],
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Stellar classification choices",
+  "anyOf": [
+    {
+      "required": ["domains"],
+      "properties": {
+        "domains": {
+          "minItems": 1,
+          "type": "array"
+        }
+      }
+    },
+    {
+      "required": ["categories"],
+      "properties": {
+        "categories": {
+          "minItems": 1,
+          "type": "array"
+        }
+      }
+    },
+    {
+      "required": ["issues"],
+      "properties": {
+        "issues": {
+          "minItems": 1,
+          "type": "array"
+        }
+      }
+    }
+  ]
+}

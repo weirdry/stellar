@@ -1,6 +1,6 @@
 ---
 name: stellar
-description: Turn a person's issues into an explorable Stellar work map with a purpose-based tree, relationship graph, and status inspector. Use when asked to map, regroup, or understand assigned work and dependencies across Linear, GitHub Issues, or supplied issue snapshots, including multiple sources in one report. Produce a local standalone HTML artifact with the bundled viewer.
+description: Turn a person's issues into an explorable Stellar work map with a purpose-based tree, relationship graph, and status inspector. Use to map work across Linear, GitHub Issues, or supplied snapshots, revise a user's grouping, or refresh an earlier map while preserving saved choices. Produce local standalone HTML with the bundled viewer.
 ---
 
 # Stellar
@@ -14,6 +14,12 @@ turn this task into a source-system reorganization.
 Resolve `STELLAR_ROOT` to the directory containing this skill, including when
 loaded through a symlink. Read [the input contract](schemas/README.md) and
 [classification guidance](references/classification.md).
+
+For a saved map, a user correction, or a requested refresh, read
+[continuity](references/continuity.md). Use its state/choices commands rather
+than restarting classification or manually editing a saved map. The collection
+and delivery boundaries below still apply. A first report can become the starting
+state through `just remember` after validation.
 
 Use the requested person, source accounts/repositories, scope, language, and
 output directory. Infer these from the conversation when established. If an
@@ -30,6 +36,8 @@ viewer filters define the requested collection scope.
   use `outputs/private/<run-name>/` under the skill checkout. Keep captures,
   drafts, reports, and logs private. Do not overwrite prior reports or snapshots
   unless the user requested replacement. HTML embeds the issue data.
+  For continuity commands, supply a fresh unused path and let the command create
+  the directory. Always retain previous state and reports.
 - Confirm the locked runtime/dependencies exist. From `STELLAR_ROOT`, use root
   Just commands. If setup is needed, follow [development setup](README.md#start-development).
   Never install dependencies as a side effect of validation.
@@ -75,7 +83,9 @@ in the draft. In-scope (`assigned`) issues each need one primary category with a
 specific rationale and `origin: agent` (or `user` for an explicit user choice).
 Context may stay unclassified. Keep normalized facts and relations intact.
 If a fact is wrong, correct the capture against source evidence and normalize
-again before reapplying interpretation. Saved override merging is not implemented.
+again before reapplying interpretation. For saved maps, apply choices through
+`classify` for agent decisions or `revise` for explicit user decisions; follow
+the continuity guide to keep saved state consistent with the report.
 
 ```sh
 just validate "$RUN/work-map.json"

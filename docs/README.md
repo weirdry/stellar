@@ -4,20 +4,21 @@ This is the repository-local entry point for Stellar's engineering knowledge.
 
 ## Authority map
 
-| Concern                                       | Owner                                                                             |
-| --------------------------------------------- | --------------------------------------------------------------------------------- |
-| Architecture current view and accepted Target | [Architecture](architecture/README.md)                                            |
-| Implemented behavior and exact tool versions  | Repository scripts, configuration, and locks                                      |
-| Skill authoring and capture workflow          | [Skill entry](../SKILL.md), [capture guide](../references/capture.md)             |
-| Work-map input shape                          | [Work-map schema and semantic contract](../schemas/README.md)                     |
-| Fixed UI language and owner-derived naming    | [Bundled viewer and locale catalogs](../assets/viewer/README.md)                  |
-| Original issue facts                          | Source snapshot and source system; neither classification nor prose rewrites them |
-| Classification decisions                      | Work-map classification rationale and origin; saved overrides remain Target       |
-| Consequential decisions                       | [ADR history](decisions/README.md)                                                |
-| Commit, branch, review, and release rules     | [Stellar contribution policy](../CONTRIBUTING.md)                                 |
-| Contributor setup and command procedures      | [Development guide](development/README.md)                                        |
-| Dated results and limitations                 | [Validation records](validation/README.md)                                        |
-| Engineering standards and adoption provenance | [Standard adoption](development/standards.md)                                     |
+| Concern                                       | Owner                                                                                              |
+| --------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| Architecture current view and accepted Target | [Architecture](architecture/README.md)                                                             |
+| Implemented behavior and exact tool versions  | Repository scripts, configuration, and locks                                                       |
+| Skill authoring and capture workflow          | [Skill entry](../SKILL.md), [capture guide](../references/capture.md)                              |
+| Work-map input shape                          | [Work-map schema and semantic contract](../schemas/README.md)                                      |
+| Saved choices and requested refresh           | [Continuity workflow](../references/continuity.md), [state contract](../schemas/state.schema.json) |
+| Fixed UI language and owner-derived naming    | [Bundled viewer and locale catalogs](../assets/viewer/README.md)                                   |
+| Original issue facts                          | Source snapshot and source system; neither classification nor prose rewrites them                  |
+| Classification decisions                      | Work-map rationale and origin; private state retains classification and target ownership           |
+| Consequential decisions                       | [ADR history](decisions/README.md)                                                                 |
+| Commit, branch, review, and release rules     | [Stellar contribution policy](../CONTRIBUTING.md)                                                  |
+| Contributor setup and command procedures      | [Development guide](development/README.md)                                                         |
+| Dated results and limitations                 | [Validation records](validation/README.md)                                                         |
+| Engineering standards and adoption provenance | [Standard adoption](development/standards.md)                                                      |
 
 Chat, Linear, and pull requests are planning provenance. The architecture must
 remain understandable without them. When sources disagree, identify the concern,

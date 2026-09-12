@@ -11,7 +11,9 @@ The [workflow](../../.github/workflows/ci.yml) runs the repository-owned gate on
 pushes to `dev` and `main`, and PRs targeting `dev`. Actual results are available
 in [GitHub Actions](https://github.com/weirdry/stellar/actions/workflows/ci.yml);
 workflow configuration is not proof of a successful run or merge enforcement.
-There is no published skill package, deployed service, or runtime data store.
+There is no published skill package, deployed service, or server-side data store.
+Local private state files support requested refreshes; each operation creates a
+new run and leaves earlier states and reports intact.
 See [development](../development/README.md).
 
 ## Local skill use

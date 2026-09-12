@@ -8,7 +8,7 @@ Organization profile: **5010-arc42-v1**
 
 This is the whole-system current view. The current repository implements the
 local skill, host capture workflow, source normalizers and rendering core;
-saved editing/refresh remains Target.
+saved choices and requested refreshes are implemented; background sync remains Target.
 It owns the engineering explanation, not original issue facts or empirical
 claims about the user's projects.
 

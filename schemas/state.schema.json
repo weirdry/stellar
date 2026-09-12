@@ -1,0 +1,175 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "map": {
+      "$ref": "work-map.schema.json"
+    },
+    "memory": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "provider": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "namespace": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "nativeId": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "identifier": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "classification": {
+            "$ref": "work-map.schema.json#/properties/issues/items/properties/classification"
+          },
+          "targets": {
+            "$ref": "work-map.schema.json#/properties/issues/items/properties/targets"
+          },
+          "targetsOrigin": {
+            "enum": ["agent", "user"]
+          },
+          "evidence": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "description": {
+                "type": ["string", "null"]
+              }
+            },
+            "required": ["title"]
+          }
+        },
+        "required": [
+          "provider",
+          "namespace",
+          "nativeId",
+          "identifier",
+          "targets",
+          "targetsOrigin"
+        ]
+      }
+    },
+    "changes": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "added": {
+          "type": "array",
+          "items": {
+            "$ref": "work-map.schema.json#/properties/issues/items/properties/id"
+          }
+        },
+        "returned": {
+          "type": "array",
+          "items": {
+            "$ref": "work-map.schema.json#/properties/issues/items/properties/id"
+          }
+        },
+        "updated": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "issueId": {
+                "$ref": "work-map.schema.json#/properties/issues/items/properties/id"
+              },
+              "fields": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S"
+                }
+              }
+            },
+            "required": ["issueId", "fields"]
+          }
+        },
+        "notObserved": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "provider": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "namespace": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              },
+              "nativeId": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "\\S"
+              }
+            },
+            "required": ["provider", "namespace", "nativeId"]
+          }
+        },
+        "review": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "issueId": {
+                "$ref": "work-map.schema.json#/properties/issues/items/properties/id"
+              },
+              "reason": {
+                "enum": [
+                  "new-issue",
+                  "purpose-text-changed",
+                  "identity-uncertain"
+                ]
+              }
+            },
+            "required": ["issueId", "reason"]
+          }
+        },
+        "preservedUser": {
+          "type": "array",
+          "items": {
+            "$ref": "work-map.schema.json#/properties/issues/items/properties/id"
+          }
+        }
+      },
+      "required": [
+        "added",
+        "returned",
+        "updated",
+        "notObserved",
+        "review",
+        "preservedUser"
+      ]
+    }
+  },
+  "required": ["schemaVersion", "map", "memory", "changes"],
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Stellar saved classification state",
+  "description": "Private state for manual refresh. Only map is sent to the viewer; memory retains absent choices."
+}
