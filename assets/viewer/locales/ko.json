@@ -99,6 +99,7 @@
   "groups.count": "세부 묶음 {count}개",
   "counts.explain": "숫자는 {scope} 범위입니다. 선을 누르면 묶음 사이의 실제 이슈 관계를 확인할 수 있습니다.",
   "detail.unknown": "상세 미조회",
+  "status.unqueried": "미조회",
   "prerequisites.note": "미완료 선행 {count}개가 등록되어 있습니다.",
   "parent.note": "상위 {id}는 {status}이며, 이 이슈는 미완료입니다.",
   "purpose": "작업 목적별 위치",
@@ -160,5 +161,6 @@
   "coverage.relations": "관계 조회",
   "coverage.complete": "명시한 범위 내 완료",
   "coverage.partial": "부분 조회",
+  "coverage.incomplete": "조회 제한",
   "coverage.unavailable": "조회 불가"
 }

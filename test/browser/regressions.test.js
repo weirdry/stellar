@@ -6,6 +6,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { renderWorkMap } from '../../lib/render.js';
+import { mixedCapture, mixedMap } from '../fixtures.js';
 
 const fixture = JSON.parse(
   await readFile(
@@ -46,6 +47,88 @@ async function screenshot(page, name) {
     path: join(process.env.STELLAR_QA_DIR, name + '.png'),
   });
 }
+
+for (const locale of ['ko', 'en'])
+  test(`coverage and unqueried labels use report locale ${locale} while source labels stay literal`, async (t) => {
+    const capture = mixedCapture();
+    capture.locale = locale === 'ko' ? 'en' : 'ko';
+    const originalLabel = capture.locale === 'ko' ? '미조회' : 'Not queried';
+    capture.records[0].data.status = originalLabel;
+    capture.records[0].data.relations.relatedTo = [
+      { id: 'EXT-99', title: 'Unfetched reference' },
+    ];
+    const data = mixedMap(capture);
+    data.locale = locale;
+    const context = data.issues.find((i) => i.detail === 'unqueried');
+    assert.equal(context.status.label, originalLabel);
+    const expectedLabel = locale === 'ko' ? '미조회' : 'Not queried';
+    const incomplete = locale === 'ko' ? '조회 제한' : 'Incomplete coverage';
+    for (const coverage of ['complete', 'partial', 'unavailable']) {
+      for (const source of data.sources)
+        source.coverage = { issues: 'complete', relations: coverage };
+      const page = await openMap(t, data);
+      assert.equal(
+        (await page.locator('#snapshot').textContent()).includes(incomplete),
+        coverage !== 'complete',
+      );
+      await page.locator('#help-open').click();
+      const coverageLabel =
+        locale === 'ko'
+          ? {
+              complete: '명시한 범위 내 완료',
+              partial: '부분 조회',
+              unavailable: '조회 불가',
+            }[coverage]
+          : {
+              complete: 'Complete within scope',
+              partial: 'Partial',
+              unavailable: 'Unavailable',
+            }[coverage];
+      assert.ok(
+        (await page.locator('.source-card').first().textContent()).includes(
+          coverageLabel,
+        ),
+      );
+      await page.keyboard.press('Escape');
+      await page.locator('#search').fill('EXT-99');
+      assert.ok(
+        (await page.locator('.search-result').textContent()).includes(
+          expectedLabel,
+        ),
+      );
+      assert.ok(
+        !(await page.locator('.search-result').textContent()).includes(
+          originalLabel,
+        ),
+      );
+      await page.locator('.search-result').click();
+      assert.equal(
+        await page.locator('#inspector > .pill').textContent(),
+        expectedLabel,
+      );
+      assert.equal(
+        await page.evaluate(() => window.stellar.getState().baseCount),
+        4,
+      );
+      await page.locator('#search').fill('OBS-1');
+      await page.locator('.search-result').click();
+      assert.equal(
+        await page.locator('#inspector > .pill').textContent(),
+        originalLabel,
+      );
+      assert.equal(
+        context.status.label,
+        originalLabel,
+        'rendering must not rewrite input data',
+      );
+      if (coverage === 'unavailable') {
+        await page.locator('#search').fill('EXT-99');
+        await page.locator('.search-result').click();
+        await screenshot(page, locale + '-unavailable-context');
+      }
+      await page.close();
+    }
+  });
 
 test('opposite relations remain independently clickable in both input orders and graph views', async (t) => {
   const data = structuredClone(fixture);
@@ -284,7 +367,7 @@ test('context search, scope labels and target tags preserve the counting boundar
     assert.equal(await parentRow.textContent(), 'Done · ' + outside);
     assert.equal(
       await page.locator('#inspector [data-issue="CTX-2"] small').textContent(),
-      '미조회 · ' + contextLabel,
+      (locale === 'ko' ? '미조회' : 'Not queried') + ' · ' + contextLabel,
     );
     const caption = await page.locator('#canvas-caption').textContent();
     assert.ok(

@@ -47,10 +47,14 @@ dashed borders without entering the current count. Targets are selectable when
 at least one assigned issue carries them; context-only targets remain descriptive
 tags with an explanation. Korean normalized status controls are translated;
 source status labels remain unchanged.
+For unqueried context, the displayed status placeholder comes from the current
+locale catalog. Changing the report locale relocalizes this UI text without
+rewriting embedded input or translating full-detail source status labels.
 
 The header joins source display names (for example, Linear + GitHub). Each
 source retains its own timestamp, query scope and coverage in help. Incomplete
-coverage is indicated beside the header. Repeated issue identifiers are qualified
+coverage is indicated beside the header with a neutral label covering both partial
+and unavailable lookups; help displays their distinct states. Repeated issue identifiers are qualified
 by namespace in visible labels; internal graph keys remain separate. The inspector
 shows full provenance, and search also matches source namespace/name. Multiple
 repositories with the same issue number navigate independently.

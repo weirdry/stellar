@@ -70,3 +70,12 @@ status. It is not silently discarded or counted as assigned. Registered duplicat
 edge observations are deduplicated; opposite directed edges retain direction.
 Only classification may be missing in normalized drafts. Other shape, URL,
 identity, and relationship failures stop normalization before writing output.
+Normalization diagnostics point into this capture: copied fields use their native
+field names, selected context metadata points to its originating reference, and
+parent errors identify a captured relationship observation. No draft file is
+needed to locate the input to repair; diagnostics do not quote issue text.
+
+The unqueried status label in a draft is a placeholder. The viewer displays it
+from the final work map's locale catalog, so changing that locale does not require
+normalizing again just to relocalize this UI text. Full-detail source status
+labels remain unchanged.

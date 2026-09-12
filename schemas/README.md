@@ -41,6 +41,9 @@ field or every relationship in the source system was fetched. Unknown statuses
 remain unknown and can be explored through the dedicated filter. The status
 label is preserved independently from its normalized type. Source lookup
 limitations belong in each source’s `notes` and structured `coverage` and are visible in help.
+For `detail: unqueried`, the label is a generated placeholder, not a source
+status: the viewer derives its displayed text from the current `locale`.
+Full-detail status labels, including unknown source statuses, remain literal.
 
 Issue metadata may include `description`, `url`, assignee, assignee ID, project, team,
 priority label, labels, and timestamps. Unavailable optional values can be
@@ -135,6 +138,10 @@ part of this initial contract.
 Validation returns `valid` and `diagnostics`. Each diagnostic has `code`, a
 JSON-pointer-style `path`, `message`, and `fix`. CLI exit status is 0 for success,
 1 for invalid input or execution failure, and 2 for invalid command usage.
+During normalization, paths refer to the supplied capture's fields or relationship
+observations, including failures found while validating the unwritten draft.
+During work-map validation/rendering, paths refer to the supplied work map.
+Parent-cycle diagnostics identify a relationship in the cycle.
 JSON syntax errors do not echo input excerpts. A failed render preserves the
 previous output; successful generation uses a same-directory temporary file
 and rename. Rendering over the input path or its symlink alias is rejected.

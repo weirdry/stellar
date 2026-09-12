@@ -49,7 +49,7 @@ for (const locale of ['ko', 'en'])
       );
       assert.ok(
         (await page.locator('#snapshot').textContent()).includes(
-          locale === 'ko' ? '부분 조회' : 'Partial',
+          locale === 'ko' ? '조회 제한' : 'Incomplete coverage',
         ),
       );
       assert.ok(
