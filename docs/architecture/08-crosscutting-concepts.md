@@ -25,6 +25,12 @@ domain order selects palette order. Browser fonts, viewport, and navigation
 state can affect pixels. Classification is agent/user interpretation, not a
 deterministic inference made by the renderer.
 
+Parallel relation curves use a common endpoint order so reversing a source
+relation does not fold its path onto the opposite relation. Arrow direction and
+the underlying issue pairs remain source facts. Target option values preserve
+the authored strings, including whitespace, instead of deriving identity from
+browser-normalized display text.
+
 The agent selects a supported `locale` (`ko` or `en`) from the user's requested
 language or conversation language and authors classification text accordingly.
 The runner selects a bundled message catalog for fixed UI and derives the

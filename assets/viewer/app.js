@@ -144,10 +144,10 @@ $('#maps-open').textContent = tr('references.count', {
 });
 $('#maps-open').dataset.shortLabel = tr('references.short');
 $('#scope').value = state.scope;
-$('#target').innerHTML += [...new Set(R.items.flatMap((i) => i.targets))]
-  .sort((a, b) => a.localeCompare(b, R.locale))
-  .map((t) => `<option>${esc(t)}</option>`)
-  .join('');
+for (const target of [...new Set(R.items.flatMap((i) => i.targets))].sort(
+  (a, b) => a.localeCompare(b, R.locale),
+))
+  $('#target').add(new Option(target, target));
 function scoped(i) {
   return (
     state.scope === 'all' ||
@@ -899,9 +899,11 @@ function applyTransform(geometry = false) {
       if (!a || !b) return;
       const parallels = pairs.get([e.source, e.target].sort().join('|')),
         order = parallels.indexOf(e.id),
+        // Reverse edges share the pair's curvature orientation.
+        direction = e.source < e.target ? 1 : -1,
         offset =
           parallels.length > 1
-            ? (order - (parallels.length - 1) / 2) * 70
+            ? (order - (parallels.length - 1) / 2) * 70 * direction
             : state.mode === 'local' && e.kind !== 'classification'
               ? 25
               : 0,
