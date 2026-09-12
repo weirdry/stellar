@@ -84,8 +84,12 @@ target-only changes do not. Context may remain unclassified and renderable while
 its lookup/review limit is disclosed.
 When an unqueried issue retains a classification with remembered full-text
 evidence, refresh adds a previous-observation notice for the inspector. Current
-source status/detail remain unknown. Explicit reconsideration or full detail
-clears the notice; target-only changes do not.
+source status/detail remain unknown. Explicit reconsideration clears the notice
+for that run; a full-detail refresh omits it. Each later refresh recomputes it,
+so retained classification on unqueried detail with remembered full-text evidence
+gets the notice again, including after reclassification while unqueried. The
+recorded rationale remains intact. Target-only changes and an agent's unchanged
+echo of a user choice do not clear the notice.
 
 All four commands validate their result before creating a new run directory with
 owner-only access. Existing paths are refused. On write failure, cleanup targets
@@ -96,8 +100,10 @@ writing because reference files are not bundled into the new directory. HTTP(S)
 references are retained through refresh. The standalone renderer still supports
 relative references when the caller supplies their colocated files.
 Output failures identify `/run` with repair guidance. Best-effort cleanup cannot
-replace the original failure, and possible leftovers are disclosed. The CLI
-does not echo raw filesystem errors or JSON source excerpts.
+replace the original failure, and possible leftovers are disclosed. Continuity
+run-output diagnostics omit raw filesystem error paths; JSON syntax diagnostics
+omit source excerpts. Input read failures still use system error messages and
+may include the supplied path, for example when an input file does not exist.
 [continuity.js](../../lib/continuity.js), [its tests](../../test/continuity.test.js)
 and [the skill workflow](../../references/continuity.md) own this behavior. No
 background worker, continuous sync, or persistent service exists.

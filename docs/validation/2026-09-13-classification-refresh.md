@@ -123,3 +123,23 @@ classification text. This is local synthetic invocation and browser evidence;
 no live source collection, private report reuse, skill relinking, automatic
 discovery or publication occurred. Exact-commit clean-checkout and hosted CI
 results are recorded in the PR handoff.
+
+## Documentation precision after re-review
+
+Documentation now makes the notice lifecycle explicit: an accepted classification
+removes the notice for that run, and each subsequent refresh recomputes it from
+current detail, retained classification and remembered evidence. An unqueried
+refresh can therefore restore the notice while keeping the new rationale intact.
+The filesystem-path omission claim applies to continuity run-output diagnostics;
+JSON syntax diagnostics omit source excerpts. Input read failures still use
+system error messages and may include the supplied path.
+
+Only Markdown documentation changed. The lead followed the updated continuity
+guide with synthetic fixtures in a fresh temporary directory and executed six
+root Just commands: remember, refresh, classify, refresh, render, and a refused
+refresh with a missing input. The notice was present, cleared, then present again;
+the new rationale and unknown current status stayed intact. State, map and embedded
+HTML matched. Missing input produced the documented raw error and no output run.
+Skill-creator quick validation passed. Current-commit CI results are recorded in
+the PR handoff; the existing browser/visual evidence belongs to the unchanged
+implementation at `00852b8`.
