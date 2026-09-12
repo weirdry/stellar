@@ -38,9 +38,13 @@ and labels are optional metadata, not taxonomy authority.
 interpretation notice for a classified, unqueried issue. Refresh sets it when
 reapplying a saved classification with remembered full-text evidence. The viewer
 labels the earlier observation separately from current detail/status; it never
-infers this notice merely from `unqueried`. A current classification decision or
-full observation clears it. It does not change classification origin or source
-facts and is not an accepted choices field.
+infers this notice merely from `unqueried`. An explicit classification decision
+clears it for that run; target-only edits and an agent's unchanged echo of a user
+choice do not. A full-detail refresh omits it. Each later refresh recomputes the
+notice: unqueried detail, a retained classification and remembered full-text
+evidence cause it to return, even after an intervening reclassification. It does
+not change the recorded rationale, classification origin or source facts and is
+not an accepted choices field.
 
 `detail: unqueried` requires `status.type: unknown`. Explicitly declare all
 relation endpoints, even when only an identifier or title was available.
@@ -186,4 +190,6 @@ from its document-relative JSON pointer. Extra-property paths use JSON pointer
 escaping; choices alternatives are explained as alternatives. Run output failures
 identify the `/run` argument and provide fresh-path/permission repair guidance.
 Cleanup failures disclose possible leftovers without masking the original write
-error; the CLI does not print source excerpts or raw filesystem error paths.
+error. JSON syntax diagnostics omit source excerpts, and continuity run-output
+diagnostics omit raw filesystem error paths. Input read failures, including
+missing files, still use system error messages that may include the supplied path.

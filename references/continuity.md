@@ -26,6 +26,9 @@ domains/categories/issues array; an issue choice needs classification, targets,
 or both. Output failures use `/run` to identify the run-directory argument.
 Choose a fresh writable path while keeping earlier runs. If cleanup reports
 leftovers, inspect that failed directory and do not use it as saved state.
+Input read failures, such as a missing file, still use system error messages that
+may include the supplied path. Check the input path and read access before
+attempting to repair its JSON contents.
 
 When bootstrapping an existing map, classification origin also sets initial
 ownership of targets because the map has no separate target-origin field.
@@ -140,10 +143,14 @@ An unqueried context may retain a classification from an earlier observation.
 When remembered full-text evidence exists, refresh sets the interpretation
 notice `classificationEvidence: previous-observation`; the inspector labels that
 basis separately from the current unknown detail/status. This is not proof of a
-fresh lookup. A current explicit classification or a return to full detail removes
-the notice; target-only changes and an agent's unchanged echo of a user choice
-do not. The agent does not author this runner-owned notice in choices or infer it
-from unknown status. A first classification of unqueried context has no notice.
+fresh lookup. A current explicit classification removes the notice for that run;
+a full-detail refresh also omits it. A later refresh adds it again whenever the
+issue is unqueried, classified, and has remembered full-text evidence, including
+after reclassification while unqueried. The recorded decision and rationale stay
+intact when the notice returns. Target-only changes and an agent's unchanged echo
+of a user choice do not clear it. The agent does not author this runner-owned
+notice in choices or infer it from unknown status. A first classification of
+unqueried context has no notice.
 
 Review reasons belong to remembered source identities, so repeated refreshes,
 context-only observations, temporary absence, and report-local ID changes do not
