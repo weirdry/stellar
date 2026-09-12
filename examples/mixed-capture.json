@@ -1,0 +1,190 @@
+{
+  "owner": "Mira",
+  "locale": "en",
+  "view": {
+    "initialScope": "all",
+    "exportName": "observatory-stellar"
+  },
+  "sources": [
+    {
+      "id": "linear-observatory",
+      "provider": "linear",
+      "name": "Linear",
+      "namespace": "observatory",
+      "scope": "Invented selected issues and their direct registered neighbors.",
+      "snapshotAt": "2026-09-12T12:00:00Z",
+      "coverage": {
+        "issues": "complete",
+        "relations": "partial"
+      },
+      "notes": "Entirely synthetic example. Only the supplied relation lookups were captured."
+    },
+    {
+      "id": "github-control",
+      "provider": "github",
+      "name": "GitHub",
+      "namespace": "github.com/example/control",
+      "scope": "Invented selected issues and their direct registered neighbors.",
+      "snapshotAt": "2026-09-12T12:00:00Z",
+      "coverage": {
+        "issues": "complete",
+        "relations": "partial"
+      },
+      "notes": "Entirely synthetic example. Only the supplied relation lookups were captured."
+    },
+    {
+      "id": "github-delivery",
+      "provider": "github",
+      "name": "GitHub",
+      "namespace": "github.com/example/delivery",
+      "scope": "Invented selected issues and their direct registered neighbors.",
+      "snapshotAt": "2026-09-12T12:00:00Z",
+      "coverage": {
+        "issues": "complete",
+        "relations": "partial"
+      },
+      "notes": "Entirely synthetic example. Only the supplied relation lookups were captured."
+    }
+  ],
+  "records": [
+    {
+      "sourceId": "linear-observatory",
+      "scope": "assigned",
+      "data": {
+        "id": "OBS-1",
+        "uuid": "invented-linear-uuid-1",
+        "title": "Calibrate the transit detector",
+        "description": "Compare transit timing errors against a simulated baseline.",
+        "status": "Investigating",
+        "statusType": "started",
+        "url": "https://linear.app/observatory/issue/OBS-1",
+        "relations": {
+          "blocks": [
+            {
+              "id": "OBS-2",
+              "title": "Compare transit false positives"
+            }
+          ],
+          "blockedBy": [],
+          "relatedTo": [],
+          "duplicateOf": null
+        }
+      }
+    },
+    {
+      "sourceId": "linear-observatory",
+      "scope": "assigned",
+      "data": {
+        "id": "OBS-2",
+        "uuid": "invented-linear-uuid-2",
+        "title": "Compare transit false positives",
+        "description": "Measure false positives after calibration.",
+        "status": "Ready",
+        "statusType": "unstarted",
+        "parentId": "OBS-1",
+        "relations": {
+          "blocks": [],
+          "blockedBy": [
+            {
+              "id": "OBS-1"
+            }
+          ],
+          "relatedTo": [],
+          "duplicateOf": null
+        }
+      }
+    },
+    {
+      "sourceId": "github-control",
+      "scope": "assigned",
+      "data": {
+        "node_id": "I_invented_control_7",
+        "number": 7,
+        "html_url": "https://github.com/example/control/issues/7",
+        "title": "Repair telescope control retry behavior",
+        "body": "Invented work for an observatory.",
+        "state": "open",
+        "state_reason": null,
+        "assignees": [
+          {
+            "login": "mira-example"
+          }
+        ],
+        "labels": [
+          {
+            "name": "operations"
+          }
+        ]
+      },
+      "links": {
+        "blockedBy": [
+          {
+            "node_id": "I_invented_delivery_7",
+            "number": 7,
+            "html_url": "https://github.com/example/delivery/issues/7",
+            "title": "Repair deployment cache across repositories",
+            "body": "Invented work for an observatory.",
+            "state": "open",
+            "state_reason": null,
+            "assignees": [
+              {
+                "login": "mira-example"
+              }
+            ],
+            "labels": [
+              {
+                "name": "operations"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "sourceId": "github-delivery",
+      "scope": "assigned",
+      "data": {
+        "node_id": "I_invented_delivery_7",
+        "number": 7,
+        "html_url": "https://github.com/example/delivery/issues/7",
+        "title": "Repair deployment cache across repositories",
+        "body": "Invented work for an observatory.",
+        "state": "open",
+        "state_reason": null,
+        "assignees": [
+          {
+            "login": "mira-example"
+          }
+        ],
+        "labels": [
+          {
+            "name": "operations"
+          }
+        ]
+      }
+    },
+    {
+      "sourceId": "github-delivery",
+      "scope": "context",
+      "data": {
+        "node_id": "I_invented_delivery_8",
+        "number": 8,
+        "html_url": "https://github.com/example/delivery/issues/8",
+        "title": "Retire obsolete deployment runner",
+        "body": "Invented work for an observatory.",
+        "state": "closed",
+        "state_reason": "not_planned",
+        "assignees": [
+          {
+            "login": "mira-example"
+          }
+        ],
+        "labels": [
+          {
+            "name": "operations"
+          }
+        ]
+      }
+    }
+  ]
+}

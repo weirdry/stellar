@@ -1,11 +1,6 @@
 {
   "schemaVersion": 1,
   "owner": "Rowan",
-  "source": {
-    "name": "Garden notebook (synthetic)",
-    "snapshotAt": "2026-07-10T10:00:00Z",
-    "notes": "Invented seed-library work with a different owner, taxonomy, and status distribution."
-  },
   "view": {
     "initialScope": "all",
     "exportName": "seed-library"
@@ -50,7 +45,10 @@
       "assignee": "Rowan",
       "priority": "Normal",
       "url": "https://example.com/issues/SEED-1",
-      "updatedAt": "2026-08-01T09:00:00Z"
+      "updatedAt": "2026-08-01T09:00:00Z",
+      "sourceId": "seed-library",
+      "nativeId": "SEED-1",
+      "identifier": "SEED-1"
     },
     {
       "id": "SEED-2",
@@ -70,7 +68,10 @@
       "assignee": "Rowan",
       "priority": "Normal",
       "url": "https://example.com/issues/SEED-2",
-      "updatedAt": "2026-08-01T09:00:00Z"
+      "updatedAt": "2026-08-01T09:00:00Z",
+      "sourceId": "seed-library",
+      "nativeId": "SEED-2",
+      "identifier": "SEED-2"
     },
     {
       "id": "SEED-3",
@@ -90,7 +91,10 @@
       "assignee": "Rowan",
       "priority": "Normal",
       "url": "https://example.com/issues/SEED-3",
-      "updatedAt": "2026-08-01T09:00:00Z"
+      "updatedAt": "2026-08-01T09:00:00Z",
+      "sourceId": "seed-library",
+      "nativeId": "SEED-3",
+      "identifier": "SEED-3"
     }
   ],
   "relations": [
@@ -100,5 +104,20 @@
       "target": "SEED-3"
     }
   ],
-  "locale": "en"
+  "locale": "en",
+  "sources": [
+    {
+      "name": "Garden notebook (synthetic)",
+      "snapshotAt": "2026-07-10T10:00:00Z",
+      "notes": "Invented seed-library work with a different owner, taxonomy, and status distribution.",
+      "id": "seed-library",
+      "provider": "synthetic",
+      "namespace": "seed-library",
+      "scope": "Invented assigned issues and their direct context.",
+      "coverage": {
+        "issues": "complete",
+        "relations": "partial"
+      }
+    }
+  ]
 }

@@ -153,5 +153,12 @@
   "hint.group": "선택해서 이슈 펼치기",
   "section.explorer": "탐색",
   "caption.filtered": "상태 필터 밖 {count}개",
-  "target.contextOnly": "맥락 이슈에만 있는 대상입니다. 집계 대상 작업이 없어 강조할 수 없습니다."
+  "target.contextOnly": "맥락 이슈에만 있는 대상입니다. 집계 대상 작업이 없어 강조할 수 없습니다.",
+  "snapshot.sources": "출처 {count}개 스냅샷",
+  "source.heading": "출처 및 조회 범위",
+  "coverage.issues": "이슈 목록",
+  "coverage.relations": "관계 조회",
+  "coverage.complete": "명시한 범위 내 완료",
+  "coverage.partial": "부분 조회",
+  "coverage.unavailable": "조회 불가"
 }

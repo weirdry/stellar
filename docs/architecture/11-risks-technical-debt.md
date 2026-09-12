@@ -4,7 +4,7 @@ State: **Open**
 
 | Open item                                      | Closure condition                                                                                | Owner              |
 | ---------------------------------------------- | ------------------------------------------------------------------------------------------------ | ------------------ |
-| Callable skill and source collection           | Guidance and source access complete a real invocation with freshness/lookup evidence             | Stellar maintainer |
+| Host source capability changes                 | Verify tool shape, pagination, permissions and relation coverage for each actual run             | Stellar maintainer |
 | Classification drift and saved edits           | Explicit override persistence and refresh rules are implemented and tested                       | Stellar maintainer |
 | Dense graphs and very long labels              | Continued visual review against actual datasets; current layout is not a general graph optimizer | Stellar maintainer |
 | Additional UI languages                        | Add reviewed catalogs and browser evidence beyond the implemented Korean and English             | Stellar maintainer |

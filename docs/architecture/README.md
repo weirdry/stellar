@@ -7,8 +7,8 @@ Scope: **Stellar agent skill, work-map contract, and bundled interactive viewer*
 Organization profile: **5010-arc42-v1**
 
 This is the whole-system current view. The current repository implements the
-development tooling and rendering core; collection, editing/refresh and the
-callable skill remain Target.
+local skill, host capture workflow, source normalizers and rendering core;
+saved editing/refresh remains Target.
 It owns the engineering explanation, not original issue facts or empirical
 claims about the user's projects.
 

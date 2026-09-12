@@ -1,11 +1,6 @@
 {
   "schemaVersion": 1,
   "owner": "Mira",
-  "source": {
-    "name": "Exhibit tracker (synthetic)",
-    "snapshotAt": "2026-08-02T09:00:00Z",
-    "notes": "가상의 박물관 전시 준비 예제입니다. 모든 이슈와 관계는 제품 검증을 위해 새로 작성했습니다."
-  },
   "view": {
     "initialScope": "active",
     "exportName": "museum-work-map"
@@ -84,7 +79,10 @@
       "assignee": "Mira",
       "priority": "Normal",
       "url": "https://example.com/issues/MUS-1",
-      "updatedAt": "2026-08-01T09:00:00Z"
+      "updatedAt": "2026-08-01T09:00:00Z",
+      "sourceId": "museum",
+      "nativeId": "MUS-1",
+      "identifier": "MUS-1"
     },
     {
       "id": "MUS-2",
@@ -104,7 +102,10 @@
       "assignee": "Mira",
       "priority": "Normal",
       "url": "https://example.com/issues/MUS-2",
-      "updatedAt": "2026-08-01T09:00:00Z"
+      "updatedAt": "2026-08-01T09:00:00Z",
+      "sourceId": "museum",
+      "nativeId": "MUS-2",
+      "identifier": "MUS-2"
     },
     {
       "id": "MUS-3",
@@ -124,7 +125,10 @@
       "assignee": "Mira",
       "priority": "Normal",
       "url": "https://example.com/issues/MUS-3",
-      "updatedAt": "2026-08-01T09:00:00Z"
+      "updatedAt": "2026-08-01T09:00:00Z",
+      "sourceId": "museum",
+      "nativeId": "MUS-3",
+      "identifier": "MUS-3"
     },
     {
       "id": "MUS-4",
@@ -144,7 +148,10 @@
       "assignee": "Mira",
       "priority": "Normal",
       "url": "https://example.com/issues/MUS-4",
-      "updatedAt": "2026-08-01T09:00:00Z"
+      "updatedAt": "2026-08-01T09:00:00Z",
+      "sourceId": "museum",
+      "nativeId": "MUS-4",
+      "identifier": "MUS-4"
     },
     {
       "id": "MUS-5",
@@ -164,7 +171,10 @@
       "assignee": "Mira",
       "priority": "Normal",
       "url": "https://example.com/issues/MUS-5",
-      "updatedAt": "2026-08-01T09:00:00Z"
+      "updatedAt": "2026-08-01T09:00:00Z",
+      "sourceId": "museum",
+      "nativeId": "MUS-5",
+      "identifier": "MUS-5"
     },
     {
       "id": "MUS-6",
@@ -184,7 +194,10 @@
       "assignee": "Mira",
       "priority": "Normal",
       "url": "https://example.com/issues/MUS-6",
-      "updatedAt": "2026-08-01T09:00:00Z"
+      "updatedAt": "2026-08-01T09:00:00Z",
+      "sourceId": "museum",
+      "nativeId": "MUS-6",
+      "identifier": "MUS-6"
     },
     {
       "id": "MUS-7",
@@ -204,7 +217,10 @@
       "assignee": "Mira",
       "priority": "Normal",
       "url": "https://example.com/issues/MUS-7",
-      "updatedAt": "2026-08-01T09:00:00Z"
+      "updatedAt": "2026-08-01T09:00:00Z",
+      "sourceId": "museum",
+      "nativeId": "MUS-7",
+      "identifier": "MUS-7"
     },
     {
       "id": "MUS-8",
@@ -224,7 +240,10 @@
       "assignee": "Mira",
       "priority": "Normal",
       "url": "https://example.com/issues/MUS-8",
-      "updatedAt": "2026-08-01T09:00:00Z"
+      "updatedAt": "2026-08-01T09:00:00Z",
+      "sourceId": "museum",
+      "nativeId": "MUS-8",
+      "identifier": "MUS-8"
     },
     {
       "id": "MUS-9",
@@ -244,7 +263,10 @@
       "assignee": "Mira",
       "priority": "Normal",
       "url": "https://example.com/issues/MUS-9",
-      "updatedAt": "2026-08-01T09:00:00Z"
+      "updatedAt": "2026-08-01T09:00:00Z",
+      "sourceId": "museum",
+      "nativeId": "MUS-9",
+      "identifier": "MUS-9"
     },
     {
       "id": "MUS-10",
@@ -264,7 +286,10 @@
       "assignee": "Mira",
       "priority": "Normal",
       "url": "https://example.com/issues/MUS-10",
-      "updatedAt": "2026-08-01T09:00:00Z"
+      "updatedAt": "2026-08-01T09:00:00Z",
+      "sourceId": "museum",
+      "nativeId": "MUS-10",
+      "identifier": "MUS-10"
     },
     {
       "id": "MUS-11",
@@ -284,7 +309,10 @@
       "assignee": "Mira",
       "priority": "Normal",
       "url": "https://example.com/issues/MUS-11",
-      "updatedAt": "2026-08-01T09:00:00Z"
+      "updatedAt": "2026-08-01T09:00:00Z",
+      "sourceId": "museum",
+      "nativeId": "MUS-11",
+      "identifier": "MUS-11"
     },
     {
       "id": "MUS-12",
@@ -304,7 +332,10 @@
       "assignee": "Mira",
       "priority": "Normal",
       "url": "https://example.com/issues/MUS-12",
-      "updatedAt": "2026-08-01T09:00:00Z"
+      "updatedAt": "2026-08-01T09:00:00Z",
+      "sourceId": "museum",
+      "nativeId": "MUS-12",
+      "identifier": "MUS-12"
     },
     {
       "id": "CTX-1",
@@ -319,7 +350,10 @@
       "assignee": "Mira",
       "priority": "Normal",
       "url": "https://example.com/issues/CTX-1",
-      "updatedAt": "2026-08-01T09:00:00Z"
+      "updatedAt": "2026-08-01T09:00:00Z",
+      "sourceId": "museum",
+      "nativeId": "CTX-1",
+      "identifier": "CTX-1"
     },
     {
       "id": "CTX-2",
@@ -330,7 +364,10 @@
         "type": "unknown",
         "label": "미조회"
       },
-      "targets": []
+      "targets": [],
+      "sourceId": "museum",
+      "nativeId": "CTX-2",
+      "identifier": "CTX-2"
     }
   ],
   "relations": [
@@ -392,5 +429,20 @@
       "note": "참고 링크의 표시를 검증하는 합성 예제입니다."
     }
   ],
-  "locale": "ko"
+  "locale": "ko",
+  "sources": [
+    {
+      "name": "Exhibit tracker (synthetic)",
+      "snapshotAt": "2026-08-02T09:00:00Z",
+      "notes": "가상의 박물관 전시 준비 예제입니다. 모든 이슈와 관계는 제품 검증을 위해 새로 작성했습니다.",
+      "id": "museum",
+      "provider": "synthetic",
+      "namespace": "museum",
+      "scope": "Invented assigned issues and their direct context.",
+      "coverage": {
+        "issues": "complete",
+        "relations": "partial"
+      }
+    }
+  ]
 }

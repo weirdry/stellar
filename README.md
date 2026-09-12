@@ -6,10 +6,11 @@ classifies work; bundled code owns typography, colors, layout, and interaction.
 
 ## Current stage
 
-The rendering core is implemented: a work-map JSON contract, validator,
-standalone HTML generator, reusable SVG viewer, and synthetic examples.
-A callable agent skill, source collection, saved edits, and synchronization
-remain **Target**. There is no backend or published package.
+The local agent skill, Linear/GitHub capture normalizers, work-map contract,
+validator, and standalone tree/graph viewer are implemented. A report can combine
+multiple workspaces and repositories. The host agent collects and classifies;
+Stellar code normalizes facts and renders the fixed interface. Saved edits and
+synchronization remain **Target**. There is no backend or published package.
 
 ## Start development
 
@@ -27,6 +28,24 @@ With mise activated, use Just directly. `just init` installs locked tools and
 frozen pnpm dependencies and enables local hooks. Node 24 is pinned in mise;
 pnpm is selected from `package.json` through the bundled Corepack. Tool locks
 cover macOS arm64 and Linux x64.
+
+## Use the local skill
+
+After development setup, register this checkout for user-level skill discovery:
+
+```sh
+just skill-link
+```
+
+This links the checkout as `stellar` in the user's `.agents/skills` directory.
+It refuses to replace another installation. The checkout and its installed
+runtime dependencies must remain available; this is local authoring setup,
+not a distributed package. Open a fresh host session if the skill list is cached.
+Explicitly invoke `$stellar` and request the person, sources, language, and output
+location, for example: “Map my Linear and GitHub issues by actual work purpose.”
+See [the skill workflow](SKILL.md) and [capture format](references/capture.md).
+Automatic selection depends on the host; local evidence distinguishes explicit
+invocation from discovery.
 
 ## Generate a map
 
@@ -75,17 +94,17 @@ passing test nor a screenshot alone establishes visual acceptance.
 
 ## Repository boundaries
 
-| Path                                   | Responsibility                                        |
-| -------------------------------------- | ----------------------------------------------------- |
-| `bin/`, `lib/`                         | Validation and HTML generation                        |
-| `schemas/`                             | Authoritative input contract and semantic rules       |
-| `assets/viewer/`                       | Fixed HTML/CSS/JavaScript/SVG viewer                  |
-| `examples/`, `test/`                   | Entirely synthetic inputs and tests                   |
-| `references/`                          | Classification guidance                               |
-| `docs/`                                | Canonical architecture, decisions, and dated evidence |
-| `scripts/`, `justfile`, tool manifests | Repository-owned development tooling                  |
-| `.githooks/`, `.github/`               | Contribution checks and hosted CI                     |
-| `local/`, `outputs/`                   | Ignored private inputs and generated artifacts        |
+| Path                                   | Responsibility                                               |
+| -------------------------------------- | ------------------------------------------------------------ |
+| `bin/`, `lib/`                         | Native capture normalization, validation and HTML generation |
+| `schemas/`                             | Authoritative input contract and semantic rules              |
+| `assets/viewer/`                       | Fixed HTML/CSS/JavaScript/SVG viewer                         |
+| `examples/`, `test/`                   | Entirely synthetic inputs and tests                          |
+| `SKILL.md`, `references/`              | Host collection, classification and repair workflow          |
+| `docs/`                                | Canonical architecture, decisions, and dated evidence        |
+| `scripts/`, `justfile`, tool manifests | Repository-owned development tooling                         |
+| `.githooks/`, `.github/`               | Contribution checks and hosted CI                            |
+| `local/`, `outputs/`                   | Ignored private inputs and generated artifacts               |
 
 Source hosting is public under `weirdry/stellar`. Follow the local contribution
 policy: integration through `dev`, review branches for substantial work, and

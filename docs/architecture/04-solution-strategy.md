@@ -19,11 +19,22 @@ Archify remains a reference for typed authoring, fixed visual implementation,
 and actionable diagnostics, rather than a product runtime dependency.
 See [ADR-0002](../decisions/0002-use-a-canonical-work-map-and-bundled-viewer.md).
 
-## Skill and refresh
+## Skill and sources
+
+State: **As-built**
+
+[SKILL.md](../../SKILL.md) bundles a common workflow and source-specific retrieval
+guides. The host collects native records and records lookup coverage. The CLI
+normalizes them into an unclassified work-map draft. The agent adds purpose
+classification; the existing validator/renderer owns the remaining execution.
+Provider namespaces and source-native identities separate repeated issue numbers.
+The viewer derives source labels and coverage from input. See
+[ADR-0004](../decisions/0004-bundle-a-source-aware-agent-skill.md).
+
+## Saved edits and refresh
 
 State: **Target**
 
-Package the functioning tools with collection/authoring guidance and bounded
-repair instructions. Source collection adapters, classification continuity,
-user overrides, and refresh merge rules still need implementation. Deterministic
-rendering does not by itself preserve user decisions across newly authored inputs.
+Classification continuity, saved overrides and refresh merge rules remain
+unimplemented. Deterministic rendering does not preserve user decisions across
+newly authored inputs. Packaged distribution and licensing remain Open.

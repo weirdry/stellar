@@ -30,11 +30,15 @@ ignored local evidence. These checks do not access Linear or publish an artifact
 hosted results and visual review. Structural/test success is not perceptual
 approval, installable skill proof, or release acceptance.
 
+Source capture and mixed identity behavior are covered by
+[normalization tests](../../test/normalize.test.js) and
+[mixed-source browser tests](../../test/browser/sources.test.js). Host collection
+evidence and lookup limitations belong in the dated validation record.
+
 ## Remaining quality outcomes
 
 State: **Target**
 
-Source collection must expose freshness and incomplete lookup boundaries.
 Saved editing/refresh must preserve explicit user decisions. Distribution must
 prove installation and actual skill invocation when a package exists. These
 are future capabilities, not separate gates for internal renderer layers.

@@ -48,6 +48,13 @@ at least one assigned issue carries them; context-only targets remain descriptiv
 tags with an explanation. Korean normalized status controls are translated;
 source status labels remain unchanged.
 
+The header joins source display names (for example, Linear + GitHub). Each
+source retains its own timestamp, query scope and coverage in help. Incomplete
+coverage is indicated beside the header. Repeated issue identifiers are qualified
+by namespace in visible labels; internal graph keys remain separate. The inspector
+shows full provenance, and search also matches source namespace/name. Multiple
+repositories with the same issue number navigate independently.
+
 Source relations and classification lines remain visually distinct;
 a collapsed relation opens the underlying source pairs in the inspector.
 `window.stellar.getState()` exposes scene diagnostics for browser tests, not

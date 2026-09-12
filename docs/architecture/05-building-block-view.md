@@ -4,7 +4,7 @@ State: **As-built**
 
 | Building block      | Owns                                                                                                         | Evidence                                                                                                                        |
 | ------------------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
-| CLI                 | Argument handling, validation diagnostics, render invocation                                                 | [bin/stellar.js](../../bin/stellar.js)                                                                                          |
+| CLI                 | Argument handling, native normalization, validation diagnostics, render invocation                           | [bin/stellar.js](../../bin/stellar.js)                                                                                          |
 | Work-map schema     | Report, issue, classification, relation and reference shape                                                  | [schemas](../../schemas/README.md)                                                                                              |
 | Validator           | Unique identities, references, primary classification, source-parent and URL invariants                      | [validate.js](../../lib/validate.js)                                                                                            |
 | Renderer            | Locale selection, owner-derived branding, safe HTML embedding and preservation of previous output on failure | [render.js](../../lib/render.js)                                                                                                |
@@ -19,8 +19,12 @@ workspace is necessary for these directories.
 
 ## Agent workflow
 
-State: **Target**
+State: **As-built**
 
-A root skill entry point will own collection, authoring, and repair guidance.
-[Classification guidance](../../references/classification.md) records the
-purpose-based grouping boundary, but no installed/callable skill exists yet.
+[SKILL.md](../../SKILL.md) owns common collection, classification, repair and
+handoff guidance. Source-specific references define host retrieval and capture
+boundaries. [normalize.js](../../lib/normalize.js) translates native facts into
+one canonical work-map draft; [classification guidance](../../references/classification.md)
+keeps judgment with the agent. [link-skill.js](../../scripts/link-skill.js) safely
+registers this checkout in the user's local discovery directory. It does not
+publish a package or replace another installation.

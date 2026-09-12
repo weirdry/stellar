@@ -118,6 +118,9 @@ repository tooling, and Node unit/CLI tests. Run `just browser-check` for change
 to viewer behavior, rendering, or its input contract; install Chromium explicitly
 with `just browser-install` first. Hosted CI runs both gates on synthetic inputs.
 Neither gate proves live source access, skill installation, or publication.
+For skill workflow changes, also validate the skill entry and exercise an
+explicit invocation with synthetic input in a separate output directory. Keep
+source access, local linking, invocation, and automatic discovery evidence distinct.
 
 ## Direct commits to dev
 

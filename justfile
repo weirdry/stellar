@@ -39,6 +39,9 @@ browser-check:
 validate input:
     mise exec --locked -- node bin/stellar.js validate {{ quote(input) }}
 
+normalize input output:
+    mise exec --locked -- node bin/stellar.js normalize {{ quote(input) }} {{ quote(output) }}
+
 render input output:
     mise exec --locked -- node bin/stellar.js render {{ quote(input) }} {{ quote(output) }}
 
@@ -46,3 +49,7 @@ render input output:
 check: docs-check format-check lint test
 
 ci: check
+
+# Link this checkout for user-level Codex discovery; never replace another skill.
+skill-link:
+    mise exec --locked -- node scripts/link-skill.js

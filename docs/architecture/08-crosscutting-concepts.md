@@ -6,7 +6,11 @@ State: **As-built**
 
 The [contract guide](../../schemas/README.md) defines normalized status, assigned
 versus context scope, detail availability, classification rationale and origin,
-and source snapshot metadata. Every assigned issue has exactly one primary
+and source snapshot metadata. Source entries separate provider namespaces; each
+issue has an internal graph key, sourceId, nativeId and visible identifier. Both
+internal keys and per-source native identities are unique; display identifiers
+may repeat across repositories. The header derives provider names from input,
+with source-specific scope and freshness in help. Every assigned issue has exactly one primary
 category, and each category belongs to one domain. Source projects and labels
 remain optional metadata. Targets may overlap but never establish dependencies.
 

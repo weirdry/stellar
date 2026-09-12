@@ -8,6 +8,7 @@ This is the repository-local entry point for Stellar's engineering knowledge.
 | --------------------------------------------- | --------------------------------------------------------------------------------- |
 | Architecture current view and accepted Target | [Architecture](architecture/README.md)                                            |
 | Implemented behavior and exact tool versions  | Repository scripts, configuration, and locks                                      |
+| Skill authoring and capture workflow          | [Skill entry](../SKILL.md), [capture guide](../references/capture.md)             |
 | Work-map input shape                          | [Work-map schema and semantic contract](../schemas/README.md)                     |
 | Fixed UI language and owner-derived naming    | [Bundled viewer and locale catalogs](../assets/viewer/README.md)                  |
 | Original issue facts                          | Source snapshot and source system; neither classification nor prose rewrites them |

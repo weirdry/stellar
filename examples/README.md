@@ -15,6 +15,18 @@ just render examples/museum.json outputs/museum.html
 just render examples/seed-library.json outputs/seed-library.html
 ```
 
+[mixed-capture.json](mixed-capture.json) is a separate invented observatory
+scenario with Linear and two GitHub repositories, repeated `#7` identifiers,
+and a registered cross-repository dependency. It is native capture input:
+
+```sh
+just normalize examples/mixed-capture.json outputs/mixed-draft.json
+```
+
+The draft intentionally requires agent classification before validation/rendering.
+It is not a ready-to-render canonical example. Tests use this same capture and
+explicit synthetic interpretation to verify normalization and mixed navigation.
+
 Real snapshots and every data-bearing derivative (JSON, HTML, SVG, screenshots,
 logs) belong only in ignored `local/` and `outputs/` or outside the repository.
 Never run private inputs in public CI. Inspect staged paths and contents before
