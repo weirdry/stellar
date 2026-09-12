@@ -56,3 +56,18 @@ It reuses canonical source invariants; the development contract remains version 
 
 Final revision, clean-checkout reproduction and hosted CI outcomes are recorded
 in the PR handoff separately from these local results.
+
+## URL scheme diagnostics
+
+The optional residual from re-check is also corrected: GitHub `html_url` must
+start with `http://` or `https://`, matching the canonical URL constraint, before
+repository resolution. Other parseable schemes receive the field-level malformed
+URL diagnostic and HTTP(S) repair guidance on full records and relationship
+endpoints. This changes diagnostics for already rejected inputs.
+
+- `just ci`: **23 Node unit/CLI tests** passed. The existing URL regression now
+  covers `javascript:`, `data:` and `ftp:` inputs on records and endpoints, and
+  verifies that HTTP and HTTPS remain accepted. CLI failures preserve existing
+  output, create no new draft and do not echo source text.
+- `just browser-check`: **14 Chromium tests** passed. Viewer code, manual visual
+  inspection, live collection and skill installation were outside this follow-up.
