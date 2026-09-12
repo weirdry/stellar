@@ -113,21 +113,127 @@ test('normalization rejects contradictory identity, malformed references and fal
     c.sources[0].provider = 'jira';
   }, /No native normalizer/);
 });
-test('status mapping retains unknown closed reasons and never guesses a started state', () => {
+test('status mapping preserves native duplicate closure and keeps unknown reasons unknown', () => {
   const capture = mixedCapture();
   capture.records[0].data.statusType = 'triage';
   assert.deepEqual(normalizeCapture(capture).issues[0].status, {
     type: 'unknown',
     label: 'Investigating',
   });
-  for (const reason of [null, 'duplicate', 'new-future-reason']) {
+  for (const reason of [null, 'new-future-reason']) {
     capture.records[4].data.state_reason = reason;
     const status = normalizeCapture(capture).issues[4].status;
     assert.equal(status.type, 'unknown');
     assert.equal(status.label, reason ? 'closed · ' + reason : 'closed');
   }
-  capture.records[4].data.state_reason = 'completed';
-  assert.equal(normalizeCapture(capture).issues[4].status.type, 'completed');
+  for (const [reason, type] of [
+    ['completed', 'completed'],
+    ['not_planned', 'canceled'],
+    ['duplicate', 'duplicate'],
+  ]) {
+    capture.records[4].data.state_reason = reason;
+    assert.deepEqual(normalizeCapture(capture).issues[4].status, {
+      type,
+      label: 'closed · ' + reason,
+    });
+    capture.records[4].data.state = 'open';
+    assert.equal(normalizeCapture(capture).issues[4].status.type, 'unstarted');
+    capture.records[4].data.state = 'closed';
+  }
+});
+
+test('explicit native IDs cannot reuse another issue identifier, including unfetched endpoints', () => {
+  for (const reverse of [false, true]) {
+    rejected((c) => {
+      c.records[2].links.blockedBy[0].node_id = 'I_distinct_unfetched_issue';
+      if (reverse) c.records.reverse();
+    }, /conflicting/);
+    rejected((c) => {
+      c.records[0].data.relations.blocks[0].uuid = 'distinct-unfetched-uuid';
+      if (reverse) c.records.reverse();
+    }, /conflicting/);
+    rejected((c) => {
+      c.records[0].data.relations.relatedTo = [
+        { id: 'EXT-1', uuid: 'external-uuid-1' },
+        { id: 'EXT-1', uuid: 'external-uuid-2' },
+      ];
+      if (reverse) c.records[0].data.relations.relatedTo.reverse();
+    }, /conflicting/);
+  }
+});
+
+test('unfetched Linear UUID and identifier observations form one context regardless of order', () => {
+  const capture = mixedCapture();
+  capture.sources = capture.sources.slice(0, 1);
+  capture.records = capture.records.slice(0, 2);
+  for (const record of capture.records) {
+    record.data.relations = {
+      blocks: [],
+      blockedBy: [],
+      relatedTo: [],
+      duplicateOf: null,
+    };
+    delete record.data.parentId;
+  }
+  capture.records[0].data.relations.relatedTo = [{ id: 'EXT-1' }];
+  capture.records[0].links = {
+    children: [
+      { id: 'EXT-1', uuid: 'external-uuid-1', title: 'External child' },
+    ],
+  };
+  capture.records[1].data.parentId = 'external-uuid-1';
+  const before = structuredClone(capture);
+  const semantic = (map) => ({
+    issues: map.issues.toSorted((a, b) => a.id.localeCompare(b.id)),
+    relations: map.relations.toSorted((a, b) =>
+      JSON.stringify(a).localeCompare(JSON.stringify(b)),
+    ),
+  });
+  const forward = normalizeCapture(capture);
+  assert.deepEqual(capture, before);
+  capture.records.reverse();
+  assert.deepEqual(semantic(normalizeCapture(capture)), semantic(forward));
+  const context = forward.issues.filter((i) => i.scope === 'context');
+  assert.equal(context.length, 1);
+  const [external] = context;
+  assert.equal(external.nativeId, 'external-uuid-1');
+  assert.equal(external.identifier, 'EXT-1');
+  assert.equal(external.title, 'External child');
+  assert.equal(external.detail, 'unqueried');
+  assert.equal(external.status.type, 'unknown');
+  const [parent, child] = forward.issues;
+  assert.deepEqual(
+    forward.relations.filter((e) => e.kind === 'parent'),
+    [
+      { kind: 'parent', source: parent.id, target: external.id },
+      { kind: 'parent', source: external.id, target: child.id },
+    ],
+  );
+  assert.equal(forward.relations.length, 3);
+
+  // Alias-only and UUID-bearing observations in the same lookup also deduplicate.
+  const related = capture.records[1].data.relations.relatedTo;
+  related.push({ id: 'EXT-1', uuid: 'external-uuid-1' });
+  for (let order = 0; order < 2; order++) {
+    related.reverse();
+    assert.deepEqual(semantic(normalizeCapture(capture)), semantic(forward));
+  }
+});
+
+test('an observed Linear UUID also resolves full detail captured only by identifier', () => {
+  const capture = mixedCapture();
+  delete capture.records[1].data.uuid;
+  capture.records[0].links = {
+    children: [{ id: 'OBS-2', uuid: 'invented-linear-uuid-2' }],
+  };
+  for (const records of [capture.records, capture.records.toReversed()]) {
+    const map = normalizeCapture({ ...capture, records });
+    const child = map.issues.find((i) => i.identifier === 'OBS-2');
+    assert.equal(child.nativeId, 'invented-linear-uuid-2');
+    assert.equal(child.detail, 'full');
+    assert.equal(map.issues.length, 5);
+    assert.equal(map.relations.length, 3);
+  }
 });
 
 test('ambiguous native references and noncanonical repository namespaces are rejected', () => {
@@ -190,6 +296,11 @@ test('normalize CLI writes a private draft, protects captures and preserves earl
   const alias = join(dir, 'alias.json');
   await symlink(input, alias);
   assert.equal(run(alias).status, 1);
+  const conflict = mixedCapture();
+  conflict.records[2].links.blockedBy[0].node_id = 'I_distinct_unfetched_issue';
+  await writeFile(input, JSON.stringify(conflict));
+  assert.equal(run().status, 1);
+  assert.equal(await readFile(output, 'utf8'), before);
   await writeFile(input, '{"private-sensitive-title":');
   assert.equal(run().status, 1);
   assert.ok(!run().stderr.includes('private-sensitive-title'));

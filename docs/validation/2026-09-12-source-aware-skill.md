@@ -27,6 +27,28 @@ corrected in place. No previous user input was overwritten or migrated.
 
 Final test counts and revision are recorded in the PR's verification evidence.
 
+## Normalizer review corrections
+
+Synthetic regression checks now cover three corrected behaviors:
+
+- Different explicit native IDs cannot share a display identifier within one
+  source. Both Linear and GitHub conflicts are rejected even when the conflicting
+  endpoint has no detail record; reversing record order does not bypass rejection.
+- UUID-only and identifier-only Linear references resolve through all observed
+  native/identifier pairs before graph construction. Reversed records and reference
+  arrays produce the same issue identities, context metadata and relationships.
+  Full detail captured without a UUID also uses a UUID observed in an endpoint.
+- GitHub's explicit `closed/duplicate` reason maps to canonical `duplicate`, with
+  its original label preserved. Unknown reasons remain unknown, and `open` remains
+  unstarted. Both locale browser tests verify that the assigned duplicate appears
+  in the closed filter while canceled context stays outside assigned totals.
+
+After these corrections, `just ci` passed with 19 Node unit/CLI tests and
+`just browser-check` passed all 12 Chromium tests. These use invented captures;
+live source collection and the earlier private snapshot checks were not repeated
+for this follow-up. No viewer styling or layout changed. Hosted CI for the pushed
+revision is recorded separately in the PR.
+
 ## Independent explicit invocation
 
 An independent agent received only the installed skill entry, the invented mixed

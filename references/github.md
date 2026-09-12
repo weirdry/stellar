@@ -30,7 +30,8 @@ Preserve the full native endpoint objects, including `node_id`, `number`, and
 context details when available; do not recursively crawl unrelated work.
 
 GitHub's `open` alone does not prove work has started: normalize it to `unstarted`.
-`closed/completed` maps to completed; `closed/not_planned` to canceled. A closed
+`closed/completed` maps to completed, `closed/not_planned` to canceled, and
+`closed/duplicate` to duplicate, retaining the original state/reason label. A closed
 issue without a recognized reason remains unknown, with its original state
 label. Project board columns and labels are not silently substituted for status.
 This native reader does not derive related/duplicate edges from prose, mentions,
