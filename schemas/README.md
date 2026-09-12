@@ -154,10 +154,16 @@ CI must use independent synthetic work rather than renamed source data.
 [State](state.schema.json) reuses the canonical work-map contract and may contain
 a draft whose only map validation failures are missing assigned classifications.
 Its `memory` stores source identities, display identifiers, classifications,
-targets with independent origin, and last full title/body evidence. Taxonomy lives
+targets with independent origin, last full title/body evidence, and an optional
+`reviewReason` retained until an explicit classification resolves it. Taxonomy lives
 in `map.domains` and `map.categories` and retains groups used by absent decisions.
 `changes` describes new, returned, updated, not-observed and review-needed work.
 It is a snapshot comparison, not source activity history.
+`changes.review` is derived from current issues and their saved reasons, including
+context; absent identities retain reasons only in memory. A pending classification
+cannot appear in the current map, and an unclassified assigned issue must have a
+saved reason. State validation checks this consistency. Continuity accepts only
+HTTP(S) attachments; the standalone renderer still supports report-relative links.
 
 [Choices](choices.schema.json) contains optional domain/category upserts and issue
 updates selected by the current map's internal `issueId`. The command determines

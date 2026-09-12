@@ -80,6 +80,9 @@ Use `just revise STATE.json CHOICES.json NEW_RUN` for a user correction and
 protecting user choices. Each command writes a new private run directory; render
 its `work-map.json` and keep its `state.json` for the next run. See the
 [continuity workflow](references/continuity.md) for rules and choices examples.
+Pending review survives context/absence until an explicit classification. Web
+references are retained; report-relative references are rejected before a new run
+is written, since local reference bundling is not implemented.
 
 ## Verify
 

@@ -20,8 +20,9 @@ context, malformed state/choices, actor restrictions, and output preservation.
 The Chromium continuity case checks saved grouping alongside current completed
 status and verifies that absent remembered work does not enter HTML or search.
 
-- `just ci`: passed, including 31 Node tests and documentation, format and lint checks.
-- `just browser-check`: passed, 15 Chromium tests using synthetic maps.
+- At `10f91a3`, `just ci` passed, including 31 Node tests and documentation,
+  format and lint checks.
+- At `10f91a3`, `just browser-check` passed, 15 Chromium tests using synthetic maps.
 - The skill-creator quick validator accepted the updated skill.
 
 Clean-checkout and hosted CI evidence is recorded in the PR handoff.
@@ -49,3 +50,33 @@ repository Chromium verification is separate. Canonical documentation was being
 updated during the evaluation; the stale Target wording it identified was aligned
 before handoff. No live source collection, private report reuse, skill relinking,
 package publication or automatic discovery was performed in this follow-up.
+
+## Self-review corrections
+
+The self-review reproduced lost pending classification during repeated unqueried
+context observations, downgraded identity-review reasons on the next refresh,
+and broken relative document links after writing a new run.
+
+Saved `reviewReason` now survives repeated refresh, missing/context observations,
+changed local keys and text reverting to its previous value. Current summaries
+are derived from memory and checked by state validation. Only an explicit
+classification resolves the review; changing targets or taxonomy does not.
+
+Continuity rejects relative references at the input field before writing, with
+guidance to retain the original artifact and its colocated files. The standalone
+renderer remains able to render that original map. Web references survive
+remember, refresh, classify and revise. No reference files are copied or uploaded.
+
+`just ci` passed with 34 Node tests; `just browser-check` passed with 16 Chromium
+tests, including withheld context classification and the retained web link.
+The skill-creator quick validator also passed.
+
+The lead agent explicitly read the updated skill and exercised 16 root Just
+commands with fresh synthetic input in a separate directory. A pending context
+review survived repeated refreshes and was resolved only after current full
+detail was classified. The user's grouping/targets and current completed status
+were preserved. Pending assigned rendering and relative-reference continuity
+were refused as expected. The final map contained 4 assigned issues, 1 context
+issue, 3 relations and 5 remembered identities. This invocation established
+command behavior and static artifact evidence; repository Chromium checks were
+separate. Hosted results for the follow-up commit are recorded in the PR handoff.

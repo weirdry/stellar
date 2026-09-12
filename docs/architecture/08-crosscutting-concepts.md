@@ -106,6 +106,13 @@ across missing observations. [Continuity rules](../../references/continuity.md)
 define scope, unknown-detail behavior and the change summary. State is private
 and is never embedded automatically in HTML.
 
+An unresolved `reviewReason` stays with the source identity until classification
+is explicitly supplied. State validation prevents a pending classification from
+being published in the current map and verifies that the current review summary
+matches saved reasons. Neither missing detail nor a repeated snapshot clears an
+identity warning. Authored HTTP(S) reference links are remembered report metadata,
+not source facts; continuity refuses relative links before writing a new run.
+
 Work-map and state version 1 are unreleased. Existing user files remain untouched.
 Concrete distributed-consumer or durable-state evidence would be required before
 adding compatibility machinery; there is no migration for an intermediate shape.

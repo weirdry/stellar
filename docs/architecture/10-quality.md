@@ -37,6 +37,10 @@ evidence and lookup limitations belong in the dated validation record.
 
 Saved-choice tests cover user ownership, current facts, absent/reappearing issues,
 renamed local source keys, pending classification and new-run output protection.
+Repeated context/absence transitions and identity-review reasons have explicit
+regressions. CLI checks prove relative references fail before output while web
+references survive every continuity command; the browser checks pending context
+and the retained reference link.
 See [continuity tests](../../test/continuity.test.js) and the
 [dated validation](../validation/2026-09-13-classification-refresh.md).
 

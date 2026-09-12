@@ -7,6 +7,7 @@ import {
   rm,
   symlink,
   stat,
+  mkdir,
 } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -325,6 +326,232 @@ test('pending purpose review survives repeated refresh and temporary absence; un
   assert.equal(unknown.status.type, 'unknown');
   assert.equal(unknown.scope, 'context');
   assert.equal(unknown.classification.origin, 'user');
+});
+
+test('pending review survives context, absence, local key changes and reverted text until explicitly classified', () => {
+  const saved = initial(),
+    nativeId = saved.map.issues[3].nativeId,
+    changed = mixedCapture();
+  const issue = (state) =>
+    state.map.issues.find((i) => i.nativeId === nativeId);
+  const memory = (state) => state.memory.find((i) => i.nativeId === nativeId);
+  changed.records[3].data.body = 'A different invented research objective.';
+  const pending = refreshState(saved, changed);
+  const unqueried = structuredClone(changed);
+  unqueried.records.splice(3, 1);
+  let state = refreshState(refreshState(pending, unqueried), unqueried);
+  assert.equal(issue(state).detail, 'unqueried');
+  assert.equal(issue(state).classification, undefined);
+  assert.deepEqual(state.changes.review, [
+    {
+      issueId: issue(state).id,
+      reason: 'purpose-text-changed',
+    },
+  ]);
+  const absent = structuredClone(unqueried);
+  absent.records[2].links.blockedBy = [];
+  state = refreshState(state, absent);
+  assert.equal(issue(state), undefined);
+  assert.equal(memory(state).reviewReason, 'purpose-text-changed');
+  assert.deepEqual(state.changes.review, []);
+  const reverted = mixedCapture();
+  reverted.sources[2].id = 'delivery-new-key';
+  for (const record of reverted.records)
+    if (record.sourceId === 'github-delivery')
+      record.sourceId = 'delivery-new-key';
+  state = refreshState(state, reverted);
+  assert.notEqual(issue(state).id, saved.map.issues[3].id);
+  assert.equal(issue(state).classification, undefined);
+  assert.equal(state.changes.review[0].issueId, issue(state).id);
+  const invalid = structuredClone(state);
+  invalid.changes.review = [];
+  rejectAt(() => assertState(invalid), '/changes/review');
+  invalid.changes.review = structuredClone(state.changes.review);
+  invalid.map.issues.find((i) => i.nativeId === nativeId).classification =
+    structuredClone(saved.map.issues[3].classification);
+  rejectAt(() => assertState(invalid), '/map/issues/3/classification');
+  state = applyChoices(
+    state,
+    {
+      issues: [{ issueId: issue(state).id, targets: ['User target'] }],
+    },
+    'user',
+  );
+  assert.equal(memory(state).reviewReason, 'purpose-text-changed');
+  state = applyChoices(
+    state,
+    {
+      issues: [
+        {
+          issueId: issue(state).id,
+          classification: {
+            category: 'delivery',
+            rationale: 'Explicitly reconsidered current work',
+          },
+        },
+      ],
+    },
+    'agent',
+  );
+  assert.equal(memory(state).reviewReason, undefined);
+  assert.deepEqual(state.changes.review, []);
+  state = refreshState(state, reverted);
+  assert.equal(issue(state).classification.category, 'delivery');
+  assert.deepEqual(issue(state).targets, ['User target']);
+});
+
+test('identity uncertainty keeps its reason through refresh and absence until a classification resolves it', () => {
+  const saved = pin(initial(), 2),
+    capture = mixedCapture();
+  capture.records[2].data.node_id = 'I_new_identity';
+  let state = refreshState(saved, capture);
+  const id = state.map.issues[2].id;
+  const pending = (value) =>
+    assert.deepEqual(value.changes.review, [
+      {
+        issueId: id,
+        reason: 'identity-uncertain',
+      },
+    ]);
+  pending(state);
+  capture.records[2].data.body = 'Changed again before the identity review.';
+  state = refreshState(state, capture);
+  pending(state);
+  const absent = structuredClone(capture);
+  absent.records.splice(2, 1);
+  state = refreshState(state, absent);
+  assert.equal(
+    state.memory.find((i) => i.nativeId === 'I_new_identity').reviewReason,
+    'identity-uncertain',
+  );
+  capture.records[2].scope = 'context';
+  state = refreshState(state, capture);
+  pending(state);
+  capture.records[2].scope = 'assigned';
+  state = refreshState(state, capture);
+  pending(state);
+  state = applyChoices(
+    state,
+    { issues: [{ issueId: id, targets: [] }] },
+    'agent',
+  );
+  pending(state);
+  state = applyChoices(
+    state,
+    {
+      issues: [
+        {
+          issueId: id,
+          classification: {
+            category: 'control',
+            rationale: 'Reviewed as a distinct identity',
+          },
+        },
+      ],
+    },
+    'user',
+  );
+  assert.deepEqual(state.changes.review, []);
+  assert.equal(
+    state.memory.find((i) => i.nativeId === 'I_new_identity').reviewReason,
+    undefined,
+  );
+  assert.deepEqual(refreshState(state, capture).changes.review, []);
+  assert.deepEqual(
+    state.memory.find((i) => i.nativeId === saved.map.issues[2].nativeId),
+    saved.memory[2],
+  );
+});
+
+test('continuity refuses relative references before writing and carries web references through every command', async (t) => {
+  const dir = await mkdtemp(join(tmpdir(), 'stellar-reference-review-'));
+  t.after(() => rm(dir, { recursive: true, force: true }));
+  const cli = fileURLToPath(new URL('../bin/stellar.js', import.meta.url));
+  const run = (...args) =>
+    spawnSync(process.execPath, [cli, ...args], { cwd: dir, encoding: 'utf8' });
+  const map = mixedMap();
+  map.attachments = [
+    {
+      title: 'Context',
+      note: 'Authored document',
+      href: 'notes/private-probe-text.html',
+    },
+  ];
+  await mkdir(join(dir, 'notes'));
+  const notePath = join(dir, map.attachments[0].href);
+  const note = '<!doctype html><title>Invented reference</title>';
+  await writeFile(notePath, note);
+  const input = join(dir, 'map.json'),
+    capture = join(dir, 'capture.json'),
+    choices = join(dir, 'choices.json');
+  const bytes = JSON.stringify(map);
+  await writeFile(input, bytes);
+  await writeFile(capture, JSON.stringify(mixedCapture()));
+  await writeFile(
+    choices,
+    JSON.stringify({ issues: [{ issueId: map.issues[0].id, targets: [] }] }),
+  );
+  assert.equal(run('render', input, join(dir, 'original.html')).status, 0);
+  const originalHTML = await readFile(join(dir, 'original.html'));
+  const reject = async (args, output, path) => {
+    const result = run(...args, output);
+    assert.equal(result.status, 1, result.stdout);
+    const diagnostic = JSON.parse(result.stderr).diagnostics[0];
+    assert.equal(diagnostic.path, path);
+    assert.ok(diagnostic.fix.includes('HTTP(S)'));
+    assert.ok(!result.stderr.includes('private-probe-text'));
+    await assert.rejects(stat(output), { code: 'ENOENT' });
+  };
+  await reject(
+    ['remember', input],
+    join(dir, 'refused-remember'),
+    '/attachments/0/href',
+  );
+  const supplied = initial();
+  supplied.map.attachments = structuredClone(map.attachments);
+  const statePath = join(dir, 'supplied-state.json');
+  const stateBytes = JSON.stringify(supplied);
+  await writeFile(statePath, stateBytes);
+  for (const command of ['refresh', 'classify', 'revise'])
+    await reject(
+      [command, statePath, command === 'refresh' ? capture : choices],
+      join(dir, 'refused-' + command),
+      '/map/attachments/0/href',
+    );
+  assert.equal(await readFile(input, 'utf8'), bytes);
+  assert.equal(await readFile(statePath, 'utf8'), stateBytes);
+  assert.equal(await readFile(notePath, 'utf8'), note);
+  assert.deepEqual(await readFile(join(dir, 'original.html')), originalHTML);
+  const web = mixedMap();
+  web.attachments = [
+    {
+      title: 'Web context',
+      note: 'Authored document',
+      href: 'https://example.com/context.html',
+    },
+  ];
+  const webPath = join(dir, 'web.json');
+  await writeFile(webPath, JSON.stringify(web));
+  let last = join(dir, 'remembered');
+  assert.equal(run('remember', webPath, last).status, 0);
+  for (const command of ['refresh', 'classify', 'revise']) {
+    const next = join(dir, command);
+    const result = run(
+      command,
+      join(last, 'state.json'),
+      command === 'refresh' ? capture : choices,
+      next,
+    );
+    assert.equal(result.status, 0, result.stderr);
+    const current = JSON.parse(await readFile(join(next, 'work-map.json')));
+    assert.deepEqual(current.attachments, web.attachments);
+    last = next;
+  }
+  assert.equal(
+    run('render', join(last, 'work-map.json'), join(last, 'stellar.html'))
+      .status,
+    0,
+  );
 });
 
 test('state and choice validation reject contradictions with repair paths before writing', () => {
