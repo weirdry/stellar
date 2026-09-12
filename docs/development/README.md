@@ -41,6 +41,12 @@ format files, collect data, commit, or publish. No empty build or typecheck
 recipe is provided for plain JavaScript. Generation is an explicit product
 operation, not a compiler build or package release.
 
+`just render` writes generated HTML with owner-only permissions (`0600` on POSIX),
+including replacement outputs. This protects reports that embed private input.
+If sharing or serving an artifact, review its data and deliberately choose the
+necessary access permissions; the renderer does not publish it or grant access
+to other users.
+
 For optional visual evidence:
 
 ```sh
