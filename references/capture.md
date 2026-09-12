@@ -28,6 +28,10 @@ Each source declares:
   empty successful result. Explain context/detail limits in `notes`.
 - `notes`: concrete pagination, detail, relation and freshness limitations.
 
+Source declarations are validated before native records are interpreted. Duplicate
+source IDs, duplicate provider/namespace pairs, and invalid namespaces report the
+offending `sources` field, even when the capture has no records.
+
 Keep one full detail record per source-native issue. Deduplicate repeated pages
 and endpoint detail; assigned membership wins over context. Preserve conflicting
 source observations for investigation in local raw captures, then choose the
@@ -40,6 +44,13 @@ children in `links.children` as native reference/detail objects.
 
 GitHub records use REST fields `node_id`, `number`, `html_url`, `title`, `body`,
 `state`, `state_reason`, `assignees`, and `labels`. Exclude pull requests.
+When present, `assignees` and `labels` must be arrays, including empty arrays.
+Assignees must be user objects with nonblank `login` strings; labels may be
+nonblank strings or objects with nonblank `name` strings. Omitted metadata stays
+unavailable; null or malformed collections and elements are rejected at their
+capture path. Full records and endpoint references require a parseable, absolute
+`html_url` before repository resolution; a missing or malformed URL is reported
+at that field rather than as a repository mismatch.
 Save additional REST results as `links.parent` (issue or null), `links.children`,
 `links.blocks`, and `links.blockedBy` (arrays). Omit a lookup on failure and mark
 partial/unavailable coverage. Endpoint references must retain `node_id`, `number`

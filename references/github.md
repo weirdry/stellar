@@ -29,6 +29,13 @@ Preserve the full native endpoint objects, including `node_id`, `number`, and
 `html_url`. Register additional context repositories when needed. Fetch direct
 context details when available; do not recursively crawl unrelated work.
 
+Full records and relationship endpoints require a parseable, absolute `html_url`
+for repository resolution. Preserve `assignees` as an array of user objects with
+nonblank `login` strings and `labels` as an array of nonblank strings or objects
+with nonblank `name` strings. Empty arrays are valid; omit unavailable metadata.
+Null or malformed collections and elements produce a diagnostic at their capture
+path with a repair instruction.
+
 GitHub's `open` alone does not prove work has started: normalize it to `unstarted`.
 `closed/completed` maps to completed, `closed/not_planned` to canceled, and
 `closed/duplicate` to duplicate, retaining the original state/reason label. A closed
