@@ -113,6 +113,147 @@ test('normalization rejects contradictory identity, malformed references and fal
     c.sources[0].provider = 'jira';
   }, /No native normalizer/);
 });
+test('source invariants fail before native records are interpreted, including empty captures', () => {
+  for (const [modify, code, path] of [
+    [
+      (c) =>
+        c.sources.push({
+          ...c.sources[1],
+          id: c.sources[0].id,
+          namespace: 'github.com/example/another',
+        }),
+      'duplicate-id',
+      '/sources/3/id',
+    ],
+    [
+      (c) => {
+        c.sources[2].namespace = c.sources[1].namespace;
+      },
+      'duplicate-source',
+      '/sources/2/namespace',
+    ],
+    [
+      (c) => {
+        c.sources[1].namespace = 'GitHub.com/Example/Control';
+      },
+      'source-namespace',
+      '/sources/1/namespace',
+    ],
+  ]) {
+    for (const recordState of ['valid', 'invalid', 'empty']) {
+      const capture = mixedCapture();
+      modify(capture);
+      if (recordState === 'invalid') capture.records[0].data = {};
+      if (recordState === 'empty') capture.records = [];
+      const before = structuredClone(capture);
+      assert.throws(
+        () => normalizeCapture(capture),
+        (error) => {
+          assert.ok(
+            error.diagnostics.some(
+              (d) => d.code === code && d.path === path && d.fix,
+            ),
+          );
+          assert.ok(
+            error.diagnostics.every((d) => d.path.startsWith('/sources/')),
+          );
+          return true;
+        },
+      );
+      assert.deepEqual(capture, before);
+    }
+  }
+});
+test('GitHub metadata arrays and elements have actionable diagnostics while valid native forms are preserved', () => {
+  for (const field of ['assignees', 'labels']) {
+    const invalidElements = [
+      null,
+      42,
+      false,
+      [],
+      {},
+      { login: null, name: null },
+      { login: ' ', name: ' ' },
+    ];
+    invalidElements.push(field === 'assignees' ? 'private-probe-text' : ' ');
+    for (const [value, suffix] of [
+      ...['private-probe-text', null, 42, {}].map((value) => [value, '']),
+      ...invalidElements.map((value) => [[value], '/0']),
+    ]) {
+      const capture = mixedCapture();
+      capture.records[2].data[field] = value;
+      const before = structuredClone(capture);
+      assert.throws(
+        () => normalizeCapture(capture),
+        (error) => {
+          const [diagnostic] = error.diagnostics;
+          assert.equal(diagnostic.code, 'capture');
+          assert.equal(diagnostic.path, `/records/2/data/${field}${suffix}`);
+          assert.ok(diagnostic.fix);
+          assert.ok(
+            !JSON.stringify(error.diagnostics).includes('private-probe-text'),
+          );
+          return true;
+        },
+      );
+      assert.deepEqual(capture, before);
+    }
+  }
+  const capture = mixedCapture(),
+    raw = capture.records[2].data;
+  delete raw.assignees;
+  delete raw.labels;
+  let issue = normalizeCapture(capture).issues[2];
+  assert.equal(issue.assignee, null);
+  assert.equal(Object.hasOwn(issue, 'labels'), false);
+  raw.assignees = [];
+  raw.labels = [];
+  issue = normalizeCapture(capture).issues[2];
+  assert.equal(issue.assignee, null);
+  assert.deepEqual(issue.labels, []);
+  raw.assignees = [{ login: 'invented-ada' }, { login: 'invented-ren' }];
+  raw.labels = ['Invented tooling', { name: 'Invented research' }];
+  issue = normalizeCapture(capture).issues[2];
+  assert.equal(issue.assignee, 'invented-ada, invented-ren');
+  assert.deepEqual(issue.labels, ['Invented tooling', 'Invented research']);
+});
+test('missing or malformed GitHub URLs identify the field before repository resolution', () => {
+  for (const endpoint of [false, true]) {
+    for (const value of [
+      undefined,
+      null,
+      '',
+      ' ',
+      7,
+      {},
+      'private-probe-text',
+    ]) {
+      const capture = mixedCapture();
+      const raw = endpoint
+        ? capture.records[2].links.blockedBy[0]
+        : capture.records[2].data;
+      if (value === undefined) delete raw.html_url;
+      else raw.html_url = value;
+      assert.throws(
+        () => normalizeCapture(capture),
+        (error) => {
+          const [diagnostic] = error.diagnostics;
+          assert.equal(diagnostic.code, 'capture');
+          assert.equal(
+            diagnostic.path,
+            `/records/2/${endpoint ? 'links/blockedBy/0' : 'data'}/html_url`,
+          );
+          assert.match(diagnostic.message, /html_url is missing or malformed/);
+          assert.ok(diagnostic.fix);
+          assert.ok(
+            !JSON.stringify(error.diagnostics).includes('private-probe-text'),
+          );
+          return true;
+        },
+      );
+    }
+  }
+});
 test('status mapping preserves native duplicate closure and keeps unknown reasons unknown', () => {
   const capture = mixedCapture();
   capture.records[0].data.statusType = 'triage';
@@ -411,6 +552,60 @@ test('normalize CLI writes a private draft, protects captures and preserves earl
   await assert.rejects(readFile(unwritten), { code: 'ENOENT' });
   assert.equal(run().status, 1);
   assert.equal(await readFile(output, 'utf8'), before);
+  for (const [modify, path] of [
+    [
+      (c) =>
+        c.sources.push({
+          ...c.sources[1],
+          id: c.sources[0].id,
+          namespace: 'github.com/example/another',
+        }),
+      '/sources/3/id',
+    ],
+    [
+      (c) => {
+        c.sources[2].namespace = c.sources[1].namespace;
+      },
+      '/sources/2/namespace',
+    ],
+    [
+      (c) => {
+        c.records[2].data.assignees = 'private-probe-text';
+      },
+      '/records/2/data/assignees',
+    ],
+    [
+      (c) => {
+        c.records[2].data.labels = [null];
+      },
+      '/records/2/data/labels/0',
+    ],
+    [
+      (c) => {
+        delete c.records[2].data.html_url;
+      },
+      '/records/2/data/html_url',
+    ],
+    [
+      (c) => {
+        delete c.records[2].links.blockedBy[0].html_url;
+      },
+      '/records/2/links/blockedBy/0/html_url',
+    ],
+  ]) {
+    const capture = mixedCapture();
+    modify(capture);
+    await writeFile(input, JSON.stringify(capture));
+    for (const target of [output, unwritten]) {
+      const failure = run(target);
+      assert.equal(failure.status, 1);
+      const diagnostics = JSON.parse(failure.stderr).diagnostics;
+      assert.ok(diagnostics.some((d) => d.path === path && d.fix));
+      assert.ok(!failure.stderr.includes('private-probe-text'));
+    }
+    assert.equal(await readFile(output, 'utf8'), before);
+    await assert.rejects(readFile(unwritten), { code: 'ENOENT' });
+  }
   await writeFile(input, '{"private-sensitive-title":');
   assert.equal(run().status, 1);
   assert.ok(!run().stderr.includes('private-sensitive-title'));

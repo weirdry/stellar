@@ -42,7 +42,9 @@ State: **As-built**
 The host follows [the skill](../../SKILL.md), exhausts the requested source query
 or records partial coverage, retrieves descriptions and supported relations, and
 writes native [capture JSON](../../references/capture.md). `just normalize`
-first indexes source-qualified native/identifier pairs from all detail and
+first validates shared metadata and source declarations with the canonical
+validator, before indexing sources or interpreting native records. It then
+indexes source-qualified native/identifier pairs from all detail and
 relationship observations. It rejects conflicting explicit native IDs, then
 resolves aliases before emitting full issues, unknown context and deduplicated
 relations in their original direction. An unfetched context referenced by UUID
@@ -51,6 +53,9 @@ Missing classifications are expected in the draft; other semantic failures stop
 before output is written. Normalization diagnostics point back to captured fields
 and relationship observations, including the native field supplying selected
 context metadata and a parent observation within a cycle.
+Missing or malformed GitHub URLs fail at `html_url` before repository resolution;
+malformed assignee/label arrays and elements identify the corresponding capture
+field with repair guidance instead of throwing an unstructured JavaScript error.
 The agent edits only taxonomy/classification/targets,
 then invokes validation and rendering. Normalization shares the renderer's atomic
 writer and input-alias protection. Source-specific freshness and coverage remain

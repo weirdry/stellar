@@ -32,3 +32,27 @@ and hosted CI outcomes are recorded in the PR handoff. Earlier source-collection
 invocation checks were not repeated for these fixes. No source issues or existing
 user reports were changed. Publication, synchronization and saved-edit behavior
 remain outside this change.
+
+## Additional capture validation findings
+
+A subsequent independent review identified three more diagnostic failures:
+source declarations could be masked by record errors, malformed GitHub metadata
+could throw a bare TypeError, and a missing GitHub `html_url` was reported as a
+repository mismatch. The normalizer now validates shared metadata before source
+indexing, guards supplied assignee/label arrays and elements, and checks required
+URLs on full records and relationship endpoints before repository resolution.
+It reuses canonical source invariants; the development contract remains version 1.
+
+- `just ci`: **23 Node unit/CLI tests** passed, along with documentation,
+  formatting and lint. Regressions cover source errors with otherwise valid,
+  malformed and empty record sets; missing and malformed URLs; malformed metadata
+  collections/elements; and preservation of supported native metadata forms.
+- CLI reproductions for all three findings return capture paths and repair
+  guidance without echoing source text. Failures leave an existing output intact
+  and do not create a new draft.
+- `just browser-check`: **14 Chromium tests** passed on invented inputs. No
+  viewer code or layout changed in this follow-up; no new visual inspection or
+  live source collection was performed.
+
+Final revision, clean-checkout reproduction and hosted CI outcomes are recorded
+in the PR handoff separately from these local results.
