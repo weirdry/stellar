@@ -1,0 +1,214 @@
+{
+  "owner": "Sora",
+  "locale": "en",
+  "view": {
+    "initialScope": "all",
+    "exportName": "river-stellar"
+  },
+  "sources": [
+    {
+      "id": "river-station",
+      "provider": "linear",
+      "name": "Linear",
+      "namespace": "river-station",
+      "scope": "Seven invented assigned issues and their supplied direct references. Offline synthetic input.",
+      "snapshotAt": "2026-09-15T00:00:00Z",
+      "coverage": {
+        "issues": "complete",
+        "relations": "partial"
+      },
+      "notes": "Wholly invented. Incoming duplicate lookup and external wording review detail are unavailable. No live collection was performed."
+    }
+  ],
+  "records": [
+    {
+      "sourceId": "river-station",
+      "scope": "assigned",
+      "data": {
+        "id": "RIV-101",
+        "uuid": "invented-river-101",
+        "title": "Compare river-height sensor drift",
+        "description": "Measure seasonal drift against surveyed reference heights. Deliver a calibration study and error estimates; no production alerting implementation.",
+        "status": "Investigating",
+        "statusType": "started",
+        "project": "River station renewal",
+        "labels": ["station-tools"],
+        "url": "https://linear.app/river-station/issue/RIV-101",
+        "relations": {
+          "blocks": [],
+          "blockedBy": [],
+          "relatedTo": [],
+          "duplicateOf": null
+        }
+      },
+      "links": {
+        "children": []
+      }
+    },
+    {
+      "sourceId": "river-station",
+      "scope": "assigned",
+      "data": {
+        "id": "RIV-102",
+        "uuid": "invented-river-102",
+        "title": "Boreal: replay readings for calibration experiments",
+        "description": "Build the Boreal replay harness so sensor researchers can repeat drift experiments against archived readings. Deliver reusable experiment inputs and replay controls. Boreal does not evaluate public bulletin wording.",
+        "status": "Ready",
+        "statusType": "unstarted",
+        "project": "River station renewal",
+        "labels": ["station-tools"],
+        "url": "https://linear.app/river-station/issue/RIV-102",
+        "relations": {
+          "blocks": [],
+          "blockedBy": [],
+          "relatedTo": [
+            {
+              "id": "RIV-101",
+              "uuid": "invented-river-101"
+            }
+          ],
+          "duplicateOf": null
+        }
+      },
+      "links": {
+        "children": []
+      }
+    },
+    {
+      "sourceId": "river-station",
+      "scope": "assigned",
+      "data": {
+        "id": "RIV-103",
+        "uuid": "invented-river-103",
+        "title": "Kestrel: evaluate bulletin drafts",
+        "description": "Build the Kestrel evaluation harness to compare the readability of public river bulletins. Deliver language review datasets and scoring reports. It does not replay sensor readings or calibrate instruments.",
+        "status": "Ready",
+        "statusType": "unstarted",
+        "project": "River station renewal",
+        "labels": ["station-tools"],
+        "url": "https://linear.app/river-station/issue/RIV-103",
+        "relations": {
+          "blocks": [],
+          "blockedBy": [],
+          "relatedTo": [],
+          "duplicateOf": null
+        }
+      },
+      "links": {
+        "children": []
+      }
+    },
+    {
+      "sourceId": "river-station",
+      "scope": "assigned",
+      "data": {
+        "id": "RIV-104",
+        "uuid": "invented-river-104",
+        "title": "Calculate daily river-height aggregates",
+        "description": "Implement deterministic aggregation of observed heights into daily minimum, maximum and quality flags. Publish validated numerical records for downstream readers.",
+        "status": "Ready",
+        "statusType": "unstarted",
+        "project": "River station renewal",
+        "labels": ["station-tools"],
+        "url": "https://linear.app/river-station/issue/RIV-104",
+        "relations": {
+          "blocks": [
+            {
+              "id": "RIV-105",
+              "uuid": "invented-river-105"
+            }
+          ],
+          "blockedBy": [],
+          "relatedTo": [],
+          "duplicateOf": null
+        }
+      },
+      "links": {
+        "children": []
+      }
+    },
+    {
+      "sourceId": "river-station",
+      "scope": "assigned",
+      "data": {
+        "id": "RIV-105",
+        "uuid": "invented-river-105",
+        "title": "Explain published river observations",
+        "description": "Produce multilingual public bulletins from existing validated aggregates. Explain the supplied measurements and uncertainty. Do not recompute heights, quality flags or alert thresholds; those belong to the aggregate producer.",
+        "status": "Ready",
+        "statusType": "unstarted",
+        "project": "River station renewal",
+        "labels": ["station-tools"],
+        "url": "https://linear.app/river-station/issue/RIV-105",
+        "relations": {
+          "blocks": [],
+          "blockedBy": [
+            {
+              "id": "RIV-104",
+              "uuid": "invented-river-104"
+            }
+          ],
+          "relatedTo": [
+            {
+              "id": "RIV-108",
+              "uuid": "invented-river-108",
+              "title": "External wording review"
+            }
+          ],
+          "duplicateOf": null
+        }
+      },
+      "links": {
+        "children": []
+      }
+    },
+    {
+      "sourceId": "river-station",
+      "scope": "assigned",
+      "data": {
+        "id": "RIV-106",
+        "uuid": "invented-river-106",
+        "title": "Repair Boreal deployment cache",
+        "description": "Restore repeatable build and deployment outputs for Boreal. This is delivery maintenance; changing calibration methods and experiment outcomes is excluded.",
+        "status": "Ready",
+        "statusType": "unstarted",
+        "project": "River station renewal",
+        "labels": ["station-tools"],
+        "url": "https://linear.app/river-station/issue/RIV-106",
+        "relations": {
+          "blocks": [],
+          "blockedBy": [],
+          "relatedTo": [],
+          "duplicateOf": null
+        }
+      },
+      "links": {
+        "children": []
+      }
+    },
+    {
+      "sourceId": "river-station",
+      "scope": "assigned",
+      "data": {
+        "id": "RIV-107",
+        "uuid": "invented-river-107",
+        "title": "Rotate Kestrel deployment credentials",
+        "description": "Rotate the CI deployment credential and verify scheduled rotation for Kestrel. This changes delivery access, not bulletin evaluation or language quality.",
+        "status": "Ready",
+        "statusType": "unstarted",
+        "project": "River station renewal",
+        "labels": ["station-tools"],
+        "url": "https://linear.app/river-station/issue/RIV-107",
+        "relations": {
+          "blocks": [],
+          "blockedBy": [],
+          "relatedTo": [],
+          "duplicateOf": null
+        }
+      },
+      "links": {
+        "children": []
+      }
+    }
+  ]
+}

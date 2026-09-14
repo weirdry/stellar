@@ -39,6 +39,29 @@ research tracks.” A weak rationale is circular: “This is tooling.” Categor
 `basis` describes the inclusion rule; domain `description` explains the broader
 area. Source issue titles and descriptions remain literal source facts.
 
+## Review membership before delivery
+
+Read each category's `basis` against its members, including classified context.
+Check the work's own deliverable, the tool or research line it changes, and any
+explicit exclusions. A repeated word such as "harness" does not establish one
+tool lineage. Consuming a calculation is different from implementing that
+calculation; a report writer must not be justified as a calculation engine when
+its body explicitly excludes that work.
+
+For example, an archive-indexing harness and a camera-calibration harness may
+share an implementation technique while serving different outcomes. A document
+that explains existing measurements does not produce those measurements. These
+are decision tests, not mandatory category names or a fixed split: a broader
+group is valid when its stated basis accurately includes all members and remains
+useful to navigate.
+
+When a member contradicts the basis, move the agent-classified issue or revise
+the group boundaries and review the affected members again. Keep the resulting
+reason in `rationale` and the inclusion rule in `basis`; a separate scoring
+system or hidden reasoning transcript is unnecessary. Respect explicit user
+grouping and disclose a conflict instead of silently replacing it.
+Structural validation cannot establish semantic grouping quality.
+
 If the evidence is insufficient, keep an explicit category such as “Purpose to
 clarify” with a factual rationale explaining what is missing. Do not invent an
 objective to avoid uncertainty. Unqueried context can stay unclassified and never

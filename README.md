@@ -86,6 +86,21 @@ is written, since local reference bundling is not implemented.
 
 ## Verify
 
+For a map built from a supported native capture, check final artifact consistency:
+
+```sh
+just verify-run CAPTURE.json MAP.json REPORT.html
+just verify-run CAPTURE.json MAP.json REPORT.html STATE.json
+```
+
+Choose the invocation with state when one exists. The read-only command compares
+normalized source facts, HTML-embedded data, the current bundled renderer and
+the optional saved map. It does not establish source completeness, semantic
+classification quality or visual acceptance. See [run evidence](references/runs.md)
+for preserving inputs, collection responses and verification results together.
+
+Repository quality gates remain separate:
+
 ```sh
 just ci
 just browser-install
@@ -108,17 +123,17 @@ passing test nor a screenshot alone establishes visual acceptance.
 
 ## Repository boundaries
 
-| Path                                   | Responsibility                                               |
-| -------------------------------------- | ------------------------------------------------------------ |
-| `bin/`, `lib/`                         | Native capture normalization, validation and HTML generation |
-| `schemas/`                             | Authoritative input contract and semantic rules              |
-| `assets/viewer/`                       | Fixed HTML/CSS/JavaScript/SVG viewer                         |
-| `examples/`, `test/`                   | Entirely synthetic inputs and tests                          |
-| `SKILL.md`, `references/`              | Host collection, classification and repair workflow          |
-| `docs/`                                | Canonical architecture, decisions, and dated evidence        |
-| `scripts/`, `justfile`, tool manifests | Repository-owned development tooling                         |
-| `.githooks/`, `.github/`               | Contribution checks and hosted CI                            |
-| `local/`, `outputs/`                   | Ignored private inputs and generated artifacts               |
+| Path                                   | Responsibility                                                       |
+| -------------------------------------- | -------------------------------------------------------------------- |
+| `bin/`, `lib/`                         | Native normalization, validation, rendering and artifact consistency |
+| `schemas/`                             | Authoritative input contract and semantic rules                      |
+| `assets/viewer/`                       | Fixed HTML/CSS/JavaScript/SVG viewer                                 |
+| `examples/`, `test/`                   | Entirely synthetic inputs and tests                                  |
+| `SKILL.md`, `references/`              | Host collection, classification and repair workflow                  |
+| `docs/`                                | Canonical architecture, decisions, and dated evidence                |
+| `scripts/`, `justfile`, tool manifests | Repository-owned development tooling                                 |
+| `.githooks/`, `.github/`               | Contribution checks and hosted CI                                    |
+| `local/`, `outputs/`                   | Ignored private inputs and generated artifacts                       |
 
 Source hosting is public under `weirdry/stellar`. Follow the local contribution
 policy: integration through `dev`, review branches for substantial work, and

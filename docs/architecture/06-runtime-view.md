@@ -21,6 +21,30 @@ State: **As-built**
 and [browser tests](../../test/browser/viewer.test.js) own this behavior.
 The renderer does not modify input files or copy referenced attachments.
 
+## Verify supplied artifacts
+
+`verify-run CAPTURE MAP HTML [STATE]` normalizes the capture, validates the final
+map and optional state, and compares source declarations, owner, issue facts and
+registered edges. Source and issue array ordering is ignored. Related edges are
+undirected; other edges retain direction. Interpretation fields and generated
+unknown-status labels are excluded from source-fact comparison. Locale, view,
+taxonomy and document references are outside the capture-fact comparison, but
+remain part of the complete embedded-map and rendered-output checks.
+
+The verifier parses exactly one bundled JSON data slot without executing HTML,
+compares its data with the final map, and reproduces the current checkout's HTML
+in memory for an exact output comparison. Optional saved state must validate and
+contain the same final map. A different renderer revision may produce a mismatch;
+verification does not rewrite old artifacts to resolve it.
+
+The command reads files and prints JSON only. Mismatches report input roles and
+JSON pointers; input-read failures omit raw filesystem paths. It performs no
+source calls, browser actions or artifact writes. Source collection, semantic
+classification, visual interaction and preservation relative to an earlier
+state remain explicitly unverified by this command. See
+[verify.js](../../lib/verify.js), [tests](../../test/verify.test.js), and
+[run evidence](../../references/runs.md).
+
 ## Browser exploration
 
 Status filters count assigned issues only. Domain/category selection expands

@@ -27,6 +27,14 @@ The draft intentionally requires agent classification before validation/renderin
 It is not a ready-to-render canonical example. Tests use this same capture and
 explicit synthetic interpretation to verify normalization and mixed navigation.
 
+[purpose-capture.json](purpose-capture.json) is an independently invented river
+station input for skill exercises. It contains different harness purposes,
+numerical production and explanation work, delivery maintenance across tools,
+and unqueried context. Ask the skill to create a map from this capture without
+giving it an expected taxonomy. Review the resulting inclusion bases against
+each issue's outputs and exclusions; category names or counts are not fixed
+answers. The synthetic capture itself requires classification before rendering.
+
 Real snapshots and every data-bearing derivative (JSON, HTML, SVG, screenshots,
 logs) belong only in ignored `local/` and `outputs/` or outside the repository.
 Never run private inputs in public CI. Inspect staged paths and contents before
