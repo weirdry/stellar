@@ -110,6 +110,15 @@ choice. Do not infer deletion or a second real issue from the two stored entries
 or edit/prune state to hide the limitation. A different owner is rejected; use
 a separate state for another person.
 
+Do not suppress an accessible current lookup or discard an observed native ID
+to avoid this review. A native/identifier pair in an authoritative source response
+is evidence even when the issue is not in the assigned set; a URL or UUID merely
+mentioned in prose is not the same evidence. Follow the source guide's bounded
+context scope, and distinguish a lookup outside that scope, a failed lookup, and
+an unresolved correspondence with saved identity. Describe the actual reason
+for missing detail. Identity uncertainty does not authorize state rebinding or
+pruning, nor does it make a current source fact unavailable.
+
 Fresh normalization alone supplies source facts, statuses, scope and relations.
 Unknown endpoints stay unknown context. Missing issues stay in memory and are
 absent from the current map; even complete query coverage is not proof of deletion
@@ -138,6 +147,16 @@ remain as observed. Empty strings and other actual text remain distinct.
 Unqueried observations do not replace full-text evidence. Pending assigned
 classifications block rendering. This is a text-change heuristic, not a semantic
 judgment by the runner.
+
+Compare previous and current full text before accepting a purpose change. Source
+serialization may add Markdown escapes or replace an attachment's signed URL
+without changing the work's intended outcome. Confirm that the particular diff
+is representational, including any code, link destination and query semantics;
+do not blanket-unescape text or strip URL parameters. If the purpose still fits,
+explicitly reapprove the existing agent classification through `classify` with
+an evidence-grounded rationale. Keep both observations literal. This review does
+not change the runner's conservative text comparison or allow an agent to
+overwrite user choices.
 
 An unqueried context may retain a classification from an earlier observation.
 When remembered full-text evidence exists, refresh sets the interpretation

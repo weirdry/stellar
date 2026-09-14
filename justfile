@@ -39,6 +39,10 @@ browser-check:
 validate input:
     mise exec --locked -- node bin/stellar.js validate {{ quote(input) }}
 
+# Read-only capture/map/HTML consistency; saved state is optional.
+verify-run capture map html state="":
+    mise exec --locked -- node bin/stellar.js verify-run {{ quote(capture) }} {{ quote(map) }} {{ quote(html) }} {{ if state == "" { "" } else { quote(state) } }}
+
 normalize input output:
     mise exec --locked -- node bin/stellar.js normalize {{ quote(input) }} {{ quote(output) }}
 

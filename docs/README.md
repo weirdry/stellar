@@ -11,6 +11,7 @@ This is the repository-local entry point for Stellar's engineering knowledge.
 | Skill authoring and capture workflow          | [Skill entry](../SKILL.md), [capture guide](../references/capture.md)                              |
 | Work-map input shape                          | [Work-map schema and semantic contract](../schemas/README.md)                                      |
 | Saved choices and requested refresh           | [Continuity workflow](../references/continuity.md), [state contract](../schemas/state.schema.json) |
+| Local run evidence and artifact consistency   | [Run guide](../references/runs.md), [verifier](../lib/verify.js)                                   |
 | Fixed UI language and owner-derived naming    | [Bundled viewer and locale catalogs](../assets/viewer/README.md)                                   |
 | Original issue facts                          | Source snapshot and source system; neither classification nor prose rewrites them                  |
 | Classification decisions                      | Work-map rationale and origin; private state retains classification and target ownership           |

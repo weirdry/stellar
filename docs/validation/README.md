@@ -4,6 +4,8 @@ Dated records identify the source or artifact, commands, observed result, and
 untested scope. They support the architecture without silently changing its
 meaning.
 
+- [2026-09-15 run consistency and skill decision review](2026-09-15-run-verification.md)
+
 - [2026-09-13 classification continuity and refresh](2026-09-13-classification-refresh.md)
 - [2026-09-13 source review follow-up](2026-09-13-source-review-fixes.md)
 - [2026-09-12 source-aware skill](2026-09-12-source-aware-skill.md)

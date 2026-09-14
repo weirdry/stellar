@@ -28,6 +28,11 @@ guides. The host collects native records and records lookup coverage. The CLI
 normalizes them into an unclassified work-map draft. The agent adds purpose
 classification; the existing validator/renderer owns the remaining execution.
 Provider namespaces and source-native identities separate repeated issue numbers.
+The agent reviews group membership against actual outputs and exclusions before
+delivery. [Run guidance](../../references/runs.md) keeps collection evidence and
+selected inputs locally inspectable across hosts. The read-only
+[verifier](../../lib/verify.js) compares supplied artifacts, keeping structural
+consistency separate from the agent's semantic judgment and source access.
 The viewer derives source labels and coverage from input. See
 [ADR-0004](../decisions/0004-bundle-a-source-aware-agent-skill.md).
 
