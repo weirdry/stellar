@@ -37,6 +37,28 @@ and endpoint detail; assigned membership wins over context. Preserve conflicting
 source observations for investigation in local raw captures, then choose the
 verified detail record deliberately. The normalizer rejects duplicate records.
 
+## Carry obtained endpoint detail into records
+
+`links` records topology. The normalizer reads issue descriptions and statuses
+only from `records[].data`; a links-only endpoint becomes unqueried context even
+if that object contains a body or status. Before normalization, also place an
+already-obtained complete native issue object in a `context` record when it is
+outside the requested set. Reuse the object mechanically, retain the relationship
+in `links`, resolve its actual source, and deduplicate against existing records
+by source-native identity. An existing assigned record keeps assigned scope.
+No extra detail request is needed merely to perform this transfer.
+
+Use this path only when the source response is known to provide complete native
+issue detail, including an untruncated description or an observed empty/null
+body. The presence of a body/status field or acceptance by the schema alone does
+not prove completeness. Identity/title-only references and truncated summaries
+stay references; retain their obtained fields in the capture/raw evidence and
+fetch detail only when needed. Do not invent a body or promote an incomplete
+reference to claim full detail. Record lookup limits and observation provenance
+in source notes and the collection account.
+
+## Provider records and normalization
+
 Linear records use the connector's `id` (identifier), optional `uuid`, `title`,
 `description`, `status`, `statusType`, `parentId`, and `relations` with `blocks`,
 `blockedBy`, `relatedTo`, and nullable `duplicateOf`. Save separately queried

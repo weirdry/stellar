@@ -65,9 +65,13 @@ Concatenating every block's chunks reproduces the original string, including
 whitespace and code. A large unheaded paragraph is still fully accessible.
 
 `search-issue` is case-sensitive literal search, not regex or semantic search.
-It returns 20 matches per page; pass a final offset to continue. Each match has
-a block and an offset usable by `read-issue`. A query reflects the agent's current
-hypothesis, not a complete filter for purpose or exclusions in other wording.
+It searches the complete original body, including text across heading and
+paragraph boundaries, and returns 20 non-overlapping matches per page; pass a
+final offset to continue. Each match has a block and an offset locating its
+start, usable by `read-issue`. For a match spanning blocks, read the following
+blocks to obtain the remainder and surrounding context. A query reflects the
+agent's current hypothesis, not a complete filter for purpose or exclusions in
+other wording.
 
 These are bounded output pages, not token guarantees or limits on the evidence
 that may be read. Relevance and stopping remain agent judgments. The metadata

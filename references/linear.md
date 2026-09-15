@@ -23,12 +23,19 @@ Linear connector's issue JSON, not arbitrary GraphQL response envelopes.
 4. Query children with paginated `list_issues(parentId: issue.id)` for each
    in-scope issue, without an assignee filter. `get_issue` does not establish that
    all children were found. Put them in that record's `links.children`.
-5. Use available endpoint metadata to establish status and context; fetch direct
-   detail when needed to explain or classify it. Preserve any description that
+5. Use available endpoint metadata to identify context; its observed complete
+   detail supplies map status and classification evidence. Fetch direct detail
+   when needed beyond those observations. Preserve any description that
    is returned, even if the model reads only an excerpt. Mark
    these records `context` unless they were already in the requested set. A
    failed endpoint fetch may remain an unqueried placeholder; explain this in
    source notes. Do not recursively expand the entire workspace.
+
+Apply [the endpoint-to-record rule](capture.md#carry-obtained-endpoint-detail-into-records)
+to complete issue detail already returned by a child/relationship lookup. Keep
+the original relation and reuse that object as one deduplicated context record
+before normalization. Incomplete endpoint metadata stays a reference, not a
+claim of full detail or an observed source status in the map.
 
 Follow [response retention](runs.md#prepare-and-retain-evidence) before querying.
 The selected issue count does not bound the number or size of direct endpoints.

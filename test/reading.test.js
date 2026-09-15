@@ -109,6 +109,138 @@ test('index and search disclose bounded pages; late exclusions remain reachable 
   assert.equal(inspectMap(map, issue.id, 40).items.length, 5);
 });
 
+test('literal search crosses body blocks with exact Unicode locations and CLI pagination', async (t) => {
+  const map = mixedMap();
+  const issue = map.issues[0];
+  issue.description =
+    '# 🪐 Limits\r\nDo not [re]compute.*\r\n\r\n'.repeat(45) +
+    'Only explain.\n\nNever recompute.';
+  const query = 'Limits\r\nDo not [re]compute.*';
+  let found = 0;
+  let offset = 0;
+  do {
+    const result = searchIssue(map, issue.id, query, offset);
+    assert.equal(result.total, 45);
+    assert.ok(result.items.length <= 20);
+    for (const match of result.items) {
+      const excerpt = readIssue(map, issue.id, match.block, match.offset);
+      assert.equal(
+        Array.from(issue.description)
+          .slice(excerpt.start, excerpt.start + Array.from(query).length)
+          .join(''),
+        query,
+      );
+      assert.ok(match.preview.startsWith(query));
+      assert.equal(excerpt.text, 'Limits\r\n');
+      assert.match(
+        readIssue(map, issue.id, match.block + 1).text,
+        /^Do not \[re\]compute\.\*/,
+      );
+      found++;
+    }
+    offset = result.nextOffset;
+  } while (offset !== null);
+  assert.equal(found, 45);
+  const paragraph = searchIssue(map, issue.id, 'explain.\n\nNever');
+  assert.equal(paragraph.total, 1);
+  const at = paragraph.items[0];
+  assert.equal(
+    readIssue(map, issue.id, at.block, at.offset).text,
+    'explain.\n\n',
+  );
+  assert.equal(searchIssue(map, issue.id, 'limits\r\nDo not').total, 0);
+
+  const dir = await directory(t);
+  const path = join(dir, 'map.json');
+  await writeFile(path, JSON.stringify(map));
+  const result = run('search-issue', path, issue.id, query, '40');
+  assert.equal(result.status, 0, result.stderr);
+  const page = JSON.parse(result.stdout);
+  assert.equal(page.total, 45);
+  assert.equal(page.items.length, 5);
+  assert.equal(page.nextOffset, null);
+
+  // Source strings may contain lone surrogates, but an astral character cannot
+  // be addressed halfway through a code point by the read command.
+  issue.description = '🪐A\ud800B\ude90C';
+  const lone = searchIssue(map, issue.id, '\ude90');
+  assert.equal(lone.total, 1);
+  assert.equal(lone.items[0].offset, 4);
+  assert.equal(
+    readIssue(map, issue.id, 0, lone.items[0].offset).text,
+    '\ude90C',
+  );
+});
+
+test('reusing complete endpoint objects as context records makes their facts readable without promoting references', () => {
+  for (const provider of ['linear', 'github']) {
+    const capture = mixedCapture();
+    const github = provider === 'github';
+    const assigned = capture.records[github ? 2 : 0];
+    const detail = structuredClone(capture.records[github ? 3 : 1].data);
+    const sourceId = capture.records[github ? 3 : 1].sourceId;
+    const body =
+      'Maintain deployment credentials; do not change measurement logic.';
+    if (github) {
+      detail.body = body;
+      detail.state = 'closed';
+      detail.state_reason = 'completed';
+      assigned.links = {
+        blockedBy: [detail],
+        children: [
+          detail,
+          {
+            node_id: 'I_unqueried',
+            number: 42,
+            html_url: 'https://github.com/example/delivery/issues/42',
+            title: 'Reference without detail',
+          },
+        ],
+      };
+    } else {
+      detail.description = body;
+      detail.status = 'Finished';
+      detail.statusType = 'completed';
+      delete detail.parentId;
+      detail.relations = {};
+      assigned.data.relations = { blocks: [detail], relatedTo: [detail] };
+      assigned.links = {
+        children: [{ id: 'OBS-42', title: 'Reference without detail' }],
+      };
+    }
+    capture.records = [assigned];
+    const referenceOnly = normalizeCapture(capture);
+    const native = github ? detail.node_id : detail.uuid;
+    assert.equal(
+      referenceOnly.issues.find((i) => i.nativeId === native).detail,
+      'unqueried',
+    );
+
+    // The capture assembler follows the guide: one obtained detail object,
+    // one context record, regardless of how many links reference that issue.
+    capture.records.push({
+      sourceId,
+      scope: 'context',
+      data: structuredClone(detail),
+    });
+    const before = structuredClone(capture);
+    const map = normalizeCapture(capture);
+    const context = map.issues.find((i) => i.nativeId === native);
+    assert.equal(context.scope, 'context');
+    assert.equal(context.status.type, 'completed');
+    assert.equal(context.description, body);
+    assert.equal(inspectMap(map, context.id).issue.detail, 'full');
+    assert.equal(readIssue(map, context.id, 0).text, body);
+    assert.equal(map.issues.length, 3);
+    assert.equal(map.issues.filter((i) => i.scope === 'assigned').length, 1);
+    assert.deepEqual(map.relations, referenceOnly.relations);
+    const unknown = map.issues.find((i) => i.detail === 'unqueried');
+    assert.equal(unknown.status.type, 'unknown');
+    assert.equal(inspectMap(map, unknown.id).total, 0);
+    assert.deepEqual(capture, before);
+  }
+});
+
 test('missing, empty and unknown descriptions are not inferred; stale body hashes change', () => {
   const map = mixedMap();
   const issue = map.issues[0];
@@ -191,17 +323,28 @@ test('CLI supports draft inspection and private diagnostics without modifying in
     assert.ok(JSON.parse(result.stdout).kind);
   }
   const marker = 'sensitive-selection';
+  const malformed = join(dir, 'malformed.json');
+  await writeFile(malformed, '{');
   for (const args of [
     ['inspect', path, marker],
     ['inspect', join(dir, marker)],
+    ['inspect', malformed],
     ['read-issue', path, id, '-1'],
+    ['search-issue', path, id, ''],
     ['retain-response', join(dir, marker), join(dir, 'new.json')],
+    ['retain-response', path, path],
   ]) {
     const result = run(...args);
     assert.equal(result.status, 1);
     assert.ok(!result.stderr.includes(marker));
     assert.ok(!result.stderr.includes(dir));
-    assert.ok(JSON.parse(result.stderr).diagnostics.length);
+    const diagnostics = JSON.parse(result.stderr).diagnostics;
+    assert.ok(diagnostics.length);
+    for (const diagnostic of diagnostics) {
+      assert.equal(typeof diagnostic.fix, 'string');
+      assert.ok(diagnostic.fix.length > 0);
+      assert.ok(!Object.hasOwn(diagnostic, 'repair'));
+    }
   }
   assert.equal(run('read-issue', path, id).status, 2);
   assert.equal(await readFile(path, 'utf8'), serialized);

@@ -36,6 +36,9 @@ Preserve the full native endpoint objects, including `node_id`, `number`, and
 context detail when needed beyond available endpoint metadata to explain or
 classify it; do not recursively crawl unrelated work. Declare list-only and
 failed/unperformed detail lookups instead of inferring missing facts.
+Before skipping a redundant request, [carry already-obtained complete endpoint
+detail into a deduplicated context record](capture.md#carry-obtained-endpoint-detail-into-records).
+Keeping it only in `links` does not expose its body/status to the map or reader.
 
 Full records and relationship endpoints require a parseable, absolute HTTP(S)
 `html_url` for repository resolution. Preserve `assignees` as an array of user objects with

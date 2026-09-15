@@ -26,6 +26,8 @@ and viewer contracts are unchanged. No prior user artifacts were rewritten.
 
 ## Local executable evidence
 
+Initial validation at `e6ac285`:
+
 - `just init` succeeded with existing pinned tools and frozen dependencies;
   dependency and tool locks did not change.
 - `just ci` passed documentation, formatting, lint and repository checks plus
@@ -57,6 +59,35 @@ The source copy remained byte-identical. `verify-run` passed `captureFacts`,
 classifications. The report, state, verification result and invocation artifacts
 remain local. This was an explicit isolated skill invocation, not automatic
 discovery, installation or cross-host validation.
+
+## Review corrections
+
+The follow-up preserves the existing capture/normalizer contract. Source guides
+now explicitly require putting already-obtained complete native endpoint detail
+in one context record as well as retaining its relation. This is a mechanical
+reuse step, not a further source request or permission to promote an incomplete
+reference. Both Linear and GitHub synthetic tests demonstrate that full body and
+status become readable while identity-only context remains unqueried and relation
+topology stays unchanged.
+
+Reader and retention errors now use the canonical `fix` diagnostic field.
+CLI regressions check missing inputs, malformed JSON, invalid reading arguments,
+empty search and an existing output, retaining private error messages and inputs.
+Literal search now locates non-overlapping text across the entire description
+and maps each match start back to a structural block/code-point offset. Regression
+coverage includes heading/paragraph boundaries, CRLF, literal regex characters,
+Unicode, paging and CLI calls. A split surrogate pair cannot produce an unusable
+code-point offset.
+
+The corrected local `just ci` passes 59 Node tests. The skill entry validator
+also passes. In a fresh synthetic output directory, the lead agent explicitly
+replayed the updated skill with a supplied response containing one assigned issue,
+one complete relationship endpoint and one incomplete reference. The complete
+endpoint was reused without a new query; its completed status and original body
+survived normalize, reading, classification, remember and render. The incomplete
+reference stayed unknown and unclassified. All four `verify-run` checks passed.
+This targeted replay was performed by the author, not an independent evaluation.
+The original independent invocation above is separate evidence.
 
 ## Limits
 
