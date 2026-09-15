@@ -4,6 +4,10 @@ Use this workflow to remember a user's grouping or refresh an earlier map. State
 is private and retains decisions for issues missing from later queries. Only the
 current work map is sent to the viewer.
 
+Select the destination using the [run location policy](runs.md#choose-the-run-location).
+An input state's location alone is not an output-directory preference. Keep that
+state in place and pass an absolute, unused run path to the continuity command.
+
 ## Start from a completed map
 
 Classify a first map through the ordinary workflow, then bootstrap its state:

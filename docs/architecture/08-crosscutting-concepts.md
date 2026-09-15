@@ -87,9 +87,9 @@ preserves the existing artifact. Generated HTML uses owner-only file permissions
 the report is an explicit caller action. There is no destructive source-data
 migration.
 
-Real input, classifications, generated HTML/SVG, screenshots, and logs stay in
-ignored local locations, outside Git and public CI. Public tests use newly
-invented datasets. Staged paths and contents must be reviewed for disclosure;
+Real input, classifications, generated HTML/SVG, screenshots, and logs stay
+outside the repository or in ignored local locations, outside Git and public CI.
+Public tests use newly invented datasets. Staged paths and contents must be reviewed for disclosure;
 ignore rules are not the only control. This is a local artifact boundary, not
 an authentication or multi-user service.
 
