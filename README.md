@@ -42,9 +42,18 @@ This links the checkout as `stellar` in the user's `.agents/skills` directory.
 It refuses to replace another installation. The checkout and its installed
 runtime dependencies must remain available; this is local authoring setup,
 not a distributed package. Open a fresh host session if the skill list is cached.
-Explicitly invoke `$stellar` and request the person, sources, language, and output
-location, for example: “Map my Linear and GitHub issues by actual work purpose.”
+Explicitly invoke `$stellar`, for example: “Map my Linear and GitHub issues by
+actual work purpose.” Specify the person, sources, language or output location
+when they differ from the conversation context or defaults.
 See [the skill workflow](SKILL.md) and [capture format](references/capture.md).
+
+The skill uses the output directory you specify, or one already established in
+the conversation. Otherwise it creates each report in
+`~/Documents/Stellar/<run-name>/`, independent of the task directory and skill
+installation. Generation and refresh use fresh run directories and preserve
+previous reports and saved state. The agent resolves the destination and passes
+absolute paths to the CLI; direct CLI commands still require output arguments.
+See [run locations and evidence](references/runs.md).
 Automatic selection depends on the host; local evidence distinguishes explicit
 invocation from discovery.
 

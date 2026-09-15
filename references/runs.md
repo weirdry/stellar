@@ -4,6 +4,27 @@ Keep the selected input and final artifacts together so another host can inspect
 the result without the producing session. All real captures, decisions, raw
 responses and rendered derivatives remain private and outside public Git/CI.
 
+## Choose the run location
+
+Use the output directory specified for the current run first, then an output
+location already established in the conversation. Without either, use
+`~/Documents/Stellar/` in the execution user's home. The default is independent
+of the task's working directory and the skill installation. A previous capture
+or state supplied as input does not by itself select a new output location.
+
+Resolve the selected directory to an absolute path before changing directories
+to run the skill commands. Expand `~` against the execution user's home; resolve
+relative user paths against the task's working directory. The agent selects and
+passes the output path; the CLI still requires explicit output arguments.
+
+Create a fresh `<run-name>/` under that directory for each generation or refresh,
+creating missing parent directories as needed. Let continuity commands create
+their own run directory as described below. If the selected location cannot be
+used, report the failure and obtain another location rather than silently
+switching to the checkout, task directory or temporary storage. Previous reports
+and saved state remain in place; changing the default does not move or rewrite
+them. Include the actual final path in the handoff.
+
 ## Prepare and retain evidence
 
 For live collection, retain the relevant native tool responses as they arrive,

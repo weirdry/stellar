@@ -4,6 +4,7 @@ Dated records identify the source or artifact, commands, observed result, and
 untested scope. They support the architecture without silently changing its
 meaning.
 
+- [2026-09-15 durable default output location](2026-09-15-output-location.md)
 - [2026-09-15 run consistency and skill decision review](2026-09-15-run-verification.md)
 
 - [2026-09-13 classification continuity and refresh](2026-09-13-classification-refresh.md)
@@ -15,6 +16,7 @@ meaning.
 - [2026-09-12 rendering core validation](2026-09-12-rendering-core.md)
 - [2026-09-12 foundation validation](2026-09-12-foundation.md)
 
-Private snapshots and bulky generated evidence belong in ignored local output,
-not in public examples. The rendering-core record distinguishes its Node tests, actual Chromium
-checks, local visual review, and private regression from hosted evidence.
+Private snapshots and bulky generated evidence belong outside the repository or
+in ignored local output, not in public examples. The rendering-core record
+distinguishes its Node tests, actual Chromium checks, local visual review, and
+private regression from hosted evidence.

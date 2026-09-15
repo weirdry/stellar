@@ -270,8 +270,10 @@ Do not introduce speculative version chains, dual readers, or migrations.
 Preserve correctness identities and ordering rules for their actual purpose.
 
 Never delete, reset, or rewrite user data merely to simplify development. Keep
-real issue data and generated user reports in ignored `local/` and `outputs/`
-directories. Use entirely invented synthetic examples in tracked fixtures, not renamed or
+real issue data and generated user reports outside the repository by default,
+following the [run location policy](references/runs.md#choose-the-run-location).
+For repository-local development, use ignored `local/` and `outputs/` directories.
+Use entirely invented synthetic examples in tracked fixtures, not renamed or
 anonymized copies of real work. Keep real-data derivatives, including HTML, SVG,
 screenshots and logs, out of Git and public CI. Inspect staged paths and contents
 before committing; do not rely only on ignore rules. Do not commit secrets,

@@ -34,10 +34,15 @@ viewer filters define the requested collection scope.
   supported choices and obtain a choice rather than silently substituting one.
 - The fixed title is `{owner}의 Stellar` or `{owner}’s Stellar`. Preserve source
   titles/status labels; author taxonomy and rationales in the chosen language.
-- Create a new run directory under the requested output directory. Without one,
-  use `outputs/private/<run-name>/` under the skill checkout. Keep captures,
-  drafts, reports, and logs private. Do not overwrite prior reports or snapshots
-  unless the user requested replacement. HTML embeds the issue data.
+- Use the output directory specified for this run, then a location already
+  established in the conversation. Otherwise use `~/Documents/Stellar/` in the
+  execution user's home, independent of the task directory or skill checkout.
+  Resolve `~` and relative paths to absolute paths before running commands from
+  `STELLAR_ROOT`; relative user paths are based on the task's working directory.
+  Create a fresh `<run-name>/` beneath the selected directory for each generation
+  or refresh. Keep captures, drafts, reports, and logs private. Do not overwrite
+  prior reports or snapshots unless the user requested replacement. HTML embeds
+  the issue data. This default does not move existing artifacts or saved state.
   For continuity commands, supply a fresh unused path and let the command create
   the directory. Always retain previous state and reports.
 - Confirm the locked runtime/dependencies exist. From `STELLAR_ROOT`, use root
