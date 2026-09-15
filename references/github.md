@@ -12,6 +12,12 @@ page arrays mechanically. REST issue lists include pull requests: remove entries
 with `pull_request`. Fetch issue detail when the listing/tool result is incomplete.
 Search results have their own completeness limits and are not proof that the
 repository query is exhausted.
+For a requested sample, establish its requested ordering and selection boundary
+and disclose the limited scope; do not call the whole repository exhausted.
+Follow [response retention](runs.md#prepare-and-retain-evidence): an authenticated
+CLI can redirect response output directly to a fresh private file without model
+transcription. Preserve obtained bodies; [progressive reading](reading.md)
+controls model input, not the retained evidence.
 
 For each in-scope issue, collect supported registered relations:
 
@@ -27,7 +33,9 @@ For each in-scope issue, collect supported registered relations:
 
 Preserve the full native endpoint objects, including `node_id`, `number`, and
 `html_url`. Register additional context repositories when needed. Fetch direct
-context details when available; do not recursively crawl unrelated work.
+context detail when needed beyond available endpoint metadata to explain or
+classify it; do not recursively crawl unrelated work. Declare list-only and
+failed/unperformed detail lookups instead of inferring missing facts.
 
 Full records and relationship endpoints require a parseable, absolute HTTP(S)
 `html_url` for repository resolution. Preserve `assignees` as an array of user objects with

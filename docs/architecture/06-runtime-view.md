@@ -70,6 +70,13 @@ be selected with Enter, and viewer shortcuts leave browser modifier keys alone.
 
 State: **As-built**
 
+The host first establishes a mechanical response-retention path as described in
+[run evidence](../../references/runs.md). `retain-response` copies a provided
+file to a fresh private destination, returning its byte count and SHA-256. It
+does not replace a destination, echo the payload or certify where the input came
+from. A host that only exposes model-visible text must disclose that limitation
+instead of retyping long responses or repeatedly recollecting them.
+
 The host follows [the skill](../../SKILL.md), exhausts the requested source query
 or records partial coverage, retrieves descriptions and supported relations, and
 writes native [capture JSON](../../references/capture.md). `just normalize`
@@ -91,6 +98,26 @@ The agent edits only taxonomy/classification/targets,
 then invokes validation and rendering. Normalization shares the renderer's atomic
 writer and input-alias protection. Source-specific freshness and coverage remain
 visible in the header/help; no source access occurs when opening the artifact.
+
+## Progressive evidence reading
+
+State: **As-built**
+
+After normalization, `inspect` pages through issue metadata or structural body
+blocks without requiring completed classifications. `read-issue` returns exact
+source substrings; `search-issue` locates case-sensitive literal text. All blocks
+remain accessible in source order, including unheaded prose, lists and code.
+Pages/chunks bound output size but are not a semantic relevance filter or token
+budget. No heading names, language or issue templates are mandatory.
+
+The agent expands reading when evidence is insufficient, including to complete
+text when needed. Source descriptions and continuity evidence stay complete even
+when only excerpts are model-visible. Description hashes identify changed text;
+block/character offsets belong to that text and must be refreshed after changes.
+See [reading.js](../../lib/reading.js) and [the reader guide](../../references/reading.md).
+This local reader does not intercept host tool responses: input already delivered
+in full to a model is not retroactively reduced. Host capabilities determine the
+initial data-transfer path; no measured latency or token reduction is asserted.
 
 ## Saved classification and refresh
 

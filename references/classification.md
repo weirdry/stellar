@@ -3,7 +3,8 @@
 The tree answers “what outcome am I working toward?”; source relations answer
 “what depends on or belongs under what?” Keep those answers separate.
 
-Read the requested set together before naming categories. Use two levels:
+Inspect the requested set together before naming categories, then obtain enough
+evidence using [progressive reading](reading.md). Use two levels:
 `domain` for an area of work and `category` for a concrete outcome, research line,
 operational responsibility, or tool capability. Every assigned issue has one
 primary category and a rationale grounded in its title/body. Targets can express
@@ -43,9 +44,11 @@ area. Source issue titles and descriptions remain literal source facts.
 
 Read each category's `basis` against its members, including classified context.
 Check the work's own deliverable, the tool or research line it changes, and any
-explicit exclusions. A repeated word such as "harness" does not establish one
-tool lineage. Consuming a calculation is different from implementing that
-calculation; a report writer must not be justified as a calculation engine when
+explicit exclusions. These need not live under any particular heading. A preview
+alone cannot establish that later text has no contrary evidence. A repeated word
+such as "harness" does not establish one tool lineage. Consuming a calculation
+is different from implementing that calculation; a report writer must not be
+justified as a calculation engine when
 its body explicitly excludes that work.
 
 For example, an archive-indexing harness and a camera-calibration harness may

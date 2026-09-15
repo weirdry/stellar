@@ -66,6 +66,13 @@ normalizer and check its assigned/context scope, unknown context status,
 registered relation count and expected pending classification. No category
 names or grouping counts are prescribed by this executable fixture check.
 
+[Reader and retention tests](../../test/reading.test.js) cover bounded indexes
+and chunks, exact reconstruction of arbitrary/multilingual text and line endings,
+late exclusions in unheaded prose, literal search, colliding display identifiers,
+missing descriptions, draft input, private diagnostics, and preservation of
+existing response files including aliases. They do not prove semantic relevance,
+live response provenance or a host's token savings.
+
 ## Remaining quality outcomes
 
 State: **Target**
