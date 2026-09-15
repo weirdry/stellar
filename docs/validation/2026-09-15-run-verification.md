@@ -18,7 +18,7 @@ map and state contracts remain unchanged; no saved user data was rewritten.
 Collection performance, concurrency, incremental fetching and alternate lookup
 strategies are outside this change.
 
-## Local executable evidence
+## Initial local executable evidence
 
 - `just init` verified locked tools/dependencies and repository hooks without
   changing dependency selectors or locks.
@@ -43,6 +43,24 @@ command. Source facts, embedded data, bundled output and saved maps matched;
 input file hashes were unchanged. This is artifact consistency evidence, not
 approval of the existing classifications. No private data or generated
 derivatives are included in this record or public fixtures.
+
+## Self-review correction: original HTML bytes
+
+Self-review reproduced two failures in the initial string comparison: corrupting
+a UTF-8 replacement character to an invalid byte could pass verification, while
+an untouched rendered file from valid JSON with a lone surrogate could fail.
+The verifier now retains the supplied HTML bytes and compares them with the
+renderer output encoded as UTF-8, matching the actual file-write encoding.
+Decoding for embedded JSON inspection is separate. The renderer and artifact
+contracts are unchanged.
+
+Two new CLI regression tests failed before the correction and pass after it.
+They cover hidden byte corruption and untouched output with lone high and low
+surrogates. `just ci` passed all 49 Node tests; `just browser-check` passed all
+18 synthetic Chromium tests. The two separate synthetic self-review reproductions
+were also rerun through `just verify-run`: the corrupted file was rejected and
+the untouched file passed, with all input hashes unchanged. No private pilot
+files were rewritten or required for this correction.
 
 ## Independent skill invocation
 

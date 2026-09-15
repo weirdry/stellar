@@ -87,10 +87,11 @@ The checks are:
   and optional document references are presentation/interpretation, not facts
   established by the capture.
 - `embeddedMap`: exactly one bundled data slot parses to the final map.
-- `bundledViewer`: HTML is byte-identical to this checkout's renderer output for
-  that map. A report from another renderer revision may fail this check; verify
-  with its original revision or generate a separate new report, preserving the
-  old one. Supplied HTML is never executed.
+- `bundledViewer`: the original HTML bytes match this checkout's renderer output
+  encoded as UTF-8 for that map. Decoding for JSON inspection is separate and
+  cannot hide invalid UTF-8 bytes. A report from another renderer revision may
+  fail this check; verify with its original revision or generate a separate new
+  report, preserving the old one. Supplied HTML is never executed.
 - `stateMap`: the optional state validates and its map equals the final map.
   Without a state it is `not-provided`, not a pass.
 

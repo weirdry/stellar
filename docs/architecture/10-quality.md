@@ -51,8 +51,10 @@ See [continuity tests](../../test/continuity.test.js) and the
 
 Artifact consistency is covered by [verification tests](../../test/verify.test.js):
 valid-but-altered source fields, missing/directed relations, edited or malformed
-HTML, state mismatches, input-role diagnostics, optional state, and read-only
-success/failure through symlinks. Interpretation and presentation edits remain
+HTML (including invalid UTF-8 bytes that decode to valid replacement characters),
+untouched renderer output from JSON with lone surrogates, state mismatches,
+input-role diagnostics, optional state, and read-only success/failure through
+symlinks. Interpretation and presentation edits remain
 permitted. These checks cannot approve a taxonomy's meaning or prove prior user
 choices survived; the [classification guide](../../references/classification.md)
 requires semantic membership review, and continuity still owns saved decisions.

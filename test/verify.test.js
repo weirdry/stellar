@@ -9,12 +9,12 @@ import {
   symlink,
 } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import { mixedCapture, mixedMap } from './fixtures.js';
 import { rememberMap, refreshState, applyChoices } from '../lib/continuity.js';
-import { renderWorkMap } from '../lib/render.js';
+import { renderFile, renderWorkMap } from '../lib/render.js';
 import { verifyRun } from '../lib/verify.js';
 
 const captureFixture = () => {
@@ -34,6 +34,66 @@ const run = (...args) =>
   });
 const verify = async (capture, map, extra = {}) =>
   verifyRun({ capture, map, html: await renderWorkMap(map), ...extra });
+
+async function renderedInputs(t, owner) {
+  const dir = await mkdtemp(join(tmpdir(), 'stellar-verification-bytes-'));
+  t.after(() => rm(dir, { recursive: true, force: true }));
+  const capture = captureFixture();
+  capture.owner = owner;
+  const map = mixedMap(capture);
+  const paths = ['capture.json', 'map.json', 'report.html'].map((name) =>
+    join(dir, name),
+  );
+  await writeFile(paths[0], JSON.stringify(capture));
+  await writeFile(paths[1], JSON.stringify(map));
+  await renderFile(paths[1], paths[2]);
+  return paths;
+}
+
+test('CLI rejects changed HTML bytes even when UTF-8 decoding hides the corruption', async (t) => {
+  const paths = await renderedInputs(t, 'Ari\ufffd');
+  const original = await readFile(paths[2]);
+  const replacement = Buffer.from('\ufffd', 'utf8');
+  const at = original.indexOf(replacement);
+  assert.ok(at >= 0);
+  const corrupt = Buffer.concat([
+    original.subarray(0, at),
+    Buffer.from([0xff]),
+    original.subarray(at + replacement.length),
+  ]);
+  assert.notDeepEqual(corrupt, original);
+  assert.equal(corrupt.toString('utf8'), original.toString('utf8'));
+  const corruptPath = join(dirname(paths[2]), 'corrupt.html');
+  await writeFile(corruptPath, corrupt);
+  const result = run(paths[0], paths[1], corruptPath);
+  assert.equal(result.status, 1, result.stdout);
+  const report = JSON.parse(result.stdout);
+  assert.equal(report.valid, false);
+  assert.deepEqual(report.checks, {
+    captureFacts: 'pass',
+    embeddedMap: 'pass',
+    bundledViewer: 'fail',
+    stateMap: 'not-provided',
+  });
+  assert.deepEqual(await readFile(paths[2]), original);
+  assert.deepEqual(await readFile(corruptPath), corrupt);
+});
+
+test('CLI accepts untouched rendered files from JSON containing lone surrogates', async (t) => {
+  for (const owner of ['Ari\ud800', 'Ari\udc00']) {
+    const paths = await renderedInputs(t, owner);
+    const original = await readFile(paths[2]);
+    assert.ok(original.includes(Buffer.from('\ufffd', 'utf8')));
+    assert.ok(original.includes(Buffer.from(JSON.stringify(owner), 'utf8')));
+    const result = run(...paths);
+    assert.equal(result.status, 0, result.stdout || result.stderr);
+    const report = JSON.parse(result.stdout);
+    assert.equal(report.valid, true);
+    assert.equal(report.checks.embeddedMap, 'pass');
+    assert.equal(report.checks.bundledViewer, 'pass');
+    assert.deepEqual(await readFile(paths[2]), original);
+  }
+});
 
 test('verification permits interpretation and presentation edits, array order and related direction without mutation', async () => {
   for (const locale of ['ko', 'en']) {
