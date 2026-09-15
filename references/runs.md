@@ -82,10 +82,12 @@ The checks are:
   source declaration, source issue fields and registered relationships. Source
   and issue array ordering is irrelevant; directed edges keep direction and
   related edges are undirected. Classification, targets and the runner's
-  previous-observation notice are interpretation. Unqueried status labels are UI
-  placeholders; observed status labels remain literal. Locale, view, taxonomy
-  and optional document references are presentation/interpretation, not facts
-  established by the capture.
+  previous-observation notice are interpretation. Unqueried status labels are
+  excluded UI placeholders. Labels on full-detail issues are compared verbatim,
+  including the normalizer's English `Unknown` fallback for missing Linear
+  status text, in either locale. Locale and view may originate in the capture
+  but remain author-editable presentation choices after normalization. Taxonomy
+  and optional document references are also outside this source-fact check.
 - `embeddedMap`: exactly one bundled data slot parses to the final map.
 - `bundledViewer`: the original HTML bytes match this checkout's renderer output
   encoded as UTF-8 for that map. Decoding for JSON inspection is separate and
@@ -96,6 +98,8 @@ The checks are:
   Without a state it is `not-provided`, not a pass.
 
 Differences identify the input role and JSON pointer without quoting issue text.
+An unknown key in embedded HTML data is reported at its containing object or
+array, without including that key in the diagnostic path.
 Use the correct input pair or fix source facts against evidence, then regenerate
 into a new output. Never patch HTML or saved state just to make a check pass.
 

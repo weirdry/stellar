@@ -95,6 +95,49 @@ test('CLI accepts untouched rendered files from JSON containing lone surrogates'
   }
 });
 
+test('CLI mismatch paths hide unknown embedded keys and retain known field locations', async (t) => {
+  const paths = await renderedInputs(t, 'Ari');
+  const originals = await Promise.all(paths.map((path) => readFile(path)));
+  const map = JSON.parse(originals[1].toString('utf8'));
+  const marker = 'private-probe-text/~';
+  const cases = [
+    [(data) => (data[marker] = true), '/data'],
+    [(data) => (data.issues[0][marker] = true), '/data/issues/0'],
+    [(data) => (data.issues[0].status[marker] = true), '/data/issues/0/status'],
+    [(data) => data.issues.push({ [marker]: true }), '/data/issues'],
+    [(data) => delete data.issues[0].title, '/data/issues/0/title'],
+    [(data) => (data.issues[0].title = marker), '/data/issues/0/title'],
+  ];
+  for (const [index, [mutate, expectedPath]] of cases.entries()) {
+    const changed = structuredClone(map);
+    mutate(changed);
+    const html = originals[2]
+      .toString('utf8')
+      .replace(
+        /(<script type="application\/json" id="data">)[\s\S]*?(<\/script>)/,
+        (_, start, end) =>
+          start + JSON.stringify(changed).replace(/</g, '\\u003c') + end,
+      );
+    const changedPath = join(dirname(paths[2]), `changed-${index}.html`);
+    await writeFile(changedPath, html);
+    const result = run(paths[0], paths[1], changedPath);
+    assert.equal(result.status, 1, result.stdout || result.stderr);
+    const report = JSON.parse(result.stdout);
+    assert.deepEqual(report.checks, {
+      captureFacts: 'pass',
+      embeddedMap: 'fail',
+      bundledViewer: 'fail',
+      stateMap: 'not-provided',
+    });
+    assert.equal(report.diagnostics[0].path, expectedPath);
+    assert.equal(report.diagnostics[0].input, 'html');
+    assert.ok(!(result.stdout + result.stderr).includes('private-probe-text'));
+    assert.equal(await readFile(changedPath, 'utf8'), html);
+  }
+  for (const [index, path] of paths.entries())
+    assert.deepEqual(await readFile(path), originals[index]);
+});
+
 test('verification permits interpretation and presentation edits, array order and related direction without mutation', async () => {
   for (const locale of ['ko', 'en']) {
     const capture = captureFixture();
