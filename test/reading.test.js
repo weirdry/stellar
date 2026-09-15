@@ -5,6 +5,9 @@ import {
   writeFile,
   readFile,
   stat,
+  mkdir,
+  chmod,
+  lstat,
   symlink,
   rm,
 } from 'node:fs/promises';
@@ -260,6 +263,81 @@ test('missing, empty and unknown descriptions are not inferred; stale body hashe
   assert.throws(() => searchIssue(map, issue.id, ''));
 });
 
+test('native null and empty bodies remain observed while omitted bodies remain absent', async (t) => {
+  const dir = await directory(t);
+  const path = join(dir, 'map.json');
+  let emptyHash;
+  for (const [index, field] of [
+    [0, 'description'],
+    [2, 'body'],
+  ]) {
+    for (const body of [undefined, null, '']) {
+      const capture = mixedCapture();
+      if (body === undefined) delete capture.records[index].data[field];
+      else capture.records[index].data[field] = body;
+      const map = normalizeCapture(capture);
+      const issue = map.issues[index];
+      const present = body !== undefined;
+      assert.equal(Object.hasOwn(issue, 'description'), present);
+      assert.equal(issue.description, body);
+      const metadata = inspectMap(map, issue.id).issue;
+      assert.equal(metadata.descriptionPresent, present);
+      assert.equal(metadata.descriptionCharacters, 0);
+      emptyHash ??= metadata.descriptionHash;
+      assert.equal(metadata.descriptionHash, emptyHash);
+      assert.equal(inspectMap(map).items[index].descriptionPresent, present);
+      const serialized = JSON.stringify(map);
+      await writeFile(path, serialized);
+      for (const args of [
+        ['inspect', path, issue.id],
+        ['search-issue', path, issue.id, 'missing text'],
+      ]) {
+        const result = run(...args);
+        assert.equal(result.status, 0, result.stderr);
+        const output = JSON.parse(result.stdout);
+        assert.equal(output.issue.descriptionPresent, present);
+        assert.equal(output.issue.descriptionHash, emptyHash);
+        assert.equal(output.total, 0);
+      }
+      assert.equal(await readFile(path, 'utf8'), serialized);
+    }
+  }
+});
+
+test('body and search previews mark exact Unicode truncation boundaries', async (t) => {
+  const map = mixedMap();
+  const issue = map.issues[0];
+  const dir = await directory(t);
+  const path = join(dir, 'map.json');
+  for (const size of [79, 80, 81]) {
+    issue.description = '🪐' + 'x'.repeat(size - 1);
+    const before = structuredClone(map);
+    const index = inspectMap(map, issue.id).items[0];
+    const search = searchIssue(map, issue.id, '🪐').items[0];
+    for (const item of [index, search]) {
+      assert.equal(Array.from(item.preview).length, Math.min(size, 80));
+      assert.equal(item.previewTruncated, size > 80);
+    }
+    assert.equal(index.preview, search.preview);
+    assert.equal(
+      readIssue(map, issue.id, search.block, search.offset).text,
+      issue.description,
+    );
+    await writeFile(path, JSON.stringify(map));
+    const result = run('search-issue', path, issue.id, '🪐');
+    assert.equal(result.status, 0, result.stderr);
+    assert.equal(
+      JSON.parse(result.stdout).items[0].previewTruncated,
+      size > 80,
+    );
+    assert.deepEqual(map, before);
+  }
+  issue.description = 'long text '.repeat(20) + '\n\n🪐tail';
+  const tail = searchIssue(map, issue.id, '🪐').items[0];
+  assert.equal(tail.preview, '🪐tail');
+  assert.equal(tail.previewTruncated, false);
+});
+
 test('source-qualified ids resolve duplicate display identifiers and catalog pages remain bounded', () => {
   const map = mixedMap();
   const left = map.issues[0];
@@ -301,6 +379,69 @@ test('retaining a response preserves all bytes, private permissions and existing
   await assert.rejects(retainResponse(source, alias));
   assert.deepEqual(await readFile(source), content);
   assert.deepEqual(await readFile(dest), content);
+});
+
+test('response output diagnostics distinguish existing paths, invalid parents and permissions', async (t) => {
+  const dir = await directory(t);
+  const source = join(dir, 'private-response.json');
+  const content = 'private-probe-text';
+  await writeFile(source, content);
+  const occupied = join(dir, 'occupied');
+  await mkdir(occupied);
+  const alias = join(dir, 'alias');
+  const dangling = join(dir, 'dangling');
+  await symlink(source, alias);
+  await symlink(join(dir, 'missing'), dangling);
+  const check = (output, code) => {
+    const result = run('retain-response', source, output);
+    assert.equal(result.status, 1, result.stderr);
+    const failure = JSON.parse(result.stderr);
+    assert.equal(failure.valid, false);
+    assert.equal(failure.diagnostics[0].code, code);
+    assert.equal(failure.diagnostics[0].path, '/output');
+    assert.ok(failure.diagnostics[0].message);
+    assert.ok(failure.diagnostics[0].fix);
+    assert.ok(!result.stderr.includes(dir));
+    assert.ok(!result.stderr.includes(content));
+    return failure.diagnostics[0];
+  };
+  for (const output of [source, occupied, alias, dangling]) {
+    const error = check(output, 'response-exists');
+    assert.match(error.message, /already exists/);
+    assert.match(error.fix, /fresh unused/);
+  }
+  // mkdir on the direct file-parent can raise EEXIST; a deeper path can raise
+  // ENOTDIR. Both are a parent problem, not an occupied destination.
+  for (const output of [
+    join(source, 'child'),
+    join(source, 'nested', 'child'),
+  ]) {
+    const error = check(output, 'response-parent');
+    assert.match(error.message, /not a directory/);
+    assert.match(error.fix, /parents are directories/);
+  }
+  if (process.getuid?.() !== 0) {
+    const locked = join(dir, 'locked');
+    await mkdir(locked);
+    await chmod(locked, 0o500);
+    try {
+      for (const output of [
+        join(locked, 'new.json'),
+        join(locked, 'nested', 'new.json'),
+      ]) {
+        const error = check(output, 'response-permission');
+        assert.match(error.message, /not writable/);
+        assert.match(error.fix, /permissions/);
+        await assert.rejects(lstat(output), { code: 'ENOENT' });
+      }
+    } finally {
+      await chmod(locked, 0o700);
+    }
+  }
+  assert.equal(await readFile(source, 'utf8'), content);
+  assert.equal((await lstat(occupied)).isDirectory(), true);
+  assert.equal((await lstat(alias)).isSymbolicLink(), true);
+  assert.equal((await lstat(dangling)).isSymbolicLink(), true);
 });
 
 test('CLI supports draft inspection and private diagnostics without modifying inputs', async (t) => {

@@ -74,7 +74,9 @@ The host first establishes a mechanical response-retention path as described in
 [run evidence](../../references/runs.md). `retain-response` copies a provided
 file to a fresh private destination, returning its byte count and SHA-256. It
 does not replace a destination, echo the payload or certify where the input came
-from. A host that only exposes model-visible text must disclose that limitation
+from. Output diagnostics distinguish occupied destinations, invalid parent paths
+and denied permissions, without exposing raw filesystem paths.
+A host that only exposes model-visible text must disclose that limitation
 instead of retyping long responses or repeatedly recollecting them.
 
 The host follows [the skill](../../SKILL.md), exhausts the requested source query
@@ -113,14 +115,17 @@ blocks without requiring completed classifications. `read-issue` returns exact
 source substrings; `search-issue` locates case-sensitive literal text across the
 whole body, including block boundaries, and maps match starts to block offsets.
 Reader and response-retention errors use the canonical diagnostic `fix` field.
+Both body-index and search previews explicitly report truncation.
 All blocks remain accessible in source order, including unheaded prose, lists and code.
 Pages/chunks bound output size but are not a semantic relevance filter or token
 budget. No heading names, language or issue templates are mandatory.
 
 The agent expands reading when evidence is insufficient, including to complete
 text when needed. Source descriptions and continuity evidence stay complete even
-when only excerpts are model-visible. Description hashes identify changed text;
-block/character offsets belong to that text and must be refreshed after changes.
+when only excerpts are model-visible. Description hashes identify changed readable
+text, treating missing/null descriptions as empty text for that digest only.
+`descriptionPresent` distinguishes an omitted field from an observed string or
+null. Block/character offsets belong to the text and must be refreshed after changes.
 See [reading.js](../../lib/reading.js) and [the reader guide](../../references/reading.md).
 This local reader does not intercept host tool responses: input already delivered
 in full to a model is not retroactively reduced. Host capabilities determine the

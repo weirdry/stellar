@@ -71,7 +71,9 @@ and chunks, exact reconstruction of arbitrary/multilingual text and line endings
 late exclusions in unheaded prose, literal search across structural boundaries,
 Unicode match-start locations, colliding display identifiers, missing descriptions,
 draft input, canonical diagnostic repair fields, and preservation of existing
-response files including aliases. They also exercise the host's reuse of complete
+response files including aliases. Native null/empty/omitted body observations,
+Unicode preview truncation boundaries and differentiated output-failure repairs
+are covered at the CLI boundary. They also exercise the host's reuse of complete
 endpoint objects as context records for both providers while incomplete references
 stay unqueried. They do not prove semantic relevance,
 live response provenance or a host's token savings.
