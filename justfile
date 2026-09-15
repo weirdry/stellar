@@ -54,9 +54,11 @@ retain-response input output:
 inspect input issue="" offset="0":
     mise exec --locked -- node bin/stellar.js inspect {{ quote(input) }} {{ quote(issue) }} {{ quote(offset) }}
 
+# Read an exact source block in bounded chunks.
 read-issue input issue block offset="0":
     mise exec --locked -- node bin/stellar.js read-issue {{ quote(input) }} {{ quote(issue) }} {{ quote(block) }} {{ quote(offset) }}
 
+# Locate literal source text across the body, returning paginated matches.
 search-issue input issue query offset="0":
     mise exec --locked -- node bin/stellar.js search-issue {{ quote(input) }} {{ quote(issue) }} {{ quote(query) }} {{ quote(offset) }}
 

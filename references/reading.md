@@ -55,7 +55,8 @@ With an issue it indexes every body block in source order: headings, paragraphs,
 lists, quotes and fenced code.
 Structural detection is a navigation aid, not a complete Markdown parser or a
 relevance classifier. No section is dropped or prioritized by its heading name.
-Previews are at most 80 Unicode code points and explicitly marked when shortened.
+Previews are at most 80 Unicode code points. Both body-index entries and search
+matches include `previewTruncated`, true only when the preview omits more text.
 
 `read-issue` returns up to 4,000 code points of the chosen block, without
 rewriting text or line endings. Follow `nextOffset` for the next chunk and the
@@ -74,9 +75,14 @@ agent's current hypothesis, not a complete filter for purpose or exclusions in
 other wording.
 
 These are bounded output pages, not token guarantees or limits on the evidence
-that may be read. Relevance and stopping remain agent judgments. The metadata
-includes description presence, length and a SHA-256 of its JSON-encoded string.
-If the body changes, rebuild the index before reusing block numbers/offsets.
-Absent text and an empty observed description remain distinguishable; neither
-implies an inferred purpose. Source detail/coverage does not change as a result
-of choosing an excerpt.
+that may be read. Relevance and stopping remain agent judgments. In metadata,
+`descriptionPresent` is true for an observed string or null, and false for an
+omitted description. An empty string and an observed null both represent empty
+text; neither implies an inferred purpose.
+
+Length and `descriptionHash` describe the readable text: `description ?? ''`,
+with SHA-256 over its JSON-encoded string. Missing, null and empty descriptions
+therefore share the empty-text hash; compare presence separately to distinguish
+an observation from an omitted field. The hash is not an observation fingerprint.
+If text changes, rebuild the index before reusing block numbers/offsets. Source
+detail/coverage does not change as a result of choosing an excerpt.

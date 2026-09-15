@@ -79,8 +79,8 @@ coverage includes heading/paragraph boundaries, CRLF, literal regex characters,
 Unicode, paging and CLI calls. A split surrogate pair cannot produce an unusable
 code-point offset.
 
-The corrected local `just ci` passes 59 Node tests. The skill entry validator
-also passes. In a fresh synthetic output directory, the lead agent explicitly
+At `adf3709`, local `just ci` passed 59 Node tests. The skill entry validator
+also passed. In a fresh synthetic output directory, the lead agent explicitly
 replayed the updated skill with a supplied response containing one assigned issue,
 one complete relationship endpoint and one incomplete reference. The complete
 endpoint was reused without a new query; its completed status and original body
@@ -88,6 +88,29 @@ survived normalize, reading, classification, remember and render. The incomplete
 reference stayed unknown and unclassified. All four `verify-run` checks passed.
 This targeted replay was performed by the author, not an independent evaluation.
 The original independent invocation above is separate evidence.
+
+## Independent-review corrections
+
+Reader metadata now distinguishes an observed empty body from an omitted body:
+native `null` and empty strings report `descriptionPresent: true`; an omitted
+field reports false. Length and digest still describe readable text, so all three
+empty-text cases share the same hash. This is an unreleased helper correction,
+not a new capture, map or state version.
+
+Both body-index and search previews now carry `previewTruncated`. Unicode
+regressions cover 79, 80 and 81 code points and a short match near the end of a
+long body; exact reading remains available beyond the preview. Response-retention
+errors distinguish an occupied destination, a non-directory parent and denied
+write access without exposing a filesystem path or source text. CLI tests cover
+both parent creation and file opening, preserve existing files and symlinks, and
+exercise permission failures when the test process is not root.
+
+Local `just ci` passed 62 Node tests, including three new regression tests for
+these corrections. `just --list` displayed descriptions for `read-issue` and
+`search-issue`, and the skill entry validator passed. The library/CLI tests use
+invented Linear and GitHub records; no new live collection or full skill replay
+was needed for these helper corrections. Earlier invocation evidence above
+remains distinct from this targeted validation.
 
 ## Limits
 

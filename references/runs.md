@@ -42,6 +42,12 @@ MCP wrappers mechanically, retaining the original response alongside extracted
 issue data. Network-layer byte capture is not required. Do not put credentials
 or unrelated transcript material in evidence.
 
+Output failures distinguish an occupied destination (`response-exists`), a
+non-directory parent (`response-parent`), and denied permissions
+(`response-permission`); other failures use `response-output`. Each includes
+repair guidance without echoing the raw filesystem path. Keep existing files
+when correcting the destination.
+
 Do not ask the model to re-emit full responses into shell heredocs or authored
 JSON as a substitute for this transfer. Comparison with a capture assembled
 from the same transcription only proves downstream consistency, not fidelity
