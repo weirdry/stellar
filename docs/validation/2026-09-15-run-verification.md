@@ -62,6 +62,29 @@ were also rerun through `just verify-run`: the corrupted file was rejected and
 the untouched file passed, with all input hashes unchanged. No private pilot
 files were rewritten or required for this correction.
 
+## Independent-review corrections
+
+The independent review at `3b3474c` identified three P3 issues. Unknown keys in
+supplied HTML now produce a mismatch at their containing object or array;
+missing or changed known fields retain their precise paths. A new CLI regression
+failed before the fix and passes after it, covering root/nested keys, added array
+elements, missing/changed known fields, diagnostic disclosure and unchanged inputs.
+The reviewer's synthetic extra-key reproduction was also rerun through
+`just verify-run`: the diagnostic is now `/data`, the marker is absent from
+stdout/stderr, and all input hashes are unchanged.
+
+The Node gate now normalizes the tracked purpose capture and checks seven assigned
+issues, one unqueried context, three registered relations and seven expected
+pending classifications. It does not prescribe a semantic taxonomy. The run
+guide now explicitly includes the `Unknown` fallback among full-detail labels
+compared verbatim, explains author-editable locale/view choices, and the README
+states that consistency does not establish preservation of earlier choices.
+
+`just ci` passed all 51 Node tests and the documentation, formatting, lint and
+repository checks. Renderer, viewer and input schemas are unchanged; the local
+Chromium suite was not rerun for this diagnostic/test/documentation correction.
+Hosted CI evidence for the follow-up commit belongs to the PR handoff.
+
 ## Independent skill invocation
 
 An independent agent received the skill path, the invented river-station capture

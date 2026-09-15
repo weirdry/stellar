@@ -34,6 +34,8 @@ and unqueried context. Ask the skill to create a map from this capture without
 giving it an expected taxonomy. Review the resulting inclusion bases against
 each issue's outputs and exclusions; category names or counts are not fixed
 answers. The synthetic capture itself requires classification before rendering.
+The Node gate checks its normalization and documented issue/relation counts;
+semantic membership remains a separate review of the agent's interpretation.
 
 Real snapshots and every data-bearing derivative (JSON, HTML, SVG, screenshots,
 logs) belong only in ignored `local/` and `outputs/` or outside the repository.

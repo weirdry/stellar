@@ -17,6 +17,32 @@ const rejected = (mutate, pattern) => {
     (error) => error.diagnostics?.some((d) => pattern.test(d.message) && d.fix),
   );
 };
+test('the purpose exercise capture normalizes to its documented scope without fixing a taxonomy', async () => {
+  const capture = JSON.parse(
+    await readFile(
+      new URL('../examples/purpose-capture.json', import.meta.url),
+      'utf8',
+    ),
+  );
+  const before = structuredClone(capture);
+  const map = normalizeCapture(capture);
+  assert.deepEqual(capture, before);
+  assert.equal(
+    map.issues.filter((issue) => issue.scope === 'assigned').length,
+    7,
+  );
+  const context = map.issues.filter((issue) => issue.scope === 'context');
+  assert.equal(context.length, 1);
+  assert.equal(context[0].detail, 'unqueried');
+  assert.equal(context[0].status.type, 'unknown');
+  assert.equal(map.relations.length, 3);
+  const result = validateWorkMap(map);
+  assert.equal(result.valid, false);
+  assert.equal(result.diagnostics.length, 7);
+  assert.ok(
+    result.diagnostics.every((d) => d.code === 'missing-classification'),
+  );
+});
 test('mixed native records preserve facts, resolve Linear aliases and distinguish repository-local issue numbers', () => {
   const capture = mixedCapture(),
     before = structuredClone(capture);

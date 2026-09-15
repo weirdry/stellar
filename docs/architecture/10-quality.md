@@ -53,11 +53,18 @@ Artifact consistency is covered by [verification tests](../../test/verify.test.j
 valid-but-altered source fields, missing/directed relations, edited or malformed
 HTML (including invalid UTF-8 bytes that decode to valid replacement characters),
 untouched renderer output from JSON with lone surrogates, state mismatches,
-input-role diagnostics, optional state, and read-only success/failure through
-symlinks. Interpretation and presentation edits remain
-permitted. These checks cannot approve a taxonomy's meaning or prove prior user
-choices survived; the [classification guide](../../references/classification.md)
+input-role diagnostics, unknown embedded keys omitted from diagnostic paths,
+optional state, and read-only success/failure through symlinks. Interpretation
+and presentation edits remain permitted. These checks cannot approve a taxonomy's
+meaning or prove prior user choices survived; the
+[classification guide](../../references/classification.md)
 requires semantic membership review, and continuity still owns saved decisions.
+
+[Normalization tests](../../test/normalize.test.js) also read the tracked
+[purpose exercise capture](../../examples/purpose-capture.json) through the
+normalizer and check its assigned/context scope, unknown context status,
+registered relation count and expected pending classification. No category
+names or grouping counts are prescribed by this executable fixture check.
 
 ## Remaining quality outcomes
 

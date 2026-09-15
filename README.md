@@ -96,8 +96,9 @@ just verify-run CAPTURE.json MAP.json REPORT.html STATE.json
 Choose the invocation with state when one exists. The read-only command compares
 normalized source facts, HTML-embedded data, the current bundled renderer and
 the optional saved map. It does not establish source completeness, semantic
-classification quality or visual acceptance. See [run evidence](references/runs.md)
-for preserving inputs, collection responses and verification results together.
+classification quality, preservation relative to a previous state, or visual
+acceptance. See [run evidence](references/runs.md) for preserving inputs,
+collection responses and verification results together.
 
 Repository quality gates remain separate:
 
