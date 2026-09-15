@@ -46,6 +46,20 @@ verify-run capture map html state="":
 normalize input output:
     mise exec --locked -- node bin/stellar.js normalize {{ quote(input) }} {{ quote(output) }}
 
+# Retain a host-provided response file without printing its content.
+retain-response input output:
+    mise exec --locked -- node bin/stellar.js retain-response {{ quote(input) }} {{ quote(output) }}
+
+# Empty issue selects the issue index; offsets page through that index or a body.
+inspect input issue="" offset="0":
+    mise exec --locked -- node bin/stellar.js inspect {{ quote(input) }} {{ quote(issue) }} {{ quote(offset) }}
+
+read-issue input issue block offset="0":
+    mise exec --locked -- node bin/stellar.js read-issue {{ quote(input) }} {{ quote(issue) }} {{ quote(block) }} {{ quote(offset) }}
+
+search-issue input issue query offset="0":
+    mise exec --locked -- node bin/stellar.js search-issue {{ quote(input) }} {{ quote(issue) }} {{ quote(query) }} {{ quote(offset) }}
+
 # Continuity commands write a new private run directory and never replace one.
 remember input run:
     mise exec --locked -- node bin/stellar.js remember {{ quote(input) }} {{ quote(run) }}

@@ -140,6 +140,13 @@ Inspect `changes.json`:
   including context. Absent issues retain their reasons in state memory.
 - `preservedUser`: current issues whose user classification was reapplied.
 
+Name the stage when reporting these counts. A refresh may produce review entries
+that a later classify run resolves; final `changes.json` reports the remaining
+review, not the original workload. Keep the earlier summary separately if useful.
+With a recent-N sample, an issue outside the next assigned set may still appear
+as context. `notObserved` means absent from the entire new capture; it does not
+identify rank changes, reassignment, deletion, completion or an access change.
+
 Read new/changed issues in the context of the existing taxonomy. Reuse groups when
 they fit and add a group when evidence warrants it. Check targets as well as
 classification. User choices remain authoritative; explain tension with new
@@ -152,7 +159,9 @@ Unqueried observations do not replace full-text evidence. Pending assigned
 classifications block rendering. This is a text-change heuristic, not a semantic
 judgment by the runner.
 
-Compare previous and current full text before accepting a purpose change. Source
+Compare the complete previous/current evidence mechanically and read the changed
+text with enough surrounding context before accepting a purpose change. The
+[reader](reading.md) helps inspect source text without rewriting it. Source
 serialization may add Markdown escapes or replace an attachment's signed URL
 without changing the work's intended outcome. Confirm that the particular diff
 is representational, including any code, link destination and query semantics;

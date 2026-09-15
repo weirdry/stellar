@@ -4,6 +4,13 @@ import { validateWorkMap, WorkMapError } from '../lib/validate.js';
 import { normalizeCapture } from '../lib/normalize.js';
 import { verifyRunFiles } from '../lib/verify.js';
 import {
+  inspectMap,
+  readIssue,
+  searchIssue,
+  readReadingMap,
+} from '../lib/reading.js';
+import { retainResponse } from '../lib/evidence.js';
+import {
   rememberMap,
   refreshState,
   applyChoices,
@@ -11,11 +18,36 @@ import {
 } from '../lib/continuity.js';
 
 const usage =
-  'Usage: stellar normalize CAPTURE.json DRAFT.json | stellar validate INPUT.json | stellar render INPUT.json OUTPUT.html | stellar verify-run CAPTURE.json MAP.json HTML [STATE.json] | stellar remember MAP.json RUN_DIR | stellar refresh STATE.json CAPTURE.json RUN_DIR | stellar classify STATE.json CHOICES.json RUN_DIR | stellar revise STATE.json CHOICES.json RUN_DIR';
+  'Usage: stellar inspect MAP.json [ISSUE [OFFSET]] | stellar read-issue MAP.json ISSUE BLOCK [OFFSET] | stellar search-issue MAP.json ISSUE TEXT [OFFSET] | stellar retain-response RESPONSE_FILE NEW_FILE | stellar normalize CAPTURE.json DRAFT.json | stellar validate INPUT.json | stellar render INPUT.json OUTPUT.html | stellar verify-run CAPTURE.json MAP.json HTML [STATE.json] | stellar remember MAP.json RUN_DIR | stellar refresh STATE.json CAPTURE.json RUN_DIR | stellar classify STATE.json CHOICES.json RUN_DIR | stellar revise STATE.json CHOICES.json RUN_DIR';
 const [command, input, output, ...extra] = process.argv.slice(2);
 try {
   if (command === '--help' && !input) console.log(usage);
-  else if (
+  else if (command === 'retain-response' && input && output && !extra.length) {
+    console.log(JSON.stringify(await retainResponse(input, output)));
+  } else if (command === 'inspect' && input && extra.length <= 1) {
+    console.log(
+      JSON.stringify(
+        inspectMap(await readReadingMap(input), output, extra[0]),
+        null,
+        2,
+      ),
+    );
+  } else if (
+    ['read-issue', 'search-issue'].includes(command) &&
+    input &&
+    output &&
+    extra.length >= 1 &&
+    extra.length <= 2
+  ) {
+    const operation = command === 'read-issue' ? readIssue : searchIssue;
+    console.log(
+      JSON.stringify(
+        operation(await readReadingMap(input), output, extra[0], extra[1]),
+        null,
+        2,
+      ),
+    );
+  } else if (
     command === 'verify-run' &&
     input &&
     output &&

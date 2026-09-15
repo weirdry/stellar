@@ -59,6 +59,13 @@ invocation from discovery.
 
 ## Generate a map
 
+The host can retain response files with `just retain-response INPUT NEW_FILE`
+without printing their contents. After normalization, `just inspect MAP`,
+`just inspect MAP ISSUE`, `just read-issue MAP ISSUE BLOCK` and
+`just search-issue MAP ISSUE TEXT` provide bounded, template-independent views
+over original descriptions. See [progressive reading](references/reading.md).
+These helpers do not fetch data or turn a model-authored copy into source proof.
+
 ```sh
 just validate examples/museum.json
 just render examples/museum.json outputs/museum.html
@@ -133,17 +140,17 @@ passing test nor a screenshot alone establishes visual acceptance.
 
 ## Repository boundaries
 
-| Path                                   | Responsibility                                                       |
-| -------------------------------------- | -------------------------------------------------------------------- |
-| `bin/`, `lib/`                         | Native normalization, validation, rendering and artifact consistency |
-| `schemas/`                             | Authoritative input contract and semantic rules                      |
-| `assets/viewer/`                       | Fixed HTML/CSS/JavaScript/SVG viewer                                 |
-| `examples/`, `test/`                   | Entirely synthetic inputs and tests                                  |
-| `SKILL.md`, `references/`              | Host collection, classification and repair workflow                  |
-| `docs/`                                | Canonical architecture, decisions, and dated evidence                |
-| `scripts/`, `justfile`, tool manifests | Repository-owned development tooling                                 |
-| `.githooks/`, `.github/`               | Contribution checks and hosted CI                                    |
-| `local/`, `outputs/`                   | Ignored private inputs and generated artifacts                       |
+| Path                                   | Responsibility                                                                                         |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `bin/`, `lib/`                         | Response retention, progressive reading, normalization, validation, rendering and artifact consistency |
+| `schemas/`                             | Authoritative input contract and semantic rules                                                        |
+| `assets/viewer/`                       | Fixed HTML/CSS/JavaScript/SVG viewer                                                                   |
+| `examples/`, `test/`                   | Entirely synthetic inputs and tests                                                                    |
+| `SKILL.md`, `references/`              | Host collection, classification and repair workflow                                                    |
+| `docs/`                                | Canonical architecture, decisions, and dated evidence                                                  |
+| `scripts/`, `justfile`, tool manifests | Repository-owned development tooling                                                                   |
+| `.githooks/`, `.github/`               | Contribution checks and hosted CI                                                                      |
+| `local/`, `outputs/`                   | Ignored private inputs and generated artifacts                                                         |
 
 Source hosting is public under `weirdry/stellar`. Follow the local contribution
 policy: integration through `dev`, review branches for substantial work, and
