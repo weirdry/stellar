@@ -79,7 +79,12 @@ instead of retyping long responses or repeatedly recollecting them.
 
 The host follows [the skill](../../SKILL.md), exhausts the requested source query
 or records partial coverage, retrieves descriptions and supported relations, and
-writes native [capture JSON](../../references/capture.md). `just normalize`
+writes native [capture JSON](../../references/capture.md). The normalizer consumes
+issue text/status from top-level records, not from relationship objects.
+The host [reuses already-obtained complete endpoint detail as a deduplicated
+context record](../../references/capture.md#carry-obtained-endpoint-detail-into-records)
+before normalization; incomplete references remain unqueried context. No source
+request is needed solely for that transfer. The normalizer
 first validates shared metadata and source declarations with the canonical
 validator, before indexing sources or interpreting native records. It then
 indexes source-qualified native/identifier pairs from all detail and
@@ -105,8 +110,10 @@ State: **As-built**
 
 After normalization, `inspect` pages through issue metadata or structural body
 blocks without requiring completed classifications. `read-issue` returns exact
-source substrings; `search-issue` locates case-sensitive literal text. All blocks
-remain accessible in source order, including unheaded prose, lists and code.
+source substrings; `search-issue` locates case-sensitive literal text across the
+whole body, including block boundaries, and maps match starts to block offsets.
+Reader and response-retention errors use the canonical diagnostic `fix` field.
+All blocks remain accessible in source order, including unheaded prose, lists and code.
 Pages/chunks bound output size but are not a semantic relevance filter or token
 budget. No heading names, language or issue templates are mandatory.
 

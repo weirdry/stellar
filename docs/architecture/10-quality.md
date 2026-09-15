@@ -68,9 +68,12 @@ names or grouping counts are prescribed by this executable fixture check.
 
 [Reader and retention tests](../../test/reading.test.js) cover bounded indexes
 and chunks, exact reconstruction of arbitrary/multilingual text and line endings,
-late exclusions in unheaded prose, literal search, colliding display identifiers,
-missing descriptions, draft input, private diagnostics, and preservation of
-existing response files including aliases. They do not prove semantic relevance,
+late exclusions in unheaded prose, literal search across structural boundaries,
+Unicode match-start locations, colliding display identifiers, missing descriptions,
+draft input, canonical diagnostic repair fields, and preservation of existing
+response files including aliases. They also exercise the host's reuse of complete
+endpoint objects as context records for both providers while incomplete references
+stay unqueried. They do not prove semantic relevance,
 live response provenance or a host's token savings.
 
 ## Remaining quality outcomes
