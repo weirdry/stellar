@@ -33,9 +33,11 @@ remain part of the complete embedded-map and rendered-output checks.
 
 The verifier parses exactly one bundled JSON data slot without executing HTML,
 compares its data with the final map, and reproduces the current checkout's HTML
-in memory for an exact output comparison. Optional saved state must validate and
-contain the same final map. A different renderer revision may produce a mismatch;
-verification does not rewrite old artifacts to resolve it.
+in memory. It compares the original file bytes against that output encoded as
+UTF-8, matching the renderer's file-write encoding. Separate decoding for JSON
+inspection cannot hide corrupted bytes from this comparison. Optional saved
+state must validate and contain the same final map. A different renderer revision
+may produce a mismatch; verification does not rewrite old artifacts to resolve it.
 
 The command reads files and prints JSON only. Mismatches report input roles and
 JSON pointers; input-read failures omit raw filesystem paths. It performs no
