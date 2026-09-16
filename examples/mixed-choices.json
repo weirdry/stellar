@@ -1,0 +1,66 @@
+{
+  "domains": [
+    {
+      "id": "research",
+      "label": "Research",
+      "description": "Observatory experiments"
+    },
+    {
+      "id": "operations",
+      "label": "Operations",
+      "description": "Control and delivery reliability"
+    }
+  ],
+  "categories": [
+    {
+      "id": "transit",
+      "domain": "research",
+      "label": "Transit detection",
+      "basis": "Transit calibration and evaluation"
+    },
+    {
+      "id": "control",
+      "domain": "operations",
+      "label": "Telescope control",
+      "basis": "Runtime control behavior"
+    },
+    {
+      "id": "delivery",
+      "domain": "operations",
+      "label": "Delivery operations",
+      "basis": "Shared delivery infrastructure"
+    }
+  ],
+  "issues": [
+    {
+      "issueId": "i:bGluZWFyLW9ic2VydmF0b3J5:aW52ZW50ZWQtbGluZWFyLXV1aWQtMQ",
+      "classification": {
+        "category": "transit",
+        "rationale": "Calibrates the detector for transit observations."
+      }
+    },
+    {
+      "issueId": "i:bGluZWFyLW9ic2VydmF0b3J5:aW52ZW50ZWQtbGluZWFyLXV1aWQtMg",
+      "classification": {
+        "category": "transit",
+        "rationale": "Evaluates false positives in the same transit detection outcome."
+      }
+    },
+    {
+      "issueId": "i:Z2l0aHViLWNvbnRyb2w:SV9pbnZlbnRlZF9jb250cm9sXzc",
+      "classification": {
+        "category": "control",
+        "rationale": "Repairs runtime retries in telescope control."
+      },
+      "targets": ["Reliable observatory operations"]
+    },
+    {
+      "issueId": "i:Z2l0aHViLWRlbGl2ZXJ5:SV9pbnZlbnRlZF9kZWxpdmVyeV83",
+      "classification": {
+        "category": "delivery",
+        "rationale": "Repairs deployment infrastructure shared across repositories."
+      },
+      "targets": ["Reliable observatory operations"]
+    }
+  ]
+}

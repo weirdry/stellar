@@ -12,13 +12,14 @@ import {
 import { retainResponse } from '../lib/evidence.js';
 import {
   rememberMap,
+  classifyDraft,
   refreshState,
   applyChoices,
   writeRun,
 } from '../lib/continuity.js';
 
 const usage =
-  'Usage: stellar inspect MAP.json [ISSUE [OFFSET]] | stellar read-issue MAP.json ISSUE BLOCK [OFFSET] | stellar search-issue MAP.json ISSUE TEXT [OFFSET] | stellar retain-response RESPONSE_FILE NEW_FILE | stellar normalize CAPTURE.json DRAFT.json | stellar validate INPUT.json | stellar render INPUT.json OUTPUT.html | stellar verify-run CAPTURE.json MAP.json HTML [STATE.json] | stellar remember MAP.json RUN_DIR | stellar refresh STATE.json CAPTURE.json RUN_DIR | stellar classify STATE.json CHOICES.json RUN_DIR | stellar revise STATE.json CHOICES.json RUN_DIR';
+  'Usage: stellar inspect MAP.json [ISSUE [OFFSET]] | stellar read-issue MAP.json ISSUE BLOCK [OFFSET] | stellar search-issue MAP.json ISSUE TEXT [OFFSET] | stellar retain-response RESPONSE_FILE NEW_FILE | stellar normalize CAPTURE.json DRAFT.json | stellar classify-draft DRAFT.json CHOICES.json RUN_DIR | stellar validate INPUT.json | stellar render INPUT.json OUTPUT.html | stellar verify-run CAPTURE.json MAP.json HTML [STATE.json] | stellar remember MAP.json RUN_DIR | stellar refresh STATE.json CAPTURE.json RUN_DIR | stellar classify STATE.json CHOICES.json RUN_DIR | stellar revise STATE.json CHOICES.json RUN_DIR';
 const [command, input, output, ...extra] = process.argv.slice(2);
 try {
   if (command === '--help' && !input) console.log(usage);
@@ -62,6 +63,17 @@ try {
       JSON.stringify(
         await writeRun(rememberMap(await readWorkMap(input)), output),
       ),
+    );
+  } else if (
+    command === 'classify-draft' &&
+    input &&
+    output &&
+    extra.length === 1
+  ) {
+    const draft = await readWorkMap(input),
+      choices = await readWorkMap(output, 'choices');
+    console.log(
+      JSON.stringify(await writeRun(classifyDraft(draft, choices), extra[0])),
     );
   } else if (
     ['refresh', 'classify', 'revise'].includes(command) &&

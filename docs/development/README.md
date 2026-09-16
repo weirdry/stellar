@@ -34,6 +34,7 @@ dependency build scripts.
 | `just browser-install`                      | Explicit Chromium download using pinned Playwright                                         |
 | `just browser-check`                        | Chromium interaction, reuse, safety, viewport and export tests with synthetic inputs       |
 | `just normalize INPUT OUTPUT`               | Convert native capture to an unclassified work-map draft                                   |
+| `just classify-draft DRAFT CHOICES RUN`     | Apply initial agent decisions and save a complete map/state in a fresh directory           |
 | `just retain-response INPUT NEW_FILE`       | Preserve a host response file without echoing its contents or replacing another file       |
 | `just inspect MAP [ISSUE [OFFSET]]`         | Page through issue metadata or a template-independent body index                           |
 | `just read-issue MAP ISSUE BLOCK [OFFSET]`  | Read exact bounded source excerpts                                                         |

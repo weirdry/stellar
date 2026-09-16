@@ -21,11 +21,17 @@ and a registered cross-repository dependency. It is native capture input:
 
 ```sh
 just normalize examples/mixed-capture.json outputs/mixed-draft.json
+just classify-draft outputs/mixed-draft.json examples/mixed-choices.json outputs/mixed-run
+just render outputs/mixed-run/work-map.json outputs/mixed-run/stellar.html
 ```
 
 The draft intentionally requires agent classification before validation/rendering.
-It is not a ready-to-render canonical example. Tests use this same capture and
-explicit synthetic interpretation to verify normalization and mixed navigation.
+[mixed-choices.json](mixed-choices.json) supplies one authored interpretation for
+this example, keyed by canonical issue IDs to distinguish repeated `#7` labels.
+The first-run command applies it and saves matching refresh state. Tests execute
+the capture/choices pair and verify facts, ownership, rendering and later refresh.
+Use fresh output run paths when repeating the example. Its taxonomy is not a
+required vocabulary for other datasets.
 
 [purpose-capture.json](purpose-capture.json) is an independently invented river
 station input for skill exercises. It contains different harness purposes,

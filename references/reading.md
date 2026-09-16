@@ -58,6 +58,26 @@ relevance classifier. No section is dropped or prioritized by its heading name.
 Previews are at most 80 Unicode code points. Both body-index entries and search
 matches include `previewTruncated`, true only when the preview omits more text.
 
+Both `inspect` and `search-issue` put their results in **`items`**, not `entries`
+or `matches`. An issue-index item's `id` is the canonical ID to use as `issueId`
+in classification choices. A body-index item has `block`, `kind`, `start`, `end`
+and preview fields; a search item has `block`, `offset`, `start`, `end` and preview
+fields. `read-issue` returns **`text`** rather than an items array.
+
+When filtering output in a shell with `jq`, inspect one successful result before
+building a loop. For example:
+
+```sh
+just inspect "$MAP" | jq '.items[] | {id, identifier, scope}'
+just search-issue "$MAP" "$ISSUE" "$QUERY" | jq '{total, nextOffset, items}'
+```
+
+Pass JSON directly through a pipe or file. For a shell variable, use
+`printf '%s\n' "$result"`, not `echo`, which can interpret source backslashes.
+Check command failures before interpreting output as evidence; fix a failed
+single call before repeating it across issues. Follow returned `nextOffset`
+values rather than assuming a fixed number of pages.
+
 `read-issue` returns up to 4,000 code points of the chosen block, without
 rewriting text or line endings. Follow `nextOffset` for the next chunk and the
 body index for other blocks. `start`/`end` locate the exact excerpt within the
