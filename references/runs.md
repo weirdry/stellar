@@ -111,10 +111,21 @@ taxonomy.
 `classify-draft` and continuity commands must create their own fresh directory.
 Collect and prepare inputs in a separate private staging directory, let
 `classify-draft`, `remember`, `refresh`, `classify` or `revise` create the final
-directory, then copy the selected capture, applied choices
-and supporting evidence into it without replacing existing files. Keep previous
-reports and states. Do not pre-create the continuity destination to store raw
-responses. New standalone runs can use a newly created private directory.
+directory, then use `retain-response` for each selected capture, applied choices
+or supporting evidence file copied into it. For example, when capture and choices
+files are available, run these commands after the runner has created `$RUN`:
+
+```sh
+just retain-response "$STAGING/capture.json" "$RUN/capture.json"
+just retain-response "$STAGING/choices.json" "$RUN/choices.json"
+```
+
+This preserves the input bytes and creates owner-only files (`0600`), refusing
+existing destinations. Retain supporting evidence files the same way, keeping
+their relative layout. Retaining authored inputs does not establish source-response
+provenance. Keep previous reports and states. Do not pre-create the continuity
+destination to store raw responses. New standalone runs can use a newly created
+private directory.
 
 The README identifies the selected capture, renderer revision used, output/state
 paths, freshness and lookup limits, plus checks actually performed. If providing
