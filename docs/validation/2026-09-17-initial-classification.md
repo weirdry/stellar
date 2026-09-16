@@ -10,7 +10,9 @@ No viewer, source schema, dependency lock or saved-state version was changed.
 
 Boundary classification: unreleased — corrected in place.
 
-## Executable checks
+## Initial implementation checks — cf675f3
+
+These results apply to [cf675f3](https://github.com/weirdry/stellar/commit/cf675f302bc4befd8df8ac4ff1715cc302c784ce).
 
 - `just init`: locked tools and dependencies available; repository hooks ready.
 - `just ci`: documentation, format, repository/shell/workflow checks, ESLint,
@@ -32,7 +34,7 @@ source/origin writes, protected user choices, taxonomy redefinition, malformed
 JSON, relative references, occupied outputs and symlinks. CLI checks confirm
 input preservation, private output permissions, error roles and exit statuses.
 
-## Explicit skill exercise
+## Initial skill exercise — cf675f3
 
 The author explicitly applied the updated Stellar skill in this session using
 only [purpose-capture.json](../../examples/purpose-capture.json), with artifacts
@@ -56,7 +58,10 @@ registered relations, three domains and six categories. Membership was checked
 against the short bodies' outcomes and exclusions. This taxonomy is an example
 interpretation, not a required answer or an automatic semantic guarantee.
 
-## Self-review corrections
+## Self-review corrections — 132fa37
+
+The corrections and local results below apply to
+[132fa37](https://github.com/weirdry/stellar/commit/132fa375bd4189d88bc836f10572458c445a131e).
 
 The follow-up corrects first-run repair guidance and two reader-guide examples:
 
