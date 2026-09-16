@@ -1,4 +1,5 @@
 <!--
+Write the title and body in English.
 Title: use Conventional Commits — e.g. `feat(scope): …`, `fix(scope): …`, `refactor(scope): …`.
 Conventions: no Linear ID in the branch name or commit subject — link planning at the bottom instead.
 History should be ready for rebase + fast-forward (no merge or squash commits).
@@ -72,6 +73,7 @@ Keep the PR focused; a reviewer should grasp it in a few minutes. Delete any sec
 
 ## Repository authority and history (optional)
 
-<!-- Link repository-owned contracts, ADRs, evidence, and relevant prior PRs. External planning systems are coordination context, not authority or evidence. -->
+<!-- Link repository-owned contracts, ADRs, evidence, and relevant prior PRs. Use Refs #123 for related work on a PR targeting dev; closing keywords do not close issues on dev merge.
+GitHub Issues own agreed work scope and progress; technical facts require repository or runtime evidence. -->
 
 -

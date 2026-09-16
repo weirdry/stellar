@@ -70,6 +70,23 @@ for constrained local environments; default checks use Playwright's pinned
 browser. The browser gate fails if Chromium is unavailable; it does not skip.
 Private regression inputs and scripts must remain in ignored local locations.
 
+## Work tracking and agent instructions
+
+Use the [issue workflow](../../CONTRIBUTING.md#issue-management),
+[work template](../../.github/ISSUE_TEMPLATE/work.md), and repository-linked
+[Project](https://github.com/users/weirdry/projects/2) for scoped development work.
+Keep issue bodies, assignees, and Project status current. Related PRs targeting
+`dev` use `Refs #123`; close an issue explicitly only when its stated acceptance
+criteria are met. `main` promotion, skill installation, and live acceptance are
+separate outcomes when relevant.
+
+[Shared rules](../../RULES.md) own repository-wide agent instructions;
+[AGENTS.md](../../AGENTS.md) and [CLAUDE.md](../../CLAUDE.md) only reference them.
+Check entry files and relative links after edits, then verify loading in a fresh
+agent session before claiming runtime discovery. `SKILL.md` owns the product
+workflow. Adding the issue template on `dev` does not make it appear in GitHub's
+web chooser before the normal promotion to default-branch `main`.
+
 ## Changes and delivery
 
 Runtime selectors belong in `mise.toml`, with a real lock regenerated using

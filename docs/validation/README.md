@@ -4,6 +4,7 @@ Dated records identify the source or artifact, commands, observed result, and
 untested scope. They support the architecture without silently changing its
 meaning.
 
+- [2026-09-16 repository work tracking and agent rules](2026-09-16-repository-operations.md)
 - [2026-09-16 source retention and progressive reading](2026-09-16-evidence-reading.md)
 - [2026-09-15 durable default output location](2026-09-15-output-location.md)
 - [2026-09-15 run consistency and skill decision review](2026-09-15-run-verification.md)

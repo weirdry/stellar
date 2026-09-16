@@ -129,6 +129,21 @@ is an explicit network operation. `browser-check` runs a separate Chromium suite
 GitHub CI runs both gates. Screenshots are optional local evidence; neither a
 passing test nor a screenshot alone establishes visual acceptance.
 
+## Contributing
+
+Read [CONTRIBUTING.md](CONTRIBUTING.md) for contribution and issue-management
+rules. Track development and maintenance in [GitHub Issues](https://github.com/weirdry/stellar/issues)
+and the [Stellar Project](https://github.com/users/weirdry/projects/2), with table
+and workflow-board views. The Project is private; issues and PRs are public.
+Use the [work template](.github/ISSUE_TEMPLATE/work.md), write repository work in
+English, and keep status and priority in Project fields rather than labels.
+Private source data and user reports remain local.
+
+Shared agent instructions live in [RULES.md](RULES.md). [AGENTS.md](AGENTS.md)
+and [CLAUDE.md](CLAUDE.md) are one-line entry documents pointing to it. Edit
+shared instructions in `RULES.md`; the product's `SKILL.md` continues to own
+work-map generation and refresh.
+
 ## Navigation
 
 - [Contributing](CONTRIBUTING.md)

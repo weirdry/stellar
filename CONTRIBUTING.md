@@ -3,6 +3,14 @@
 This document defines Stellar's commit, branch, review, validation, and release
 rules. Contributors can follow the complete workflow from this repository.
 
+## Working language
+
+Write repository documentation, commit messages, issue titles and bodies, pull
+requests, comments, and Project updates in English. Preserve exact code,
+identifiers, source text, and diagnostic output when quoting evidence. This
+policy does not change conversation language, the requested language of a user
+report, or the viewer's supported locales.
+
 ## Branch strategy
 
 Stellar uses a simplified Gitflow model with linear integration and release
@@ -44,6 +52,79 @@ Use descriptive, purpose-based branch names. Recommended prefixes include:
 For example, `feature/work-map-renderer` describes the work. Do not include
 Linear or other tracker identifiers in branch names; put planning context in
 the PR body.
+
+## Issue management
+
+Stellar uses [GitHub Issues](https://github.com/weirdry/stellar/issues) as the source of
+truth for project development and maintenance work. Track feature planning,
+bugs, research, refactoring, documentation, testing, and operational improvements
+there. Issues own the agreed work scope, acceptance criteria, ownership, and
+progress; repository documents and executable evidence own technical facts.
+
+### Creating and maintaining an issue
+
+Search existing issues before creating one. Reuse an issue when it already
+tracks the same outcome. Create an issue for work that needs planning, ownership,
+discussion, or follow-up. A small, self-contained correction can be explained in
+its commit or PR when it needs no separate tracking.
+
+Use the repository-local [work template](.github/ISSUE_TEMPLATE/work.md) for all
+work types. Web, CLI, and API authors use the same five sections: Purpose, Work,
+Acceptance criteria, Out of scope, and References. Retain the headings, replace
+placeholders, and remove instructional comments. Use `N/A` with a short reason
+where a section does not apply. CLI/API authors must read and fill the template;
+the web template chooser does not enforce their issue bodies.
+
+Keep the body current as work progresses: check completed work, retain open
+questions, and update the acceptance criteria only when the agreed scope changes.
+Link detailed design and validation evidence under References. Add comments for
+substantive decisions, blockers, or coordination; do not repeat a body update as
+a routine status comment. Write all authored issue content in English.
+
+GitHub displays issue templates from the default branch, `main`. Adding a
+template to `dev` makes it available in that checkout; the web chooser uses it
+after the normal fast-forward promotion to `main`.
+
+### Work structure and planning
+
+- Use a parent issue and native sub-issues when parts need independent owners,
+  statuses, or acceptance criteria. Use checkboxes for steps within one task.
+- Record actual blocking dependencies with GitHub's issue relationships.
+- Use assignees for ownership and labels for the kind or area of work.
+- Use milestones for a concrete release or shared target, when one exists.
+- Add tracked work to the [Stellar Project](https://github.com/users/weirdry/projects/2). Keep
+  workflow status in its `Status` field and priority in its `Priority` field.
+  Use `Backlog → Todo → In Progress → In Review → Done`, and priority options
+  `Urgent`, `High`, `Normal`, and `Low`. Do not duplicate status or priority in
+  labels. Keep the Project status consistent with the issue's completion state.
+- Treat Project updates as part of issue maintenance; do not assume automation
+  keeps the two in sync. For canceled or duplicate work, record the closure
+  reason and clear its workflow status instead of presenting it as Done.
+- The Project is private, following the Crew reference. Stellar issues and PRs
+  are public: adding them to a private Project does not make their contents
+  private. Keep source captures, private reports, credentials, and session logs
+  out of issue bodies, attachments, and Project fields.
+
+### Linking work and recording completion
+
+Link the issue from related PRs and record implementation commits when work is
+committed directly to `dev`. For a PR targeting `dev`, use a reference such as
+`Refs #123` and add a Development link when applicable. Closing keywords such as
+`Closes #123` in a PR body only take effect for PRs targeting the default branch;
+they do not close issues when a PR targeting `dev` is merged.
+
+Close an issue as completed only after its acceptance criteria are met. Update
+the body with completed work and supporting PR, commit, document, or validation
+links, then close it explicitly and update its Project status if applicable.
+Close canceled or duplicate work with the reason and replacement link when one
+exists; do not present it as completed work.
+
+Development integration, release, installation, and live validation are distinct
+outcomes. An implementation issue may finish after `dev` integration and its
+required checks; an issue that promises installation or live validation stays
+open until that evidence exists. Track release scope through the relevant
+milestone and release evidence. Do not create a separate issue or release gate
+for every internal step.
 
 ## Commit messages
 
@@ -182,6 +263,8 @@ revision is recorded in [standard adoption](docs/development/standards.md).
 
 - Write the title and body in English. Use a Conventional Commit title and
   keep tracker identifiers in the optional history section, not the title.
+- Link tracked work with `Refs #123` and follow the explicit issue-completion
+  procedure above for PRs targeting `dev`.
 - Explain the problem and resulting behavior in Summary. State scope and
   non-goals, select the applicable change types, and summarize changes by area.
   Record significant decisions when they help review.
@@ -256,6 +339,20 @@ Mermaid is allowed when Archify is unavailable, execution is constrained, or the
 required meaning or notation cannot be adequately represented; record a brief
 reason in the change description. Existing diagrams do not require wholesale
 conversion. This documentation rule does not make Archify a product dependency.
+
+### Agent entry documents
+
+[RULES.md](RULES.md) is the single source of repository-wide agent instructions.
+[AGENTS.md](AGENTS.md) directs agents to read it;
+[CLAUDE.md](CLAUDE.md) imports it with `@RULES.md`. Keep both entry documents to
+one line and maintain shared instructions only in `RULES.md`. Contribution and
+issue-management procedures remain in this document and are referenced there.
+The product's [SKILL.md](SKILL.md) remains the work-map workflow, not repository
+contribution policy.
+
+When adopting another agent tool, use its supported entry/reference mechanism.
+Verify in a fresh session that it loads `RULES.md`; static file and link checks
+alone do not establish runtime loading.
 
 ## Release boundaries and user data
 
