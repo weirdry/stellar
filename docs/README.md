@@ -4,26 +4,32 @@ This is the repository-local entry point for Stellar's engineering knowledge.
 
 ## Authority map
 
-| Concern                                       | Owner                                                                                              |
-| --------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| Architecture current view and accepted Target | [Architecture](architecture/README.md)                                                             |
-| Implemented behavior and exact tool versions  | Repository scripts, configuration, and locks                                                       |
-| Skill authoring and capture workflow          | [Skill entry](../SKILL.md), [capture guide](../references/capture.md)                              |
-| Work-map input shape                          | [Work-map schema and semantic contract](../schemas/README.md)                                      |
-| Saved choices and requested refresh           | [Continuity workflow](../references/continuity.md), [state contract](../schemas/state.schema.json) |
-| Local run evidence and artifact consistency   | [Run guide](../references/runs.md), [verifier](../lib/verify.js)                                   |
-| Fixed UI language and owner-derived naming    | [Bundled viewer and locale catalogs](../assets/viewer/README.md)                                   |
-| Original issue facts                          | Source snapshot and source system; neither classification nor prose rewrites them                  |
-| Classification decisions                      | Work-map rationale and origin; private state retains classification and target ownership           |
-| Consequential decisions                       | [ADR history](decisions/README.md)                                                                 |
-| Commit, branch, review, and release rules     | [Stellar contribution policy](../CONTRIBUTING.md)                                                  |
-| Contributor setup and command procedures      | [Development guide](development/README.md)                                                         |
-| Dated results and limitations                 | [Validation records](validation/README.md)                                                         |
-| Engineering standards and adoption provenance | [Standard adoption](development/standards.md)                                                      |
+| Concern                                          | Owner                                                                                                                      |
+| ------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------- |
+| Architecture current view and accepted Target    | [Architecture](architecture/README.md)                                                                                     |
+| Implemented behavior and exact tool versions     | Repository scripts, configuration, and locks                                                                               |
+| Skill authoring and capture workflow             | [Skill entry](../SKILL.md), [capture guide](../references/capture.md)                                                      |
+| Work-map input shape                             | [Work-map schema and semantic contract](../schemas/README.md)                                                              |
+| Saved choices and requested refresh              | [Continuity workflow](../references/continuity.md), [state contract](../schemas/state.schema.json)                         |
+| Local run evidence and artifact consistency      | [Run guide](../references/runs.md), [verifier](../lib/verify.js)                                                           |
+| Fixed UI language and owner-derived naming       | [Bundled viewer and locale catalogs](../assets/viewer/README.md)                                                           |
+| Original issue facts                             | Source snapshot and source system; neither classification nor prose rewrites them                                          |
+| Classification decisions                         | Work-map rationale and origin; private state retains classification and target ownership                                   |
+| Consequential decisions                          | [ADR history](decisions/README.md)                                                                                         |
+| Repository-wide agent instructions               | [Shared rules](../RULES.md), referenced by [AGENTS.md](../AGENTS.md) and [CLAUDE.md](../CLAUDE.md)                         |
+| Development work scope, acceptance and progress  | [GitHub Issues](https://github.com/weirdry/stellar/issues), [Stellar Project](https://github.com/users/weirdry/projects/2) |
+| Commit, branch, issue, review, and release rules | [Stellar contribution policy](../CONTRIBUTING.md)                                                                          |
+| Contributor setup and command procedures         | [Development guide](development/README.md)                                                                                 |
+| Dated results and limitations                    | [Validation records](validation/README.md)                                                                                 |
+| Engineering standards and adoption provenance    | [Standard adoption](development/standards.md)                                                                              |
 
-Chat, Linear, and pull requests are planning provenance. The architecture must
-remain understandable without them. When sources disagree, identify the concern,
-verify its owner, and correct that owner rather than creating duplicate truths.
+GitHub Issues own agreed development work scope and progress; the Project is its
+planning view. Repository documents and executable evidence own technical facts.
+Chat, external trackers, and PR discussions provide context; the architecture
+must remain understandable without them. Source issues rendered by Stellar are
+product inputs, distinct from issues used to manage Stellar itself. When sources
+disagree, identify the concern, verify its owner, and correct that owner rather
+than creating duplicate truths.
 
 ## State vocabulary
 

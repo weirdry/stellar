@@ -53,10 +53,19 @@ distribution remain **Open**. Publishing obligations will be revisited with the 
   minimum remains intact. Link checking verifies local file targets; fragment
   meaning and factual correctness require review.
 - [.github/pull_request_template.md](../../.github/pull_request_template.md)
-  is copied without content changes from the organization's
+  was initially copied without content changes from the organization's
   [template at the reviewed commit](https://github.com/5010-dev/.github/blob/9411f3ee4adc5cbb7f7a951e4cee1a1602fffc39/pull_request_template.md).
   Root CONTRIBUTING.md requires this local template for PR authoring, including
-  its applicable sections and checklists. No automatic upstream sync is used.
+  its applicable sections and checklists. The 2026-09-16 adaptation adds explicit
+  English authoring and `Refs` guidance for issue tracking on `dev`. No automatic
+  upstream sync is used.
+- The issue workflow, [work template](../../.github/ISSUE_TEMPLATE/work.md), and
+  shared [agent rules structure](../../RULES.md) were adapted on 2026-09-16 from
+  [`weirdry/crew` at `97f2a76`](https://github.com/weirdry/crew/tree/97f2a76c3018b80f80886cab6590deca510847c5).
+  Stellar retains its own product/privacy constraints and canonical documentation
+  owners. Its hosted Project uses the same workflow and priority options, with
+  table and board views; actual settings and visibility require GitHub read-back.
+  This is a copy-once reference, not a runtime dependency on Crew.
 - Canonical CI follows the organization example. Its action tags and the mise
   Linux release asset were checked at adoption; exact pins live in the workflow.
 
