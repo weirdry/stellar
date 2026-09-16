@@ -56,6 +56,31 @@ registered relations, three domains and six categories. Membership was checked
 against the short bodies' outcomes and exclusions. This taxonomy is an example
 interpretation, not a required answer or an automatic semantic guarantee.
 
+## Self-review corrections
+
+The follow-up corrects first-run repair guidance and two reader-guide examples:
+
+- Missing first-run classifications now identify the draft issue with
+  `input: "work-map"`. The repair explains canonical `issueId`, category and
+  rationale in choices, with origin assigned by the runner. A new CLI regression
+  reverses draft and choices order, confirms refusal before directory creation,
+  follows that pointer to repair choices without origin, and checks successful
+  state creation and unchanged source facts. Standalone map-validation guidance
+  still requires origin. Source-text probes remain absent from diagnostics.
+- Search items are documented with their actual four fields: `block`, `offset`,
+  `preview` and `previewTruncated`. Excerpt `start`/`end` belong to `read-issue`.
+- The documented pipelines enable `set -euo pipefail`. Executing both examples
+  under Bash and Zsh succeeded with valid synthetic inputs; a missing map or
+  issue selector exited 1 and stopped before the subsequent command in both
+  shells. The positive search also checked the returned item fields.
+
+Local `just ci` passed **67/67 Node tests** and the skill validator passed.
+A fresh synthetic root-Just exercise confirmed incomplete-choice refusal,
+successful repair, validation, rendering, and all four `verify-run` checks.
+The local Chromium suite was not repeated for this diagnostic/documentation-only
+follow-up; the earlier **18/18** result above applies to the initial change.
+Exact-head hosted CI remains recorded in the PR.
+
 ## Evidence limits
 
 This was a same-session explicit workflow exercise, not independent forward

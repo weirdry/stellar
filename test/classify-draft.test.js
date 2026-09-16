@@ -19,6 +19,7 @@ import {
   assertState,
 } from '../lib/continuity.js';
 import { normalizeCapture } from '../lib/normalize.js';
+import { validateWorkMap } from '../lib/validate.js';
 import { mixedCapture } from './fixtures.js';
 
 const example = JSON.parse(
@@ -133,6 +134,77 @@ test('initial decisions reject incomplete assignments, invalid facts and invalid
     edit(c);
     rejectAt(() => classifyDraft(draft(), c), path);
   }
+});
+
+test('incomplete first-run choices can be repaired through the draft-relative diagnostic', async (t) => {
+  const dir = await mkdtemp(join(tmpdir(), 'stellar-first-run-repair-'));
+  t.after(() => rm(dir, { recursive: true, force: true }));
+  const map = draft(),
+    decisions = choices();
+  map.issues.reverse();
+  const omitted = map.issues[1];
+  omitted.title = 'private-probe-text';
+  omitted.description = 'private-probe-text';
+  const withheld = decisions.issues.find((item) => item.issueId === omitted.id);
+  decisions.issues = decisions.issues
+    .filter((item) => item !== withheld)
+    .reverse();
+  const input = join(dir, 'draft.json'),
+    decisionPath = join(dir, 'choices.json'),
+    output = join(dir, 'run'),
+    cli = fileURLToPath(new URL('../bin/stellar.js', import.meta.url));
+  const run = () =>
+    spawnSync(
+      process.execPath,
+      [cli, 'classify-draft', input, decisionPath, output],
+      {
+        cwd: dir,
+        encoding: 'utf8',
+      },
+    );
+  await writeFile(input, JSON.stringify(map));
+  await writeFile(decisionPath, JSON.stringify(decisions));
+  const rejected = run();
+  assert.equal(rejected.status, 1, rejected.stderr);
+  assert.equal(rejected.stdout, '');
+  assert.ok(!rejected.stderr.includes('private-probe-text'));
+  const [diagnostic] = JSON.parse(rejected.stderr).diagnostics;
+  assert.equal(diagnostic.code, 'missing-classification');
+  assert.equal(diagnostic.input, 'work-map');
+  assert.equal(diagnostic.path, '/issues/1/classification');
+  assert.match(diagnostic.fix, /issueId/);
+  assert.match(diagnostic.fix, /Omit origin/);
+  await assert.rejects(stat(output), { code: 'ENOENT' });
+
+  // Resolve the pointer against the draft, then supply only choices fields.
+  const issue = diagnostic.path
+    .split('/')
+    .slice(1, -1)
+    .reduce((value, part) => value[part], map);
+  decisions.issues.push({
+    issueId: issue.id,
+    classification: {
+      category: withheld.classification.category,
+      rationale: withheld.classification.rationale,
+    },
+  });
+  await writeFile(decisionPath, JSON.stringify(decisions));
+  const repaired = run();
+  assert.equal(repaired.status, 0, repaired.stderr);
+  const state = JSON.parse(await readFile(join(output, 'state.json'), 'utf8'));
+  assert.equal(state.map.issues[1].classification.origin, 'agent');
+  assert.deepEqual(strip(state.map), map);
+  assertState(state);
+  assert.deepEqual(JSON.parse(await readFile(input, 'utf8')), map);
+
+  // Standalone map validation still explains its own origin requirement.
+  const standalone = validateWorkMap(map).diagnostics.find(
+    (item) => item.path === diagnostic.path,
+  );
+  assert.equal(
+    standalone.fix,
+    'Assign one existing category with rationale and origin.',
+  );
 });
 
 test('partially interpreted drafts retain user authority and reject conflicting agent decisions', () => {

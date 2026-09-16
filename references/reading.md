@@ -61,13 +61,16 @@ matches include `previewTruncated`, true only when the preview omits more text.
 Both `inspect` and `search-issue` put their results in **`items`**, not `entries`
 or `matches`. An issue-index item's `id` is the canonical ID to use as `issueId`
 in classification choices. A body-index item has `block`, `kind`, `start`, `end`
-and preview fields; a search item has `block`, `offset`, `start`, `end` and preview
-fields. `read-issue` returns **`text`** rather than an items array.
+and preview fields; a search item has `block`, `offset`, `preview` and
+`previewTruncated`. `read-issue` returns **`text`** rather than an items array,
+with `start`/`end` locating that excerpt in the original description.
 
 When filtering output in a shell with `jq`, inspect one successful result before
-building a loop. For example:
+building a loop. In Bash or Zsh, enable pipeline failure propagation and stop
+on errors so a successful `jq` cannot hide a failed reader command:
 
-```sh
+```bash
+set -euo pipefail
 just inspect "$MAP" | jq '.items[] | {id, identifier, scope}'
 just search-issue "$MAP" "$ISSUE" "$QUERY" | jq '{total, nextOffset, items}'
 ```
