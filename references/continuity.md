@@ -29,6 +29,10 @@ user classifications/targets cannot be overwritten. For a partially interpreted
 first map, classification origin also supplies initial target ownership, as with
 `remember` below. Context can remain unclassified. Missing assigned
 classifications or invalid decisions are rejected before a directory is created.
+For a missing classification, `input: "work-map"` and `/issues/N/classification`
+identify the issue in the draft, not the Nth choices entry. Add a choice using
+that draft issue's canonical `id` as `issueId`, with `category` and `rationale`
+inside `classification`; omit `origin`, which the runner assigns.
 
 Successful application writes a complete `work-map.json`, matching `state.json`,
 and empty initial `changes.json`. Keep the original draft and choices; retain

@@ -141,7 +141,9 @@ uses the shared choices validation and authority rules, and requires a complete
 map before writing matching state. Context may remain unclassified. The initial
 change summary is empty because no earlier observation is compared. Facts and
 registered relations are preserved; no semantic classification is generated.
-Invalid choices or incomplete assignments fail before run creation. Use
+Invalid choices or incomplete assignments fail before run creation. Missing
+classification diagnostics identify the draft map issue and explain how to add
+its canonical ID, category and rationale to choices without supplying origin. Use
 `classify` with existing state to preserve absent decisions and ownership.
 
 `remember` initializes a saved state from an already-valid standalone map. `refresh` accepts that
