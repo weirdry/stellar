@@ -63,6 +63,9 @@ search-issue input issue query offset="0":
     mise exec --locked -- node bin/stellar.js search-issue {{ quote(input) }} {{ quote(issue) }} {{ quote(query) }} {{ quote(offset) }}
 
 # Continuity commands write a new private run directory and never replace one.
+classify-draft draft choices run:
+    mise exec --locked -- node bin/stellar.js classify-draft {{ quote(draft) }} {{ quote(choices) }} {{ quote(run) }}
+
 remember input run:
     mise exec --locked -- node bin/stellar.js remember {{ quote(input) }} {{ quote(run) }}
 

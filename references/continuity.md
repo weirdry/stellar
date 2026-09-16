@@ -8,15 +8,48 @@ Select the destination using the [run location policy](runs.md#choose-the-run-lo
 An input state's location alone is not an output-directory preference. Keep that
 state in place and pass an absolute, unused run path to the continuity command.
 
+## Classify a first draft
+
+After normalization and evidence reading, author a choices file using the
+[choices contract](../schemas/choices.schema.json) and the example below.
+Use each draft issue's canonical `id` as `issueId`, not its display identifier.
+Domains/categories define the taxonomy; issue choices carry classification
+and/or targets. Do not supply source fields or `origin`: the command sets agent
+origin. See [the complete synthetic choices](../examples/mixed-choices.json).
+
+```sh
+just classify-draft "$STAGING/draft.json" "$STAGING/choices.json" "$OUT/classified-01"
+just render "$OUT/classified-01/work-map.json" "$OUT/classified-01/stellar.html"
+```
+
+The runner applies authored decisions; it does not infer purposes or propose
+groups. It reuses the same choices validation and user-authority protections as
+`classify`. Existing groups cannot be redefined by agent choices, and existing
+user classifications/targets cannot be overwritten. For a partially interpreted
+first map, classification origin also supplies initial target ownership, as with
+`remember` below. Context can remain unclassified. Missing assigned
+classifications or invalid decisions are rejected before a directory is created.
+
+Successful application writes a complete `work-map.json`, matching `state.json`,
+and empty initial `changes.json`. Keep the original draft and choices; retain
+the input capture and applied choices with the final run. No extra `remember`
+step or custom map-mutation script is needed.
+If there are no assigned issues and no decisions to apply, validate the draft
+and use `remember` instead; the choices contract requires a nonempty update.
+
+This is a first-run entry point. When state already exists, use `classify` with
+that state: extracting its map for `classify-draft` would discard absent
+identities, pending review and independent target ownership.
+
 ## Start from a completed map
 
-Classify a first map through the ordinary workflow, then bootstrap its state:
+For an already-complete standalone map without saved state, bootstrap its state:
 
 ```sh
 just remember "$MAP/work-map.json" "$OUT/saved-01"
 ```
 
-Each continuity command creates a **new directory** containing `state.json`,
+`classify-draft` and each continuity command create a **new directory** containing `state.json`,
 `work-map.json`, and `changes.json`. Supply an unused path; do not create the
 run directory in advance. Existing files, directories and symlinks are refused.
 Use the latest successful `state.json` for the next operation. Branches of saved

@@ -108,9 +108,10 @@ runs when needed to trace a refresh. The final map records the agent's actual
 classification; rerunning interpretation is not guaranteed to choose the same
 taxonomy.
 
-Continuity commands must create their own fresh directory. Collect and prepare
-inputs in a separate private staging directory, let `remember`, `refresh`,
-`classify` or `revise` create the final directory, then copy the selected capture
+`classify-draft` and continuity commands must create their own fresh directory.
+Collect and prepare inputs in a separate private staging directory, let
+`classify-draft`, `remember`, `refresh`, `classify` or `revise` create the final
+directory, then copy the selected capture, applied choices
 and supporting evidence into it without replacing existing files. Keep previous
 reports and states. Do not pre-create the continuity destination to store raw
 responses. New standalone runs can use a newly created private directory.

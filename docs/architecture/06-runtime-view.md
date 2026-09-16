@@ -101,8 +101,8 @@ context metadata and a parent observation within a cycle.
 Missing, malformed or non-HTTP GitHub URLs fail at `html_url` before repository
 resolution; malformed assignee/label arrays and elements identify the corresponding capture
 field with repair guidance instead of throwing an unstructured JavaScript error.
-The agent edits only taxonomy/classification/targets,
-then invokes validation and rendering. Normalization shares the renderer's atomic
+The agent authors taxonomy/classification/target choices and applies them with
+`classify-draft`, then invokes validation and rendering. Normalization shares the renderer's atomic
 writer and input-alias protection. Source-specific freshness and coverage remain
 visible in the header/help; no source access occurs when opening the artifact.
 
@@ -135,7 +135,16 @@ initial data-transfer path; no measured latency or token reduction is asserted.
 
 State: **As-built**
 
-`remember` initializes a saved state from a valid map. `refresh` accepts that
+`classify-draft` accepts a normalized first draft and agent-authored choices.
+It permits missing assigned classifications only while preparing the input,
+uses the shared choices validation and authority rules, and requires a complete
+map before writing matching state. Context may remain unclassified. The initial
+change summary is empty because no earlier observation is compared. Facts and
+registered relations are preserved; no semantic classification is generated.
+Invalid choices or incomplete assignments fail before run creation. Use
+`classify` with existing state to preserve absent decisions and ownership.
+
+`remember` initializes a saved state from an already-valid standalone map. `refresh` accepts that
 state and a native capture, normalizes current facts, and matches remembered
 choices by provider/namespace/native identity. It retains missing choices in
 state without restoring old issues or relations to the current report. Changed
@@ -161,7 +170,7 @@ gets the notice again, including after reclassification while unqueried. The
 recorded rationale remains intact. Target-only changes and an agent's unchanged
 echo of a user choice do not clear the notice.
 
-All four commands validate their result before creating a new run directory with
+All run-producing commands validate their result before creating a new run directory with
 owner-only access. Existing paths are refused. On write failure, cleanup targets
 only files created by that operation. Each run contains `state.json`,
 `work-map.json`, and `changes.json`; the renderer consumes only the work map.
@@ -174,6 +183,7 @@ replace the original failure, and possible leftovers are disclosed. Continuity
 run-output diagnostics omit raw filesystem error paths; JSON syntax diagnostics
 omit source excerpts. Input read failures still use system error messages and
 may include the supplied path, for example when an input file does not exist.
-[continuity.js](../../lib/continuity.js), [its tests](../../test/continuity.test.js)
+[continuity.js](../../lib/continuity.js), [first-run tests](../../test/classify-draft.test.js),
+[continuity tests](../../test/continuity.test.js)
 and [the skill workflow](../../references/continuity.md) own this behavior. No
 background worker, continuous sync, or persistent service exists.

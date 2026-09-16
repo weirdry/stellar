@@ -65,6 +65,11 @@ system or hidden reasoning transcript is unnecessary. Respect explicit user
 grouping and disclose a conflict instead of silently replacing it.
 Structural validation cannot establish semantic grouping quality.
 
+Apply first-run decisions through `classify-draft` using the
+[shared choices format](continuity.md#classify-a-first-draft). This keeps map
+mutation and state creation in the runner; the agent still owns interpretation.
+For a saved state, continue through `classify` or an explicit user's `revise`.
+
 If the evidence is insufficient, keep an explicit category such as “Purpose to
 clarify” with a factual rationale explaining what is missing. Do not invent an
 objective to avoid uncertainty. Unqueried context can stay unclassified and never

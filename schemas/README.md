@@ -185,6 +185,12 @@ agent/user origin; source fields cannot be supplied as choice fields. Neither
 contract is a replacement viewer format. Only `state.map`, emitted as
 `work-map.json`, enters HTML. See [continuity](../references/continuity.md).
 
+`classify-draft DRAFT CHOICES RUN` uses this same choices contract for first-run
+application. It accepts missing assigned classifications in the input draft but
+requires a complete classified map before writing matching map/state files.
+All other map invariants and the existing agent/user protections apply. It is
+not a replacement for `classify STATE CHOICES RUN` when saved state exists.
+
 JSON syntax and continuity-schema diagnostics identify the input role separately
 from its document-relative JSON pointer. Extra-property paths use JSON pointer
 escaping; choices alternatives are explained as alternatives. Run output failures

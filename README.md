@@ -66,6 +66,21 @@ without printing their contents. After normalization, `just inspect MAP`,
 over original descriptions. See [progressive reading](references/reading.md).
 These helpers do not fetch data or turn a model-authored copy into source proof.
 
+For a native capture, write agent decisions in the
+[choices format](references/continuity.md#classify-a-first-draft), then use
+`just classify-draft DRAFT.json CHOICES.json NEW_RUN`. The runner applies the
+decisions and creates a complete map with refresh state; it does not propose
+classifications. A runnable synthetic example is:
+
+```sh
+just normalize examples/mixed-capture.json outputs/mixed-draft.json
+just classify-draft outputs/mixed-draft.json examples/mixed-choices.json outputs/mixed-run
+just render outputs/mixed-run/work-map.json outputs/mixed-run/stellar.html
+```
+
+Choose a fresh run path when repeating this example. Already-classified examples
+can be rendered directly:
+
 ```sh
 just validate examples/museum.json
 just render examples/museum.json outputs/museum.html
@@ -89,7 +104,8 @@ Use [the input guide](schemas/README.md) to author a different map.
 
 ## Remember and refresh
 
-After classifying a first map, `just remember MAP.json NEW_RUN` saves its state.
+`classify-draft` already saves the first run's state. For an existing complete
+standalone map without state, `just remember MAP.json NEW_RUN` initializes it.
 Use `just revise STATE.json CHOICES.json NEW_RUN` for a user correction and
 `just refresh STATE.json CAPTURE.json NEW_RUN` for a fresh source snapshot.
 `just classify STATE.json CHOICES.json NEW_RUN` applies agent decisions while

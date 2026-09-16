@@ -19,7 +19,8 @@ For a saved map, a user correction, or a requested refresh, read
 [continuity](references/continuity.md). Use its state/choices commands rather
 than restarting classification or manually editing a saved map. The collection
 and delivery boundaries below still apply. A first report can become the starting
-state through `just remember` after validation.
+state through `just remember` after validation; `classify-draft` already saves
+state for a newly classified draft.
 Continuity refuses report-relative references before writing; follow its guide
 to retain the original artifact and disclose this limitation.
 
@@ -43,7 +44,7 @@ viewer filters define the requested collection scope.
   or refresh. Keep captures, drafts, reports, and logs private. Do not overwrite
   prior reports or snapshots unless the user requested replacement. HTML embeds
   the issue data. This default does not move existing artifacts or saved state.
-  For continuity commands, supply a fresh unused path and let the command create
+  For `classify-draft` and continuity commands, supply a fresh unused path and let the command create
   the directory. Always retain previous state and reports.
 - Confirm the locked runtime/dependencies exist. From `STELLAR_ROOT`, use root
   Just commands. If setup is needed, follow [development setup](README.md#start-development).
@@ -71,11 +72,12 @@ locally; a host session log or a path outside the delivered folder is not a
 self-contained collection record. Supplied snapshots retain their original
 observation times and limitations; do not invent evidence of fresh collection.
 
-Build the capture in [capture format](references/capture.md), then run from
-`STELLAR_ROOT` with absolute input/output paths:
+Build the capture in [capture format](references/capture.md) in a private staging
+directory. Keep the final run path unused. Run from `STELLAR_ROOT` with absolute
+input/output paths:
 
 ```sh
-just normalize "$RUN/capture.json" "$RUN/work-map.json"
+just normalize "$STAGING/capture.json" "$STAGING/draft.json"
 ```
 
 This creates a canonical **draft**, with source facts and deduplicated registered
@@ -102,19 +104,32 @@ actual outputs and exclusions in their source text. Correct contradictory agent
 assignments before rendering; preserve explicit user choices and explain any
 tension with new facts.
 
-Edit only `domains`, `categories`, each issue's `classification`, and `targets`
-in the draft. In-scope (`assigned`) issues each need one primary category with a
-specific rationale and `origin: agent` (or `user` for an explicit user choice).
-Context may stay unclassified. Keep normalized facts and relations intact.
+For a first draft, write your decisions in the existing
+[choices format](references/continuity.md#classify-a-first-draft): domains,
+categories, and issue choices selected by the draft's canonical `id` as `issueId`.
+Author a specific rationale for each assigned issue's primary category; context
+may stay unclassified. The runner applies decisions with `origin: agent`, protects
+existing user choices, and preserves normalized facts and relations. It does not
+generate classifications. Record explicit user grouping through `revise` on
+the returned state in another fresh run before final delivery.
 If a fact is wrong, correct the capture against source evidence and normalize
 again before reapplying interpretation. For saved maps, apply choices through
 `classify` for agent decisions or `revise` for explicit user decisions; follow
 the continuity guide to keep saved state consistent with the report.
 
 ```sh
+just classify-draft "$STAGING/draft.json" "$STAGING/choices.json" "$RUN"
 just validate "$RUN/work-map.json"
 just render "$RUN/work-map.json" "$RUN/stellar.html"
 ```
+
+`classify-draft` requires every assigned issue to be classified before writing.
+It creates `work-map.json`, `state.json`, and `changes.json` in a fresh directory;
+no per-run application script or extra `remember` is needed. Retain the capture,
+choices and applicable evidence in that directory as described in the run guide.
+For an existing saved state, continue with `classify`, not `classify-draft`.
+If a draft has no assigned issues and needs no interpretation changes, validate
+it and use `remember` directly; do not invent a group just to supply choices.
 
 Use diagnostic paths and `fix` guidance to repair the relevant input. Never
 invent a missing source fact, remove a real relationship, or relabel unknown
