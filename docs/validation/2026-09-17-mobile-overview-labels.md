@@ -85,6 +85,15 @@ Follow-up local results:
   intersections were found in the corrected outputs. This bounded comparison
   is local evidence, not an arbitrary-layout guarantee.
 
+## Subsequent independent review
+
+Independent review at `b0f5a58` found area-name loss, expanded-node selection
+collisions, target-view label suppression, cross-area arrow interference, and
+short-phone minimap occlusion beyond these fixtures. The local results above
+remain observations of those revisions, not evidence that these regressions
+were absent. See the [follow-up record](2026-09-18-overview-review-fixes.md) for
+the corrected policy and regression evidence.
+
 ## Limits
 
 This is a bounded regression for small overviews with long labels. It is not a
