@@ -1144,28 +1144,65 @@ function bounds(nodes) {
 }
 function fitScene(nodes = state.scene.nodes) {
   if (!nodes.length) return;
+  let top = 120;
   const b = bounds(nodes),
     w = $('#stage').clientWidth,
     h = $('#stage').clientHeight,
     marginX = w < 500 ? 65 : 105,
-    top = 120,
     // Leave room for overview names below the lowest node, above the minimap.
-    bottom = w < 500 && state.mode === 'global' ? 250 : w < 600 ? 190 : 160,
-    availW = Math.max(100, w - marginX * 2),
-    availH = Math.max(140, h - top - bottom),
-    k = Math.min(
-      1.65,
-      Math.max(
-        0.015,
-        Math.min(availW / (b.maxX - b.minX), availH / (b.maxY - b.minY)),
-      ),
-    );
-  state.transform = {
-    k,
-    x: w / 2 - ((b.minX + b.maxX) / 2) * k,
-    y: top + availH / 2 - ((b.minY + b.maxY) / 2) * k,
+    bottom = w < 500 && state.mode === 'global' ? 250 : w < 600 ? 190 : 160;
+  const fit = () => {
+    const availW = Math.max(100, w - marginX * 2),
+      availH = Math.max(140, h - top - bottom),
+      k = Math.min(
+        1.65,
+        Math.max(
+          0.015,
+          Math.min(availW / (b.maxX - b.minX), availH / (b.maxY - b.minY)),
+        ),
+      );
+    state.transform = {
+      k,
+      x: w / 2 - ((b.minX + b.maxX) / 2) * k,
+      y: top + availH / 2 - ((b.minY + b.maxY) / 2) * k,
+    };
+    applyTransform(true);
   };
-  applyTransform(true);
+  fit();
+  if (state.mode !== 'global') return;
+  const stageTop = $('#stage').getBoundingClientRect().top,
+    clearTop =
+      Math.max(
+        $('.canvas-top').getBoundingClientRect().bottom,
+        $('#canvas-caption').getBoundingClientRect().bottom,
+      ) + 8,
+    labels = nodes.map((node) => ({
+      node,
+      label: $(`[data-node="${CSS.escape(node.id)}"] .node-label`),
+    }));
+  if (
+    !labels.some(
+      ({ label }) =>
+        label.style.display !== 'none' &&
+        label.getBoundingClientRect().top < clearTop,
+    )
+  )
+    return;
+  // A moved label can rise above the fixed node-only fit margin. Reserve its
+  // measured upper extent once, including labels the new scale may reveal.
+  // The second fit only reduces scale, so text height and dot radii cannot grow.
+  const k = state.transform.k,
+    overhang = Math.max(
+      ...labels.map(({ node, label }) => {
+        const display = label.style.display;
+        label.style.display = '';
+        const height = label.getBBox().height * k;
+        label.style.display = display;
+        return height + nodeRadius(node) * k + 10 + 16;
+      }),
+    );
+  top = Math.max(top, clearTop - stageTop + overhang);
+  fit();
 }
 function currentFocusNodes() {
   if (state.mode !== 'global' || !state.selected) return state.scene.nodes;

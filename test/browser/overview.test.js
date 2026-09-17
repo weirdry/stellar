@@ -80,20 +80,15 @@ async function readableLabels(page) {
   return boxes.filter((box) => box.label);
 }
 
-async function fittedLabels(page) {
-  const labels = await readableLabels(page);
-  assert.equal(
-    labels.length,
-    6,
-    'the small overview retains both domains and all four group labels',
-  );
+async function clearCanvasUI(page) {
   const occluded = await page.evaluate(() => {
     const stage = document.querySelector('#stage').getBoundingClientRect();
     const controls = [
       '#canvas-caption',
+      '.canvas-top',
       '.minimap-wrap',
       '.legend-panel',
-      '#zoom-in',
+      '.viewport-tools',
     ].map((selector) =>
       document.querySelector(selector).getBoundingClientRect(),
     );
@@ -123,6 +118,16 @@ async function fittedLabels(page) {
     [],
     'fitted label lines stay inside the stage and clear of canvas controls',
   );
+}
+
+async function fittedLabels(page) {
+  const labels = await readableLabels(page);
+  assert.equal(
+    labels.length,
+    6,
+    'the small overview retains both domains and all four group labels',
+  );
+  await clearCanvasUI(page);
 }
 
 for (const locale of ['ko', 'en']) {
@@ -258,5 +263,116 @@ for (const locale of ['ko', 'en']) {
         .evaluate((element) => JSON.parse(element.textContent)),
       data,
     );
+  });
+}
+
+for (const locale of ['ko', 'en']) {
+  test(`short ${locale} phone fit keeps area names below the canvas caption`, async (t) => {
+    const data = JSON.parse(
+      await readFile(
+        new URL('../../examples/museum.json', import.meta.url),
+        'utf8',
+      ),
+    );
+    data.locale = locale;
+    data.view.initialScope = 'all';
+    data.domains.forEach((domain, index) => {
+      domain.label =
+        locale === 'ko'
+          ? `해안 관측 기록 검토와 시민 안내 ${index + 1}`
+          : `Coastal observation review and public guidance ${index + 1}`;
+    });
+    data.categories.forEach((category, index) => {
+      category.label =
+        locale === 'ko'
+          ? `관측 실험 결과 검토와 안내 자료 제작 ${index + 1}`
+          : `Observation experiment review and bulletin production ${index + 1}`;
+    });
+    data.issues = data.issues.slice(0, 6);
+    data.issues.forEach((issue, index) => {
+      issue.classification.category = data.categories[index].id;
+    });
+    const ids = new Set(data.issues.map((issue) => issue.id));
+    data.relations = data.relations.filter(
+      (edge) => ids.has(edge.source) && ids.has(edge.target),
+    );
+    const dir = await mkdtemp(join(tmpdir(), 'stellar-short-overview-'));
+    t.after(() => rm(dir, { recursive: true, force: true }));
+    const browser = await chromium.launch({
+      headless: true,
+      ...(process.env.STELLAR_CHROME
+        ? { executablePath: process.env.STELLAR_CHROME }
+        : {}),
+    });
+    t.after(() => browser.close());
+    const page = await browser.newPage({
+      viewport: { width: 390, height: 667 },
+    });
+    const errors = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    t.after(() => assert.deepEqual(errors, []));
+    const file = join(dir, 'map.html');
+    await writeFile(file, await renderWorkMap(data));
+    await page.goto(pathToFileURL(file).href);
+    await page.waitForFunction(() => window.stellar);
+    await page.waitForTimeout(150);
+    const state = () => page.evaluate(() => window.stellar.getState());
+    const initial = await state();
+    const check = async () => {
+      const labels = await readableLabels(page);
+      assert.ok(labels.length > 0, 'the overview must retain readable names');
+      if (page.viewportSize().height === 667)
+        assert.ok(
+          labels.some((box) => box.node.startsWith('d:')),
+          'the short-phone correction must retain an area name, not just hide the offending text',
+        );
+      await clearCanvasUI(page);
+      assert.deepEqual((await state()).nodes, initial.nodes);
+      assert.deepEqual((await state()).edges, initial.edges);
+      assert.equal((await state()).baseCount, 6);
+    };
+    if (process.env.STELLAR_QA_DIR) {
+      await mkdir(process.env.STELLAR_QA_DIR, { recursive: true });
+      await page.screenshot({
+        path: join(process.env.STELLAR_QA_DIR, `${locale}-short-overview.png`),
+      });
+    }
+    await check();
+    await page.locator('#theme').click();
+    await check();
+    await page.locator('#zoom-in').click();
+    await page.locator('#fit').click();
+    await check();
+    const fitted = (await state()).transform;
+    await page.locator('#fit').click();
+    assert.deepEqual(
+      (await state()).transform,
+      fitted,
+      'repeated fit does not accumulate padding',
+    );
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.waitForTimeout(180);
+    await check();
+    await page.setViewportSize({ width: 390, height: 667 });
+    await page.waitForTimeout(180);
+    await check();
+    assert.deepEqual(
+      (await state()).transform,
+      fitted,
+      'resizing back produces the same fitted camera',
+    );
+    const beforePan = await readableLabels(page);
+    await page.mouse.move(20, 360);
+    await page.mouse.down();
+    await page.mouse.move(55, 380, { steps: 4 });
+    await page.mouse.up();
+    const afterPan = await readableLabels(page);
+    assert.equal(afterPan.length, beforePan.length);
+    for (let i = 0; i < afterPan.length; i++) {
+      assert.ok(Math.abs(afterPan[i].left - beforePan[i].left - 35) < 1);
+      assert.ok(Math.abs(afterPan[i].top - beforePan[i].top - 20) < 1);
+    }
+    await page.locator('#fit').click();
+    await check();
   });
 }

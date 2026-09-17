@@ -48,6 +48,13 @@ This does not relocate graph nodes to solve collisions, change classification,
 or promise that arbitrary dense graphs show every name at once. Neighborhood
 node-label placement is unchanged.
 
+A global fit that places text above the caption/navigation clearance receives
+one corrective fit using measured label height and the upper placement offsets.
+Only the fitted nodes contribute; unrelated off-screen groups do not enlarge a
+focused view's margin. The correction reserves room rather than merely hiding
+text under fixed UI. Repeated fit starts from the same initial margins, and
+manual camera movement remains independent.
+
 Parallel relation curves use a common endpoint order so reversing a source
 relation does not fold its path onto the opposite relation. Arrow direction and
 the underlying issue pairs remain source facts. A minimum screen-space curve
