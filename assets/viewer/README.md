@@ -12,15 +12,26 @@ The viewer derives presentation fields from the canonical issue classification
 and relation list. It keeps a domain grid with radial subgroups, expands issues
 from their subgroup, and uses a radial neighborhood for direct source links.
 A cross-domain target view uses compact horizontal trees. Node positions remain
-stable during camera movement. Palette order follows authored domain order;
-font fallback and viewport may affect pixels. Small scenes keep subgroup labels
-visible; dense scenes reveal labels as the user zooms.
+stable during camera movement. Below a 490 CSS-pixel stage width, overview domains
+use one compact column; fitted phone overviews reserve extra space above the
+minimap for names. Wider stages retain the multi-column grid. Palette order
+follows authored domain order; font fallback and viewport may affect pixels.
+
+Global-view labels are measured after wrapping. Selected/in-focus labels and
+area names take priority; each label tries below its node, then above it, clearing
+all node dots and already placed text. Both anchors can try one extra line of
+clearance (16 CSS pixels). If none of these four positions fits, only the label
+is hidden and reconsidered on zoom, fit, selection or resize. Panning moves the
+existing placement with the graph. Full names remain in accessible node names,
+hover tooltips, the tree and the inspector. Small scenes can retain all subgroup
+labels; dense scenes may require zoom or selection. Neighborhood node-label
+placement is unchanged.
 
 Parallel curves retain a minimum screen-space separation for pointer selection.
 Relation labels that overlap nodes, node text, or another visible relation label
 are suppressed and reconsidered on zoom; the underlying edges and inspector
 details remain available.
-This is a text-visibility rule, not a general graph-layout optimizer.
+These are bounded text-placement rules, not a general graph-layout optimizer.
 
 Search, synchronized tree/graph selection, status and target filters, relationship
 toggles, history, pan/zoom/fit, minimap, themes, keyboard controls, mobile drawers,

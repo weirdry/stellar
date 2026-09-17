@@ -355,14 +355,14 @@ function globalScene() {
     edges = [],
     byId = new Map(),
     stageW = $('#stage').clientWidth,
-    cols = stageW >= 760 ? 4 : stageW >= 490 ? 3 : 2;
+    cols = stageW >= 760 ? 4 : stageW >= 490 ? 3 : 1;
   R.domains.forEach((d, di) => {
     const items = base.filter((i) => i.domain === d.id);
     if (!items.length) return;
     const row = Math.floor(di / cols),
       col = di % cols,
       x = col * 2400 + (row % 2 ? 80 : 0),
-      y = row * 2250 + ([0, 95, -65, 40][col] || 0);
+      y = row * (cols === 1 ? 1900 : 2250) + ([0, 95, -65, 40][col] || 0);
     const dn = {
       id: 'd:' + d.id,
       key: d.id,
@@ -934,6 +934,65 @@ function lineGeometry(a, b, offset = 0) {
     ly: (ay + 2 * cy + by) / 4,
   };
 }
+function boxesOverlap(a, b, padding) {
+  return (
+    a.x < b.x + b.width + padding &&
+    b.x < a.x + a.width + padding &&
+    a.y < b.y + b.height + padding &&
+    b.y < a.y + a.height + padding
+  );
+}
+function placeNodeLabels(nodeEls) {
+  const k = state.transform.k,
+    occupied = state.scene.nodes.map((node) => {
+      const r = nodeRadius(node);
+      return { x: node.x - r, y: node.y - r, width: r * 2, height: r * 2 };
+    }),
+    priority = (node) =>
+      (nodeSelected(node) ? 0 : inFocus(node) ? 10 : 20) +
+      (node.type === 'domain' ? 0 : node.type === 'category' ? 1 : 2),
+    ordered = state.scene.nodes
+      .map((node, index) => ({
+        node,
+        label: nodeEls[index].querySelector('.node-label'),
+      }))
+      .sort((a, b) => priority(a.node) - priority(b.node));
+  for (const { node, label } of ordered) {
+    if (label.style.display === 'none') continue;
+    const box = label.getBBox(),
+      below = {
+        x: node.x + box.x,
+        y: node.y + box.y,
+        width: box.width,
+        height: box.height,
+      };
+    if (state.mode !== 'global') {
+      occupied.push(below);
+      continue;
+    }
+    // Keep text near its node: try below/above, then one extra line of clearance.
+    // If none fits, zoom or selection can reveal it; full names remain in
+    // accessible names, tooltips, the tree and inspector. Never move nodes.
+    const above = {
+        ...below,
+        y: node.y - nodeRadius(node) - 10 / k - box.height,
+      },
+      placed = [
+        below,
+        above,
+        { ...below, y: below.y + 16 / k },
+        { ...above, y: above.y - 16 / k },
+      ].find(
+        (candidate) =>
+          !occupied.some((other) => boxesOverlap(candidate, other, 4 / k)),
+      );
+    if (placed) {
+      label.setAttribute('transform', `translate(0 ${placed.y - below.y})`);
+      occupied.push(placed);
+    } else label.style.display = 'none';
+  }
+  return occupied;
+}
 function applyTransform(geometry = false) {
   const { x, y, k } = state.transform;
   $('#viewport').setAttribute('transform', `translate(${x} ${y}) scale(${k})`);
@@ -1020,6 +1079,7 @@ function applyTransform(geometry = false) {
           (state.target && targetMatch(n)),
         label = el.querySelector('.node-label');
       label.style.display = show ? '' : 'none';
+      label.removeAttribute('transform');
       const mainText = n.type === 'issue' ? displayId(n.issue) : n.label,
         lines = wrapLabel(
           mainText,
@@ -1061,32 +1121,12 @@ function applyTransform(geometry = false) {
     });
     // Prefer node identities over relation text. Hidden relation labels are
     // reconsidered on zoom; their paths and inspector details remain available.
-    const occupied = state.scene.nodes.flatMap((node, index) =>
-      [...nodeEls[index].querySelectorAll('.node-label, .node-dot')]
-        .filter((el) => el.style.display !== 'none')
-        .map((el) => {
-          const box = el.getBBox();
-          return {
-            x: node.x + box.x,
-            y: node.y + box.y,
-            width: box.width,
-            height: box.height,
-          };
-        }),
-    );
+    const occupied = placeNodeLabels(nodeEls);
     const padding = 3 / k;
     for (const label of $$('#edge-labels .edge-label')) {
       if (label.style.display === 'none') continue;
       const box = label.getBBox();
-      if (
-        occupied.some(
-          (other) =>
-            box.x < other.x + other.width + padding &&
-            other.x < box.x + box.width + padding &&
-            box.y < other.y + other.height + padding &&
-            other.y < box.y + box.height + padding,
-        )
-      )
+      if (occupied.some((other) => boxesOverlap(box, other, padding)))
         label.style.display = 'none';
       else occupied.push(box);
     }
@@ -1109,7 +1149,8 @@ function fitScene(nodes = state.scene.nodes) {
     h = $('#stage').clientHeight,
     marginX = w < 500 ? 65 : 105,
     top = 120,
-    bottom = w < 600 ? 190 : 160,
+    // Leave room for overview names below the lowest node, above the minimap.
+    bottom = w < 500 && state.mode === 'global' ? 250 : w < 600 ? 190 : 160,
     availW = Math.max(100, w - marginX * 2),
     availH = Math.max(140, h - top - bottom),
     k = Math.min(
