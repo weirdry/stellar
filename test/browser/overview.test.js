@@ -49,13 +49,15 @@ function overviewMap(fixture, locale) {
 async function readableLabels(page) {
   const boxes = await page.locator('.graph-node').evaluateAll((nodes) =>
     nodes.flatMap((node) =>
-      [...node.querySelectorAll('.node-label, .node-dot')]
-        .filter((element) => element.style.display !== 'none')
+      [...node.querySelectorAll('.node-label tspan, .node-dot')]
+        .filter(
+          (element) => element.closest('.node-label')?.style.display !== 'none',
+        )
         .map((element) => {
           const box = element.getBoundingClientRect();
           return {
             node: node.dataset.node,
-            label: element.classList.contains('node-label'),
+            label: element.tagName.toLowerCase() === 'tspan',
             left: box.left,
             right: box.right,
             top: box.top,
@@ -67,7 +69,7 @@ async function readableLabels(page) {
   for (let i = 0; i < boxes.length; i++) {
     for (const b of boxes.slice(i + 1)) {
       const a = boxes[i];
-      if (!a.label && !b.label) continue;
+      if ((!a.label && !b.label) || a.node === b.node) continue;
       assert.ok(
         a.right + 2 <= b.left ||
           b.right + 2 <= a.left ||
@@ -77,7 +79,11 @@ async function readableLabels(page) {
       );
     }
   }
-  return boxes.filter((box) => box.label);
+  return [
+    ...new Map(
+      boxes.filter((box) => box.label).map((box) => [box.node, box]),
+    ).values(),
+  ];
 }
 
 async function clearCanvasUI(page) {
@@ -185,8 +191,8 @@ for (const locale of ['ko', 'en']) {
     for (let i = 0; i < 5; i++) await page.locator('#zoom-out').click();
     const reduced = await readableLabels(page);
     assert.ok(
-      reduced.length >= 2 && reduced.length < 6,
-      'crowded labels yield to readable area names',
+      reduced.length >= 2 && reduced.length <= 6,
+      'zoomed labels remain readable and retain area names',
     );
     assert.ok(reduced.some((box) => box.node.startsWith('d:')));
     assert.deepEqual((await state()).nodes, initial.nodes);

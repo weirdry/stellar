@@ -36,33 +36,55 @@ domain order selects palette order. Browser fonts, viewport, and navigation
 state can affect pixels. Classification is agent/user interpretation, not a
 deterministic inference made by the renderer.
 
-Narrow overview stages use one compact column of domains and reserve room for
-names above the phone minimap. Global-view labels use measured text bounds:
-selected/in-focus labels and domains take priority, and text tries below then
-above its node without overlapping dots or previously placed labels. Text with
-no clear candidate gets one extra line of clearance at either anchor, then is
-hidden until navigation provides room; the node, full accessible name, tooltip,
-tree and inspector remain available. Zoom, fit,
-selection and resize reconsider placement; panning moves the existing layout.
-This does not relocate graph nodes to solve collisions, change classification,
-or promise that arbitrary dense graphs show every name at once. Neighborhood
-node-label placement is unchanged.
+Narrow overview stages use one column of domains. A two-group area places its
+groups on opposite horizontal sides, leaving the area name a vertical slot and
+removing the former cross-area alignment through area centers. Row spacing
+reserves the current groups' full issue footprints even while collapsed; opening
+another group cannot shift area centers or interleave adjacent areas. Wider
+stages retain their domain grid.
 
-A global fit that places text above the caption/navigation clearance receives
-one corrective fit using measured label height and the upper placement offsets.
-Only the fitted nodes contribute; unrelated off-screen groups do not enlarge a
-focused view's margin. The correction reserves room rather than merely hiding
-text under fixed UI. Repeated fit starts from the same initial margins, and
-manual camera movement remains independent.
+Global-view labels, including target focus, use measured bounds per text line.
+Selected/in-focus labels are considered first, followed by domains, categories
+and issues. Candidates try below/above in 16 CSS-pixel steps bounded by their
+rounded text height plus one extra step, then beside the node at
+middle/below/above alignment. They clear node dots
+and placed text; on-screen nodes' labels align within horizontal stage edges.
+If none fits, the text is hidden while its node, accessible name, tooltip, tree
+and inspector remain available. Zoom, fit, selection and resize reconsider
+placement; panning translates existing placements. This bounded rule retains
+area names in the tested small overviews without promising every label in an
+arbitrary dense scene or very short viewport. Neighborhood node-label placement
+is unchanged.
+
+A global fit checks fitted text lines against the individual caption/navigation
+and bottom minimap/control rectangles. One corrective fit reserves the visible
+overhang on each side when needed. Candidates may slide horizontally by up to
+half their width to use free space beside a control; remaining intersections are
+rejected. If margins would consume the stage, the fit uses the interval between
+controls and checks candidates directly. It uses actual remaining height instead of the old minimum 140-pixel fit region. Only the
+requested nodes contribute; off-screen groups do not enlarge a focused view's
+margins. Repeated fits start from the same margins, while manual camera movement
+remains independent. Source data, classification and relationship direction do
+not change with placement. The bundled-viewer
+[policy](../../assets/viewer/README.md) and
+[regressions](../../test/browser/layout.test.js) own the bounded details.
 
 Parallel relation curves use a common endpoint order so reversing a source
 relation does not fold its path onto the opposite relation. Arrow direction and
 the underlying issue pairs remain source facts. A minimum screen-space curve
 separation preserves pointer targets at small scales. Relation text that obscures
 nodes or other labels is suppressed and reconsidered on zoom without removing
-source edges. Target option values preserve the authored strings, including
-whitespace, instead of deriving identity from
-browser-normalized display text. Only targets attached to assigned work activate
+source edges. Narrow global source curves compare a bounded set of seven
+quadratic bends
+against unrelated node dots and visible text. A node pair shares its bend so
+parallel separation and reverse direction survive. The first clear bend wins;
+otherwise the least obstructed candidate wins. On-screen endpoints favor paths
+that stay within the stage width. Classification lines and neighborhood routing
+are unchanged. This is a sampled readability rule, not a guarantee that every
+edge in an arbitrary graph avoids every obstacle.
+
+Target option values preserve the authored strings, including whitespace, instead
+of deriving identity from browser-normalized display text. Only targets attached to assigned work activate
 an overlay; context-only tags remain descriptive. Search includes all input
 issues, while counting still includes assigned issues matching the status filter.
 UI labels distinguish source context from assigned work outside that filter.

@@ -13,32 +13,52 @@ and relation list. It keeps a domain grid with radial subgroups, expands issues
 from their subgroup, and uses a radial neighborhood for direct source links.
 A cross-domain target view uses compact horizontal trees. Node positions remain
 stable during camera movement. Below a 490 CSS-pixel stage width, overview domains
-use one compact column; fitted phone overviews reserve extra space above the
-minimap for names. Wider stages retain the multi-column grid. Palette order
+use one column. A two-group area puts its groups on opposite horizontal sides,
+leaving room for the area name and avoiding the former straight cross-area arrow
+through both area centers. Row spacing includes the issue footprints of every
+current group, even while collapsed, so successive expansions do not interleave
+neighboring areas. Wider stages retain the multi-column grid. Palette order
 follows authored domain order; font fallback and viewport may affect pixels.
 
-Global-view labels are measured after wrapping. Selected/in-focus labels and
-area names take priority; each label tries below its node, then above it, clearing
-all node dots and already placed text. Both anchors can try one extra line of
-clearance (16 CSS pixels). If none of these four positions fits, only the label
-is hidden and reconsidered on zoom, fit, selection or resize. Panning moves the
-existing placement with the graph. Full names remain in accessible node names,
-hover tooltips, the tree and the inspector. Small scenes can retain all subgroup
-labels; dense scenes may require zoom or selection. Neighborhood node-label
-placement is unchanged.
+Global-view labels, including target-focus labels, use measured bounds for each
+text line. Empty space beside a short subtitle does not exclude another name.
+Selected/in-focus labels are considered first, then area, group and issue names.
+Each label tries below/above with extra clearance bounded by its measured text
+height rounded up to 16 CSS-pixel steps plus one extra step, then beside its
+node at middle/below/above alignment. Candidates clear all node dots and previously placed text. Labels of on-screen nodes align
+inside the horizontal stage edges. If no candidate fits, only text is hidden;
+zoom, fit, selection and resize reconsider placement. Panning translates existing
+placements without changing their relation to nodes. Full names remain in
+accessible node names, tooltips, the tree and inspector. The bundled phone example
+retains all area names; denser scenes and very short phones may require zoom or
+selection. Neighborhood node-label placement is unchanged.
 
-After the initial fit, global views check the fitted labels against the caption
-and navigation height. If upward placement intrudes there, one corrective fit
-reserves the measured maximum upper label extent, including currently hidden
-labels that the new scale may reveal. This does not accumulate padding across
-fit requests or change label placement while panning. It does not automatically
-refit user-controlled zoom/pan positions.
+After the initial fit, global views check fitted text against both the caption /
+navigation and the minimap / controls. If either boundary is crossed, one
+corrective fit reserves the visible overhang on both sides and tests candidates
+against the individual controls. A candidate may slide horizontally by up to
+half its width to use free space beside a control. Remaining intersecting
+candidates are rejected; empty space beside a subtitle remains usable. The
+global fit uses the actual remaining height instead of imposing a 140-pixel
+floor that can push text into controls. If these margins consume the entire
+stage, the fit uses the interval between controls and checks candidates directly.
+Only nodes requested by the fit contribute; unrelated off-screen groups do not enlarge its
+margins. Every fit starts from the same margins. Manual zoom and pan remain
+independent of this fit-only constraint.
 
 Parallel curves retain a minimum screen-space separation for pointer selection.
 Relation labels that overlap nodes, node text, or another visible relation label
 are suppressed and reconsidered on zoom; the underlying edges and inspector
 details remain available.
-These are bounded text-placement rules, not a general graph-layout optimizer.
+On narrow global stages, source curves compare seven quadratic bends
+against unrelated node dots and visible text lines. The first clear candidate
+wins; otherwise the candidate with the fewest sampled obstructions wins. A pair
+shares its bend, preserving parallel separation and reversed arrow direction.
+Bends that leave the stage horizontally are penalized when both endpoints are
+on screen. This reduces the single-column interference without changing source
+relations, node positions, classification lines or neighborhood routing. It does
+not guarantee obstacle-free edges for arbitrary graphs.
+These are bounded placement rules, not a general graph-layout optimizer.
 
 Search, synchronized tree/graph selection, status and target filters, relationship
 toggles, history, pan/zoom/fit, minimap, themes, keyboard controls, mobile drawers,
