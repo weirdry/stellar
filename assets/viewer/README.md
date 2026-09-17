@@ -27,9 +27,17 @@ Candidates sit above, below or beside their node, with at most 32 CSS pixels of
 extra vertical clearance. A candidate is rejected if its first text line is
 closer to another dot than its owning dot (with a two-pixel tolerance).
 This rule also constrains horizontal alignment at the stage edge: a name cannot
-be moved into another node's space merely to keep it visible. Area names wrap to
-two shorter lines; redundant area subtitles appear only above 20% zoom, while
-the count stays on the dot and full details remain in the inspector.
+be moved into another node's space merely to keep it visible. Area names use
+two compact lines on stages narrower than 500 CSS pixels. Wider stages balance
+the name across up to three lines, or four on the 500–759 pixel middle grid,
+using a bounded width that grows with the text. This preserves distinguishing
+endings of longer names without reserving a broad rectangle beside every dot.
+If the longer name cannot be placed, try its compact two-line form with the same
+collision, control-clearance and owning-dot checks before hiding it. Both forms
+are measured in the same batch; temporary measurement nodes are removed before
+display or export. Names beyond the chosen capacity still use an ellipsis; full
+names remain available in the tree, accessible name, tooltip and inspector. Redundant area subtitles
+appear only above 20% zoom, while the count stays on the dot.
 
 Every global geometry pass checks visible text against the stage and the actual
 caption, navigation, minimap and control rectangles. Filter changes, Back,
@@ -48,9 +56,12 @@ their detail scale. Dense or
 short views may therefore extend beyond the stage: pan, use the minimap, select
 an area/group from the tree, or manually zoom out to explore them. Fit does not
 promise to display every node and name simultaneously. This avoids turning a
-short view into overlapping dots just to include the entire scene. Area centers
-still remain fixed during expansion. Selecting a group fits the group and its
-issues; its parent area remains in the scene but does not widen those camera
+short view into overlapping dots just to include the entire scene.
+The F control is labelled "Reframe for readability" ("읽기 좋은 크기로 보기")
+and its tooltip, overview hint and help explain that some areas may remain
+off-screen. This wording does not change the camera behavior.
+Area centers still remain fixed during expansion. Selecting a group fits the
+group and its issues; its parent area remains in the scene but does not widen those camera
 bounds. That same selection scope is used by Fit and resize. The selected group's
 issue identifiers are eligible for placement below the usual 25% zoom threshold.
 

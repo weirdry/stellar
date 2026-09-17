@@ -5,6 +5,7 @@ untested scope. They support the architecture without silently changing its
 meaning.
 
 - [2026-09-18 overview usability follow-up](2026-09-18-overview-usability.md)
+- [2026-09-18 area-name readability and framing guidance](2026-09-18-area-name-readability.md)
 - [2026-09-18 overview independent-review corrections](2026-09-18-overview-review-fixes.md)
 - [2026-09-17 mobile overview label readability](2026-09-17-mobile-overview-labels.md)
 - [2026-09-17 first-draft classification application](2026-09-17-initial-classification.md)

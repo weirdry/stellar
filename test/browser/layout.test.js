@@ -172,6 +172,48 @@ async function clearLabels(page, fixedUI = true) {
 }
 
 for (const locale of ['ko', 'en']) {
+  test(`${locale} wide overviews preserve distinguishing ends of long area names`, async (t) => {
+    const data = await invented(locale, [2, 2, 2, 2, 2, 2], 3),
+      page = await open(t, data, { width: 1600, height: 1000 });
+    for (const viewport of [
+      { width: 1600, height: 1000 },
+      { width: 390, height: 844 },
+      { width: 1024, height: 768 },
+      { width: 1600, height: 1000 },
+    ]) {
+      await page.setViewportSize(viewport);
+      await page.waitForTimeout(180);
+      if (viewport.width === 390) continue;
+      await shot(page, `${locale}-long-areas-${viewport.width}`);
+      const labels = await page
+        .locator('.graph-node.domain')
+        .evaluateAll((nodes) =>
+          nodes.map((node) => ({
+            id: node.dataset.node.slice(2),
+            visible: node.querySelector('.node-label').style.display !== 'none',
+            text: [...node.querySelectorAll('.node-label tspan:not(.node-sub)')]
+              .map((line) => line.textContent)
+              .join('')
+              .replace(/\s/g, ''),
+          })),
+        );
+      assert.equal(labels.length, data.domains.length);
+      for (const area of data.domains) {
+        const label = labels.find((entry) => entry.id === area.id);
+        assert.equal(label.visible, true, `${area.id} at ${viewport.width}`);
+        assert.equal(label.text, area.label.replace(/\s/g, ''), area.id);
+      }
+      await clearLabels(page);
+      await associatedLabels(page);
+    }
+    const notice = locale === 'ko' ? '화면 밖에 남을 수' : 'off-screen';
+    assert.ok(
+      (await page.locator('#fit').getAttribute('title')).includes(notice),
+    );
+    await page.locator('#help-open').click();
+    assert.ok((await page.locator('#modal').textContent()).includes(notice));
+  });
+
   test(`${locale} fitted overview retains every area name in common small maps`, async (t) => {
     for (const viewport of [
       { width: 390, height: 844 },
@@ -248,6 +290,24 @@ for (const locale of ['ko', 'en']) {
     await clearLabels(page);
   });
 }
+
+test('crowded and short overviews retain area names when longer text cannot fit', async (t) => {
+  for (const [shape, perGroup, viewport] of [
+    [[4], 1, { width: 568, height: 320 }],
+    [[3, 3, 3, 3], 12, { width: 1024, height: 768 }],
+    [[1, 4, 2, 3, 1, 2], 1, { width: 740, height: 360 }],
+  ]) {
+    const page = await open(t, await invented('en', shape, perGroup), viewport);
+    assert.ok(await shown(page, 'domain'));
+    await clearLabels(page);
+    await associatedLabels(page);
+    assert.equal(
+      await page.locator('.node-label[visibility="hidden"]').count(),
+      0,
+    );
+    await shot(page, `long-area-fallback-${viewport.width}`);
+  }
+});
 
 for (const [groups, perGroup] of [
   [2, 6],

@@ -48,8 +48,14 @@ Selected/in-focus labels take priority, followed by domains, categories and
 issues. Candidate placement preserves association with the owning dot: the
 first line cannot be nearer another dot beyond a two-pixel tolerance. Names use
 nearby above/below/side anchors, with at most 32 CSS pixels of extra vertical
-clearance. Area names use shorter wrapping and omit their redundant subtitle at
-low zoom. Full names remain in the tree, accessible names, tooltip and inspector.
+clearance. Area names use two compact lines on narrow stages. Wider stages
+balance longer names over three lines (four on the middle grid), growing their
+bounded width with the text to preserve distinguishing endings. Names exceeding
+this capacity still truncate. A longer name that cannot be placed falls back
+to its compact two-line form under the same clearance and association checks.
+Both forms are measured together; temporary measurement nodes are removed
+before display/export. Full names remain in the tree, accessible names,
+tooltip and inspector. Redundant area subtitles are omitted at low zoom.
 
 All global geometry passes check text against the stage and actual control
 rectangles. Filter changes and history restoration retain this protection at
@@ -62,8 +68,10 @@ Automatic fitting preserves a minimum separation for area/group dots, focused
 issue hit targets and area-name space. Unfocused expanded issues do not force the
 overview to their detail scale. A dense/short view may exceed the stage instead of
 shrinking to overlapping dots; pan, minimap, tree selection and manual zoom
-remain available. Group selection, Fit and resize use the group and its issues
-as camera bounds; its parent remains in the scene. Selected-group issue IDs are
+remain available. The F control says "Reframe for readability" in English and
+"읽기 좋은 크기로 보기" in Korean; its tooltip, overview hint and help explain
+that some areas may remain off-screen. Group selection, Fit and resize use the
+group and its issues as camera bounds; its parent remains in the scene. Selected-group issue IDs are
 eligible below the usual zoom threshold. Source data, classification and
 relationship direction do not change. The bundled-viewer
 [policy](../../assets/viewer/README.md) and

@@ -1094,22 +1094,31 @@ function placeNodeLabels(nodeEls, frame) {
       .map(({ node, label }) => ({
         node,
         label,
-        box: label.getBBox(),
-        lines: [...label.querySelectorAll('tspan')]
-          .filter((line) => line.textContent)
-          .map((line) => {
-            const b = line.getBBox();
-            return {
-              id: node.id,
-              x: node.x + b.x,
-              y: node.y + b.y,
-              width: b.width,
-              height: b.height,
-            };
-          }),
+        layouts: [label, label.compactLayout]
+          .filter(Boolean)
+          .map((variant) => ({
+            markup: variant === label ? null : variant.innerHTML,
+            box: variant.getBBox(),
+            lines: [...variant.querySelectorAll('tspan')]
+              .filter((line) => line.textContent)
+              .map((line) => {
+                const b = line.getBBox();
+                return {
+                  id: node.id,
+                  x: node.x + b.x,
+                  y: node.y + b.y,
+                  width: b.width,
+                  height: b.height,
+                };
+              }),
+          })),
       }))
       .sort((a, b) => priority(a.node) - priority(b.node));
-  for (const { node, label, box, lines } of ordered) {
+  for (const { label } of ordered) {
+    label.compactLayout?.remove();
+    delete label.compactLayout;
+  }
+  for (const { node, label, layouts } of ordered) {
     const onStage =
       !frame ||
       (node.x * k + state.transform.x >= 0 &&
@@ -1117,6 +1126,7 @@ function placeNodeLabels(nodeEls, frame) {
         node.y * k + state.transform.y >= 0 &&
         node.y * k + state.transform.y <= frame.height);
     if (state.mode !== 'global') {
+      const { box } = layouts[0];
       occupied.push({
         x: node.x + box.x,
         y: node.y + box.y,
@@ -1125,92 +1135,98 @@ function placeNodeLabels(nodeEls, frame) {
       });
       continue;
     }
-    const above = -nodeRadius(node) - 10 / k - box.height - box.y,
-      middle = -box.y - box.height / 2,
-      right = nodeRadius(node) + 10 / k - box.x,
-      left = -nodeRadius(node) - 10 / k - box.x - box.width,
-      candidates = [
-        [0, 0],
-        [0, above],
-        [right, middle],
-        [left, middle],
-        [right, 0],
-        [left, 0],
-        [right, above],
-        [left, above],
-        [right, middle - 16 / k],
-        [left, middle - 16 / k],
-        [right, middle + 16 / k],
-        [left, middle + 16 / k],
-        [0, 16 / k],
-        [0, above - 16 / k],
-        [0, 32 / k],
-        [0, above - 32 / k],
-      ],
-      placed = candidates
-        .map(([x, y]) => {
-          const minX = (8 - state.transform.x) / k - node.x - box.x,
-            maxX =
-              ($('#stage').clientWidth - 8 - state.transform.x) / k -
-              node.x -
-              box.x -
-              box.width;
-          const screenX = node.x * k + state.transform.x;
-          return [
-            screenX >= 0 && screenX <= $('#stage').clientWidth
-              ? Math.max(minX, Math.min(maxX, x))
-              : x,
-            y,
-          ];
-        })
-        .find(([x, y]) => {
-          const first = { ...lines[0], x: lines[0].x + x, y: lines[0].y + y },
-            distance = (n) =>
-              Math.hypot(
-                Math.max(first.x - n.x, 0, n.x - first.x - first.width),
-                Math.max(first.y - n.y, 0, n.y - first.y - first.height),
-              ),
-            own = distance(node);
-          if (
-            state.scene.nodes.some(
-              (other) => other.id !== node.id && distance(other) + 2 / k < own,
-            )
-          )
-            return false;
-          return lines.every((line) => {
-            const candidate = { ...line, x: line.x + x, y: line.y + y };
-            if (frame && onStage) {
-              const screen = {
-                x: candidate.x * k + state.transform.x,
-                y: candidate.y * k + state.transform.y,
-                width: candidate.width * k,
-                height: candidate.height * k,
-              };
-              if (
-                screen.x < 8 ||
-                screen.x + screen.width > frame.width - 8 ||
-                screen.y < 0 ||
-                screen.y + screen.height > frame.height ||
-                frame.controls.some((control) =>
-                  boxesOverlap(screen, control, 4),
-                )
+    for (const { markup, box, lines } of layouts) {
+      const above = -nodeRadius(node) - 10 / k - box.height - box.y,
+        middle = -box.y - box.height / 2,
+        right = nodeRadius(node) + 10 / k - box.x,
+        left = -nodeRadius(node) - 10 / k - box.x - box.width,
+        candidates = [
+          [0, 0],
+          [0, above],
+          [right, middle],
+          [left, middle],
+          [right, 0],
+          [left, 0],
+          [right, above],
+          [left, above],
+          [right, middle - 16 / k],
+          [left, middle - 16 / k],
+          [right, middle + 16 / k],
+          [left, middle + 16 / k],
+          [0, 16 / k],
+          [0, above - 16 / k],
+          [0, 32 / k],
+          [0, above - 32 / k],
+        ],
+        placed = candidates
+          .map(([x, y]) => {
+            const minX = (8 - state.transform.x) / k - node.x - box.x,
+              maxX =
+                ($('#stage').clientWidth - 8 - state.transform.x) / k -
+                node.x -
+                box.x -
+                box.width;
+            const screenX = node.x * k + state.transform.x;
+            return [
+              screenX >= 0 && screenX <= $('#stage').clientWidth
+                ? Math.max(minX, Math.min(maxX, x))
+                : x,
+              y,
+            ];
+          })
+          .find(([x, y]) => {
+            const first = { ...lines[0], x: lines[0].x + x, y: lines[0].y + y },
+              distance = (n) =>
+                Math.hypot(
+                  Math.max(first.x - n.x, 0, n.x - first.x - first.width),
+                  Math.max(first.y - n.y, 0, n.y - first.y - first.height),
+                ),
+              own = distance(node);
+            if (
+              state.scene.nodes.some(
+                (other) =>
+                  other.id !== node.id && distance(other) + 2 / k < own,
               )
-                return false;
-            }
-            return !occupied.some((other) =>
-              boxesOverlap(candidate, other, 4 / k),
-            );
+            )
+              return false;
+            return lines.every((line) => {
+              const candidate = { ...line, x: line.x + x, y: line.y + y };
+              if (frame && onStage) {
+                const screen = {
+                  x: candidate.x * k + state.transform.x,
+                  y: candidate.y * k + state.transform.y,
+                  width: candidate.width * k,
+                  height: candidate.height * k,
+                };
+                if (
+                  screen.x < 8 ||
+                  screen.x + screen.width > frame.width - 8 ||
+                  screen.y < 0 ||
+                  screen.y + screen.height > frame.height ||
+                  frame.controls.some((control) =>
+                    boxesOverlap(screen, control, 4),
+                  )
+                )
+                  return false;
+              }
+              return !occupied.some((other) =>
+                boxesOverlap(candidate, other, 4 / k),
+              );
+            });
           });
-        });
-    if (placed) {
-      const [x, y] = placed;
-      label.setAttribute('transform', `translate(${x} ${y})`);
-      label.dataset.placed = 'true';
-      if (!onStage) label.style.display = 'none';
-      occupied.push(
-        ...lines.map((line) => ({ ...line, x: line.x + x, y: line.y + y })),
-      );
-    } else label.style.display = 'none';
+      if (placed) {
+        const [x, y] = placed;
+        if (markup !== null) label.innerHTML = markup;
+        label.setAttribute('transform', `translate(${x} ${y})`);
+        label.dataset.placed = 'true';
+        if (!onStage) label.style.display = 'none';
+        occupied.push(
+          ...lines.map((line) => ({ ...line, x: line.x + x, y: line.y + y })),
+        );
+        break;
+      }
+    }
+    if (!label.dataset.placed) label.style.display = 'none';
   }
   return occupied;
 }
@@ -1274,6 +1290,24 @@ function applyTransform(geometry = false) {
       delete label.dataset.placed;
       label.removeAttribute('transform');
       const mainText = n.type === 'issue' ? displayId(n.issue) : n.label,
+        wideArea = n.type === 'domain' && $('#stage').clientWidth >= 500,
+        areaLines = $('#stage').clientWidth < 760 ? 4 : 3,
+        // Balance wider-stage area names across a compact block. The middle
+        // grid has less horizontal room, so it gets one additional line.
+        areaWeight = wideArea
+          ? Math.min(
+              20,
+              Math.max(
+                8,
+                Math.ceil(
+                  [...mainText].reduce(
+                    (sum, c) => sum + (c.codePointAt(0) <= 127 ? 0.53 : 1),
+                    0,
+                  ) / areaLines,
+                ),
+              ),
+            )
+          : 12,
         lines = wrapLabel(
           mainText,
           n.type === 'category'
@@ -1281,9 +1315,9 @@ function applyTransform(geometry = false) {
               ? 12
               : 19
             : n.type === 'domain'
-              ? 12
+              ? areaWeight
               : 20,
-          n.type === 'issue' ? 1 : 2,
+          n.type === 'issue' ? 1 : wideArea ? areaLines : 2,
         );
       const font = n.type === 'domain' ? 13 : n.type === 'category' ? 12 : 11.5;
       let labelY = r + 18 / k;
@@ -1309,6 +1343,22 @@ function applyTransform(geometry = false) {
         (n.type === 'category' && k > 0.38)
       ) {
         label.innerHTML += `<tspan class="node-sub" x="0" y="${labelY + (lines.length * 16) / k}" font-size="${9 / k}">${esc(n.subtitle || '')}</tspan>`;
+      }
+      if (wideArea) {
+        // Measure one compact fallback in the same batch as the preferred
+        // layout. Only names that cannot be placed use the shorter form.
+        const compact = label.cloneNode(false),
+          shortLines = wrapLabel(mainText, 12, 2);
+        compact.setAttribute('visibility', 'hidden');
+        compact.innerHTML = shortLines
+          .map(
+            (line, index) =>
+              `<tspan x="0" y="${labelY + (index * 16) / k}">${esc(line)}</tspan>`,
+          )
+          .join('');
+        if (k > 0.2)
+          compact.innerHTML += `<tspan class="node-sub" x="0" y="${labelY + (shortLines.length * 16) / k}" font-size="${9 / k}">${esc(n.subtitle || '')}</tspan>`;
+        label.compactLayout = el.appendChild(compact);
       }
       const bl = el.querySelector('.node-block');
       if (bl) {
