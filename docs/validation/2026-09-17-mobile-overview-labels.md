@@ -37,7 +37,7 @@ The [overview regressions](../../test/browser/overview.test.js) cover both local
   original phone layout. Embedded source/classification data remains unchanged.
 - Page errors and external HTTP(S) requests are absent.
 
-Observed local results:
+Observed local results at `3e63931`:
 
 - `just ci`: passed documentation, formatting, repository/JavaScript lint and
   all **67/67** Node unit/CLI tests.
@@ -52,6 +52,38 @@ Observed local results:
 Hosted CI belongs to the PR's exact revision and is reported separately. The
 local browser gate used the repository-pinned Playwright Chromium, not a host
 browser extension or a live report.
+
+## Caption-clearance follow-up
+
+Self-review of `3e63931` reproduced a new caption collision at 390 × 667 with
+three synthetic coastal-observation areas and two groups per area. The English
+area title began at y=121.62 while the fixed caption spanned y=119–133.39. The
+previous candidate test only considered nodes and already placed labels.
+
+The follow-up measures the fitted text. When an upward label intrudes into the
+caption/navigation clearance, one additional fit reserves its maximum upper
+extent. It includes hidden labels in the measurement, because a new scale can
+reveal them, and excludes nodes outside the requested fit. The original margins
+are recalculated on every fit; panning does not trigger the correction.
+
+The new English regression fails against `3e63931` on actual caption overlap;
+a Korean companion covers the same topology. Both check fixed UI clearance,
+visible area-name retention on the short phone, repeated fit, a height round
+trip, unchanged nodes/relations/counts, and relative label positions during pan.
+The shared occlusion check now includes the entire navigation and camera toolbar.
+
+Follow-up local results:
+
+- `just ci`: passed, **67/67 Node** tests.
+- `just browser-check`: passed, **22/22 Chromium** tests, including both new
+  short-phone cases and the 20 existing cases.
+- Inspected the corrected Korean and English 390 × 667 screenshots. The area
+  names remain visible below the caption, and lower text clears the controls.
+- A supplemental base/follow-up comparison of 32 invented phone configurations
+  (both locales, one to three areas, one to four groups per area, two heights)
+  reduced the observed fixed-UI occlusions from one to zero. No visible-label
+  intersections were found in the corrected outputs. This bounded comparison
+  is local evidence, not an arbitrary-layout guarantee.
 
 ## Limits
 

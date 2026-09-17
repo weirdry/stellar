@@ -27,6 +27,13 @@ hover tooltips, the tree and the inspector. Small scenes can retain all subgroup
 labels; dense scenes may require zoom or selection. Neighborhood node-label
 placement is unchanged.
 
+After the initial fit, global views check the fitted labels against the caption
+and navigation height. If upward placement intrudes there, one corrective fit
+reserves the measured maximum upper label extent, including currently hidden
+labels that the new scale may reveal. This does not accumulate padding across
+fit requests or change label placement while panning. It does not automatically
+refit user-controlled zoom/pan positions.
+
 Parallel curves retain a minimum screen-space separation for pointer selection.
 Relation labels that overlap nodes, node text, or another visible relation label
 are suppressed and reconsidered on zoom; the underlying edges and inspector
