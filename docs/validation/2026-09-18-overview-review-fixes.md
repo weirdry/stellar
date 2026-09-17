@@ -2,6 +2,11 @@
 
 State: **As-built**
 
+This record describes `e66e922`. Subsequent review found label-association,
+repeat-render, short-stage scale and selected-group regressions despite the
+checks below passing. See the [follow-up validation](2026-09-18-overview-usability.md)
+for the correction; the original observations below are retained as history.
+
 Scope: [PR #15](https://github.com/weirdry/stellar/pull/15) and
 [issue #14](https://github.com/weirdry/stellar/issues/14), following independent
 review of `d6df519` → `b0f5a58`. This record supersedes the placement details in

@@ -44,28 +44,28 @@ another group cannot shift area centers or interleave adjacent areas. Wider
 stages retain their domain grid.
 
 Global-view labels, including target focus, use measured bounds per text line.
-Selected/in-focus labels are considered first, followed by domains, categories
-and issues. Candidates try below/above in 16 CSS-pixel steps bounded by their
-rounded text height plus one extra step, then beside the node at
-middle/below/above alignment. They clear node dots
-and placed text; on-screen nodes' labels align within horizontal stage edges.
-If none fits, the text is hidden while its node, accessible name, tooltip, tree
-and inspector remain available. Zoom, fit, selection and resize reconsider
-placement; panning translates existing placements. This bounded rule retains
-area names in the tested small overviews without promising every label in an
-arbitrary dense scene or very short viewport. Neighborhood node-label placement
-is unchanged.
+Selected/in-focus labels take priority, followed by domains, categories and
+issues. Candidate placement preserves association with the owning dot: the
+first line cannot be nearer another dot beyond a two-pixel tolerance. Names use
+nearby above/below/side anchors, with at most 32 CSS pixels of extra vertical
+clearance. Area names use shorter wrapping and omit their redundant subtitle at
+low zoom. Full names remain in the tree, accessible names, tooltip and inspector.
 
-A global fit checks fitted text lines against the individual caption/navigation
-and bottom minimap/control rectangles. One corrective fit reserves the visible
-overhang on each side when needed. Candidates may slide horizontally by up to
-half their width to use free space beside a control; remaining intersections are
-rejected. If margins would consume the stage, the fit uses the interval between
-controls and checks candidates directly. It uses actual remaining height instead of the old minimum 140-pixel fit region. Only the
-requested nodes contribute; off-screen groups do not enlarge a focused view's
-margins. Repeated fits start from the same margins, while manual camera movement
-remains independent. Source data, classification and relationship direction do
-not change with placement. The bundled-viewer
+All global geometry passes check text against the stage and actual control
+rectangles. Filter changes and history restoration retain this protection at
+the same camera. Manual panning translates existing placements without moving
+names relative to their nodes. No clear placement means hidden text, not a
+changed identity. Measurements are batched before transforms; off-stage names retain their
+placement and become visible when panning brings their node into view. Neighborhood placement is unchanged.
+
+Automatic fitting preserves a minimum separation for area/group dots, focused
+issue hit targets and area-name space. Unfocused expanded issues do not force the
+overview to their detail scale. A dense/short view may exceed the stage instead of
+shrinking to overlapping dots; pan, minimap, tree selection and manual zoom
+remain available. Group selection, Fit and resize use the group and its issues
+as camera bounds; its parent remains in the scene. Selected-group issue IDs are
+eligible below the usual zoom threshold. Source data, classification and
+relationship direction do not change. The bundled-viewer
 [policy](../../assets/viewer/README.md) and
 [regressions](../../test/browser/layout.test.js) own the bounded details.
 
@@ -78,10 +78,11 @@ source edges. Narrow global source curves compare a bounded set of seven
 quadratic bends
 against unrelated node dots and visible text. A node pair shares its bend so
 parallel separation and reverse direction survive. The first clear bend wins;
-otherwise the least obstructed candidate wins. On-screen endpoints favor paths
-that stay within the stage width. Classification lines and neighborhood routing
-are unchanged. This is a sampled readability rule, not a guarantee that every
-edge in an arbitrary graph avoids every obstacle.
+otherwise the least obstructed candidate wins. Control-hull rejection and
+quadratic/rectangle intersections replace point sampling for obstacle tests.
+On-screen endpoints favor paths that stay within the stage width. Classification
+lines and neighborhood routing are unchanged. The finite candidate set does not
+guarantee that every edge in an arbitrary graph avoids every obstacle.
 
 Target option values preserve the authored strings, including whitespace, instead
 of deriving identity from browser-normalized display text. Only targets attached to assigned work activate

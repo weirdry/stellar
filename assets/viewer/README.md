@@ -23,36 +23,46 @@ follows authored domain order; font fallback and viewport may affect pixels.
 Global-view labels, including target-focus labels, use measured bounds for each
 text line. Empty space beside a short subtitle does not exclude another name.
 Selected/in-focus labels are considered first, then area, group and issue names.
-Each label tries below/above with extra clearance bounded by its measured text
-height rounded up to 16 CSS-pixel steps plus one extra step, then beside its
-node at middle/below/above alignment. Candidates clear all node dots and previously placed text. Labels of on-screen nodes align
-inside the horizontal stage edges. If no candidate fits, only text is hidden;
-zoom, fit, selection and resize reconsider placement. Panning translates existing
-placements without changing their relation to nodes. Full names remain in
-accessible node names, tooltips, the tree and inspector. The bundled phone example
-retains all area names; denser scenes and very short phones may require zoom or
-selection. Neighborhood node-label placement is unchanged.
+Candidates sit above, below or beside their node, with at most 32 CSS pixels of
+extra vertical clearance. A candidate is rejected if its first text line is
+closer to another dot than its owning dot (with a two-pixel tolerance).
+This rule also constrains horizontal alignment at the stage edge: a name cannot
+be moved into another node's space merely to keep it visible. Area names wrap to
+two shorter lines; redundant area subtitles appear only above 20% zoom, while
+the count stays on the dot and full details remain in the inspector.
 
-After the initial fit, global views check fitted text against both the caption /
-navigation and the minimap / controls. If either boundary is crossed, one
-corrective fit reserves the visible overhang on both sides and tests candidates
-against the individual controls. A candidate may slide horizontally by up to
-half its width to use free space beside a control. Remaining intersecting
-candidates are rejected; empty space beside a subtitle remains usable. The
-global fit uses the actual remaining height instead of imposing a 140-pixel
-floor that can push text into controls. If these margins consume the entire
-stage, the fit uses the interval between controls and checks candidates directly.
-Only nodes requested by the fit contribute; unrelated off-screen groups do not enlarge its
-margins. Every fit starts from the same margins. Manual zoom and pan remain
-independent of this fit-only constraint.
+Every global geometry pass checks visible text against the stage and the actual
+caption, navigation, minimap and control rectangles. Filter changes, Back,
+selection, zoom and resize use the same constraint. Text with no clear,
+unambiguous placement is hidden; the node, tree, accessible name, tooltip and
+inspector retain its identity. Panning rigidly translates current placements,
+so manual camera movement can still put content behind controls. DOM measurements
+are batched before placement. Off-stage labels retain a nearby placement and
+become visible when panning brings their node into view.
+Neighborhood label placement and camera behavior are unchanged.
+
+Automatic global fitting stops shrinking when node separation would no longer
+support distinct area/group dots, focused issue hit targets and a two-line
+area-name slot. Overview fitting does not force unfocused expanded issues to
+their detail scale. Dense or
+short views may therefore extend beyond the stage: pan, use the minimap, select
+an area/group from the tree, or manually zoom out to explore them. Fit does not
+promise to display every node and name simultaneously. This avoids turning a
+short view into overlapping dots just to include the entire scene. Area centers
+still remain fixed during expansion. Selecting a group fits the group and its
+issues; its parent area remains in the scene but does not widen those camera
+bounds. That same selection scope is used by Fit and resize. The selected group's
+issue identifiers are eligible for placement below the usual 25% zoom threshold.
 
 Parallel curves retain a minimum screen-space separation for pointer selection.
 Relation labels that overlap nodes, node text, or another visible relation label
 are suppressed and reconsidered on zoom; the underlying edges and inspector
 details remain available.
 On narrow global stages, source curves compare seven quadratic bends
-against unrelated node dots and visible text lines. The first clear candidate
-wins; otherwise the candidate with the fewest sampled obstructions wins. A pair
+against unrelated node dots and visible text lines. Disjoint control hulls are
+rejected cheaply; remaining collisions use quadratic/rectangle intersections
+instead of forty point samples per obstacle. The first clear candidate wins;
+otherwise the candidate with the fewest obstructions wins. A pair
 shares its bend, preserving parallel separation and reversed arrow direction.
 Bends that leave the stage horizontally are penalized when both endpoints are
 on screen. This reduces the single-column interference without changing source

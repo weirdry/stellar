@@ -290,12 +290,7 @@ function selectCategory(id, push = true) {
   state.treeDomains.add(c.domain);
   state.treeCats.add(id);
   render(false);
-  fitScene(
-    state.scene.nodes.filter(
-      (n) =>
-        n.id === 'd:' + c.domain || n.id === 'c:' + id || n.category === id,
-    ),
-  );
+  fitScene(currentFocusNodes());
   closeMobileTree();
 }
 function selectIssue(id, push = true) {
@@ -964,6 +959,51 @@ function lineGeometry(a, b, offset = 0) {
     ly: (ay + 2 * cy + by) / 4,
   };
 }
+// Reject disjoint control hulls first, then solve intersections with the four
+// rectangle sides. This avoids testing forty points against every obstacle.
+function curveHitsBox(g, box, padding) {
+  const left = box.x - padding,
+    right = box.x + box.width + padding,
+    top = box.y - padding,
+    bottom = box.y + box.height + padding;
+  if (
+    Math.max(g.ax, g.cx, g.bx) < left ||
+    Math.min(g.ax, g.cx, g.bx) > right ||
+    Math.max(g.ay, g.cy, g.by) < top ||
+    Math.min(g.ay, g.cy, g.by) > bottom
+  )
+    return false;
+  const inside = (x, y) =>
+    x >= left - 1e-7 &&
+    x <= right + 1e-7 &&
+    y >= top - 1e-7 &&
+    y <= bottom + 1e-7;
+  if (inside(g.ax, g.ay) || inside(g.bx, g.by)) return true;
+  const roots = (a, c, b, boundary) => {
+    const A = a - 2 * c + b,
+      B = 2 * (c - a),
+      C = a - boundary;
+    if (Math.abs(A) < 1e-9) return Math.abs(B) < 1e-9 ? [] : [-C / B];
+    const discriminant = B * B - 4 * A * C;
+    if (discriminant < 0) return [];
+    const root = Math.sqrt(discriminant);
+    return [(-B + root) / (2 * A), (-B - root) / (2 * A)];
+  };
+  return [
+    ...roots(g.ax, g.cx, g.bx, left),
+    ...roots(g.ax, g.cx, g.bx, right),
+    ...roots(g.ay, g.cy, g.by, top),
+    ...roots(g.ay, g.cy, g.by, bottom),
+  ].some(
+    (t) =>
+      t >= 0 &&
+      t <= 1 &&
+      inside(
+        (1 - t) ** 2 * g.ax + 2 * (1 - t) * t * g.cx + t * t * g.bx,
+        (1 - t) ** 2 * g.ay + 2 * (1 - t) * t * g.cy + t * t * g.by,
+      ),
+  );
+}
 // Bounded routing for source curves on narrow global stages only.
 // A pair shares its bend, retaining parallel separation and reverse direction.
 function sourceCurveOffset(a, b, count, spacing, occupied) {
@@ -988,35 +1028,27 @@ function sourceCurveOffset(a, b, count, spacing, occupied) {
   ]) {
     let score = 0;
     for (let index = 0; index < count; index++) {
-      const g = lineGeometry(a, b, bend + (index - (count - 1) / 2) * spacing),
-        points = Array.from({ length: 40 }, (_, i) => {
-          const t = (i + 1) / 41,
-            u = 1 - t;
-          return {
-            x: u * u * g.ax + 2 * u * t * g.cx + t * t * g.bx,
-            y: u * u * g.ay + 2 * u * t * g.cy + t * t * g.by,
-          };
-        });
+      const g = lineGeometry(a, b, bend + (index - (count - 1) / 2) * spacing);
       if (
         endpointsOnScreen &&
-        points.some(
-          (p) =>
-            p.x * k + state.transform.x < 8 ||
-            p.x * k + state.transform.x > width - 8,
+        [
+          g.ax,
+          g.bx,
+          ...(() => {
+            const t = (g.ax - g.cx) / (g.ax - 2 * g.cx + g.bx);
+            return t > 0 && t < 1
+              ? [(1 - t) ** 2 * g.ax + 2 * (1 - t) * t * g.cx + t * t * g.bx]
+              : [];
+          })(),
+        ].some(
+          (x) =>
+            x * k + state.transform.x < 8 ||
+            x * k + state.transform.x > width - 8,
         )
       )
         score += obstacles.length + 1;
       for (const box of obstacles) {
-        if (
-          points.some(
-            (p) =>
-              p.x > box.x - 3 / k &&
-              p.x < box.x + box.width + 3 / k &&
-              p.y > box.y - 3 / k &&
-              p.y < box.y + box.height + 3 / k,
-          )
-        )
-          score++;
+        if (curveHitsBox(g, box, 3 / k)) score++;
       }
     }
     if (score < bestScore) {
@@ -1051,26 +1083,39 @@ function placeNodeLabels(nodeEls, frame) {
       (nodeSelected(node) ? 0 : inFocus(node) ? 10 : 20) +
       (node.type === 'domain' ? 0 : node.type === 'category' ? 1 : 2),
     ordered = state.scene.nodes
-      .map((node, index) => ({
+      .map((node, index) => {
+        const label = nodeEls[index].querySelector('.node-label');
+        if (label.style.display === 'none') return null;
+        return { node, label };
+      })
+      .filter(Boolean)
+      // Finish DOM measurements before applying any placements. Interleaving
+      // text transforms and getBBox forces one layout per visible name.
+      .map(({ node, label }) => ({
         node,
-        label: nodeEls[index].querySelector('.node-label'),
+        label,
+        box: label.getBBox(),
+        lines: [...label.querySelectorAll('tspan')]
+          .filter((line) => line.textContent)
+          .map((line) => {
+            const b = line.getBBox();
+            return {
+              id: node.id,
+              x: node.x + b.x,
+              y: node.y + b.y,
+              width: b.width,
+              height: b.height,
+            };
+          }),
       }))
       .sort((a, b) => priority(a.node) - priority(b.node));
-  for (const { node, label } of ordered) {
-    if (label.style.display === 'none') continue;
-    const box = label.getBBox(),
-      lines = [...label.querySelectorAll('tspan')]
-        .filter((line) => line.textContent)
-        .map((line) => {
-          const b = line.getBBox();
-          return {
-            id: node.id,
-            x: node.x + b.x,
-            y: node.y + b.y,
-            width: b.width,
-            height: b.height,
-          };
-        });
+  for (const { node, label, box, lines } of ordered) {
+    const onStage =
+      !frame ||
+      (node.x * k + state.transform.x >= 0 &&
+        node.x * k + state.transform.x <= frame.width &&
+        node.y * k + state.transform.y >= 0 &&
+        node.y * k + state.transform.y <= frame.height);
     if (state.mode !== 'global') {
       occupied.push({
         x: node.x + box.x,
@@ -1085,19 +1130,22 @@ function placeNodeLabels(nodeEls, frame) {
       right = nodeRadius(node) + 10 / k - box.x,
       left = -nodeRadius(node) - 10 / k - box.x - box.width,
       candidates = [
-        ...Array.from(
-          { length: Math.ceil((box.height * k) / 16) + 2 },
-          (_, step) => [
-            [0, (step * 16) / k],
-            [0, above - (step * 16) / k],
-          ],
-        ).flat(),
+        [0, 0],
+        [0, above],
         [right, middle],
         [left, middle],
         [right, 0],
         [left, 0],
         [right, above],
         [left, above],
+        [right, middle - 16 / k],
+        [left, middle - 16 / k],
+        [right, middle + 16 / k],
+        [left, middle + 16 / k],
+        [0, 16 / k],
+        [0, above - 16 / k],
+        [0, 32 / k],
+        [0, above - 32 / k],
       ],
       placed = candidates
         .map(([x, y]) => {
@@ -1115,27 +1163,23 @@ function placeNodeLabels(nodeEls, frame) {
             y,
           ];
         })
-        .flatMap(([x, y]) => {
-          if (!frame?.ids.has(node.id)) return [[x, y]];
-          const screen = {
-            x: (node.x + box.x + x) * k + state.transform.x,
-            y: (node.y + box.y + y) * k + state.transform.y,
-            width: box.width * k,
-            height: box.height * k,
-          };
-          const shifts = frame.controls
-            .filter((control) => boxesOverlap(screen, control, 4))
-            .flatMap((control) => [
-              control.x - 4 - screen.x - screen.width,
-              control.x + control.width + 4 - screen.x,
-            ])
-            .filter((shift) => Math.abs(shift) <= screen.width / 2);
-          return [[x, y], ...shifts.map((shift) => [x + shift / k, y])];
-        })
-        .find(([x, y]) =>
-          lines.every((line) => {
+        .find(([x, y]) => {
+          const first = { ...lines[0], x: lines[0].x + x, y: lines[0].y + y },
+            distance = (n) =>
+              Math.hypot(
+                Math.max(first.x - n.x, 0, n.x - first.x - first.width),
+                Math.max(first.y - n.y, 0, n.y - first.y - first.height),
+              ),
+            own = distance(node);
+          if (
+            state.scene.nodes.some(
+              (other) => other.id !== node.id && distance(other) + 2 / k < own,
+            )
+          )
+            return false;
+          return lines.every((line) => {
             const candidate = { ...line, x: line.x + x, y: line.y + y };
-            if (frame?.ids.has(node.id)) {
+            if (frame && onStage) {
               const screen = {
                 x: candidate.x * k + state.transform.x,
                 y: candidate.y * k + state.transform.y,
@@ -1156,11 +1200,13 @@ function placeNodeLabels(nodeEls, frame) {
             return !occupied.some((other) =>
               boxesOverlap(candidate, other, 4 / k),
             );
-          }),
-        );
+          });
+        });
     if (placed) {
       const [x, y] = placed;
       label.setAttribute('transform', `translate(${x} ${y})`);
+      label.dataset.placed = 'true';
+      if (!onStage) label.style.display = 'none';
       occupied.push(
         ...lines.map((line) => ({ ...line, x: line.x + x, y: line.y + y })),
       );
@@ -1168,7 +1214,29 @@ function placeNodeLabels(nodeEls, frame) {
   }
   return occupied;
 }
-function applyTransform(geometry = false, frame) {
+function labelFrame() {
+  const stage = $('#stage').getBoundingClientRect();
+  return {
+    width: stage.width,
+    height: stage.height,
+    controls: [
+      '.canvas-top',
+      '#canvas-caption',
+      '.minimap-wrap',
+      '.legend-panel',
+      '.viewport-tools',
+    ].map((selector) => {
+      const box = $(selector).getBoundingClientRect();
+      return {
+        x: box.left - stage.left,
+        y: box.top - stage.top,
+        width: box.width,
+        height: box.height,
+      };
+    }),
+  };
+}
+function applyTransform(geometry = false) {
   const { x, y, k } = state.transform;
   $('#viewport').setAttribute('transform', `translate(${x} ${y}) scale(${k})`);
   $('#zoom-label').textContent = Math.round(k * 100) + '%';
@@ -1197,10 +1265,13 @@ function applyTransform(geometry = false, frame) {
           local ||
           (n.type === 'category' && state.scene.nodes.length <= 24) ||
           k > 0.25 ||
+          (state.selected?.type === 'category' &&
+            n.category === state.selected.id) ||
           nodeSelected(n) ||
           (state.target && targetMatch(n)),
         label = el.querySelector('.node-label');
       label.style.display = show ? '' : 'none';
+      delete label.dataset.placed;
       label.removeAttribute('transform');
       const mainText = n.type === 'issue' ? displayId(n.issue) : n.label,
         lines = wrapLabel(
@@ -1209,7 +1280,9 @@ function applyTransform(geometry = false, frame) {
             ? $('#stage').clientWidth < 500
               ? 12
               : 19
-            : 20,
+            : n.type === 'domain'
+              ? 12
+              : 20,
           n.type === 'issue' ? 1 : 2,
         );
       const font = n.type === 'domain' ? 13 : n.type === 'category' ? 12 : 11.5;
@@ -1231,7 +1304,10 @@ function applyTransform(geometry = false, frame) {
         wrapLabel(clean, 17, 2).forEach((l, ix) => {
           label.innerHTML += `<tspan class="node-sub" x="0" y="${labelY + ((lines.length + ix) * 16) / k}" font-size="${11 / k}">${esc(l)}</tspan>`;
         });
-      } else if (n.type === 'domain' || (n.type === 'category' && k > 0.38)) {
+      } else if (
+        (n.type === 'domain' && k > 0.2) ||
+        (n.type === 'category' && k > 0.38)
+      ) {
         label.innerHTML += `<tspan class="node-sub" x="0" y="${labelY + (lines.length * 16) / k}" font-size="${9 / k}">${esc(n.subtitle || '')}</tspan>`;
       }
       const bl = el.querySelector('.node-block');
@@ -1243,7 +1319,10 @@ function applyTransform(geometry = false, frame) {
     });
     // Prefer node identities over relation text. Hidden relation labels are
     // reconsidered on zoom; their paths and inspector details remain available.
-    const occupied = placeNodeLabels(nodeEls, frame);
+    const occupied = placeNodeLabels(
+      nodeEls,
+      state.mode === 'global' ? labelFrame() : null,
+    );
     const edgeGroups = $$('#edges .edge-group'),
       pairs = new Map(),
       routes = new Map();
@@ -1326,6 +1405,21 @@ function applyTransform(geometry = false, frame) {
       else occupied.push(box);
     }
   }
+  if (!geometry && state.mode === 'global') {
+    const w = $('#stage').clientWidth,
+      h = $('#stage').clientHeight;
+    state.scene.nodes.forEach((node) => {
+      const label = $(`[data-node="${CSS.escape(node.id)}"] .node-label`);
+      if (label.dataset.placed)
+        label.style.display =
+          node.x * k + x >= 0 &&
+          node.x * k + x <= w &&
+          node.y * k + y >= 0 &&
+          node.y * k + y <= h
+            ? ''
+            : 'none';
+    });
+  }
   updateMinimapViewport();
 }
 function bounds(nodes) {
@@ -1337,119 +1431,92 @@ function bounds(nodes) {
     maxY: Math.max(...nodes.map((n) => n.y)) + 95,
   };
 }
+// Keep overview area/group dots distinct and focused issue targets selectable.
+// Unfocused expanded issues must not force an overview to their detail scale.
+function readableScale(nodes) {
+  let scale = 0.015;
+  for (let i = 0; i < nodes.length; i++) {
+    for (const other of nodes.slice(i + 1)) {
+      const node = nodes[i],
+        distance = Math.hypot(node.x - other.x, node.y - other.y),
+        radius = (n) =>
+          n.type === 'domain' ? 12 : n.type === 'category' ? 5 : 13;
+      if (distance)
+        scale = Math.max(
+          scale,
+          (radius(node) +
+            radius(other) +
+            ((node.type === 'domain' &&
+              other.type === 'category' &&
+              node.domain === other.domain) ||
+            (other.type === 'domain' &&
+              node.type === 'category' &&
+              other.domain === node.domain)
+              ? 44
+              : 8)) /
+            distance,
+        );
+    }
+  }
+  return scale;
+}
 function fitScene(nodes = state.scene.nodes) {
   if (!nodes.length) return;
-  let top = 120,
-    bottom;
   const b = bounds(nodes),
     w = $('#stage').clientWidth,
     h = $('#stage').clientHeight,
-    marginX = w < 500 ? 65 : 105,
-    // Leave room for overview names below the lowest node, above the minimap.
-    initialBottom =
-      w < 500 && state.mode === 'global' ? 250 : w < 600 ? 190 : 160;
-  bottom = initialBottom;
-  const fit = (frame) => {
-    const availW = Math.max(100, w - marginX * 2),
-      availH = Math.max(state.mode === 'global' ? 1 : 140, h - top - bottom),
-      k = Math.min(
-        1.65,
-        Math.max(
-          0.015,
-          Math.min(availW / (b.maxX - b.minX), availH / (b.maxY - b.minY)),
-        ),
-      );
-    state.transform = {
-      k,
-      x: w / 2 - ((b.minX + b.maxX) / 2) * k,
-      y: top + availH / 2 - ((b.minY + b.maxY) / 2) * k,
-    };
-    applyTransform(true, frame);
+    global = state.mode === 'global',
+    minimumScale = global
+      ? readableScale(
+          !state.selected && !state.target
+            ? nodes.filter((n) => n.type !== 'issue')
+            : nodes,
+        )
+      : 0.015,
+    marginX = w < 500 ? (global ? 40 : 65) : 105,
+    top = 120,
+    bottom = w < 500 && global ? 250 : w < 600 ? 190 : 160,
+    availW = Math.max(100, w - marginX * 2),
+    availH = Math.max(global ? 1 : 140, h - top - bottom),
+    k = Math.min(
+      1.65,
+      Math.max(
+        minimumScale,
+        Math.min(availW / (b.maxX - b.minX), availH / (b.maxY - b.minY)),
+      ),
+    );
+  state.transform = {
+    k,
+    x: w / 2 - ((b.minX + b.maxX) / 2) * k,
+    y: top + availH / 2 - ((b.minY + b.maxY) / 2) * k,
   };
-  const stage = $('#stage').getBoundingClientRect(),
-    controls = [
-      '.canvas-top',
-      '#canvas-caption',
-      '.minimap-wrap',
-      '.legend-panel',
-      '.viewport-tools',
-    ].map((selector) => {
-      const b = $(selector).getBoundingClientRect();
-      return {
-        x: b.left - stage.left,
-        y: b.top - stage.top,
-        width: b.width,
-        height: b.height,
-      };
-    }),
-    fitFrame = {
-      ids: new Set(nodes.map((node) => node.id)),
-      controls,
-      width: w,
-      height: h,
-    };
-  fit();
-  if (state.mode !== 'global') return;
-  const labels = nodes
-    .map((node) => {
-      const label = $(`[data-node="${CSS.escape(node.id)}"] .node-label`),
-        measure = (element) => {
-          const b = element.getBoundingClientRect();
-          return {
-            x: b.left - stage.left,
-            y: b.top - stage.top,
-            width: b.width,
-            height: b.height,
-          };
-        };
-      return {
-        node,
-        label,
-        box: measure(label),
-        lines: [...label.querySelectorAll('tspan')]
-          .filter((line) => line.textContent)
-          .map(measure),
-      };
-    })
-    .filter(({ label }) => label.style.display !== 'none');
+  applyTransform(true);
+  // A readable minimum scale may crop a tall map between its areas. Start at
+  // an area instead of presenting an empty strip; manual navigation is unchanged.
+  const areas = nodes.filter((n) => n.type === 'domain');
   if (
-    !labels.some(({ lines }) =>
-      lines.some(
-        (box) =>
-          box.y < 0 ||
-          box.y + box.height > h ||
-          controls.some((control) => boxesOverlap(box, control, 4)),
-      ),
+    global &&
+    areas.length &&
+    !nodes.some((n) => n.type === 'issue') &&
+    !areas.some(
+      (n) =>
+        $(`[data-node="${CSS.escape(n.id)}"] .node-label`).style.display !==
+        'none',
     )
-  )
-    return;
-  // Reserve the actual visible overhang on each side, then try placements
-  // against the individual controls. Space beside a minimap remains usable.
-  const above = Math.max(
-      0,
-      ...labels.map(
-        ({ node, box }) =>
-          node.y * state.transform.k + state.transform.y - box.y,
-      ),
-    ),
-    below = Math.max(
-      0,
-      ...labels.map(
-        ({ node, box }) =>
-          box.y + box.height - node.y * state.transform.k - state.transform.y,
-      ),
-    ),
-    clearTop = Math.max(...controls.slice(0, 2).map((c) => c.y + c.height)) + 8,
-    clearBottom = Math.min(...controls.slice(2).map((c) => c.y)) - 8;
-  top = Math.max(top, clearTop + above);
-  bottom = Math.max(bottom, h - clearBottom + below);
-  // Do not enlarge a too-short view's margins until no canvas remains. The
-  // final candidate check handles individual controls even in that case.
-  if (top + bottom >= h) {
-    top = clearTop;
-    bottom = h - Math.max(clearTop + 1, clearBottom);
+  ) {
+    const frame = labelFrame(),
+      clearTop =
+        Math.max(...frame.controls.slice(0, 2).map((c) => c.y + c.height)) + 8,
+      clearBottom = frame.controls[3].y - 8,
+      centerY = (b.minY + b.maxY) / 2,
+      anchor = areas.reduce((best, n) =>
+        Math.abs(n.y - centerY) < Math.abs(best.y - centerY) ? n : best,
+      );
+    state.transform.x = w / 2 - anchor.x * k;
+    state.transform.y =
+      (clearTop + Math.max(clearTop + 48, clearBottom)) / 2 - anchor.y * k;
+    applyTransform(true);
   }
-  fit(fitFrame);
 }
 function currentFocusNodes() {
   if (state.mode !== 'global' || !state.selected) return state.scene.nodes;
@@ -1459,8 +1526,7 @@ function currentFocusNodes() {
   if (sel.type === 'category') {
     const c = categories.get(sel.id);
     return state.scene.nodes.filter(
-      (n) =>
-        n.id === 'd:' + c.domain || n.id === 'c:' + c.id || n.category === c.id,
+      (n) => n.id === 'c:' + c.id || n.category === c.id,
     );
   }
   return state.scene.nodes;

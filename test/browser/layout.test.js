@@ -412,3 +412,195 @@ test('a short view with four groups retains its area name', async (t) => {
     await clearLabels(page);
   }
 });
+
+async function associatedLabels(page) {
+  const misplaced = await page.evaluate(() => {
+    const dots = [...document.querySelectorAll('.graph-node')].map((el) => {
+      const box = el.querySelector('.node-dot').getBoundingClientRect();
+      return {
+        id: el.dataset.node,
+        x: (box.left + box.right) / 2,
+        y: (box.top + box.bottom) / 2,
+      };
+    });
+    return [...document.querySelectorAll('.graph-node:not(.issue)')].flatMap(
+      (el) => {
+        const label = el.querySelector('.node-label');
+        if (label.style.display === 'none') return [];
+        const box = label.querySelector('tspan').getBoundingClientRect(),
+          distance = (dot) =>
+            Math.hypot(
+              Math.max(box.left - dot.x, 0, dot.x - box.right),
+              Math.max(box.top - dot.y, 0, dot.y - box.bottom),
+            ),
+          own = distance(dots.find((dot) => dot.id === el.dataset.node));
+        return dots
+          .filter(
+            (dot) => dot.id !== el.dataset.node && distance(dot) + 2.1 < own,
+          )
+          .map((dot) => `${el.dataset.node} reads as ${dot.id}`);
+      },
+    );
+  });
+  assert.deepEqual(
+    misplaced,
+    [],
+    'a visible name remains nearest its owning dot',
+  );
+}
+
+for (const locale of ['ko', 'en']) {
+  test(`${locale} labels remain associated with their own dots after fit and navigation`, async (t) => {
+    for (const viewport of [
+      { width: 1024, height: 768 },
+      { width: 390, height: 844 },
+      { width: 667, height: 375 },
+    ]) {
+      const page = await open(t, await museum(locale), viewport);
+      assert.ok(await shown(page, 'domain'));
+      await associatedLabels(page);
+      await page.locator('[data-node="c:story"]').focus();
+      await page.keyboard.press('Enter');
+      await associatedLabels(page);
+      await page.locator('#back').click();
+      await associatedLabels(page);
+    }
+  });
+
+  test(`${locale} control clearance survives relation toggles and Back at the same camera`, async (t) => {
+    for (const viewport of [
+      { width: 320, height: 568 },
+      { width: 667, height: 375 },
+    ]) {
+      const page = await open(t, await invented(locale), viewport);
+      const before = await page.evaluate(
+        () => window.stellar.getState().transform,
+      );
+      await page.locator('[data-edge-toggle="related"]').uncheck();
+      await clearLabels(page);
+      assert.deepEqual(
+        await page.evaluate(() => window.stellar.getState().transform),
+        before,
+      );
+      await page.locator('[data-node="d:area-0"]').focus();
+      await page.keyboard.press('Enter');
+      await page.locator('#back').click();
+      await clearLabels(page);
+      assert.deepEqual(
+        await page.evaluate(() => window.stellar.getState().transform),
+        before,
+      );
+      await shot(page, `${locale}-controls-after-back-${viewport.width}`);
+    }
+  });
+
+  test(`${locale} selected phone groups retain their issue identifiers`, async (t) => {
+    const data = await museum(locale);
+    data.view.initialScope = 'all';
+    for (const height of [667, 844]) {
+      const page = await open(t, data, { width: 390, height });
+      for (const category of data.categories) {
+        await page.locator(`[data-node="c:${category.id}"]`).focus();
+        await page.keyboard.press('Enter');
+        const selectedCamera = await page.evaluate(
+          () => window.stellar.getState().transform,
+        );
+        await page.locator('#fit').click();
+        assert.deepEqual(
+          await page.evaluate(() => window.stellar.getState().transform),
+          selectedCamera,
+        );
+        for (const issue of data.issues.filter(
+          (i) =>
+            i.scope === 'assigned' &&
+            i.classification?.category === category.id,
+        )) {
+          const label = page.locator(`[data-node="i:${issue.id}"] .node-label`);
+          assert.notEqual(
+            await label.evaluate((el) => el.style.display),
+            'none',
+            issue.identifier,
+          );
+        }
+        await clearLabels(page);
+        if (category === data.categories[0])
+          await shot(page, `${locale}-selected-group-${height}`);
+        await page.locator('#back').click();
+      }
+    }
+  });
+}
+
+test('short fitted views keep distinct node dots instead of shrinking into blobs', async (t) => {
+  for (const [data, viewport] of [
+    [await museum('en'), { width: 844, height: 390 }],
+    [await invented('en'), { width: 1280, height: 500 }],
+    [await invented('en', [1, 1, 1, 1]), { width: 667, height: 375 }],
+    [await invented('en', [3, 3, 3, 3], 12), { width: 390, height: 667 }],
+  ]) {
+    const page = await open(t, data, viewport);
+    const overlaps = await page.evaluate(() => {
+      const dots = [...document.querySelectorAll('.graph-node')].map((el) => {
+        const b = el.querySelector('.node-dot').getBoundingClientRect();
+        return {
+          id: el.dataset.node,
+          x: (b.left + b.right) / 2,
+          y: (b.top + b.bottom) / 2,
+          r: b.width / 2,
+        };
+      });
+      return dots.flatMap((a, i) =>
+        dots
+          .slice(i + 1)
+          .filter((b) => Math.hypot(a.x - b.x, a.y - b.y) < a.r + b.r + 2)
+          .map((b) => `${a.id}/${b.id}`),
+      );
+    });
+    assert.deepEqual(overlaps, []);
+    assert.ok(await shown(page, 'domain'));
+    await clearLabels(page);
+    await shot(page, `readable-dots-${viewport.width}-${viewport.height}`);
+  }
+});
+
+test('panning to a cropped area reveals its retained label without moving the label relative to its dot', async (t) => {
+  const page = await open(t, await invented('en', [1, 1, 1, 1]), {
+    width: 390,
+    height: 667,
+  });
+  const target = await page.evaluate(() => {
+    const s = window.stellar.getState(),
+      stage = document.querySelector('#stage').getBoundingClientRect();
+    return s.nodes.find(
+      (node) =>
+        node.type === 'domain' &&
+        (node.y * s.transform.k + s.transform.y < 0 ||
+          node.y * s.transform.k + s.transform.y > stage.height),
+    );
+  });
+  assert.ok(
+    target,
+    'the readable fit leaves another area available by panning',
+  );
+  const label = page.locator(`[data-node="${target.id}"] .node-label`),
+    placement = await label.getAttribute('transform');
+  assert.equal(await label.evaluate((el) => el.style.display), 'none');
+  const movement = await page.evaluate((node) => {
+    const s = window.stellar.getState(),
+      stage = document.querySelector('#stage').getBoundingClientRect();
+    return {
+      x: stage.left + stage.width / 2,
+      y: stage.top + stage.height / 2,
+      dx: stage.width / 2 - node.x * s.transform.k - s.transform.x,
+      dy: stage.height / 2 - node.y * s.transform.k - s.transform.y,
+    };
+  }, target);
+  await page.mouse.move(movement.x, movement.y);
+  await page.mouse.down();
+  await page.mouse.move(movement.x + movement.dx, movement.y + movement.dy, {
+    steps: 5,
+  });
+  await page.mouse.up();
+  assert.notEqual(await label.evaluate((el) => el.style.display), 'none');
+  assert.equal(await label.getAttribute('transform'), placement);
+});
