@@ -36,6 +36,18 @@ domain order selects palette order. Browser fonts, viewport, and navigation
 state can affect pixels. Classification is agent/user interpretation, not a
 deterministic inference made by the renderer.
 
+Narrow overview stages use one compact column of domains and reserve room for
+names above the phone minimap. Global-view labels use measured text bounds:
+selected/in-focus labels and domains take priority, and text tries below then
+above its node without overlapping dots or previously placed labels. Text with
+no clear candidate gets one extra line of clearance at either anchor, then is
+hidden until navigation provides room; the node, full accessible name, tooltip,
+tree and inspector remain available. Zoom, fit,
+selection and resize reconsider placement; panning moves the existing layout.
+This does not relocate graph nodes to solve collisions, change classification,
+or promise that arbitrary dense graphs show every name at once. Neighborhood
+node-label placement is unchanged.
+
 Parallel relation curves use a common endpoint order so reversing a source
 relation does not fold its path onto the opposite relation. Arrow direction and
 the underlying issue pairs remain source facts. A minimum screen-space curve
