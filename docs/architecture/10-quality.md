@@ -100,6 +100,8 @@ and reject generated-file drift without mutation. Dated
 [installation evidence](../validation/2026-09-18-skill-installation.md) records actual
 installer, workflow and historical-runner recovery results. Every release also
 requires installation from its published tag before release acceptance is claimed.
+The [v0.1.0 release record](../validation/2026-09-19-v0.1.0-release.md) records
+the first published-tag and default-branch installation results.
 
 ## Remaining quality outcomes
 

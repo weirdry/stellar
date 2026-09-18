@@ -55,7 +55,9 @@ isolated installation, command execution and host invocation evidence.
 The short install command follows validated default-branch `main`. Immutable tags
 identify version-pinned installations, starting with `v0.1.0`.
 [GitHub Releases](https://github.com/weirdry/stellar/releases) records publication
-and exact source commits. Promotion, tag publication and installation acceptance
+and exact source commits. The [v0.1.0 release record](../validation/2026-09-19-v0.1.0-release.md)
+records its publication and default-branch/published-tag installation acceptance.
+Promotion, tag publication and installation acceptance
 are separate observations. This manual GitHub release path needs no automated
 publication workflow or separate npm artifact. `dev` has no deployment target.
 
