@@ -173,6 +173,24 @@ Hashes identify the files, not their Git provenance, and cannot restore a past
 installation. This record is not a new work-map/state field or a verifier input.
 For a known ref, an isolated installation of that ref can recover the original
 runner and resources; compare recorded hashes before using it for verification.
+Use a fresh temporary directory and a project-local install **without `-g`**;
+do not replace the current global skill to recover an older runner. Replace `REF`
+below with the recorded tag or full commit SHA. This keeps the task directory
+unchanged and selects the recovered runner only if installation succeeds:
+
+```sh
+STELLAR_RECOVERY="$(mktemp -d)" &&
+  (cd "$STELLAR_RECOVERY" &&
+    npx --yes skills@1.7.0 add \
+      https://github.com/weirdry/stellar/tree/REF \
+      --skill stellar --agent codex -y) &&
+  STELLAR_ROOT="$STELLAR_RECOVERY/.agents/skills/stellar"
+```
+
+The recovered copy is under `$STELLAR_RECOVERY/.agents/skills/stellar`, with its
+project lock at `$STELLAR_RECOVERY/skills-lock.json`; the current global install
+and its lock are retained. Use absolute report paths with the recovered runner
+after comparing its files to the recorded hashes.
 If the original files cannot be recovered, disclose that original-renderer
 verification is unavailable. Generate and verify a separate new report with the
 current runner if needed; keep the original HTML and its verification history.
