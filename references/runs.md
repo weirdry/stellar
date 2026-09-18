@@ -184,9 +184,12 @@ STELLAR_RECOVERY="$(mktemp -d)" &&
     npx --yes skills@1.7.0 add \
       https://github.com/weirdry/stellar/tree/REF \
       --skill stellar --agent codex -y) &&
-  STELLAR_ROOT="$STELLAR_RECOVERY/.agents/skills/stellar"
+  STELLAR_ROOT="$STELLAR_RECOVERY/.agents/skills/stellar" &&
+  printf '%s\n' "$STELLAR_ROOT"
 ```
 
+After success, record the final printed absolute path and use it explicitly in
+later shell calls; do not assume these variables survive between tool calls.
 The recovered copy is under `$STELLAR_RECOVERY/.agents/skills/stellar`, with its
 project lock at `$STELLAR_RECOVERY/skills-lock.json`; the current global install
 and its lock are retained. Use absolute report paths with the recovered runner
