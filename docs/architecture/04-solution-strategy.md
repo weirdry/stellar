@@ -48,4 +48,4 @@ new normalization. [ADR-0005](../decisions/0005-preserve-classification-on-refre
 records this separation. Background synchronization remains Open. MIT licensing
 and the installable Node runner are implemented; see
 [skill distribution](07-deployment-view.md#skill-distribution) for the current
-installation and pending release boundary.
+installation and release boundary.

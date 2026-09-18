@@ -360,11 +360,14 @@ Publish only from validated `main` through the repository's defined release
 workflow. Published tags, versions, and artifacts are immutable; corrections use
 a new version rather than moving a tag or overwriting an existing artifact.
 
-No Stellar artifact or input contract has been released. Evolve development
-contracts in place until concrete evidence identifies a released consumer,
-non-disposable stored data, or a real deployment interval requiring compatibility.
-Do not introduce speculative version chains, dual readers, or migrations.
-Preserve correctness identities and ordering rules for their actual purpose.
+The first public distribution boundary is `v0.1.0`. Published tags and their
+capture, work-map and saved-state contracts are distributed artifacts; existing
+saved files are durable user data. Before changing a published contract, identify
+the exact artifacts and consumers that must remain usable and choose the smallest
+compatible change. Unreleased development intermediates may still evolve in
+place where no real consumer or durable state requires preservation. Do not add
+speculative version chains, dual readers, or migrations. Preserve correctness
+identities and ordering rules for their actual purpose.
 
 Never delete, reset, or rewrite user data merely to simplify development. Keep
 real issue data and generated user reports outside the repository by default,
@@ -378,6 +381,7 @@ credentials, or machine-specific paths.
 
 Stellar uses the MIT license and GitHub-hosted skills installation. Follow the
 [distribution guide](docs/development/distribution.md) for bundle generation,
-installation checks and the manual release procedure. The first release is pending.
+installation checks and the manual release procedure. Published versions and
+their exact source commits are recorded in GitHub Releases.
 Exceptions to this workflow require explicit maintainer direction and a durable
 record of their scope, reason, risk, owner, review condition, and exit condition.

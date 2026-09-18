@@ -11,7 +11,8 @@ The [workflow](../../.github/workflows/ci.yml) runs the repository-owned gate on
 pushes to `dev` and `main`, and PRs targeting `dev`. Actual results are available
 in [GitHub Actions](https://github.com/weirdry/stellar/actions/workflows/ci.yml);
 workflow configuration is not proof of a successful run or merge enforcement.
-There is no published skill package, deployed service, or server-side data store.
+The skill is distributed from GitHub; there is no npm package, deployed service,
+or server-side data store.
 Local private state files support requested refreshes; each operation creates a
 new run and leaves earlier states and reports intact.
 See [development](../development/README.md).
@@ -51,13 +52,12 @@ or development checkout. The installer owns registration and updates.
 procedure; [validation](../validation/2026-09-18-skill-installation.md) distinguishes
 isolated installation, command execution and host invocation evidence.
 
-State: **Target**
-
-The first release is pending. The short install command becomes available after
-validated fast-forward promotion to default-branch `main`. The first immutable
-release tag is intended to be `v0.1.0`; it has not been published. No automated
-publication workflow or separate npm artifact is needed for this manual GitHub
-release path. `dev` has no deployment target.
+The short install command follows validated default-branch `main`. Immutable tags
+identify version-pinned installations, starting with `v0.1.0`.
+[GitHub Releases](https://github.com/weirdry/stellar/releases) records publication
+and exact source commits. Promotion, tag publication and installation acceptance
+are separate observations. This manual GitHub release path needs no automated
+publication workflow or separate npm artifact. `dev` has no deployment target.
 
 User inputs and saved reports belong to the user. Repository refactoring or a
 future artifact update must not reset or migrate those files as incidental work.

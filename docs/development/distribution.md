@@ -9,7 +9,7 @@ documented npx commands also require npm/npx and Git to retrieve this repository
 Installed report generation requires neither Git
 nor a development checkout, mise, Just, pnpm, or installed npm dependencies.
 
-After the first promotion to `main`, the normal entry point is:
+The normal entry point installs validated default-branch `main`:
 
 ```sh
 npx skills add weirdry/stellar --skill stellar -g
@@ -34,8 +34,14 @@ npx skills add https://github.com/weirdry/stellar/tree/REF --skill stellar -g
 ```
 
 The short command follows the repository's default branch, `main`. Installing a
-review branch is an explicit development preview, not a release. No release tag
-exists yet. Do not present a planned tag as an available install source.
+review branch is an explicit development preview, not a release. Published tags
+are listed in [GitHub Releases](https://github.com/weirdry/stellar/releases).
+The first release identity is `v0.1.0`; verify its publication before using the
+version-pinned command:
+
+```sh
+npx skills add https://github.com/weirdry/stellar/tree/v0.1.0 --skill stellar -g
+```
 
 Updates and interactive removal belong to the same installer:
 
@@ -110,10 +116,9 @@ Command replay, explicit agent invocation, automatic discovery, live source
 collection, and publication are separate evidence. See the
 [installation validation record](../validation/2026-09-18-skill-installation.md).
 
-## First release procedure
+## Release procedure
 
-This change prepares installation; it does not publish a release. After review
-and integration, validate the intended `dev` head with local and hosted CI and
+After review and integration, validate the intended `dev` head with local and hosted CI and
 the isolated installation workflow. Follow
 [CONTRIBUTING](../../CONTRIBUTING.md#promoting-dev-to-main) to fast-forward `main`
 only on maintainer direction. Use an immutable `v0.1.0` tag on the validated

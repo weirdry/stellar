@@ -45,7 +45,8 @@ GitHub Actions; workflow presence does not establish merge enforcement.
 Branch rules, dependency visibility and remediation routing remain **Open**.
 Stellar uses MIT licensing and GitHub-hosted skill distribution; the
 [distribution guide](distribution.md) owns the manual validated-main release
-path and installation checks. The first release remains pending.
+path and installation checks. Immutable GitHub release tags identify published
+skill versions; no Stellar npm publication is involved.
 
 ## Copy-once provenance
 

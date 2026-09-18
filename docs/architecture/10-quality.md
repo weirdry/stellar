@@ -98,12 +98,12 @@ The [distribution tests](../../test/distribution.test.js) exercise an installed
 runner without development dependencies, compare HTML with the source renderer,
 and reject generated-file drift without mutation. Dated
 [installation evidence](../validation/2026-09-18-skill-installation.md) records actual
-installer, workflow and historical-runner recovery results.
+installer, workflow and historical-runner recovery results. Every release also
+requires installation from its published tag before release acceptance is claimed.
 
 ## Remaining quality outcomes
 
 State: **Target**
 
-First-release acceptance still requires installation from the published tag;
-host discovery is a separate, unverified observation. Automatic refresh,
+Host discovery is a separate, unverified observation. Automatic refresh,
 concurrent state reconciliation and identity rebinding are not implemented.

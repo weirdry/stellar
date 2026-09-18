@@ -11,8 +11,9 @@ validator, and standalone tree/graph viewer are implemented. A report can combin
 multiple workspaces and repositories. The host agent collects and classifies;
 Stellar code normalizes facts and renders the fixed interface. Local saved choices
 and requested refreshes preserve user grouping while updating source facts.
-Background synchronization remains **Target**. There is no backend. Installation
-support is implemented; the first public release and promotion to `main` are pending.
+Background synchronization remains **Target**. There is no backend. Stellar is
+distributed as an MIT-licensed GitHub skill with a bundled Node runner. See
+[GitHub Releases](https://github.com/weirdry/stellar/releases) for published versions.
 
 ## Install and use
 
@@ -23,8 +24,8 @@ With **Node.js 24.x** (including npm/npx) and **Git** available, install the ski
 npx skills add weirdry/stellar --skill stellar -g
 ```
 
-This is the release installation command, available after the first promotion to
-`main`. The installer fetches Stellar from GitHub; Stellar is not an npm package.
+This command installs validated default-branch `main` from GitHub; Stellar is not
+an npm package. Use an immutable release tag for a version-pinned installation.
 Choose your agent in the installer, or pass `--agent codex` or
 `--agent claude-code`. Start a fresh host session if its skill list is cached.
 Ask it to use Stellar, for example: “Use Stellar to map my assigned issues by

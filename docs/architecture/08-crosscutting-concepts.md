@@ -186,6 +186,7 @@ earlier full-text evidence is remembered. The localized inspector notice does no
 change the current source detail or classification origin. The runner owns this
 notice; it is separate from the rationale and cannot be supplied in choices.
 
-Work-map and state version 1 are unreleased. Existing user files remain untouched.
-Concrete distributed-consumer or durable-state evidence would be required before
-adding compatibility machinery; there is no migration for an intermediate shape.
+Work-map and state version 1 belong to the first public skill distribution
+boundary, `v0.1.0`. Existing user files remain untouched. Future changes must
+account for the exact published contracts and durable files that remain in use;
+there is no migration for an unconsumed development intermediate.
