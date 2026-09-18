@@ -24,6 +24,12 @@ dependency build scripts.
 
 ## Commands
 
+Canonical authoring follows the [documentation policy](documentation.md).
+Use `just diagrams-build` with a reviewed `ARCHIFY_ROOT` for explicit generation;
+`just diagrams-check` is read-only and included in CI. The
+[diagram guide](../architecture/diagrams/README.md) describes source validation,
+SVG export, browser review and evidence retention.
+
 | Command                                     | Behavior                                                                                      |
 | ------------------------------------------- | --------------------------------------------------------------------------------------------- |
 | `just init`                                 | Locked tools, frozen dependencies, local hooks                                                |

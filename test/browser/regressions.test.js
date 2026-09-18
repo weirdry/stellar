@@ -456,7 +456,7 @@ test('owner text retains literal whitespace in the header and exported SVG title
     const expected =
       data.owner + (locale === 'ko' ? '의 Stellar' : '’s Stellar');
     const page = await openMap(t, data);
-    assert.equal(await page.locator('title').textContent(), expected);
+    assert.equal(await page.locator('head > title').textContent(), expected);
     assert.equal(await page.locator('#brand-title').textContent(), expected);
     assert.equal(
       await page.locator('#brand-title').getAttribute('title'),

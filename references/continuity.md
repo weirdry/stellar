@@ -189,7 +189,10 @@ they fit and add a group when evidence warrants it. Check targets as well as
 classification. User choices remain authoritative; explain tension with new
 facts rather than silently replacing them. Changed full text with an agent
 classification withholds that classification until reconsidered; the prior choice
-stays in memory for context. A status change alone does not trigger regrouping.
+stays in memory for context. For a matched identity, refresh carries remembered
+target tags forward even while classification review is pending, regardless of
+their user or agent origin. Target-only changes do not clear that review.
+A status change alone does not trigger regrouping.
 Null and omitted descriptions are equivalent for this comparison; source fields
 remain as observed. Empty strings and other actual text remain distinct.
 Unqueried observations do not replace full-text evidence. Pending assigned

@@ -1,0 +1,151 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Refresh: classification review and target retention",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1080,
+      690
+    ]
+  },
+  "components": [
+    {
+      "id": "match",
+      "type": "backend",
+      "label": "Normalize and match",
+      "sublabel": "Provider + namespace + native ID",
+      "pos": [
+        410,
+        55
+      ],
+      "size": [
+        260,
+        90
+      ]
+    },
+    {
+      "id": "user",
+      "type": "backend",
+      "label": "User classification",
+      "sublabel": "Preserve despite text changes",
+      "pos": [
+        45,
+        280
+      ],
+      "size": [
+        250,
+        90
+      ]
+    },
+    {
+      "id": "agent",
+      "type": "backend",
+      "label": "Agent classification",
+      "sublabel": "Reuse when no review is pending",
+      "pos": [
+        415,
+        280
+      ],
+      "size": [
+        250,
+        90
+      ]
+    },
+    {
+      "id": "review",
+      "type": "security",
+      "label": "Classification review",
+      "sublabel": "New / uncertain / changed evidence",
+      "pos": [
+        785,
+        280
+      ],
+      "size": [
+        250,
+        90
+      ]
+    },
+    {
+      "id": "save",
+      "type": "database",
+      "label": "Fresh map + remembered targets",
+      "sublabel": "Matched targets persist during review",
+      "pos": [
+        365,
+        520
+      ],
+      "size": [
+        350,
+        90
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "user-branch",
+      "from": "match",
+      "to": "user",
+      "label": "user origin"
+    },
+    {
+      "id": "agent-branch",
+      "from": "match",
+      "to": "agent",
+      "label": "agent; no review",
+      "labelAt": [
+        540,
+        210
+      ]
+    },
+    {
+      "id": "review-branch",
+      "from": "match",
+      "to": "review",
+      "label": "review required",
+      "variant": "security"
+    },
+    {
+      "id": "user-save",
+      "from": "user",
+      "to": "save",
+      "label": "restore classification"
+    },
+    {
+      "id": "agent-save",
+      "from": "agent",
+      "to": "save",
+      "label": "restore classification",
+      "labelAt": [
+        540,
+        445
+      ]
+    },
+    {
+      "id": "review-save",
+      "from": "review",
+      "to": "save",
+      "label": "retain review reason",
+      "variant": "security"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "violet",
+      "title": "Current facts, remembered interpretation",
+      "items": [
+        "Unobserved identities stay in private memory, outside the current map.",
+        "Unknown context never replaces remembered full-text evidence."
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Save and render are separate",
+      "items": [
+        "refresh may save assigned issues without a primary classification.",
+        "classify or revise supplies explicit choices in a new run before rendering."
+      ]
+    }
+  ]
+}

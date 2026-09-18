@@ -15,6 +15,8 @@ just render examples/museum.json outputs/museum.html
 just render examples/seed-library.json outputs/seed-library.html
 ```
 
+## Mixed-source generation and continuity
+
 [mixed-capture.json](mixed-capture.json) is a separate invented observatory
 scenario with Linear and two GitHub repositories, repeated `#7` identifiers,
 and a registered cross-repository dependency. It is native capture input:
@@ -33,6 +35,12 @@ the capture/choices pair and verify facts, ownership, rendering and later refres
 Use fresh output run paths when repeating the example. Its taxonomy is not a
 required vocabulary for other datasets.
 
+The [continuity walkthrough](continuity-walkthrough.md) extends this same fixture
+through a user correction, changed source evidence, pending classification and a
+verified refreshed report. It identifies the state file to carry into each step.
+
+## Purpose-classification exercise
+
 [purpose-capture.json](purpose-capture.json) is an independently invented river
 station input for skill exercises. It contains different harness purposes,
 numerical production and explanation work, delivery maintenance across tools,
@@ -42,6 +50,8 @@ each issue's outputs and exclusions; category names or counts are not fixed
 answers. The synthetic capture itself requires classification before rendering.
 The Node gate checks its normalization and documented issue/relation counts;
 semantic membership remains a separate review of the agent's interpretation.
+
+## Private data boundary
 
 Real snapshots and every data-bearing derivative (JSON, HTML, SVG, screenshots,
 logs) belong only in ignored `local/` and `outputs/` or outside the repository.

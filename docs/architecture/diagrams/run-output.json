@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "diagram_type": "lifecycle",
+  "meta": {
+    "title": "Private run output: success and failure",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1080,
+      680
+    ]
+  },
+  "lanes": [
+    {
+      "id": "main",
+      "label": "One command invocation"
+    },
+    {
+      "id": "errors",
+      "label": "Failure handling"
+    },
+    {
+      "id": "terminal",
+      "label": "Return to caller"
+    }
+  ],
+  "states": [
+    {
+      "id": "validated",
+      "type": "start",
+      "label": "Validated",
+      "sublabel": "State checked",
+      "lane": "main",
+      "col": 0
+    },
+    {
+      "id": "reserved",
+      "type": "active",
+      "label": "Reserve path",
+      "sublabel": "Exclusive mkdir",
+      "lane": "main",
+      "col": 1
+    },
+    {
+      "id": "writing",
+      "type": "active",
+      "label": "Write files",
+      "sublabel": "Write + close each",
+      "lane": "main",
+      "col": 2
+    },
+    {
+      "id": "complete",
+      "type": "success",
+      "label": "Run saved",
+      "sublabel": "Three files ready",
+      "lane": "main",
+      "col": 3
+    },
+    {
+      "id": "returned",
+      "type": "success",
+      "label": "Return summary",
+      "sublabel": "Review counts",
+      "lane": "main",
+      "col": 4
+    },
+    {
+      "id": "cleanup",
+      "type": "active",
+      "label": "Clean new files",
+      "sublabel": "Only this attempt",
+      "lane": "errors",
+      "col": 0
+    },
+    {
+      "id": "refused",
+      "type": "failure",
+      "label": "Refused",
+      "sublabel": "Prior run untouched",
+      "lane": "errors",
+      "col": 1
+    },
+    {
+      "id": "failed",
+      "type": "failure",
+      "label": "Write failed",
+      "sublabel": "Report any leftovers",
+      "lane": "terminal",
+      "col": 0
+    }
+  ],
+  "transitions": [
+    {
+      "from": "reserved",
+      "to": "refused",
+      "label": "path exists / cannot create",
+      "variant": "security",
+      "route": "bottom-channel",
+      "channelY": 600
+    },
+    {
+      "from": "writing",
+      "to": "cleanup",
+      "label": "I/O failure",
+      "variant": "security",
+      "labelAt": [
+        402,
+        230
+      ]
+    },
+    {
+      "from": "cleanup",
+      "to": "failed",
+      "label": "best-effort cleanup",
+      "variant": "security",
+      "labelAt": [
+        402,
+        390
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Successful output",
+      "items": [
+        "state.json, work-map.json, and changes.json are written privately.",
+        "refresh may save pending classifications; rendering checks completeness separately."
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Failure and retry",
+      "items": [
+        "Existing paths are refused. Cleanup never removes an earlier run.",
+        "Caller retries with a fresh unused path; no automatic retry or crash recovery."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,182 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Stellar system context",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1120,
+      720
+    ],
+    "views": [
+      {
+        "id": "facts",
+        "label": "Who owns facts and interpretation?",
+        "focus": [
+          "sources",
+          "agent",
+          "user"
+        ],
+        "note": "Sources own facts; the host agent interprets purpose under the user's requested scope."
+      },
+      {
+        "id": "local",
+        "label": "What runs and stays local?",
+        "focus": [
+          "runner",
+          "files",
+          "browser"
+        ],
+        "note": "The runner writes private artifacts. The browser opens a complete standalone HTML report."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "user",
+      "type": "external",
+      "label": "Person using Stellar",
+      "sublabel": "Scope, language, corrections",
+      "pos": [
+        400,
+        70
+      ],
+      "size": [
+        240,
+        90
+      ]
+    },
+    {
+      "id": "sources",
+      "type": "external",
+      "label": "Linear / GitHub",
+      "sublabel": "Facts and registered relations",
+      "pos": [
+        40,
+        300
+      ],
+      "size": [
+        240,
+        90
+      ]
+    },
+    {
+      "id": "agent",
+      "type": "backend",
+      "label": "Host agent",
+      "sublabel": "Read tools + purpose judgment",
+      "pos": [
+        400,
+        300
+      ],
+      "size": [
+        240,
+        90
+      ]
+    },
+    {
+      "id": "runner",
+      "type": "backend",
+      "label": "Stellar Node runner",
+      "sublabel": "Normalize, preserve, render",
+      "pos": [
+        800,
+        300
+      ],
+      "size": [
+        240,
+        90
+      ]
+    },
+    {
+      "id": "files",
+      "type": "database",
+      "label": "Private run directory",
+      "sublabel": "State, map, changes, report",
+      "pos": [
+        800,
+        540
+      ],
+      "size": [
+        240,
+        90
+      ]
+    },
+    {
+      "id": "browser",
+      "type": "frontend",
+      "label": "Local browser",
+      "sublabel": "Tree, graph, inspector, export",
+      "pos": [
+        400,
+        540
+      ],
+      "size": [
+        240,
+        90
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "scope",
+      "from": "user",
+      "to": "agent",
+      "label": "scope + choices",
+      "labelAt": [
+        520,
+        230
+      ]
+    },
+    {
+      "id": "native-facts",
+      "from": "sources",
+      "to": "agent",
+      "label": "tool responses"
+    },
+    {
+      "id": "commands",
+      "from": "agent",
+      "to": "runner",
+      "label": "capture + choices",
+      "variant": "emphasis"
+    },
+    {
+      "id": "artifacts",
+      "from": "runner",
+      "to": "files",
+      "label": "fresh run + HTML",
+      "variant": "emphasis",
+      "labelAt": [
+        920,
+        465
+      ]
+    },
+    {
+      "id": "open-report",
+      "from": "files",
+      "to": "browser",
+      "label": "open local HTML",
+      "variant": "emphasis"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "violet",
+      "title": "Authority",
+      "items": [
+        "Host tools own authentication and collection.",
+        "Stellar never invents source relations or fetches issues."
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Private artifacts",
+      "items": [
+        "HTML embeds the issue data and bundled viewer.",
+        "No backend, background sync, or source writeback."
+      ]
+    }
+  ]
+}

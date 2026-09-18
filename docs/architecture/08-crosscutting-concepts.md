@@ -36,65 +36,36 @@ domain order selects palette order. Browser fonts, viewport, and navigation
 state can affect pixels. Classification is agent/user interpretation, not a
 deterministic inference made by the renderer.
 
-Narrow overview stages use one column of domains. A two-group area places its
-groups on opposite horizontal sides, leaving the area name a vertical slot and
-removing the former cross-area alignment through area centers. Row spacing
-reserves the current groups' full issue footprints even while collapsed; opening
-another group cannot shift area centers or interleave adjacent areas. Wider
-stages retain their domain grid.
+The [Open Star identity](../brand.md) has one canonical
+[SVG source](../../assets/viewer/stellar.svg), used by documentation and embedded
+by the renderer in the viewer header and as a data-URL favicon. Theme accents
+and header sizing belong to the viewer stylesheet; the favicon uses the SVG's
+default lavender. Branding introduces no external request or input field.
 
-Global-view labels, including target focus, use measured bounds per text line.
-Selected/in-focus labels take priority, followed by domains, categories and
-issues. Candidate placement preserves association with the owning dot: the
-first line cannot be nearer another dot beyond a two-pixel tolerance. Names use
-nearby above/below/side anchors, with at most 32 CSS pixels of extra vertical
-clearance. Equally prioritized area names nearest a stage edge place first and
-try outward side positions before inward ones. Additional area candidates use
-16/32-pixel horizontal offsets or a five-pixel side gap, while retaining the
-four-pixel collision margin. This accommodates fallback font widths without
-changing font selection, node geometry or the owning-dot test. Area names use two compact lines on narrow stages. Wider stages
-balance longer names over three lines (four on the middle grid), growing their
-bounded width with the text to preserve distinguishing endings. Names exceeding
-this capacity still truncate. A longer name that cannot be placed falls back
-to its compact two-line form under the same clearance and association checks.
-Both forms are measured together; temporary measurement nodes are removed
-before display/export. Full names remain in the tree, accessible names,
-tooltip and inspector. Redundant area subtitles are omitted at low zoom.
+The visual contract preserves identity and meaning while adapting the view:
 
-All global geometry passes check text against the stage and actual control
-rectangles. Filter changes and history restoration retain this protection at
-the same camera. Manual panning translates existing placements without moving
-names relative to their nodes. No clear placement means hidden text, not a
-changed identity. Measurements are batched before transforms; off-stage names retain their
-placement and become visible when panning brings their node into view. Neighborhood placement is unchanged.
+- Area centers remain stable during expansion and camera movement. Framing favors
+  distinct nodes and readable selection over fitting every item on screen.
+- In the global view, automatic label placement keeps visible names associated
+  with their owning nodes and clear of other text, nodes and fixed controls.
+  If placement fails, hide the label rather than move it ambiguously; full names
+  remain accessible through the tree, accessible name, tooltip and inspector.
+  The neighborhood view uses its separate layout and does not run these
+  placement checks. Manual panning translates the scene and can move content
+  behind controls.
+- Source relations retain their endpoints and direction regardless of grouping,
+  curve shape or label suppression. Classification lines and target membership
+  do not become source dependencies. Parallel curves preserve separate selection
+  targets in the reviewed scenarios.
+- Dense or short views may require panning, tree selection or zoom. The finite
+  label/curve candidate sets do not promise obstacle-free arbitrary graphs or
+  simultaneous visibility of every name.
 
-Automatic fitting preserves a minimum separation for area/group dots, focused
-issue hit targets and area-name space. Unfocused expanded issues do not force the
-overview to their detail scale. A dense/short view may exceed the stage instead of
-shrinking to overlapping dots; pan, minimap, tree selection and manual zoom
-remain available. The F control says "Reframe for readability" in English and
-"읽기 좋은 크기로 보기" in Korean; its tooltip, overview hint and help explain
-that some areas may remain off-screen. Group selection, Fit and resize use the
-group and its issues as camera bounds; its parent remains in the scene. Selected-group issue IDs are
-eligible below the usual zoom threshold. Source data, classification and
-relationship direction do not change. The bundled-viewer
-[policy](../../assets/viewer/README.md) and
-[regressions](../../test/browser/layout.test.js) own the bounded details.
-
-Parallel relation curves use a common endpoint order so reversing a source
-relation does not fold its path onto the opposite relation. Arrow direction and
-the underlying issue pairs remain source facts. A minimum screen-space curve
-separation preserves pointer targets at small scales. Relation text that obscures
-nodes or other labels is suppressed and reconsidered on zoom without removing
-source edges. Narrow global source curves compare a bounded set of seven
-quadratic bends
-against unrelated node dots and visible text. A node pair shares its bend so
-parallel separation and reverse direction survive. The first clear bend wins;
-otherwise the least obstructed candidate wins. Control-hull rejection and
-quadratic/rectangle intersections replace point sampling for obstacle tests.
-On-screen endpoints favor paths that stay within the stage width. Classification
-lines and neighborhood routing are unchanged. The finite candidate set does not
-guarantee that every edge in an arbitrary graph avoids every obstacle.
+The [viewer layout guide](../../assets/viewer/README.md#layout-and-label-placement)
+owns breakpoints, pixel tolerances, line counts, curve candidates and camera
+rules. Its [regression map](../../assets/viewer/README.md#verification-ownership)
+links the detailed browser scenarios. Changes to those algorithms need not
+redefine these system invariants; changes to an invariant update this chapter.
 
 Target option values preserve the authored strings, including whitespace, instead
 of deriving identity from browser-normalized display text. Only targets attached to assigned work activate

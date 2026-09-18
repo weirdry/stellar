@@ -40,3 +40,56 @@ first-draft choice application, saved choices, refresh matching and actor-specif
 a current work map plus private remembered interpretation. [link-skill.js](../../scripts/link-skill.js) safely
 registers this checkout in the user's local discovery directory. It does not
 publish a package or replace another installation.
+
+## Artifact ownership and continuation
+
+![Capture and choices produce a current map, private state and change summary; only the map enters HTML, while state continues the run](diagrams/artifact-ownership.svg)
+
+[Explore HTML](diagrams/artifact-ownership.html) · [JSON source](diagrams/artifact-ownership.json)
+
+The main path shows first generation with assigned work to classify. `normalize`
+creates a draft from a retained capture; the host agent authors choices after
+reading evidence. `classify-draft`
+consumes both and writes the three JSON artifacts in one fresh run directory.
+`render` then consumes only the completed map. The lower branch identifies the
+input to later operations: `refresh` combines saved state with a new capture;
+`classify` or `revise` combines it with agent choices or explicit user corrections.
+Each operation writes another fresh run, not back into the selected state.
+
+| Artifact           | Producer and responsibility                                                                                                                                                           | How it is used next                                                                                                                                                                  |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Native capture     | Host collector retains native observations, per-source scope, timestamps and declared coverage. Retained response files support inspection but a digest is not source authentication. | Input to `normalize`, `refresh` and the source-fact part of `verify-run`. It contains no authoritative purpose grouping.                                                             |
+| Unclassified draft | Normalizer translates identities, current facts and registered relations. Missing assigned classifications are expected at this stage.                                                | Input to evidence reading and first-run `classify-draft`. Missing classification blocks rendering only for assigned issues; a valid empty or context-only draft can render directly. |
+| Choices            | Agent authors purpose categories, rationale and targets; explicit user corrections use the same choices shape through `revise`.                                                       | Operation input, not a saved-state replacement. The command establishes actor ownership; choices cannot supply their own origin.                                                     |
+| Current work map   | Runner combines current observations with the permitted interpretation. Refresh may produce a map with pending assigned classification.                                               | Renderer input only after complete validation; embedded in HTML. It excludes absent issues and private continuity memory.                                                            |
+| Saved state        | Continuity runner retains the current map, remembered decisions, separate classification/target ownership, evidence and review reasons.                                               | Select the intended latest successful state for the next operation, even when its map still needs classification. Starting from an older state starts another lineage.               |
+| Change summary     | Continuity runner reports changes relative to the selected prior observation and outstanding current review. The first-run summary is empty.                                          | Inspect what needs attention. It is neither an event log nor a replacement for state; `notObserved` does not mean deleted or completed.                                              |
+| Standalone HTML    | Renderer embeds the validated map and fixed viewer. It does not automatically include saved state or retained source-response files.                                                  | Browser exploration and deliberate sharing. Navigation and SVG export do not save classification edits or continue a run.                                                            |
+
+For a first run with no assigned issues and no decisions to apply, validate the
+draft and render it directly. If saved state is needed for continuation, use
+[`remember`](../../references/continuity.md#start-from-a-completed-map) to create
+the initial run, then render its `work-map.json`. An empty choices object is
+rejected, so this case does not require `classify-draft` or invented categories.
+
+The [schemas](../../schemas/README.md) own exact fields and validation. The
+[run guide](../../references/runs.md) owns filenames, retained evidence and
+handoff contents; the [continuity guide](../../references/continuity.md) owns
+command semantics. The [synthetic walkthrough](../../examples/continuity-walkthrough.md)
+connects these artifacts through first generation, a user correction and refresh.
+All data-bearing derivatives need the privacy treatment of their inputs.
+
+## Rendering and brand assets
+
+![Validated map and fixed viewer assets combine with the canonical Open Star SVG](diagrams/viewer-rendering.svg)
+
+[Explore HTML](diagrams/viewer-rendering.html) · [JSON source](diagrams/viewer-rendering.json)
+
+[renderWorkMap](../../lib/render.js) validates input, selects the bundled locale,
+escapes embedded JSON and titles, and inserts the fixed shell, styles and viewer.
+The [Open Star SVG](../../assets/viewer/stellar.svg) is the single vector source
+for the inline header and data-URL favicon. The header inherits its theme accent;
+the favicon uses the SVG default color. The [README banner](../brand.md#readme-banner)
+is separate promotional artwork. No image-generation service or Archify runtime
+is involved in rendering a user report. Identical ordered data and viewer assets
+produce identical HTML bytes; input order remains meaningful.

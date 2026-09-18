@@ -4,7 +4,9 @@ State: **As-built**
 
 [work-map.schema.json](work-map.schema.json) owns the JSON shape.
 [validate.js](../lib/validate.js) owns cross-reference and semantic checks.
-`schemaVersion: 1` is the first contract under development, not a release claim.
+`schemaVersion: 1` is the work-map contract included in the
+[v0.1.0 public skill distribution](../docs/validation/2026-09-19-v0.1.0-release.md).
+A version token alone is not release evidence; that record identifies the boundary.
 There are no readers or migrations for prototype intermediate shapes.
 
 ## Authoring
@@ -109,8 +111,8 @@ structural checks cannot independently prove pagination or source permissions.
 
 The report name is derived by the runner: `{owner}의 Stellar` for `ko`, and
 `{owner}’s Stellar` for `en`. Do not author a top-level `title`; issue titles and
-attachment titles retain their separate meanings. The schema remains version 1
-under development and is corrected in place.
+attachment titles retain their separate meanings. The schema remains version 1;
+future changes must assess the published contract and durable files actually in use.
 
 The agent selects `locale` from an explicit user language request, otherwise
 from the conversation language, and writes classification descriptions in that

@@ -8,6 +8,15 @@ fixed interface. The renderer embeds these resources and the validated input
 in one HTML file. There is no browser framework, external font request,
 Archify runtime, server, or dynamic code generation by the host agent.
 
+[stellar.svg](stellar.svg) is the canonical Open Star brand mark. The renderer
+inlines it in the header and embeds the same SVG as a data-URL favicon, so
+standalone reports need no external logo or icon file. The header mark inherits
+the viewer's theme accent and is decorative beside the accessible owner-derived
+title; the favicon uses the SVG's default lavender. See the
+[brand guide](../../docs/brand.md) for geometry, sizing, and usage.
+
+## Layout and label placement
+
 The viewer derives presentation fields from the canonical issue classification
 and relation list. It keeps a domain grid with radial subgroups, expands issues
 from their subgroup, and uses a radial neighborhood for direct source links.
@@ -70,7 +79,9 @@ group and its issues; its parent area remains in the scene but does not widen th
 bounds. That same selection scope is used by Fit and resize. The selected group's
 issue identifiers are eligible for placement below the usual 25% zoom threshold.
 
-Parallel curves retain a minimum screen-space separation for pointer selection.
+Parallel curves use a common endpoint order so reversing a source relation does
+not fold its path onto the opposite relation. They retain a minimum screen-space
+separation for pointer selection.
 Relation labels that overlap nodes, node text, or another visible relation label
 are suppressed and reconsidered on zoom; the underlying edges and inspector
 details remain available.
@@ -85,6 +96,8 @@ on screen. This reduces the single-column interference without changing source
 relations, node positions, classification lines or neighborhood routing. It does
 not guarantee obstacle-free edges for arbitrary graphs.
 These are bounded placement rules, not a general graph-layout optimizer.
+
+## Interaction and presentation
 
 Search, synchronized tree/graph selection, status and target filters, relationship
 toggles, history, pan/zoom/fit, minimap, themes, keyboard controls, mobile drawers,
@@ -136,3 +149,32 @@ an editing or persistence API.
 The source retains the prototype's visual language. Its private data, generated
 reports, attachments, and tests containing real identities were not imported.
 See [quality](../../docs/architecture/10-quality.md).
+
+## Verification ownership
+
+The [system quality chapter](../../docs/architecture/10-quality.md) owns stable
+quality outcomes. This guide and the following tests own detailed visual rules
+and regression scenarios; dated [validation records](../../docs/validation/README.md)
+state what actually ran and which artifacts were inspected.
+
+| Test owner                                                         | Detailed coverage                                                                                                                                                                                                                                                                                            |
+| ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [Viewer interactions](../../test/browser/viewer.test.js)           | Tree/graph selection, direct neighbors, status/target controls, history, pan/zoom, minimap, themes, mobile drawers, keyboard access and SVG download.                                                                                                                                                        |
+| [Interaction regressions](../../test/browser/regressions.test.js)  | Independently selectable opposite/parallel relations, relation-label clearance in phone neighborhoods, literal target whitespace and owner names, browser shortcuts, visible search-result selection, repeated selection history, context versus filtered assigned labels, and context-only target behavior. |
+| [Overview regressions](../../test/browser/overview.test.js)        | Long Korean/English names on phones, owning-dot association, caption/control clearance, repeat-fit, resize and panning.                                                                                                                                                                                      |
+| [Layout regressions](../../test/browser/layout.test.js)            | Two-group areas, five-area desktop layouts, successive neighboring expansions, per-line target-focus labels, source curves on 320 × 568 stages, long-name retention through resizing, unchanged-camera filter/Back behavior, short-stage readability and selected-group framing.                             |
+| [Mixed sources](../../test/browser/sources.test.js)                | Repeated issue numbers across namespaces, provenance/coverage labels and direct source relationships.                                                                                                                                                                                                        |
+| [Continuity browser checks](../../test/browser/continuity.test.js) | Pending context, retained references, and localized previous-observation notices without changing source status or assigned totals.                                                                                                                                                                          |
+| [Core tests](../../test/core.test.js)                              | Deterministic rendering, locale/name derivation, literal markup-like input, URL validation and safe output replacement.                                                                                                                                                                                      |
+
+Layout regressions include Arial/sans-serif overrides, resolved to Liberation
+Sans on Ubuntu, to exercise fallback widths without changing the product font
+stack. Assertions protect fixture-specific readable names, collision clearance,
+identity association, unchanged embedded facts and repeatable framing. They do
+not establish readability for every graph or font.
+
+Run `just browser-check` for actual Chromium coverage. It is separate from
+`just ci`; both are invoked by the repository's hosted workflow with synthetic
+data. Local execution is not proof of a hosted run. Optional screenshots stay
+in ignored output. Public fixtures never contain real work records; any private
+regression and its derivatives remain local.

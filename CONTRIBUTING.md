@@ -256,10 +256,8 @@ branch protection or required-check enforcement.
 ### Pull request template requirements
 
 Every new or substantially updated PR must use the repository-local
-[PR template](.github/pull_request_template.md), copied from the organization
-template. Use its applicable headings and checklists rather than a substitute
-summary format. The local file is the source for PR authoring; its copied
-revision is recorded in [standard adoption](docs/development/standards.md).
+[PR template](.github/pull_request_template.md). Use its applicable headings and
+checklists. The local file is the source for PR authoring.
 
 - Write the title and body in English. Use a Conventional Commit title and
   keep tracker identifiers in the optional history section, not the title.
@@ -311,6 +309,7 @@ the real artifact, destination, and validation path have been defined.
 
 ## Canonical documentation and evidence
 
+Follow the repository-owned [canonical documentation policy](docs/development/documentation.md).
 The `docs/architecture/` corpus is the canonical engineering current view.
 Update it in the same change when responsibilities, contracts, invariants,
 runtime behavior, deployment, security, or quality expectations change.
@@ -333,8 +332,11 @@ As-built only after verifying their owning evidence. Add runbooks when actual
 operations and recovery procedures exist.
 
 Use Archify by default for new or substantively revised canonical engineering
-diagrams. Keep source and generated views together and record the reproducible
-generation path and applicable structural, semantic, browser, and visual review.
+diagrams. Keep JSON source, delivered HTML and its exported SVG together. Embed
+the SVG in the owning chapter and link the source and explorable HTML. Follow the
+[diagram generation guide](docs/architecture/diagrams/README.md), run
+`just diagrams-check`, and record structural, semantic, browser and visual review
+separately.
 Mermaid is allowed when Archify is unavailable, execution is constrained, or the
 required meaning or notation cannot be adequately represented; record a brief
 reason in the change description. Existing diagrams do not require wholesale

@@ -2,6 +2,27 @@
 
 State: **As-built**
 
+## First report
+
+![Ordered capture, evidence reading, classification and report generation](diagrams/first-report.svg)
+
+[Explore HTML](diagrams/first-report.html) · [JSON source](diagrams/first-report.json)
+
+The [skill](../../SKILL.md) orchestrates host reads and local commands. Retain
+native records and collection limits before interpretation. `inspect` and
+`read-issue` expose evidence; the agent authors purpose-based choices and rationale.
+`classify-draft` applies those choices and requires every assigned issue to have
+a primary classification before writing the first run. It never invents a
+taxonomy. Rendering, artifact verification and browser review are separate steps;
+the final open action in the diagram does not prove those checks passed.
+The detailed collection and reading boundaries appear below.
+
+The [synthetic walkthrough](../../examples/continuity-walkthrough.md) executes
+this path, records an explicit user correction, then refreshes changed source
+text and resolves the remaining agent classification. Use the
+[artifact ownership view](05-building-block-view.md#artifact-ownership-and-continuation)
+to choose which file continues each step.
+
 ## Validate and generate
 
 1. The caller supplies a work-map JSON file and an output HTML path.
@@ -22,6 +43,19 @@ and [browser tests](../../test/browser/viewer.test.js) own this behavior.
 The renderer does not modify input files or copy referenced attachments.
 
 ## Verify supplied artifacts
+
+![Four independent comparisons bind the selected capture, map, HTML and optional state](diagrams/run-verification.svg)
+
+[Explore HTML](diagrams/run-verification.html) · [JSON source](diagrams/run-verification.json)
+
+Each input pair in the diagram includes the **same selected work map**. HTML
+appears in both the embedded-data and rendered-byte pairs; the latter also uses
+the current runner and its bundled assets. `captureFacts` re-normalizes the capture and
+compares current source facts; `embeddedMap` requires exactly one equal embedded
+JSON map; `bundledViewer` compares the original HTML bytes to a fresh in-memory
+render by the current runner; optional `stateMap` compares `state.map`. HTML is
+read as data and never executed. A passing result is not proof of collection
+completeness, classification meaning, prior-state continuity or browser behavior.
 
 `verify-run CAPTURE MAP HTML [STATE]` normalizes the capture, validates the final
 map and optional state, and compares source declarations, owner, issue facts and
@@ -134,6 +168,23 @@ initial data-transfer path; no measured latency or token reduction is asserted.
 
 ## Saved classification and refresh
 
+![Refresh separates classification review from preserved matched target tags](diagrams/refresh-continuity.svg)
+
+[Explore HTML](diagrams/refresh-continuity.html) · [JSON source](diagrams/refresh-continuity.json)
+
+[refreshState](../../lib/continuity.js) first normalizes current facts, checks the
+owner and matches provider, namespace and native identity. Explicit user
+classifications survive text changes. Eligible agent classifications can carry
+forward; new assigned issues, changed full text for an agent classification and
+saved pending review require reconsideration. For matched identities, remembered
+target tags are always carried forward during refresh, including while an agent
+classification is withheld. Classification and target ownership are tracked
+separately; target-only edits do not clear classification review. Absent decisions remain in private
+memory but absent issues do not enter the current map. A fresh refresh run can be
+saved while assigned issues still need classification: saved does not mean
+renderable. The [continuity contract](../../references/continuity.md) owns the
+exact command inputs and review reasons.
+
 State: **As-built**
 
 `classify-draft` accepts a normalized first draft and agent-authored choices.
@@ -190,3 +241,36 @@ may include the supplied path, for example when an input file does not exist.
 [continuity tests](../../test/continuity.test.js)
 and [the skill workflow](../../references/continuity.md) own this behavior. No
 background worker, continuous sync, or persistent service exists.
+
+## Run output and failure boundary
+
+![Fresh-run persistence reserves a new directory and cleans only newly created files on failure](diagrams/run-output.svg)
+
+[Explore HTML](diagrams/run-output.html) · [JSON source](diagrams/run-output.json)
+
+[writeRun](../../lib/continuity.js) validates state before reserving a fresh
+private directory. It creates `state.json`, `work-map.json` and `changes.json`
+exclusively and closes each file before continuing. An existing path is refused.
+A write or close failure triggers best-effort removal of only files and the
+directory created by that invocation; cleanup failures disclose possible partial
+output. Earlier runs remain untouched. The caller chooses a fresh path for any
+retry. This is not a crash-safe multi-file transaction or automatic recovery
+protocol. The separate [renderer](../../lib/render.js) writes HTML through a
+private temporary file and rename, preserving an existing report on failure.
+
+## Failure response
+
+The host discloses the affected scope before handing off a report. A saved run,
+a renderable map and a verified report are different outcomes; the following
+responses preserve that distinction.
+
+| Observed condition                                               | Effect and whether work can continue                                                                                                                        | Safe next action and preserved artifacts                                                                                                                                                                                                                                                                             |
+| ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Source lookup is partial or unavailable                          | A structurally valid map may still render, but it cannot claim complete collection or absence of dependencies. Coverage applies per source and lookup type. | Retain available capture/evidence, declare the exact coverage and missing capability, and disclose it in the handoff. Continue within the available scope; retry collection when useful. See [source collection](#source-collection).                                                                                |
+| First draft lacks assigned classifications                       | `normalize` can save the draft; `classify-draft` requires all assigned issues classified before creating a run.                                             | Read the draft's evidence and complete agent choices. Preserve the capture and draft; context may remain unclassified. See [first report](#first-report).                                                                                                                                                            |
+| Refresh has pending assigned classification                      | The new state/map/changes can be saved, but validation/rendering fails until assigned review is resolved. Pending context alone need not block rendering.   | Continue from that new state with `classify` after reading evidence, or `revise` for an explicit user decision. Preserve user-owned fields and matched targets. A target-only edit does not clear classification review. See [refresh](#saved-classification-and-refresh).                                           |
+| Identity correspondence is uncertain                             | A display identifier cannot prove that a new native identity is the old issue. The current entry needs review; the old memory remains not observed.         | Retain both observations and disclose the correspondence uncertainty. Classify the current entry from evidence; do not rewrite identities or silently copy old choices. Classification clears its review reason, not the historical identity distinction. See [identity continuity](../../references/continuity.md). |
+| Invalid input, conflicting identities or unsafe references       | Structural validation stops the affected command; coverage warnings cannot excuse invalid data.                                                             | Repair the diagnostic's input role and field using source evidence. Preserve original files. For relative references, keep the colocated standalone report or supply verified web references; do not upload or remove files merely to bypass the check. See [contract guide](../../schemas/README.md).               |
+| Run destination exists, permissions fail, or a write/close fails | A fresh run is refused or incomplete; cleanup is best effort. A failed HTML replacement preserves the previous report.                                      | Keep the last successful state/report. Inspect disclosed leftovers without treating them as a completed run, correct the destination/permissions, and retry at a fresh run path. Never delete earlier runs to make room. See [output boundary](#run-output-and-failure-boundary).                                    |
+| `bundledViewer` mismatches for an older report                   | Exact bytes may differ because the current runner is different; this result alone cannot distinguish renderer drift from edited HTML.                       | Keep the original capture/map/HTML/state and recover the recorded renderer in an isolated location for verification. If unavailable, disclose the unverified check. Newly rendering HTML does not verify the old artifact. See [run evidence](../../references/runs.md).                                             |
+| The host cannot mechanically retain a tool response              | The local reader cannot undo a full response already sent to the model or establish provenance for a reconstructed copy.                                    | Preserve available host references and disclose the retention limit. Do not retype a large response or recollect it repeatedly just to claim file-backed evidence or token savings. See [progressive reading](#progressive-evidence-reading).                                                                        |

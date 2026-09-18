@@ -1,6 +1,6 @@
 # 1. Introduction and goals
 
-State: **Target**
+State: **As-built**
 
 Stellar turns a user's assigned work into an explorable map combining a
 classification tree, a relationship graph, and contextual issue details.
@@ -18,6 +18,9 @@ The goal is repeatable artifact generation through an agent skill.
 3. Complete in-scope classification without inflating counts with context.
 4. Local, inspectable output with reproducible generation.
 
+The [quality scenarios](10-quality.md#product-quality-scenarios) translate these
+priorities into observable behavior, evidence owners and verification limits.
+
 ## Current implementation
 
 State: **As-built**
@@ -28,7 +31,7 @@ Contribution guidance, locked tooling, documentation checking, hooks and hosted
 CI support development. The local skill guides collection through host tools;
 Linear and GitHub native captures normalize into one source-aware contract.
 Local saved choices and requested refreshes are implemented. Background
-synchronization remains Target/Open. GitHub skill installation with a bundled
+synchronization remains Open. GitHub skill installation with a bundled
 Node runner is implemented; published versions are identified by immutable GitHub
 release tags on validated `main`.
 See [development](../development/README.md) and

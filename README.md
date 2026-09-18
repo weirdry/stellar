@@ -1,3 +1,5 @@
+<img src="assets/brand/stellar-readme-banner.png" alt="Stellar — Your work, connected." width="100%" />
+
 # Stellar
 
 Stellar presents a person's work as a constellation of connected issues: a classification tree,
@@ -11,7 +13,7 @@ validator, and standalone tree/graph viewer are implemented. A report can combin
 multiple workspaces and repositories. The host agent collects and classifies;
 Stellar code normalizes facts and renders the fixed interface. Local saved choices
 and requested refreshes preserve user grouping while updating source facts.
-Background synchronization remains **Target**. There is no backend. Stellar is
+Background synchronization remains **Open**. There is no backend. Stellar is
 distributed as an MIT-licensed GitHub skill with a bundled Node runner. See
 [GitHub Releases](https://github.com/weirdry/stellar/releases) for published versions.
 
@@ -231,11 +233,14 @@ work-map generation and refresh.
 
 ## Navigation
 
+- [Visual identity and logo](docs/brand.md)
 - [Contributing](CONTRIBUTING.md)
 - [Canonical documentation](docs/README.md)
 - [Development commands](docs/development/README.md)
-- [Standard adoption](docs/development/standards.md)
+- [Engineering standards](docs/development/standards.md)
+- [Canonical authoring policy](docs/development/documentation.md)
 - [Architecture](docs/architecture/README.md)
+- [Architecture diagrams](docs/architecture/diagrams/README.md)
 - [Validation evidence](docs/validation/README.md)
 
 ## Repository boundaries

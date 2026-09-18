@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Adapted once from 5010-dev/.github@9411f3ee4adc5cbb7f7a951e4cee1a1602fffc39.
-# Provenance and local changes: docs/development/standards.md.
+# Repository-owned canonical documentation contract.
+# Policy: docs/development/documentation.md.
 
 set -euo pipefail
 
-profile_id="5010-arc42-v1"
+profile_id="stellar-arc42-v1"
 target_dir="$(pwd)"
 
 usage() {
@@ -70,7 +70,7 @@ required_architecture=(
     12-glossary.md
 )
 
-for required_file in docs/README.md docs/decisions/README.md; do
+for required_file in docs/README.md docs/decisions/README.md docs/development/documentation.md docs/architecture/diagrams/README.md docs/architecture/diagrams/manifest.json; do
     if [[ ! -s "$target_root/$required_file" ]]; then
         report "required documentation file missing or empty: $required_file"
     fi
@@ -91,7 +91,7 @@ if [[ -f "$architecture_index" ]]; then
     if ! grep -Eq '^Scope: \*\*.+\*\*$' "$architecture_index"; then
         report "docs/architecture/README.md must declare a non-empty Scope"
     fi
-    if ! grep -Fq "Organization profile: **$profile_id**" "$architecture_index"; then
+    if ! grep -Fq "Documentation profile: **$profile_id**" "$architecture_index"; then
         report "docs/architecture/README.md must adopt $profile_id"
     fi
 fi

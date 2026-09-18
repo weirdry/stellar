@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "First report: capture to exploration",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "viewBox": [
+      1080,
+      590
+    ]
+  },
+  "participants": [
+    {
+      "id": "agent",
+      "type": "external",
+      "label": "Host agent",
+      "sublabel": "purpose judgment"
+    },
+    {
+      "id": "tools",
+      "type": "external",
+      "label": "Source tools",
+      "sublabel": "authenticated reads"
+    },
+    {
+      "id": "runner",
+      "type": "backend",
+      "label": "Stellar runner",
+      "sublabel": "local Node commands"
+    },
+    {
+      "id": "files",
+      "type": "database",
+      "label": "Private files",
+      "sublabel": "staging + fresh run"
+    },
+    {
+      "id": "browser",
+      "type": "frontend",
+      "label": "Browser",
+      "sublabel": "bundled viewer"
+    }
+  ],
+  "messages": [
+    {
+      "id": "read",
+      "from": "agent",
+      "to": "tools",
+      "label": "read assigned issues",
+      "y": 160,
+      "variant": "default"
+    },
+    {
+      "id": "responses",
+      "from": "tools",
+      "to": "agent",
+      "label": "native records + limits",
+      "y": 188,
+      "variant": "return"
+    },
+    {
+      "id": "retain",
+      "from": "agent",
+      "to": "files",
+      "label": "retain capture.json",
+      "y": 216,
+      "variant": "default"
+    },
+    {
+      "id": "normalize",
+      "from": "agent",
+      "to": "runner",
+      "label": "normalize(capture)",
+      "y": 244,
+      "variant": "default"
+    },
+    {
+      "id": "draft",
+      "from": "runner",
+      "to": "files",
+      "label": "draft.json",
+      "y": 272,
+      "variant": "default"
+    },
+    {
+      "id": "read-evidence",
+      "from": "agent",
+      "to": "runner",
+      "label": "inspect / read-issue",
+      "y": 300,
+      "variant": "default"
+    },
+    {
+      "id": "evidence",
+      "from": "runner",
+      "to": "agent",
+      "label": "exact evidence",
+      "y": 328,
+      "variant": "return"
+    },
+    {
+      "id": "choices",
+      "from": "agent",
+      "to": "files",
+      "label": "choices.json",
+      "y": 356,
+      "variant": "default"
+    },
+    {
+      "id": "classify",
+      "from": "agent",
+      "to": "runner",
+      "label": "classify-draft",
+      "y": 384,
+      "variant": "default"
+    },
+    {
+      "id": "run",
+      "from": "runner",
+      "to": "files",
+      "label": "new state / map / changes",
+      "y": 412,
+      "variant": "default"
+    },
+    {
+      "id": "render",
+      "from": "agent",
+      "to": "runner",
+      "label": "render(work-map)",
+      "y": 440,
+      "variant": "default"
+    },
+    {
+      "id": "html",
+      "from": "runner",
+      "to": "files",
+      "label": "standalone HTML",
+      "y": 468,
+      "variant": "default"
+    },
+    {
+      "id": "review",
+      "from": "agent",
+      "to": "browser",
+      "label": "open report; review",
+      "y": 496,
+      "variant": "default"
+    }
+  ],
+  "cards": []
+}
