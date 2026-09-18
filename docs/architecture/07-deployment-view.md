@@ -57,6 +57,11 @@ GitHub revision; Stellar itself is not published to npm. Instructions invoke the
 committed Node.js 24 runner with bundled JavaScript dependencies. Its schemas,
 viewer and guides are colocated, so generation needs no mise, Just, pnpm, Git,
 or development checkout. The installer owns registration and updates.
+The generated build manifest travels beside the runner. After installation or
+update, `doctor` checks the running Node version and local file consistency;
+`--version` reports the embedded product version. Neither needs Git or a network
+connection. The [diagnostics guide](../../references/cli.md) distinguishes these
+checks from source authenticity, host discovery, credentials, and live use.
 [Distribution](../development/distribution.md) owns commands and the release
 procedure; [validation](../validation/2026-09-18-skill-installation.md) distinguishes
 isolated installation, command execution and host invocation evidence.

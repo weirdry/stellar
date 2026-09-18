@@ -44,6 +44,16 @@ browser-install:
 browser-check:
     mise exec --locked -- corepack pnpm test:browser
 
+# Installed-skill diagnostics and usage, using canonical source in a checkout.
+version:
+    mise exec --locked -- node bin/stellar.js --version
+
+doctor format="":
+    mise exec --locked -- node bin/stellar.js doctor {{ if format == "" { "" } else { quote(format) } }}
+
+help command="":
+    mise exec --locked -- node bin/stellar.js help {{ if command == "" { "" } else { quote(command) } }}
+
 validate input:
     mise exec --locked -- node bin/stellar.js validate {{ quote(input) }}
 

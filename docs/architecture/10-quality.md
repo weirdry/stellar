@@ -19,6 +19,14 @@ actual revision, commands, results and remaining scope.
 | **Readable exploration:** navigate, resize, filter or select overlapping work in either supported locale. | Selection stays synchronized across tree/graph/inspector; counts and source directions remain correct. Visible labels identify their nodes, full names remain accessible, and framing preserves usable separation. Input locale controls fixed UI while source text remains literal. | The [viewer regression map](../../assets/viewer/README.md#verification-ownership) owns exact layouts, fonts, viewport fixtures and interactions. Browser and image review cover named scenarios, not every graph; dense views can require pan/zoom.                                                                                                 |
 | **Portable execution:** install the skill outside a development checkout.                                 | The bundled Node runner operates without contributor dependencies and reproduces the source renderer; generated-file drift is detected without mutation.                                                                                                                             | [Distribution tests](../../test/distribution.test.js), [installation evidence](../validation/2026-09-18-skill-installation.md) and [published-tag evidence](../validation/2026-09-19-v0.1.0-release.md). Installation, host discovery, invocation and live source access are distinct observations.                                                 |
 
+Installed diagnostics have separate [CLI tests](../../test/cli-diagnostics.test.js):
+version/help remain available with missing schemas, doctor reports missing,
+unreadable or changed files without executing them, and invalid usage does not
+start a workflow. Source and installed entry points share the help catalog.
+The build gate also checks the generated integrity manifest against current
+source/resource bytes. These observations concern local consistency, not release
+authenticity, automatic repair or host authentication.
+
 Retention and progressive reading support traceability: the
 [reader tests](../../test/reading.test.js) check bounded structural indexes, exact
 substrings, literal search and complete reconstruction. The

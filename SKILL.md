@@ -18,9 +18,24 @@ assume a previous shell call retained the variable. Node.js **24.x** must be
 available (`node --version`). The installed `bin/stellar.mjs` bundles JavaScript
 dependencies and resolves schemas/viewer files relative to itself. It runs from
 the task directory: no mise, Just, pnpm, Git checkout, or dependency installation
-is needed. Do not run contributor setup in an installed copy. Check the runner
-with `node "$STELLAR_ROOT/bin/stellar.mjs" --help`. If Node 24 is unavailable,
-report the prerequisite instead of silently installing tools. Read [the input contract](schemas/README.md) and
+is needed. Do not run contributor setup in an installed copy. If Node 24 is unavailable,
+report the prerequisite instead of silently installing tools.
+
+- When asked which Stellar version is installed, run
+  `node "$STELLAR_ROOT/bin/stellar.mjs" --version` (`-V` is equivalent).
+  Report development/prerelease suffixes; a version label alone does not identify a Git commit.
+- After installation/update, or when troubleshooting execution, run
+  `node "$STELLAR_ROOT/bin/stellar.mjs" doctor --json`. Explain failed checks and
+  their remedies without automatically repairing the installation. Do not repeat
+  doctor before every ordinary run. It checks local runtime/build consistency,
+  not host discovery, account authentication, or live source access.
+- When command usage is unclear, run
+  `node "$STELLAR_ROOT/bin/stellar.mjs" help COMMAND` or
+  `node "$STELLAR_ROOT/bin/stellar.mjs" COMMAND --help` before supplying input files.
+  Global `--help` lists commands. See [CLI diagnostics and help](references/cli.md)
+  for output, exit codes, and limitations.
+
+Read [the input contract](schemas/README.md) and
 [classification guidance](references/classification.md).
 
 For a saved map, a user correction, or a requested refresh, read

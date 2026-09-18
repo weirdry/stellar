@@ -74,6 +74,22 @@ Use a clean export or a GitHub ref for installation tests.
 
 ## Runtime artifact and source ownership
 
+### Product identity and local diagnosis
+
+[`package.json`](../../package.json) owns the product version. The build embeds
+it in the runner; `--version` and `-V` work without Git, installer metadata,
+schemas, or viewer resources. Development revisions use a prerelease suffix
+such as `-dev.0` until a release is deliberately prepared. A version label does
+not prove a Git commit or publication.
+
+`doctor` / `doctor --json` check Node and installed build consistency using a
+generated integrity manifest. `help COMMAND` and `COMMAND --help` describe
+individual commands without loading their data-processing runtime.
+[CLI diagnostics and help](../../references/cli.md) owns the commands, outputs,
+exit codes, remedies, and limits; [run identity](../../references/runs.md#record-renderer-identity)
+still records actual renderer hashes. Keep diagnostics separate from host
+discovery, credentials, source collection, and report/browser validation.
+
 ### Installation footprint
 
 The root skill distribution includes public contributor documentation and brand
@@ -97,7 +113,7 @@ as an installer guarantee.
 
 ### Runtime files
 
-`bin/stellar.js` and `lib/` remain the canonical runner source. Root Just product
+`bin/stellar.js`, `lib/`, and the product version in `package.json` remain the canonical runner source. Root Just product
 commands execute that source with locked dependencies. `just build-runner`
 explicitly generates committed `bin/stellar.mjs` with esbuild and
 `THIRD_PARTY_NOTICES.txt` from the included packages' full license texts. The
@@ -106,6 +122,11 @@ runtime JavaScript dependencies, with Node built-ins remaining external.
 The pinned platform-specific esbuild executable is a development dependency;
 its postinstall script is disabled and it is not needed by installed users.
 
+The same build generates `bin/stellar.manifest.json`, containing the product
+version and SHA-256 hashes of the runner and fixed runtime resource inventory.
+Doctor detects missing or altered installed files against this local manifest;
+it does not authenticate that manifest or establish source/build correctness.
+
 The bundle remains in `bin/`, preserving the source modules' paths to authoritative
 `schemas/` and `assets/viewer/`. These resources are installed alongside it, not
 duplicated into a second hand-maintained distribution tree. The root skill and
@@ -113,7 +134,7 @@ its focused references call `node "$STELLAR_ROOT/bin/stellar.mjs"` from any task
 directory. Installed users do not run contributor setup. All output arguments
 remain explicit, and continuity still refuses occupied run paths.
 
-`just bundle-check`, included in `just ci`, builds in memory and compares both
+`just bundle-check`, included in `just ci`, builds in memory and compares all three
 generated files byte-for-byte. It fails on missing/stale files without repairing
 them. Regenerate deliberately after changing runner source or dependencies, then
 commit the generated files with their owners. Schema and viewer files remain
@@ -140,6 +161,18 @@ collection, and publication are separate evidence. See the
 [installation validation record](../validation/2026-09-18-skill-installation.md).
 
 ## Release procedure
+
+For a release containing product version reporting, set the intended release
+version in `package.json`, remove its development suffix, and run
+`just build-runner` and `just ci` before promotion. On the validated release
+commit, verify that the intended immutable tag is exactly `v` followed by
+`node bin/stellar.mjs --version`'s version value. Publish that same commit; do
+not change the version or rebuild between validation and tagging. Record the
+tag, commit, product version, and installation evidence in the release notes.
+The label alone is not a publication check. Start later development with an
+appropriate prerelease value and regenerate the bundle and manifest; never
+modify already published tags. This adds version alignment to the existing
+manual release procedure, not an automatic publisher.
 
 After review and integration, validate the intended `dev` head with local and hosted CI and
 the isolated installation workflow. Follow

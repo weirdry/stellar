@@ -40,8 +40,11 @@ SVG export, browser review and evidence retention.
 | `just diagrams-check`                       | Read-only source/HTML/SVG inventory, generator identity, hash and export comparison                                          |
 | `just lint`                                 | ESLint, Just format, Bash syntax, ShellCheck, actionlint, Git whitespace                                                     |
 | `just test`                                 | Deterministic Node unit and CLI integration tests                                                                            |
-| `just build-runner`                         | Explicitly regenerate the installed runner and dependency notices                                                            |
-| `just bundle-check`                         | Read-only byte comparison of the generated runner and notices against locked source inputs                                   |
+| `just build-runner`                         | Explicitly regenerate the installed runner, integrity manifest and dependency notices                                        |
+| `just bundle-check`                         | Read-only byte comparison of the generated runner, integrity manifest and notices against locked source inputs               |
+| `just version`                              | Print the product version from its authoritative source                                                                      |
+| `just doctor [--json]`                      | Read-only runtime and installed-build consistency diagnostics                                                                |
+| `just help [COMMAND]`                       | Global or command-specific CLI usage                                                                                         |
 | `just check` / `just ci`                    | Documentation structure, diagram consistency, format, lint, bundle currency and Node tests; no installation or repair writes |
 | `just browser-install`                      | Explicit Chromium download using pinned Playwright                                                                           |
 | `just browser-check`                        | Chromium interaction, reuse, safety, viewport and export tests with synthetic inputs                                         |
@@ -64,7 +67,7 @@ Tests create temporary artifacts and remove them. Gates do not rewrite source,
 format files, collect data, commit, or publish. No empty build or typecheck
 recipe is provided for plain JavaScript. Report generation is an explicit product
 operation. `just build-runner` separately regenerates the committed installed
-runner and dependency notices; `just bundle-check` compares them without writing
+runner, integrity manifest and dependency notices; `just bundle-check` compares them without writing
 and is included in `check` and `ci`. See [distribution](distribution.md).
 
 `just render` writes generated HTML with owner-only permissions (`0600` on POSIX),

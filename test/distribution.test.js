@@ -27,6 +27,7 @@ test('installed bundle runs the map and continuity workflow without development 
   await mkdir(work);
   for (const name of [
     'bin/stellar.mjs',
+    'bin/stellar.manifest.json',
     'schemas',
     'assets/viewer',
     'LICENSE',
@@ -50,6 +51,9 @@ test('installed bundle runs the map and continuity workflow without development 
     return result.stdout;
   };
   assert.match(run(['--help']), /classify-draft/);
+  assert.match(run(['--version']), /^stellar /);
+  assert.equal(JSON.parse(run(['doctor', '--json'])).ok, true);
+  assert.equal(run(['help', 'normalize']), run(['normalize', '--help']));
   await cp(
     join(root, 'examples/mixed-capture.json'),
     join(work, 'capture.json'),
@@ -151,6 +155,9 @@ test('bundle gate detects drift and never rewrites the generated artifact', asyn
     'scripts/build-runner.js',
     'bin',
     'lib',
+    'package.json',
+    'schemas',
+    'assets/viewer',
     'THIRD_PARTY_NOTICES.txt',
   ]) {
     await cp(join(root, path), join(dir, path), { recursive: true });
@@ -170,11 +177,23 @@ test('bundle gate detects drift and never rewrites the generated artifact', asyn
     });
   const initial = check();
   assert.equal(initial.status, 0, initial.stderr);
-  const path = join(dir, 'bin/stellar.mjs');
-  const changed = (await readFile(path, 'utf8')) + '\n// synthetic drift\n';
-  await writeFile(path, changed);
-  const result = check();
-  assert.equal(result.status, 1, result.stderr);
-  assert.match(result.stderr, /bin\/stellar.mjs is stale/);
-  assert.equal(await readFile(path, 'utf8'), changed);
+  for (const name of ['bin/stellar.mjs', 'bin/stellar.manifest.json']) {
+    const path = join(dir, name);
+    const original = await readFile(path, 'utf8');
+    const changed = original + '\n';
+    await writeFile(path, changed);
+    const result = check();
+    assert.equal(result.status, 1, result.stderr);
+    assert.ok(result.stderr.includes(`${name} is stale`));
+    assert.equal(await readFile(path, 'utf8'), changed);
+    await writeFile(path, original);
+  }
+  const pkgPath = join(dir, 'package.json');
+  const pkg = await json(pkgPath);
+  pkg.version = '0.0.0-test';
+  await writeJSON(pkgPath, pkg);
+  const changedVersion = check();
+  assert.equal(changedVersion.status, 1, changedVersion.stderr);
+  assert.match(changedVersion.stderr, /bin\/stellar.mjs is stale/);
+  assert.match(changedVersion.stderr, /bin\/stellar.manifest.json is stale/);
 });
