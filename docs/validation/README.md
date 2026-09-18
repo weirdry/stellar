@@ -4,6 +4,7 @@ Dated records identify the source or artifact, commands, observed result, and
 untested scope. They support the architecture without silently changing its
 meaning.
 
+- [2026-09-19 v0.1.1 publication and installation acceptance](2026-09-19-v0.1.1-release.md)
 - [2026-09-19 interactive walkthrough correction](2026-09-19-walkthrough-shell.md)
 - [2026-09-19 independent review follow-up](2026-09-19-review-follow-up.md)
 - [2026-09-19 branding review for pull request preparation](2026-09-19-branding-pr.md)
