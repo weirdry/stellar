@@ -35,18 +35,19 @@ user-supplied template can help navigation, but is not a default semantic filter
 
 ## Commands
 
-Run from the skill root with an absolute draft/map path. `ISSUE` is the canonical
+Set `STELLAR_ROOT` to the installed skill directory and pass an absolute draft/map
+path from the task directory. `ISSUE` is the canonical
 map id or an unambiguous display identifier; use the canonical id across sources
 with colliding identifiers.
 
 ```sh
-just inspect MAP.json
-just inspect MAP.json "" 20
-just inspect MAP.json ISSUE
-just inspect MAP.json ISSUE 20
-just read-issue MAP.json ISSUE BLOCK
-just read-issue MAP.json ISSUE BLOCK OFFSET
-just search-issue MAP.json ISSUE 'literal source text'
+node "$STELLAR_ROOT/bin/stellar.mjs" inspect MAP.json
+node "$STELLAR_ROOT/bin/stellar.mjs" inspect MAP.json "" 20
+node "$STELLAR_ROOT/bin/stellar.mjs" inspect MAP.json ISSUE
+node "$STELLAR_ROOT/bin/stellar.mjs" inspect MAP.json ISSUE 20
+node "$STELLAR_ROOT/bin/stellar.mjs" read-issue MAP.json ISSUE BLOCK
+node "$STELLAR_ROOT/bin/stellar.mjs" read-issue MAP.json ISSUE BLOCK OFFSET
+node "$STELLAR_ROOT/bin/stellar.mjs" search-issue MAP.json ISSUE 'literal source text'
 ```
 
 `inspect` returns 20 entries per page, with `total` and `nextOffset`. Without an
@@ -71,8 +72,8 @@ on errors so a successful `jq` cannot hide a failed reader command:
 
 ```bash
 set -euo pipefail
-just inspect "$MAP" | jq '.items[] | {id, identifier, scope}'
-just search-issue "$MAP" "$ISSUE" "$QUERY" | jq '{total, nextOffset, items}'
+node "$STELLAR_ROOT/bin/stellar.mjs" inspect "$MAP" | jq '.items[] | {id, identifier, scope}'
+node "$STELLAR_ROOT/bin/stellar.mjs" search-issue "$MAP" "$ISSUE" "$QUERY" | jq '{total, nextOffset, items}'
 ```
 
 Pass JSON directly through a pipe or file. For a shell variable, use

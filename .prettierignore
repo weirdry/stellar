@@ -4,5 +4,8 @@ dist/
 coverage/
 .cache/
 node_modules/
+.pnpm-store/
 mise.lock
 pnpm-lock.yaml
+bin/stellar.mjs
+THIRD_PARTY_NOTICES.txt

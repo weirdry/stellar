@@ -18,8 +18,8 @@ and/or targets. Do not supply source fields or `origin`: the command sets agent
 origin. See [the complete synthetic choices](../examples/mixed-choices.json).
 
 ```sh
-just classify-draft "$STAGING/draft.json" "$STAGING/choices.json" "$OUT/classified-01"
-just render "$OUT/classified-01/work-map.json" "$OUT/classified-01/stellar.html"
+node "$STELLAR_ROOT/bin/stellar.mjs" classify-draft "$STAGING/draft.json" "$STAGING/choices.json" "$OUT/classified-01"
+node "$STELLAR_ROOT/bin/stellar.mjs" render "$OUT/classified-01/work-map.json" "$OUT/classified-01/stellar.html"
 ```
 
 The runner applies authored decisions; it does not infer purposes or propose
@@ -50,7 +50,7 @@ identities, pending review and independent target ownership.
 For an already-complete standalone map without saved state, bootstrap its state:
 
 ```sh
-just remember "$MAP/work-map.json" "$OUT/saved-01"
+node "$STELLAR_ROOT/bin/stellar.mjs" remember "$MAP/work-map.json" "$OUT/saved-01"
 ```
 
 `classify-draft` and each continuity command create a **new directory** containing `state.json`,
@@ -117,8 +117,8 @@ group definition affects all remembered issues using it, including absent ones.
 There is no deletion, history pruning or identity-rebinding operation.
 
 ```sh
-just revise "$PREVIOUS/state.json" "$USER_CHOICES" "$OUT/revised-02"
-just render "$OUT/revised-02/work-map.json" "$OUT/revised-02/stellar.html"
+node "$STELLAR_ROOT/bin/stellar.mjs" revise "$PREVIOUS/state.json" "$USER_CHOICES" "$OUT/revised-02"
+node "$STELLAR_ROOT/bin/stellar.mjs" render "$OUT/revised-02/work-map.json" "$OUT/revised-02/stellar.html"
 ```
 
 `revise` marks supplied issue fields as user choices. Use it only for an explicit
@@ -133,7 +133,7 @@ Collect a new native capture through the read-only source guides, resolving the
 requested scope again. Viewer filters are not collection instructions.
 
 ```sh
-just refresh "$PREVIOUS/state.json" "$CAPTURE" "$OUT/refreshed-03"
+node "$STELLAR_ROOT/bin/stellar.mjs" refresh "$PREVIOUS/state.json" "$CAPTURE" "$OUT/refreshed-03"
 ```
 
 Matching uses `(provider, namespace, nativeId)`, independent of report-local IDs.
@@ -233,9 +233,9 @@ until an explicit decision is recorded.
 Write agent decisions in the same choices format:
 
 ```sh
-just classify "$OUT/refreshed-03/state.json" "$AGENT_CHOICES" "$OUT/classified-04"
-just validate "$OUT/classified-04/work-map.json"
-just render "$OUT/classified-04/work-map.json" "$OUT/classified-04/stellar.html"
+node "$STELLAR_ROOT/bin/stellar.mjs" classify "$OUT/refreshed-03/state.json" "$AGENT_CHOICES" "$OUT/classified-04"
+node "$STELLAR_ROOT/bin/stellar.mjs" validate "$OUT/classified-04/work-map.json"
+node "$STELLAR_ROOT/bin/stellar.mjs" render "$OUT/classified-04/work-map.json" "$OUT/classified-04/stellar.html"
 ```
 
 If no assigned classifications are pending, the refreshed map can be rendered

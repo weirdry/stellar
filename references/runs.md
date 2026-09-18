@@ -32,7 +32,7 @@ returned object/text or response file to private storage. A host-provided file
 can be retained without printing its content:
 
 ```sh
-just retain-response HOST_RESPONSE_FILE NEW_STAGING/evidence/raw/response.json
+node "$STELLAR_ROOT/bin/stellar.mjs" retain-response HOST_RESPONSE_FILE NEW_STAGING/evidence/raw/response.json
 ```
 
 This copies bytes to a fresh owner-only file and returns a byte count/hash, not
@@ -116,8 +116,8 @@ or supporting evidence file copied into it. For example, when capture and choice
 files are available, run these commands after the runner has created `$RUN`:
 
 ```sh
-just retain-response "$STAGING/capture.json" "$RUN/capture.json"
-just retain-response "$STAGING/choices.json" "$RUN/choices.json"
+node "$STELLAR_ROOT/bin/stellar.mjs" retain-response "$STAGING/capture.json" "$RUN/capture.json"
+node "$STELLAR_ROOT/bin/stellar.mjs" retain-response "$STAGING/choices.json" "$RUN/choices.json"
 ```
 
 This preserves the input bytes and creates owner-only files (`0600`), refusing
@@ -141,8 +141,8 @@ From the skill root, select the matching native capture, map and HTML, adding
 the actual state path when one exists:
 
 ```sh
-just verify-run CAPTURE.json MAP.json REPORT.html
-just verify-run CAPTURE.json MAP.json REPORT.html STATE.json
+node "$STELLAR_ROOT/bin/stellar.mjs" verify-run CAPTURE.json MAP.json REPORT.html
+node "$STELLAR_ROOT/bin/stellar.mjs" verify-run CAPTURE.json MAP.json REPORT.html STATE.json
 ```
 
 Use one invocation, not both. This read-only command returns JSON on stdout;
@@ -164,7 +164,7 @@ The checks are:
   but remain author-editable presentation choices after normalization. Taxonomy
   and optional document references are also outside this source-fact check.
 - `embeddedMap`: exactly one bundled data slot parses to the final map.
-- `bundledViewer`: the original HTML bytes match this checkout's renderer output
+- `bundledViewer`: the original HTML bytes match this installed runner's renderer output
   encoded as UTF-8 for that map. Decoding for JSON inspection is separate and
   cannot hide invalid UTF-8 bytes. A report from another renderer revision may
   fail this check; verify with its original revision or generate a separate new

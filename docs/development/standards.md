@@ -33,7 +33,8 @@ The Node profile now applies to the repository-native JavaScript CLI and
 bundled viewer: exact Node 24, pnpm 11, Prettier 3.9, flat ESLint 10, and frozen
 locks. The profile permits the built-in Node test runner for a small native CLI;
 Playwright supplies separately named browser checks. There is no TypeScript
-artifact requiring typecheck and no compiled build or published library package.
+artifact requiring typecheck or published npm library. The installed runner is
+a reproducible esbuild bundle, generated explicitly and checked for currency in CI.
 The root package is private to prevent accidental registry publication.
 No native-root map, release-unit map, central agent, or reusable conformance
 workflow is needed for this single native root.
@@ -41,8 +42,10 @@ workflow is needed for this single native root.
 Source hosting is public under `weirdry/stellar`. The repository owns its hosted
 CI definition and permits rebase merge only. Actual CI results are recorded in
 GitHub Actions; workflow presence does not establish merge enforcement.
-Branch rules, dependency visibility and remediation routing, license, and skill
-distribution remain **Open**. Publishing obligations will be revisited with the actual distributed artifact.
+Branch rules, dependency visibility and remediation routing remain **Open**.
+Stellar uses MIT licensing and GitHub-hosted skill distribution; the
+[distribution guide](distribution.md) owns the manual validated-main release
+path and installation checks. The first release remains pending.
 
 ## Copy-once provenance
 

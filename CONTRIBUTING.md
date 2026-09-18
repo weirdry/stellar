@@ -376,6 +376,8 @@ screenshots and logs, out of Git and public CI. Inspect staged paths and content
 before committing; do not rely only on ignore rules. Do not commit secrets,
 credentials, or machine-specific paths.
 
-License, skill distribution, and artifact-publication configuration remain Open.
+Stellar uses the MIT license and GitHub-hosted skills installation. Follow the
+[distribution guide](docs/development/distribution.md) for bundle generation,
+installation checks and the manual release procedure. The first release is pending.
 Exceptions to this workflow require explicit maintainer direction and a durable
 record of their scope, reason, risk, owner, review condition, and exit condition.

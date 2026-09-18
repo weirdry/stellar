@@ -50,8 +50,10 @@ dependency build scripts.
 
 Tests create temporary artifacts and remove them. Gates do not rewrite source,
 format files, collect data, commit, or publish. No empty build or typecheck
-recipe is provided for plain JavaScript. Generation is an explicit product
-operation, not a compiler build or package release.
+recipe is provided for plain JavaScript. Report generation is an explicit product
+operation. `just build-runner` separately regenerates the committed installed
+runner and dependency notices; `just bundle-check` compares them without writing
+and is included in `check` and `ci`. See [distribution](distribution.md).
 
 `just render` writes generated HTML with owner-only permissions (`0600` on POSIX),
 including replacement outputs. This protects reports that embed private input.

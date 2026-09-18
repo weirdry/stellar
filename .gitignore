@@ -5,6 +5,7 @@
 /dist/
 /coverage/
 node_modules/
+.pnpm-store/
 .venv/
 __pycache__/
 *.pyc

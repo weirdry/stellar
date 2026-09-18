@@ -3,7 +3,15 @@ import globals from 'globals';
 
 export default [
   {
-    ignores: ['local/**', 'outputs/**', 'dist/**', 'coverage/**', '.cache/**'],
+    ignores: [
+      'local/**',
+      'outputs/**',
+      'dist/**',
+      'coverage/**',
+      '.cache/**',
+      '.pnpm-store/**',
+      'bin/stellar.mjs',
+    ],
   },
   js.configs.recommended,
   { languageOptions: { globals: globals.node } },

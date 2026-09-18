@@ -28,5 +28,7 @@ Contribution guidance, locked tooling, documentation checking, hooks and hosted
 CI support development. The local skill guides collection through host tools;
 Linear and GitHub native captures normalize into one source-aware contract.
 Local saved choices and requested refreshes are implemented. Background
-synchronization and packaged distribution remain Target/Open. See [development](../development/README.md) and
+synchronization remains Target/Open. GitHub skill installation with a bundled
+Node runner is implemented; the first public release remains pending.
+See [development](../development/README.md) and
 [validation](../validation/README.md).

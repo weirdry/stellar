@@ -10,9 +10,10 @@ There are no readers or migrations for prototype intermediate shapes.
 ## Authoring
 
 Start from [museum.json](../examples/museum.json) or
-[seed-library.json](../examples/seed-library.json). Run `just validate INPUT`
-before `just render INPUT OUTPUT`. Relative arguments resolve from the caller's
-working directory when invoking `node bin/stellar.js` directly.
+[seed-library.json](../examples/seed-library.json). Run `node "$STELLAR_ROOT/bin/stellar.mjs" validate INPUT`
+before `node "$STELLAR_ROOT/bin/stellar.mjs" render INPUT OUTPUT`. Relative arguments resolve from the caller's
+working directory when invoking the runner directly. `STELLAR_ROOT` is the
+absolute installed skill directory, as established in [SKILL.md](../SKILL.md).
 
 | Field         | Meaning                                                                               |
 | ------------- | ------------------------------------------------------------------------------------- |
@@ -84,7 +85,7 @@ sources' display names. Internal graph/edge references always use `id`.
 Cross-source endpoints are allowed when the relation is actually registered;
 co-membership in a category or a URL mention is insufficient evidence.
 
-`just normalize CAPTURE DRAFT` converts Linear connector and GitHub REST issue
+`node "$STELLAR_ROOT/bin/stellar.mjs" normalize CAPTURE DRAFT` converts Linear connector and GitHub REST issue
 records using [normalize.js](../lib/normalize.js). The
 [capture schema](capture.schema.json) references the canonical metadata definitions.
 The output uses this same work-map shape, with empty taxonomy and unclassified

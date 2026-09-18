@@ -26,7 +26,8 @@ and the affected canonical architecture before substantive changes.
   classification or target membership alone does not establish a dependency.
 - Do not claim the prototype has been imported, that a skill is callable, or
   that rendering works until executable evidence exists in this repository.
-- Use root Just commands. `check` and `ci` are read-only quality gates; install,
+- Use root Just commands for repository development; installed skill workflows
+  follow the direct-Node commands in `SKILL.md`. `check` and `ci` are read-only quality gates; install,
   format, generation, release, and deployment are separate actions.
 - Update affected canonical documentation with implementation. Promote Target
   claims to As-built only after checking their owning evidence.

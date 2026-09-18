@@ -4,6 +4,7 @@ Dated records identify the source or artifact, commands, observed result, and
 untested scope. They support the architecture without silently changing its
 meaning.
 
+- [2026-09-18 Node-ready skill installation](2026-09-18-skill-installation.md)
 - [2026-09-18 fallback-font area placement](2026-09-18-fallback-font-placement.md)
 - [2026-09-18 overview usability follow-up](2026-09-18-overview-usability.md)
 - [2026-09-18 area-name readability and framing guidance](2026-09-18-area-name-readability.md)

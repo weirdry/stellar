@@ -10,7 +10,7 @@ State: **Open**
 | Classification review and identity continuity  | Validate real workflow fit; semantic purpose changes and identity rebinding still require judgment    | Stellar maintainer |
 | Dense graphs and very long labels              | Continued visual review against actual datasets; current layout is not a general graph optimizer      | Stellar maintainer |
 | Additional UI languages                        | Add reviewed catalogs and browser evidence beyond the implemented Korean and English                  | Stellar maintainer |
-| License and distribution                       | Choose the package/channel and verify installation/use                                                | Stellar maintainer |
+| First public release                           | Validate and promote main, tag the MIT-licensed skill and verify installation from that exact tag     | Stellar maintainer |
 | Hosting enforcement and dependency remediation | Configure applicable branch rules and ownership at the actual delivery boundary                       | Stellar maintainer |
 
 The renderer currently supports a two-level taxonomy and one-hop issue
