@@ -22,31 +22,33 @@ dependency build scripts.
 
 ## Commands
 
-| Command                                     | Behavior                                                                                   |
-| ------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| `just init`                                 | Locked tools, frozen dependencies, local hooks                                             |
-| `just format`                               | Explicit Prettier write                                                                    |
-| `just format-check`                         | Read-only repository-local Prettier check                                                  |
-| `just docs-check`                           | Canonical structure, indexes, local links, whitespace                                      |
-| `just lint`                                 | ESLint, Just format, Bash syntax, ShellCheck, actionlint, Git whitespace                   |
-| `just test`                                 | Deterministic Node unit and CLI integration tests                                          |
-| `just check` / `just ci`                    | Complete local gate above, without dependency installation or persistent generated outputs |
-| `just browser-install`                      | Explicit Chromium download using pinned Playwright                                         |
-| `just browser-check`                        | Chromium interaction, reuse, safety, viewport and export tests with synthetic inputs       |
-| `just normalize INPUT OUTPUT`               | Convert native capture to an unclassified work-map draft                                   |
-| `just classify-draft DRAFT CHOICES RUN`     | Apply initial agent decisions and save a complete map/state in a fresh directory           |
-| `just retain-response INPUT NEW_FILE`       | Preserve a host response file without echoing its contents or replacing another file       |
-| `just inspect MAP [ISSUE [OFFSET]]`         | Page through issue metadata or a template-independent body index                           |
-| `just read-issue MAP ISSUE BLOCK [OFFSET]`  | Read exact bounded source excerpts                                                         |
-| `just search-issue MAP ISSUE TEXT [OFFSET]` | Locate literal source text, returning bounded match pages                                  |
-| `just remember MAP RUN`                     | Initialize private state from a complete map in a new directory                            |
-| `just refresh STATE CAPTURE RUN`            | Normalize current facts and reapply saved choices                                          |
-| `just classify STATE CHOICES RUN`           | Apply agent choices while protecting user decisions                                        |
-| `just revise STATE CHOICES RUN`             | Record explicit user corrections                                                           |
-| `just skill-link`                           | Register this checkout as a local user skill; refuse conflicting installs                  |
-| `just validate INPUT`                       | Validate input without writing it                                                          |
-| `just render INPUT OUTPUT`                  | Validate and generate a standalone HTML artifact                                           |
-| `just verify-run CAPTURE MAP HTML [STATE]`  | Read-only source-fact, HTML, bundle and optional state-map comparison                      |
+| Command                                     | Behavior                                                                                      |
+| ------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `just init`                                 | Locked tools, frozen dependencies, local hooks                                                |
+| `just format`                               | Explicit Prettier write                                                                       |
+| `just format-check`                         | Read-only repository-local Prettier check                                                     |
+| `just docs-check`                           | Canonical structure, indexes, local links, whitespace                                         |
+| `just lint`                                 | ESLint, Just format, Bash syntax, ShellCheck, actionlint, Git whitespace                      |
+| `just test`                                 | Deterministic Node unit and CLI integration tests                                             |
+| `just build-runner`                         | Explicitly regenerate the installed runner and dependency notices                             |
+| `just bundle-check`                         | Read-only byte comparison of the generated runner and notices against locked source inputs    |
+| `just check` / `just ci`                    | Documentation, format, lint, bundle currency and Node tests; no installation or repair writes |
+| `just browser-install`                      | Explicit Chromium download using pinned Playwright                                            |
+| `just browser-check`                        | Chromium interaction, reuse, safety, viewport and export tests with synthetic inputs          |
+| `just normalize INPUT OUTPUT`               | Convert native capture to an unclassified work-map draft                                      |
+| `just classify-draft DRAFT CHOICES RUN`     | Apply initial agent decisions and save a complete map/state in a fresh directory              |
+| `just retain-response INPUT NEW_FILE`       | Preserve a host response file without echoing its contents or replacing another file          |
+| `just inspect MAP [ISSUE [OFFSET]]`         | Page through issue metadata or a template-independent body index                              |
+| `just read-issue MAP ISSUE BLOCK [OFFSET]`  | Read exact bounded source excerpts                                                            |
+| `just search-issue MAP ISSUE TEXT [OFFSET]` | Locate literal source text, returning bounded match pages                                     |
+| `just remember MAP RUN`                     | Initialize private state from a complete map in a new directory                               |
+| `just refresh STATE CAPTURE RUN`            | Normalize current facts and reapply saved choices                                             |
+| `just classify STATE CHOICES RUN`           | Apply agent choices while protecting user decisions                                           |
+| `just revise STATE CHOICES RUN`             | Record explicit user corrections                                                              |
+| `just skill-link`                           | Register this checkout as a local user skill; refuse conflicting installs                     |
+| `just validate INPUT`                       | Validate input without writing it                                                             |
+| `just render INPUT OUTPUT`                  | Validate and generate a standalone HTML artifact                                              |
+| `just verify-run CAPTURE MAP HTML [STATE]`  | Read-only source-fact, HTML, bundle and optional state-map comparison                         |
 
 Tests create temporary artifacts and remove them. Gates do not rewrite source,
 format files, collect data, commit, or publish. No empty build or typecheck

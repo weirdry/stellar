@@ -4,8 +4,9 @@
 
 Stellar is MIT licensed and distributed as a GitHub-hosted skill. The public
 `skills` installer is fetched by npx; Stellar itself is not published to npm.
-Node.js 24.x is the runtime prerequisite. The installer may also require Git
-to retrieve the repository. Installed report generation requires neither Git
+Node.js 24.x is the runtime prerequisite. Installation and updates through the
+documented npx commands also require npm/npx and Git to retrieve this repository.
+Installed report generation requires neither Git
 nor a development checkout, mise, Just, pnpm, or installed npm dependencies.
 
 After the first promotion to `main`, the normal entry point is:
@@ -19,6 +20,11 @@ selected Git revision. Its canonical copy and agent registration locations are
 owned by the installer. Select the desired agents interactively, or use
 `--agent codex claude-code`. Hosts may require a fresh session to discover it.
 Installation does not configure source credentials or prove automatic discovery.
+With the verified `skills@1.7.0` global Codex/Claude Code installation, the
+canonical directory is `~/.agents/skills/stellar`; Claude Code registers a
+symlink at `~/.claude/skills/stellar`. Use `npx skills list -g` to confirm the
+actual path for your installation, and set `STELLAR_ROOT` to that directory
+when following manual runner examples.
 
 For an exact release or review revision, replace `REF` with a real tag or full
 commit SHA that is available on GitHub:
@@ -31,16 +37,29 @@ The short command follows the repository's default branch, `main`. Installing a
 review branch is an explicit development preview, not a release. No release tag
 exists yet. Do not present a planned tag as an available install source.
 
-Updates and removal belong to the same installer:
+Updates and interactive removal belong to the same installer:
 
 ```sh
 npx skills update stellar -g
 npx skills remove stellar -g
 ```
 
-Updating an installed skill changes its executable/instruction files, not private
-reports or saved state. Keep reports outside the installation, normally under
+An exact-SHA or immutable-tag installation stays on that ref: `skills update`
+does not advance it to a newer release. To move it, run `skills add` again with
+the desired new tag or SHA using the exact-ref command above. A default-branch
+installation follows updates on that branch.
+
+Removal asks for confirmation. In a non-interactive agent or script, use
+`npx --yes skills remove stellar -g -y` to confirm both npx execution and removal.
+Without `-y`, removal can exit zero while leaving the skill installed. Confirm
+the result with `npx skills list -g`.
+
+Update or reinstall replaces the installed directory, including any locally
+added files. Reports and saved state outside that directory are retained.
+Keep reports outside the installation, normally under
 `~/Documents/Stellar/`. Do not store user captures in an installed skill directory.
+Record the [renderer identity](../../references/runs.md#record-renderer-identity)
+with each report before updating; hashes identify files but cannot restore them.
 Before replacing a developer symlink, inspect it and choose deliberately between
 the installed copy and checkout; Stellar's `just skill-link` refuses to replace
 another installation. A local-path `skills add` copies the local source directory;
@@ -78,9 +97,9 @@ validate their behavior. Re-run `just build-runner` after formatting source.
   tests, and an isolated runtime test with only the bundle, schemas, viewer, and
   license files. The test exercises first classification, user revision, refresh,
   agent authority refusal, rendering and consistency, with an unrelated working
-  directory and no dependency/tool lookup environment.
-- `just browser-check`: the pinned Chromium suite on synthetic data. The installed
-  runner's report is also compared byte-for-byte to the source renderer.
+  directory and no dependency/tool lookup environment. It also compares the
+  installed runner's report byte-for-byte to the source renderer.
+- `just browser-check`: the pinned Chromium suite on synthetic data.
 - Explicit installation: run a pinned official skills CLI in an isolated home
   (for example, a disposable container), selecting Codex and Claude Code. Exercise
   the installed skill instructions using only invented captures. Do not replace

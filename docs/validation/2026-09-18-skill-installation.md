@@ -82,3 +82,62 @@ exact source revision and installer acceptance. No fresh agent process,
 automatic selection, live collection, Windows execution, or published release
 acceptance is claimed here. Local gates, hosted CI and browser observations are
 recorded separately as they complete.
+
+## Exact-ref installation and review evidence
+
+At implementation commit `10d26db8c56bc8bfcce8968643dc0e28aaa8d27d`, the
+implementing agent also installed the exact GitHub ref with official
+`skills@1.7.0` in the disposable Linux environment (Node 24.20.0). The installed
+runner hash matched the committed bundle, and the synthetic generation,
+user-revision and refresh workflow passed while retaining prior artifact bytes.
+This was manual command replay, not fresh-host invocation or automatic discovery.
+
+[Hosted CI 35300600085](https://github.com/weirdry/stellar/actions/runs/35300600085)
+passed at `10d26db`: bundle currency, **69/69 Node**, **47/47 Chromium**.
+The README-only follow-up `1c6a9af` passed local CI (**69/69 Node**) and
+[hosted CI 35304473418](https://github.com/weirdry/stellar/actions/runs/35304473418)
+(**69/69 Node**, **47/47 Chromium**). Local Chromium was not repeated for that
+documentation-only commit; its preceding local result belongs to `10d26db`.
+
+Independent review of [PR #18](https://github.com/weirdry/stellar/pull/18) at
+`1c6a9af` reported no blocking defects, **69/69 Node** and **47/47 Chromium**
+locally, and exact-ref installation with `skills@1.7.0` on Linux arm64 / Node
+24.21.0. Its installed workflow used a read-only skill directory without
+developer tools and with unusable external Ajv packages. Synthetic bilingual,
+mixed-source generation and continuity matched the source runner; prior bytes
+and user choices were preserved. Browser evidence was repository Playwright;
+fresh-agent discovery, live collection and release acceptance were not tested.
+
+The review's recorded installer reproductions showed that this repository
+requires Git to install, a pinned SHA stays pinned on update, and non-interactive
+removal without `-y` can exit zero without removing the skill. With `-y`, removal
+completed and synthetic reports outside the installation remained unchanged.
+These are observations of `skills@1.7.0`, not new installer behavior in Stellar.
+
+## Review follow-up after `1c6a9af`
+
+F1–F5 are addressed with installation prerequisites and locations, pinned-ref
+update and non-interactive removal instructions, recorded renderer identity,
+current architecture status, and corrected command/evidence ownership. The
+verifier's mismatch guidance now refers to a runner and distinguishes verifying
+an original report from creating a separate new report; the installed bundle
+was regenerated. Verification logic, rendering, schemas and state are unchanged.
+
+- `just ci`: **69/69 Node** passed, including bundle currency and isolated
+  installation-runtime coverage.
+- The new hash example was extracted verbatim from the run guide and executed
+  under Bash and Zsh against a scratch runtime copy with spaces in its path.
+  Both outputs matched independently computed hashes for all seven runner/viewer
+  files, including both locale catalogs. The command changed no files.
+- Manual installed-runner replay on the tracked synthetic mixed capture passed
+  normalization, first classification, retention, validation, rendering, and all
+  four `verify-run` checks. Changing only the scratch viewer CSS then caused only
+  `bundledViewer` to fail, with the new recovery guidance. A separate new HTML
+  passed; every original input, map, state and report remained byte-identical.
+- Local Chromium and the official installer were not repeated for this follow-up.
+  Existing installation and browser observations remain attributed to their
+  revisions above; hosted results for the follow-up are recorded in PR #18.
+
+These checks used temporary synthetic artifacts. The existing skill registration,
+private reports and source systems were unchanged. No fresh agent process or
+automatic-discovery test was performed.
