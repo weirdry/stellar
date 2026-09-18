@@ -48,7 +48,11 @@ Selected/in-focus labels take priority, followed by domains, categories and
 issues. Candidate placement preserves association with the owning dot: the
 first line cannot be nearer another dot beyond a two-pixel tolerance. Names use
 nearby above/below/side anchors, with at most 32 CSS pixels of extra vertical
-clearance. Area names use two compact lines on narrow stages. Wider stages
+clearance. Equally prioritized area names nearest a stage edge place first and
+try outward side positions before inward ones. Additional area candidates use
+16/32-pixel horizontal offsets or a five-pixel side gap, while retaining the
+four-pixel collision margin. This accommodates fallback font widths without
+changing font selection, node geometry or the owning-dot test. Area names use two compact lines on narrow stages. Wider stages
 balance longer names over three lines (four on the middle grid), growing their
 bounded width with the text to preserve distinguishing endings. Names exceeding
 this capacity still truncate. A longer name that cannot be placed falls back

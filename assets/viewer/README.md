@@ -23,8 +23,13 @@ follows authored domain order; font fallback and viewport may affect pixels.
 Global-view labels, including target-focus labels, use measured bounds for each
 text line. Empty space beside a short subtitle does not exclude another name.
 Selected/in-focus labels are considered first, then area, group and issue names.
-Candidates sit above, below or beside their node, with at most 32 CSS pixels of
-extra vertical clearance. A candidate is rejected if its first text line is
+Within the same area-name priority, areas nearest a stage edge place first.
+Their side candidates try the outward direction before consuming a neighbor's
+space. Candidates sit above, below or beside their node, with at most 32 CSS
+pixels of extra vertical clearance. Area names also try 16/32-pixel horizontal
+shifts at the above/below anchors and a closer five-pixel side gap; all candidates
+retain the same four-pixel collision margin. These bounded alternatives accommodate
+fallback font metrics without fixing a platform-specific font or shrinking text. A candidate is rejected if its first text line is
 closer to another dot than its owning dot (with a two-pixel tolerance).
 This rule also constrains horizontal alignment at the stage edge: a name cannot
 be moved into another node's space merely to keep it visible. Area names use

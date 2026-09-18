@@ -1113,7 +1113,17 @@ function placeNodeLabels(nodeEls, frame) {
               }),
           })),
       }))
-      .sort((a, b) => priority(a.node) - priority(b.node));
+      .sort((a, b) => {
+        const rank = priority(a.node) - priority(b.node);
+        if (rank || !frame || a.node.type !== 'domain') return rank;
+        // Edge areas have fewer placements; reserve their space before areas
+        // that can put a name on either side.
+        const edgeSpace = (node) => {
+          const x = node.x * k + state.transform.x;
+          return Math.min(x, frame.width - x);
+        };
+        return edgeSpace(a.node) - edgeSpace(b.node);
+      });
   for (const { label } of ordered) {
     label.compactLayout?.remove();
     delete label.compactLayout;
@@ -1140,11 +1150,25 @@ function placeNodeLabels(nodeEls, frame) {
         middle = -box.y - box.height / 2,
         right = nodeRadius(node) + 10 / k - box.x,
         left = -nodeRadius(node) - 10 / k - box.x - box.width,
+        preferLeft =
+          frame &&
+          node.type === 'domain' &&
+          node.x * k + state.transform.x < frame.width / 2,
+        sides = preferLeft ? [left, right] : [right, left],
         candidates = [
           [0, 0],
           [0, above],
-          [right, middle],
-          [left, middle],
+          // Exhaust the outward side before taking a neighboring area's slot.
+          ...(node.type === 'domain'
+            ? sides.flatMap((x) => [
+                [x, middle],
+                [x, middle - 16 / k],
+                [x, middle + 16 / k],
+              ])
+            : [
+                [right, middle],
+                [left, middle],
+              ]),
           [right, 0],
           [left, 0],
           [right, above],
@@ -1157,6 +1181,21 @@ function placeNodeLabels(nodeEls, frame) {
           [0, above - 16 / k],
           [0, 32 / k],
           [0, above - 32 / k],
+          // Font fallback can make the ten-pixel side gap or centered name
+          // miss an otherwise clear slot. Retain the four-pixel collision
+          // margin and owning-dot check for these nearby area candidates too.
+          ...(node.type === 'domain'
+            ? [
+                [right - 5 / k, middle],
+                [left + 5 / k, middle],
+                [right - 5 / k, middle + 16 / k],
+                [left + 5 / k, middle + 16 / k],
+                ...[-32, -16, 16, 32].flatMap((dx) => [
+                  [dx / k, 0],
+                  [dx / k, above],
+                ]),
+              ]
+            : []),
         ],
         placed = candidates
           .map(([x, y]) => {

@@ -70,7 +70,7 @@ async function invented(locale, shape = [2, 2, 2], perGroup = 1) {
   return data;
 }
 
-async function open(t, data, viewport) {
+async function open(t, data, viewport, font = null) {
   const dir = await mkdtemp(join(tmpdir(), 'stellar-layout-'));
   t.after(() => rm(dir, { recursive: true, force: true }));
   const browser = await chromium.launch({
@@ -92,7 +92,13 @@ async function open(t, data, viewport) {
     assert.deepEqual(requests, []);
   });
   const file = join(dir, 'map.html');
-  await writeFile(file, await renderWorkMap(data));
+  const html = await renderWorkMap(data);
+  await writeFile(
+    file,
+    font
+      ? html.replace('</style>', `body { font-family: ${font}; }</style>`)
+      : html,
+  );
   await page.goto(pathToFileURL(file).href);
   await page.waitForFunction(() => window.stellar);
   await page.waitForTimeout(180);
@@ -288,6 +294,60 @@ for (const locale of ['ko', 'en']) {
       fitted,
     );
     await clearLabels(page);
+  });
+}
+
+// Arial resolves to Liberation Sans on Ubuntu; it also reproduces the Linux
+// fallback metrics on macOS without installing a font or changing the product.
+for (const [name, shape, viewport, full] of [
+  [
+    'six-area middle grid',
+    [2, 2, 2, 2, 2, 2],
+    { width: 1024, height: 768 },
+    true,
+  ],
+  ['five-area desktop', [3, 3, 3, 3, 3], { width: 1600, height: 1000 }, true],
+  ['short four-group area', [4], { width: 568, height: 320 }, false],
+  ['landscape four-group area', [4], { width: 667, height: 375 }, false],
+]) {
+  test(`fallback font retains names in the ${name}`, async (t) => {
+    const data = await invented('en', shape, 3),
+      page = await open(t, data, viewport, 'Arial, sans-serif');
+    assert.equal(await shown(page, 'domain'), shape.length);
+    if (full) {
+      const labels = await page
+        .locator('.graph-node.domain')
+        .evaluateAll((nodes) =>
+          nodes.map((node) => ({
+            id: node.dataset.node.slice(2),
+            text: [...node.querySelectorAll('.node-label tspan:not(.node-sub)')]
+              .map((line) => line.textContent)
+              .join('')
+              .replace(/\s/g, ''),
+          })),
+        );
+      for (const area of data.domains)
+        assert.equal(
+          labels.find((l) => l.id === area.id).text,
+          area.label.replace(/\s/g, ''),
+          area.id,
+        );
+    }
+    await clearLabels(page);
+    await associatedLabels(page);
+    const before = await page.locator('#nodes').innerHTML(),
+      camera = await page.evaluate(() => window.stellar.getState().transform);
+    await page.locator('#fit').click();
+    assert.deepEqual(
+      await page.evaluate(() => window.stellar.getState().transform),
+      camera,
+    );
+    assert.equal(await page.locator('#nodes').innerHTML(), before);
+    assert.deepEqual(
+      await page.locator('#data').evaluate((el) => JSON.parse(el.textContent)),
+      data,
+    );
+    await shot(page, `fallback-${viewport.width}`);
   });
 }
 

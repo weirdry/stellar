@@ -33,6 +33,11 @@ State: **As-built**
 `just ci` runs documentation, formatting, JavaScript and shell lint, workflow
 syntax, Git whitespace, and Node unit/CLI tests. `just browser-check` is a
 separate actual Chromium gate. Hosted CI runs both with entirely synthetic data.
+Layout regressions also override the test page's font with Arial/sans-serif:
+four fixtures require retained area names, clear text, owning-dot association,
+unchanged embedded facts and repeatable framing. Ubuntu resolves that font to
+Liberation Sans; the same fixtures catch the fallback-width failures on macOS.
+The product keeps its existing system-font stack.
 Tests use temporary artifacts and clean them; optional screenshots are explicit
 ignored local evidence. These checks do not access Linear or publish an artifact.
 
