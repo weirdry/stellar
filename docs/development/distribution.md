@@ -1,0 +1,110 @@
+# Installation and release
+
+## Installed skill
+
+Stellar is MIT licensed and distributed as a GitHub-hosted skill. The public
+`skills` installer is fetched by npx; Stellar itself is not published to npm.
+Node.js 24.x is the runtime prerequisite. The installer may also require Git
+to retrieve the repository. Installed report generation requires neither Git
+nor a development checkout, mise, Just, pnpm, or installed npm dependencies.
+
+After the first promotion to `main`, the normal entry point is:
+
+```sh
+npx skills add weirdry/stellar --skill stellar -g
+```
+
+The installer discovers the root `SKILL.md` and copies that directory from the
+selected Git revision. Its canonical copy and agent registration locations are
+owned by the installer. Select the desired agents interactively, or use
+`--agent codex claude-code`. Hosts may require a fresh session to discover it.
+Installation does not configure source credentials or prove automatic discovery.
+
+For an exact release or review revision, replace `REF` with a real tag or full
+commit SHA that is available on GitHub:
+
+```sh
+npx skills add https://github.com/weirdry/stellar/tree/REF --skill stellar -g
+```
+
+The short command follows the repository's default branch, `main`. Installing a
+review branch is an explicit development preview, not a release. No release tag
+exists yet. Do not present a planned tag as an available install source.
+
+Updates and removal belong to the same installer:
+
+```sh
+npx skills update stellar -g
+npx skills remove stellar -g
+```
+
+Updating an installed skill changes its executable/instruction files, not private
+reports or saved state. Keep reports outside the installation, normally under
+`~/Documents/Stellar/`. Do not store user captures in an installed skill directory.
+Before replacing a developer symlink, inspect it and choose deliberately between
+the installed copy and checkout; Stellar's `just skill-link` refuses to replace
+another installation. A local-path `skills add` copies the local source directory;
+do not feed it a working checkout containing private ignored files or dependencies.
+Use a clean export or a GitHub ref for installation tests.
+
+## Runtime artifact and source ownership
+
+`bin/stellar.js` and `lib/` remain the canonical runner source. Root Just product
+commands execute that source with locked dependencies. `just build-runner`
+explicitly generates committed `bin/stellar.mjs` with esbuild and
+`THIRD_PARTY_NOTICES.txt` from the included packages' full license texts. The
+bundle is readable JavaScript, not a platform binary. It contains Ajv and other
+runtime JavaScript dependencies, with Node built-ins remaining external.
+The pinned platform-specific esbuild executable is a development dependency;
+its postinstall script is disabled and it is not needed by installed users.
+
+The bundle remains in `bin/`, preserving the source modules' paths to authoritative
+`schemas/` and `assets/viewer/`. These resources are installed alongside it, not
+duplicated into a second hand-maintained distribution tree. The root skill and
+its focused references call `node "$STELLAR_ROOT/bin/stellar.mjs"` from any task
+directory. Installed users do not run contributor setup. All output arguments
+remain explicit, and continuity still refuses occupied run paths.
+
+`just bundle-check`, included in `just ci`, builds in memory and compares both
+generated files byte-for-byte. It fails on missing/stale files without repairing
+them. Regenerate deliberately after changing runner source or dependencies, then
+commit the generated files with their owners. Schema and viewer files remain
+runtime inputs and require their normal tests; the bundle check alone does not
+validate their behavior. Re-run `just build-runner` after formatting source.
+
+## Verification
+
+- `just init` and `just ci`: frozen development install, bundle currency, source
+  tests, and an isolated runtime test with only the bundle, schemas, viewer, and
+  license files. The test exercises first classification, user revision, refresh,
+  agent authority refusal, rendering and consistency, with an unrelated working
+  directory and no dependency/tool lookup environment.
+- `just browser-check`: the pinned Chromium suite on synthetic data. The installed
+  runner's report is also compared byte-for-byte to the source renderer.
+- Explicit installation: run a pinned official skills CLI in an isolated home
+  (for example, a disposable container), selecting Codex and Claude Code. Exercise
+  the installed skill instructions using only invented captures. Do not replace
+  a maintainer's existing skill or read their reports to perform this check.
+  Record the installer version, source ref, runtime, commands, and limits.
+
+Command replay, explicit agent invocation, automatic discovery, live source
+collection, and publication are separate evidence. See the
+[installation validation record](../validation/2026-09-18-skill-installation.md).
+
+## First release procedure
+
+This change prepares installation; it does not publish a release. After review
+and integration, validate the intended `dev` head with local and hosted CI and
+the isolated installation workflow. Follow
+[CONTRIBUTING](../../CONTRIBUTING.md#promoting-dev-to-main) to fast-forward `main`
+only on maintainer direction. Use an immutable `v0.1.0` tag on the validated
+`main` commit for the first release, with a GitHub Release identifying that commit,
+installation command, Node prerequisite, supported hosts tested, and known limits.
+No Stellar npm publication or separate upload bundle is required: the Git revision
+contains the skill, runtime and notices.
+
+Verify installation from the published tag before reporting release completion.
+Later corrections use a new tag; never move an existing release tag. A broken
+installation can be replaced with a known-good tagged copy while preserving user
+reports and state. No automatic state migration, rollback script, or publication
+workflow is introduced for this first manual release path.

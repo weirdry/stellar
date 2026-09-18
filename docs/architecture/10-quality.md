@@ -97,6 +97,10 @@ live response provenance or a host's token savings.
 
 State: **Target**
 
-Distribution must prove installation and actual skill invocation when a package
-exists. Automatic refresh, concurrent state reconciliation and identity rebinding
+The [distribution tests](../../test/distribution.test.js) exercise an installed
+runner without development dependencies, compare HTML with the source renderer,
+and reject generated-file drift without mutation. Dated
+[installation evidence](../validation/2026-09-18-skill-installation.md) records actual
+installer and workflow results. First-release acceptance still requires
+installation from the published tag; host discovery is a separate observation. Automatic refresh, concurrent state reconciliation and identity rebinding
 are not implemented.

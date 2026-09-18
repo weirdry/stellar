@@ -11,7 +11,37 @@ validator, and standalone tree/graph viewer are implemented. A report can combin
 multiple workspaces and repositories. The host agent collects and classifies;
 Stellar code normalizes facts and renders the fixed interface. Local saved choices
 and requested refreshes preserve user grouping while updating source facts.
-Background synchronization remains **Target**. There is no backend or published package.
+Background synchronization remains **Target**. There is no backend. Installation
+support is implemented; the first public release and promotion to `main` are pending.
+
+## Install and use
+
+With **Node.js 24.x** available, install the skill through the
+[skills CLI](https://github.com/vercel-labs/skills):
+
+```sh
+npx skills add weirdry/stellar --skill stellar -g
+```
+
+This is the release installation command, available after the first promotion to
+`main`. The installer fetches Stellar from GitHub; Stellar is not an npm package.
+Choose your agent in the installer, or pass `--agent codex` or
+`--agent claude-code`. Start a fresh host session if its skill list is cached.
+Ask it to use Stellar, for example: “Use Stellar to map my assigned issues by
+actual work purpose.” In hosts supporting `$stellar`, you can invoke it explicitly.
+Source access uses the host's existing authenticated tools.
+
+The installed skill includes a generated runner, its JavaScript dependencies,
+schemas, viewer and guides. No developer checkout, mise, Just, pnpm, or Git hooks
+are needed to generate reports. Node must remain available. The host resolves the
+installed skill root and calls `node "$STELLAR_ROOT/bin/stellar.mjs"` from the
+user's task directory. Do not run `just init` in an installed copy.
+
+Use `npx skills update stellar -g` to check and apply updates through the installer.
+Reports and saved state live outside the installation and are retained. To remove
+the skill, use `npx skills remove stellar -g`; this does not delete report folders.
+See [distribution and release](docs/development/distribution.md) for exact-ref
+installs, contributor linking, validation, and the release procedure.
 
 ## Start development
 
@@ -30,7 +60,7 @@ frozen pnpm dependencies and enables local hooks. Node 24 is pinned in mise;
 pnpm is selected from `package.json` through the bundled Corepack. Tool locks
 cover macOS arm64 and Linux x64.
 
-## Use the local skill
+## Link a development checkout
 
 After development setup, register this checkout for user-level skill discovery:
 
@@ -39,9 +69,11 @@ just skill-link
 ```
 
 This links the checkout as `stellar` in the user's `.agents/skills` directory.
-It refuses to replace another installation. The checkout and its installed
-runtime dependencies must remain available; this is local authoring setup,
-not a distributed package. Open a fresh host session if the skill list is cached.
+It refuses to replace another installation. The checkout and Node must remain
+available. Run `just build-runner` after changing runner source or dependencies:
+skill invocations use the generated bundle, while development Just commands
+exercise source. This authoring link sees uncommitted changes; use an installed
+copy for everyday use. Open a fresh host session if the skill list is cached.
 Explicitly invoke `$stellar`, for example: “Map my Linear and GitHub issues by
 actual work purpose.” Specify the person, sources, language or output location
 when they differ from the conversation context or defaults.
@@ -57,7 +89,7 @@ See [run locations and evidence](references/runs.md).
 Automatic selection depends on the host; local evidence distinguishes explicit
 invocation from discovery.
 
-## Generate a map
+## Generate a map from a development checkout
 
 The host can retain response files with `just retain-response INPUT NEW_FILE`
 without printing their contents. After normalization, `just inspect MAP`,
@@ -188,3 +220,10 @@ policy: integration through `dev`, review branches for substantial work, and
 validated promotion to `main`. Real snapshots, classifications, reports,
 screenshots, and logs must never enter Git or public CI. Public fixtures are
 invented from scratch, not anonymized copies of actual work.
+
+## License
+
+Stellar is [MIT licensed](LICENSE). Bundled dependency licenses are retained in
+[THIRD_PARTY_NOTICES.txt](THIRD_PARTY_NOTICES.txt). The license covers Stellar's
+code and bundled synthetic examples; it does not grant rights to users' source
+issues, captures, or reports.

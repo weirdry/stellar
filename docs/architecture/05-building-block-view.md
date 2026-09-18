@@ -16,6 +16,13 @@ State: **As-built**
 | Examples and tests  | Public reuse and behavior evidence using invented data                                                       | [examples](../../examples/README.md), [core tests](../../test/core.test.js), [browser tests](../../test/browser/viewer.test.js) |
 | Development tooling | Locked native dependencies, Just gates, hooks and CI caller                                                  | [development](../development/README.md)                                                                                         |
 
+The installed runner is generated from the same CLI and library source by
+[build-runner.js](../../scripts/build-runner.js), with dependencies included in
+[stellar.mjs](../../bin/stellar.mjs) and full third-party notices retained.
+Schemas and viewer assets keep their authoritative paths beside it. Installed
+usage needs Node 24; contributor tooling is separate. See
+[distribution](../development/distribution.md).
+
 The single native root is the repository's Node package. The viewer is bundled
 source, not an independently deployed service. No L1 boundary or multi-package
 workspace is necessary for these directories.

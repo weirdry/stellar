@@ -22,7 +22,8 @@ State: **As-built**
 
 After locked checkout setup, `just skill-link` creates a user-level `stellar`
 skill symlink to this checkout. Existing different installations are not replaced.
-The checkout, Node runtime and installed dependencies must remain available. The
+The checkout and Node runtime must remain available; regenerate the installed
+runner after source changes with `just build-runner`. The
 skill resolves bundled resources relative to its root; it can render artifacts
 outside the checkout. Discovery/caching belongs to the host. Local invocation
 and fixture/live evidence are recorded in [validation](../validation/2026-09-12-source-aware-skill.md).
@@ -37,17 +38,26 @@ remain required; existing reports and states are not relocated. The
 The [output-location validation record](../validation/2026-09-15-output-location.md)
 records the explicit synthetic invocation and its limits.
 
-## Intended distribution
+## Skill distribution
+
+State: **As-built**
+
+Stellar is MIT licensed. The public skills CLI installs the root skill from a
+GitHub revision; Stellar itself is not published to npm. Instructions invoke the
+committed Node.js 24 runner with bundled JavaScript dependencies. Its schemas,
+viewer and guides are colocated, so generation needs no mise, Just, pnpm, Git,
+or development checkout. The installer owns registration and updates.
+[Distribution](../development/distribution.md) owns commands and the release
+procedure; [validation](../validation/2026-09-18-skill-installation.md) distinguishes
+isolated installation, command execution and host invocation evidence.
 
 State: **Target**
 
-A distributable package/channel, license and release automation remain Open.
-A local development symlink is not a published artifact.
-
-`dev` accumulates unreleased work; validated fast-forward promotion to `main`
-is the intended release boundary. Add release automation only after identifying
-the actual distributed artifact and its validation. No development deployment
-or mixed-version runtime overlap is assumed.
+The first release is pending. The short install command becomes available after
+validated fast-forward promotion to default-branch `main`. The first immutable
+release tag is intended to be `v0.1.0`; it has not been published. No automated
+publication workflow or separate npm artifact is needed for this manual GitHub
+release path. `dev` has no deployment target.
 
 User inputs and saved reports belong to the user. Repository refactoring or a
 future artifact update must not reset or migrate those files as incidental work.

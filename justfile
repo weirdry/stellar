@@ -81,8 +81,16 @@ revise state choices run:
 render input output:
     mise exec --locked -- node bin/stellar.js render {{ quote(input) }} {{ quote(output) }}
 
-# No compiled bundle or published package exists. Browser QA is a separate gate.
-check: docs-check format-check lint test
+# Regenerate the committed installed runner and dependency notices explicitly.
+build-runner:
+    mise exec --locked -- node scripts/build-runner.js
+
+# Compare in memory; never rewrite the installed artifact from a quality gate.
+bundle-check:
+    mise exec --locked -- node scripts/build-runner.js --check
+
+# Browser QA is a separate gate.
+check: docs-check format-check lint bundle-check test
 
 ci: check
 

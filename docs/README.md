@@ -31,6 +31,9 @@ product inputs, distinct from issues used to manage Stellar itself. When sources
 disagree, identify the concern, verify its owner, and correct that owner rather
 than creating duplicate truths.
 
+Installation and release commands are maintained in the
+[distribution guide](development/distribution.md).
+
 ## State vocabulary
 
 - **As-built:** behavior verified against repository or observed evidence.

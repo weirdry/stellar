@@ -1,5 +1,6 @@
 ---
 name: stellar
+license: MIT
 description: Turn a person's issues into an explorable Stellar work map with a purpose-based tree, relationship graph, and status inspector. Use to map work across Linear, GitHub Issues, or supplied snapshots, revise a user's grouping, or refresh an earlier map while preserving saved choices. Produce local standalone HTML with the bundled viewer.
 ---
 
@@ -12,14 +13,21 @@ turn this task into a source-system reorganization.
 ## Establish the run
 
 Resolve `STELLAR_ROOT` to the directory containing this skill, including when
-loaded through a symlink. Read [the input contract](schemas/README.md) and
+loaded through a symlink. Use its absolute path in every shell invocation; do not
+assume a previous shell call retained the variable. Node.js **24.x** must be
+available (`node --version`). The installed `bin/stellar.mjs` bundles JavaScript
+dependencies and resolves schemas/viewer files relative to itself. It runs from
+the task directory: no mise, Just, pnpm, Git checkout, or dependency installation
+is needed. Do not run contributor setup in an installed copy. Check the runner
+with `node "$STELLAR_ROOT/bin/stellar.mjs" --help`. If Node 24 is unavailable,
+report the prerequisite instead of silently installing tools. Read [the input contract](schemas/README.md) and
 [classification guidance](references/classification.md).
 
 For a saved map, a user correction, or a requested refresh, read
 [continuity](references/continuity.md). Use its state/choices commands rather
 than restarting classification or manually editing a saved map. The collection
 and delivery boundaries below still apply. A first report can become the starting
-state through `just remember` after validation; `classify-draft` already saves
+state through `remember` after validation; `classify-draft` already saves
 state for a newly classified draft.
 Continuity refuses report-relative references before writing; follow its guide
 to retain the original artifact and disclose this limitation.
@@ -38,17 +46,14 @@ viewer filters define the requested collection scope.
 - Use the output directory specified for this run, then a location already
   established in the conversation. Otherwise use `~/Documents/Stellar/` in the
   execution user's home, independent of the task directory or skill checkout.
-  Resolve `~` and relative paths to absolute paths before running commands from
-  `STELLAR_ROOT`; relative user paths are based on the task's working directory.
+  Resolve `~` and relative paths to absolute paths before invoking the runner;
+  relative user paths are based on the task's working directory.
   Create a fresh `<run-name>/` beneath the selected directory for each generation
   or refresh. Keep captures, drafts, reports, and logs private. Do not overwrite
   prior reports or snapshots unless the user requested replacement. HTML embeds
   the issue data. This default does not move existing artifacts or saved state.
   For `classify-draft` and continuity commands, supply a fresh unused path and let the command create
   the directory. Always retain previous state and reports.
-- Confirm the locked runtime/dependencies exist. From `STELLAR_ROOT`, use root
-  Just commands. If setup is needed, follow [development setup](README.md#start-development).
-  Never install dependencies as a side effect of validation.
 
 ## Collect and normalize
 
@@ -73,11 +78,11 @@ self-contained collection record. Supplied snapshots retain their original
 observation times and limitations; do not invent evidence of fresh collection.
 
 Build the capture in [capture format](references/capture.md) in a private staging
-directory. Keep the final run path unused. Run from `STELLAR_ROOT` with absolute
+directory. Keep the final run path unused. Use the installed runner with absolute
 input/output paths:
 
 ```sh
-just normalize "$STAGING/capture.json" "$STAGING/draft.json"
+node "$STELLAR_ROOT/bin/stellar.mjs" normalize "$STAGING/capture.json" "$STAGING/draft.json"
 ```
 
 This creates a canonical **draft**, with source facts and deduplicated registered
@@ -118,9 +123,9 @@ again before reapplying interpretation. For saved maps, apply choices through
 the continuity guide to keep saved state consistent with the report.
 
 ```sh
-just classify-draft "$STAGING/draft.json" "$STAGING/choices.json" "$RUN"
-just validate "$RUN/work-map.json"
-just render "$RUN/work-map.json" "$RUN/stellar.html"
+node "$STELLAR_ROOT/bin/stellar.mjs" classify-draft "$STAGING/draft.json" "$STAGING/choices.json" "$RUN"
+node "$STELLAR_ROOT/bin/stellar.mjs" validate "$RUN/work-map.json"
+node "$STELLAR_ROOT/bin/stellar.mjs" render "$RUN/work-map.json" "$RUN/stellar.html"
 ```
 
 `classify-draft` requires every assigned issue to be classified before writing.
@@ -142,9 +147,9 @@ reported as partial coverage; invalid structure must be fixed before delivery.
 For a supported native capture, run the read-only consistency check:
 
 ```sh
-just verify-run "$RUN/capture.json" "$RUN/work-map.json" "$RUN/stellar.html"
+node "$STELLAR_ROOT/bin/stellar.mjs" verify-run "$RUN/capture.json" "$RUN/work-map.json" "$RUN/stellar.html"
 # When saved state belongs to this result, also supply its actual path:
-just verify-run "$RUN/capture.json" "$RUN/work-map.json" "$RUN/stellar.html" "$RUN/state.json"
+node "$STELLAR_ROOT/bin/stellar.mjs" verify-run "$RUN/capture.json" "$RUN/work-map.json" "$RUN/stellar.html" "$RUN/state.json"
 ```
 
 Choose the applicable invocation, retain its result, and follow

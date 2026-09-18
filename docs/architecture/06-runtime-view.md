@@ -37,7 +37,8 @@ checks.
 
 The verifier parses exactly one bundled JSON data slot without executing HTML,
 compares its data with the final map, and reproduces the current checkout's HTML
-in memory. It compares the original file bytes against that output encoded as
+in memory (using the installed runner and colocated viewer for installed skills).
+It compares the original file bytes against that output encoded as
 UTF-8, matching the renderer's file-write encoding. Separate decoding for JSON
 inspection cannot hide corrupted bytes from this comparison. Optional saved
 state must validate and contain the same final map. A different renderer revision
