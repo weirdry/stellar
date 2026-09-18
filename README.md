@@ -136,13 +136,34 @@ Use [the input guide](schemas/README.md) to author a different map.
 
 ## Remember and refresh
 
-`classify-draft` already saves the first run's state. For an existing complete
-standalone map without state, `just remember MAP.json NEW_RUN` initializes it.
-Use `just revise STATE.json CHOICES.json NEW_RUN` for a user correction and
-`just refresh STATE.json CAPTURE.json NEW_RUN` for a fresh source snapshot.
-`just classify STATE.json CHOICES.json NEW_RUN` applies agent decisions while
-protecting user choices. Each command writes a new private run directory; render
-its `work-map.json` and keep its `state.json` for the next run. See the
+These commands and the verification examples below use Node.js 24.x. Set
+`STELLAR_ROOT` to the installed directory containing `SKILL.md`, and replace the
+`/absolute/...` placeholders with your input and output paths.
+
+`classify-draft` already saves the first run's state. Choose the operation needed
+below; these are alternatives, not a sequence. Use a fresh run directory for each
+invocation.
+
+```sh
+# Initialize state for an existing complete standalone map without state.
+node "$STELLAR_ROOT/bin/stellar.mjs" remember \
+  /absolute/map.json /absolute/new-run
+
+# Record a user correction.
+node "$STELLAR_ROOT/bin/stellar.mjs" revise \
+  /absolute/state.json /absolute/choices.json /absolute/new-run
+
+# Apply a fresh source snapshot.
+node "$STELLAR_ROOT/bin/stellar.mjs" refresh \
+  /absolute/state.json /absolute/capture.json /absolute/new-run
+
+# Apply agent decisions while protecting user choices.
+node "$STELLAR_ROOT/bin/stellar.mjs" classify \
+  /absolute/state.json /absolute/choices.json /absolute/new-run
+```
+
+Each command writes a new private run directory; render its `work-map.json` and
+keep its `state.json` for the next run. See the
 [continuity workflow](references/continuity.md) for rules and choices examples.
 Pending review survives context/absence until an explicit classification. Web
 references are retained; report-relative references are rejected before a new run
@@ -153,8 +174,10 @@ is written, since local reference bundling is not implemented.
 For a map built from a supported native capture, check final artifact consistency:
 
 ```sh
-just verify-run CAPTURE.json MAP.json REPORT.html
-just verify-run CAPTURE.json MAP.json REPORT.html STATE.json
+node "$STELLAR_ROOT/bin/stellar.mjs" verify-run \
+  /absolute/capture.json /absolute/map.json /absolute/report.html
+node "$STELLAR_ROOT/bin/stellar.mjs" verify-run \
+  /absolute/capture.json /absolute/map.json /absolute/report.html /absolute/state.json
 ```
 
 Choose the invocation with state when one exists. The read-only command compares
@@ -164,7 +187,10 @@ classification quality, preservation relative to a previous state, or visual
 acceptance. See [run evidence](references/runs.md) for preserving inputs,
 collection responses and verification results together.
 
-Repository quality gates remain separate:
+## Development quality gates
+
+From a development checkout, complete [developer setup](#start-development)
+before running these repository checks with Just:
 
 ```sh
 just ci
@@ -172,10 +198,10 @@ just browser-install
 just browser-check
 ```
 
-`ci` checks documentation, formatting, lint, and Node tests. Browser installation
-is an explicit network operation. `browser-check` runs a separate Chromium suite;
-GitHub CI runs both gates. Screenshots are optional local evidence; neither a
-passing test nor a screenshot alone establishes visual acceptance.
+`ci` checks documentation, formatting, lint, bundle currency, and Node tests.
+Browser installation is an explicit network operation. `browser-check` runs a
+separate Chromium suite; GitHub CI runs both gates. Screenshots are optional local
+evidence; neither a passing test nor a screenshot alone establishes visual acceptance.
 
 ## Contributing
 
