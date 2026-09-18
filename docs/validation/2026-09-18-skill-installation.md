@@ -114,7 +114,7 @@ removal without `-y` can exit zero without removing the skill. With `-y`, remova
 completed and synthetic reports outside the installation remained unchanged.
 These are observations of `skills@1.7.0`, not new installer behavior in Stellar.
 
-## Review follow-up after `1c6a9af`
+## Author follow-up at `375f48d`
 
 F1–F5 are addressed with installation prerequisites and locations, pinned-ref
 update and non-interactive removal instructions, recorded renderer identity,
@@ -134,10 +134,57 @@ was regenerated. Verification logic, rendering, schemas and state are unchanged.
   four `verify-run` checks. Changing only the scratch viewer CSS then caused only
   `bundledViewer` to fail, with the new recovery guidance. A separate new HTML
   passed; every original input, map, state and report remained byte-identical.
-- Local Chromium and the official installer were not repeated for this follow-up.
-  Existing installation and browser observations remain attributed to their
-  revisions above; hosted results for the follow-up are recorded in PR #18.
+- The implementing agent did not repeat local Chromium or the official installer
+  for this follow-up. Independent rechecks and hosted results are recorded below.
 
 These checks used temporary synthetic artifacts. The existing skill registration,
 private reports and source systems were unchanged. No fresh agent process or
 automatic-discovery test was performed.
+
+## Independent rechecks through `43eccaf`
+
+The following observations summarize the independent review reports supplied
+for PR #18 on 2026-09-18. They are separate from the implementing agent's checks
+above. Installation and recovery exercises were not repeated for this
+documentation-only follow-up.
+
+- At `375f48d`, all F1–F5 findings were confirmed fixed. Exact-ref installation
+  with `skills@1.7.0` on Linux / Node 24.21.0 produced the 121 tracked files,
+  without `.git` or `node_modules`, and the runner hash matched the commit.
+  In a separate container without development tools, the read-only installed
+  skill completed all 40 expected workflow and refusal steps on invented Korean
+  and English inputs despite unusable external Ajv packages. Artifacts matched
+  the source runner byte-for-byte; stdout/stderr matched after path normalization.
+  Prior files and user choices were preserved. The remaining N1 finding concerned
+  documenting project-local recovery instead of replacing the global skill.
+- At `77a12a1`, the reviewer confirmed N1 fixed by running the documented recovery
+  command with real installation in Bash and Zsh from a task directory with
+  spaces. Recovered `1c6a9af` and `375f48d` runners matched their recorded hashes
+  and passed all four `verify-run` checks against reports from those revisions.
+  A nonexistent SHA and an unreplaced `REF` failed without selecting a runner.
+  The global installation, lock, Claude Code link and task directory stayed
+  unchanged. Printing the recovered path remained an optional usability fix.
+- At `43eccaf`, the reviewer executed that fix with `skills@1.7.0` on Linux /
+  Node 24.21.0 in both Bash and Zsh. Successful recovery printed the absolute
+  path as its last output line, with stdout alone or stdout/stderr combined.
+  A separate shell reused the printed path: the runner hash matched `1c6a9af`
+  and `--help` succeeded. A nonexistent SHA exited 1 without printing a path.
+  The global installation, lock and task directory remained unchanged. No
+  findings remained open in that recheck.
+
+| Reviewed head | Independent local `just ci` | Independent local Chromium | Hosted CI                                                                                                              |
+| ------------- | --------------------------- | -------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `375f48d`     | 69/69 Node; bundle current  | 47/47                      | [35333679862](https://github.com/weirdry/stellar/actions/runs/35333679862): 69/69 Node, 47/47 Chromium; bundle current |
+| `77a12a1`     | 69/69 Node; bundle current  | Not repeated               | [35338255054](https://github.com/weirdry/stellar/actions/runs/35338255054): 69/69 Node, 47/47 Chromium; bundle current |
+| `43eccaf`     | 69/69 Node; bundle current  | Not repeated               | [35339612519](https://github.com/weirdry/stellar/actions/runs/35339612519): 69/69 Node, 47/47 Chromium; bundle current |
+
+The hosted runs checked merge refs `f05594f`, `11f4f8b` and `3c5cd12`,
+respectively; each tree matched its reviewed head. Runtime and bundle bytes
+are unchanged after `375f48d`, so its installed-workflow and local Chromium
+evidence remains applicable to the two documentation-only follow-ups.
+
+These rechecks used isolated checkouts and disposable containers with synthetic
+inputs. Fresh agent invocation, automatic discovery, live collection, macOS or
+Windows installation, and published-tag acceptance remain unverified. Host-browser
+inspection was not performed; the recorded Chromium results use repository
+Playwright. No main promotion or release is established by these results.

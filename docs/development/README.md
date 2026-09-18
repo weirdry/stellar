@@ -1,8 +1,10 @@
 # Development
 
 The product is a Node-native JavaScript CLI with an HTML/CSS/JavaScript/SVG
-viewer. `package.json` and `pnpm-lock.yaml` own one dependency graph. No
-TypeScript artifact, compiler build, published library, or backend exists.
+viewer. `package.json` and `pnpm-lock.yaml` own one dependency graph.
+Contributor product commands execute JavaScript source; `just build-runner`
+uses esbuild to generate the installed runner. No TypeScript compilation step,
+published library, or backend exists.
 Node's built-in test runner covers the small native CLI; Playwright drives
 separately named browser verification.
 

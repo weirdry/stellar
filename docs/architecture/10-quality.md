@@ -31,8 +31,9 @@ State: **As-built**
 | Reuse the original private report                             | Preserve source facts, classification and relationship topology                                                        | Private local regression only; never public fixtures               |
 
 `just ci` runs documentation, formatting, JavaScript and shell lint, workflow
-syntax, Git whitespace, and Node unit/CLI tests. `just browser-check` is a
-separate actual Chromium gate. Hosted CI runs both with entirely synthetic data.
+syntax, Git whitespace, bundle currency, and Node unit/CLI tests.
+`just browser-check` is a separate actual Chromium gate. Hosted CI runs both with
+entirely synthetic data.
 Layout regressions also override the test page's font with Arial/sans-serif:
 four fixtures require retained area names, clear text, owning-dot association,
 unchanged embedded facts and repeatable framing. Ubuntu resolves that font to
@@ -93,14 +94,16 @@ endpoint objects as context records for both providers while incomplete referenc
 stay unqueried. They do not prove semantic relevance,
 live response provenance or a host's token savings.
 
-## Remaining quality outcomes
-
-State: **Target**
-
 The [distribution tests](../../test/distribution.test.js) exercise an installed
 runner without development dependencies, compare HTML with the source renderer,
 and reject generated-file drift without mutation. Dated
 [installation evidence](../validation/2026-09-18-skill-installation.md) records actual
-installer and workflow results. First-release acceptance still requires
-installation from the published tag; host discovery is a separate observation. Automatic refresh, concurrent state reconciliation and identity rebinding
-are not implemented.
+installer, workflow and historical-runner recovery results.
+
+## Remaining quality outcomes
+
+State: **Target**
+
+First-release acceptance still requires installation from the published tag;
+host discovery is a separate, unverified observation. Automatic refresh,
+concurrent state reconciliation and identity rebinding are not implemented.
