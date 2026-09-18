@@ -15,3 +15,5 @@ __pycache__/
 mise.local.toml
 mise.local.lock
 mise.*.local.toml
+# Archify browser receipts and screenshots are local review evidence.
+/docs/architecture/diagrams/*.visual-check.*

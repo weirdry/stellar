@@ -8,6 +8,11 @@
 | [0004: Bundle a source-aware agent skill](0004-bundle-a-source-aware-agent-skill.md)                     | Accepted | 2026-09-12 |
 | [0005: Preserve classification through local state](0005-preserve-classification-on-refresh.md)          | Accepted | 2026-09-13 |
 | [0006: Distribute a Node-ready skill from GitHub](0006-distribute-a-node-ready-skill.md)                 | Accepted | 2026-09-18 |
+| [0007: Own the canonical documentation policy](0007-own-canonical-documentation-policy.md)               | Accepted | 2026-09-19 |
+
+ADR-0001 remains Accepted for the foundation. Its external documentation profile
+and upstream policy authority are superseded by ADR-0007; the original text is
+preserved as historical rationale. See chapter 9 for current effects.
 
 Accepted decisions are historical rationale. Add a new decision when changing a
 consequential choice and update the [current-view index](../architecture/09-architecture-decisions.md).

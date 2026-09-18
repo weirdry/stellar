@@ -7,7 +7,7 @@
     "quality_profile": "showcase",
     "viewBox": [
       1080,
-      680
+      640
     ]
   },
   "lanes": [
@@ -97,7 +97,7 @@
       "label": "path exists / cannot create",
       "variant": "security",
       "route": "bottom-channel",
-      "channelY": 600
+      "channelY": 570
     },
     {
       "from": "writing",
@@ -117,24 +117,6 @@
       "labelAt": [
         402,
         390
-      ]
-    }
-  ],
-  "cards": [
-    {
-      "dot": "emerald",
-      "title": "Successful output",
-      "items": [
-        "state.json, work-map.json, and changes.json are written privately.",
-        "refresh may save pending classifications; rendering checks completeness separately."
-      ]
-    },
-    {
-      "dot": "rose",
-      "title": "Failure and retry",
-      "items": [
-        "Existing paths are refused. Cleanup never removes an earlier run.",
-        "Caller retries with a fresh unused path; no automatic retry or crash recovery."
       ]
     }
   ]

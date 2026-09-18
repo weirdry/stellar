@@ -6,9 +6,22 @@
     "locale": "en",
     "quality_profile": "showcase",
     "viewBox": [
-      1080,
-      690
-    ]
+      940,
+      520
+    ],
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Runner logic"
+        },
+        "security": {
+          "label": "Review required"
+        },
+        "database": {
+          "label": "Saved interpretation"
+        }
+      }
+    }
   },
   "components": [
     {
@@ -17,12 +30,12 @@
       "label": "Normalize and match",
       "sublabel": "Provider + namespace + native ID",
       "pos": [
-        410,
-        55
+        350,
+        25
       ],
       "size": [
-        260,
-        90
+        240,
+        75
       ]
     },
     {
@@ -31,12 +44,12 @@
       "label": "User classification",
       "sublabel": "Preserve despite text changes",
       "pos": [
-        45,
-        280
+        30,
+        200
       ],
       "size": [
-        250,
-        90
+        220,
+        75
       ]
     },
     {
@@ -45,12 +58,12 @@
       "label": "Agent classification",
       "sublabel": "Reuse when no review is pending",
       "pos": [
-        415,
-        280
+        360,
+        200
       ],
       "size": [
-        250,
-        90
+        220,
+        75
       ]
     },
     {
@@ -59,12 +72,12 @@
       "label": "Classification review",
       "sublabel": "New / uncertain / changed evidence",
       "pos": [
-        785,
-        280
+        690,
+        200
       ],
       "size": [
-        250,
-        90
+        220,
+        75
       ]
     },
     {
@@ -73,12 +86,12 @@
       "label": "Fresh map + remembered targets",
       "sublabel": "Matched targets persist during review",
       "pos": [
-        365,
-        520
+        300,
+        375
       ],
       "size": [
-        350,
-        90
+        340,
+        75
       ]
     }
   ],
@@ -95,8 +108,8 @@
       "to": "agent",
       "label": "agent; no review",
       "labelAt": [
-        540,
-        210
+        470,
+        155
       ]
     },
     {
@@ -118,8 +131,8 @@
       "to": "save",
       "label": "restore classification",
       "labelAt": [
-        540,
-        445
+        470,
+        335
       ]
     },
     {
@@ -128,24 +141,6 @@
       "to": "save",
       "label": "retain review reason",
       "variant": "security"
-    }
-  ],
-  "cards": [
-    {
-      "dot": "violet",
-      "title": "Current facts, remembered interpretation",
-      "items": [
-        "Unobserved identities stay in private memory, outside the current map.",
-        "Unknown context never replaces remembered full-text evidence."
-      ]
-    },
-    {
-      "dot": "amber",
-      "title": "Save and render are separate",
-      "items": [
-        "refresh may save assigned issues without a primary classification.",
-        "classify or revise supplies explicit choices in a new run before rendering."
-      ]
     }
   ]
 }

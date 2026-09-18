@@ -6,9 +6,22 @@
     "locale": "en",
     "quality_profile": "showcase",
     "viewBox": [
-      1080,
-      690
-    ]
+      960,
+      530
+    ],
+    "legend": {
+      "entries": {
+        "database": {
+          "label": "Rendering input"
+        },
+        "backend": {
+          "label": "Local renderer"
+        },
+        "frontend": {
+          "label": "Visual artifact"
+        }
+      }
+    }
   },
   "components": [
     {
@@ -17,12 +30,12 @@
       "label": "Validated work map",
       "sublabel": "Facts, taxonomy, owner, locale",
       "pos": [
-        50,
-        85
+        20,
+        45
       ],
       "size": [
-        260,
-        90
+        220,
+        75
       ]
     },
     {
@@ -31,12 +44,12 @@
       "label": "Bundled viewer assets",
       "sublabel": "Shell, CSS, JS, locale catalogs",
       "pos": [
-        770,
-        85
+        720,
+        45
       ],
       "size": [
-        260,
-        90
+        220,
+        75
       ]
     },
     {
@@ -45,12 +58,12 @@
       "label": "renderWorkMap",
       "sublabel": "Escape data; fill slots once",
       "pos": [
-        410,
-        305
+        370,
+        235
       ],
       "size": [
-        260,
-        90
+        220,
+        75
       ]
     },
     {
@@ -59,12 +72,12 @@
       "label": "Open Star SVG",
       "sublabel": "Header mark + embedded favicon",
       "pos": [
-        50,
-        520
+        20,
+        390
       ],
       "size": [
-        260,
-        90
+        220,
+        75
       ]
     },
     {
@@ -73,12 +86,12 @@
       "label": "Standalone report",
       "sublabel": "Tree, graph, inspector, export",
       "pos": [
-        770,
-        520
+        720,
+        390
       ],
       "size": [
-        260,
-        90
+        220,
+        75
       ]
     }
   ],
@@ -107,24 +120,6 @@
       "to": "html",
       "label": "complete HTML bytes",
       "variant": "emphasis"
-    }
-  ],
-  "cards": [
-    {
-      "dot": "violet",
-      "title": "Safe and repeatable",
-      "items": [
-        "JSON escapes every less-than sign; title and UI copy are escaped.",
-        "Same ordered input and viewer revision produce identical HTML bytes."
-      ]
-    },
-    {
-      "dot": "emerald",
-      "title": "Identity without extra requests",
-      "items": [
-        "The header embeds Open Star and inherits the viewer theme accent.",
-        "The same SVG becomes a lavender data-URL favicon; the README banner is separate."
-      ]
     }
   ]
 }
