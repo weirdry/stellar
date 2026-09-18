@@ -72,7 +72,8 @@ Export the SVG from that exact HTML through the repository script; do not
 redraw it or independently regenerate an illustration. The artifact manifest
 records the generator version, hashes and HTML size. SVG images use the dark
 palette. HTML starts dark unless a URL or saved user choice selects another
-theme. The repository build applies this default reproducibly and checks the
+theme. Live OS theme changes do not override the default or a reader's choice.
+The repository build applies this default reproducibly and checks the
 final HTML; both generator and final artifact hashes are retained. Generated
 views are never edited manually. Rebuild after a source, presentation adapter
 or generator change, then review again.

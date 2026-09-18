@@ -15,20 +15,34 @@ const read = (name) => readFileSync(join(directory, name), 'utf8');
 const systemTheme =
   "window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'";
 const defaultTheme = "'dark' /* Stellar documentation default */";
+const expectedGenerator = 'archify 2.17.0-dev.1';
+const systemChange = "apply(e.matches ? 'light' : 'dark');";
+const retainTheme =
+  'return; /* Stellar theme changes require an explicit choice */';
 
-// Keep explicit URL and saved choices; replace only the two system fallbacks.
+// Preserve explicit choices and keep the dark default through live OS changes.
 function setDefaultTheme(html) {
   if (html.split(systemTheme).length !== 3)
     throw new Error(
       'Expected two Archify theme fallbacks; review the theme adapter.',
     );
-  return html.replaceAll(systemTheme, defaultTheme);
+  if (html.split(systemChange).length !== 2)
+    throw new Error(
+      'Expected one Archify OS theme listener; review the adapter.',
+    );
+  return html
+    .replaceAll(systemTheme, defaultTheme)
+    .replace(systemChange, retainTheme);
 }
 
 function generatorHtml(html) {
   if (html.split(defaultTheme).length !== 3)
     throw new Error('Expected the Stellar dark-theme adapter.');
-  return html.replaceAll(defaultTheme, systemTheme);
+  if (html.split(retainTheme).length !== 2)
+    throw new Error('Expected the Stellar OS-theme adapter.');
+  return html
+    .replaceAll(defaultTheme, systemTheme)
+    .replace(retainTheme, systemChange);
 }
 
 // Export the exact delivered SVG and stylesheet without redrawing it.
@@ -81,9 +95,11 @@ function inspect(name) {
   const generator = html.match(/<meta name="generator" content="([^"]+)"/)?.[1];
   if (
     specification.meta?.quality_profile !== 'showcase' ||
-    !generator?.startsWith('archify ')
+    generator !== expectedGenerator
   ) {
-    throw new Error(`${name}: expected showcase source and Archify delivery.`);
+    throw new Error(
+      `${name}: expected showcase source and ${expectedGenerator} delivery.`,
+    );
   }
   const svg = exportSvg(html);
   return {

@@ -4,7 +4,23 @@
   "meta": {
     "title": "Skill delivery: source, release, installation",
     "locale": "en",
-    "quality_profile": "showcase"
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Contributor / maintainer / user action"
+        },
+        "security": {
+          "label": "Validation"
+        },
+        "cloud": {
+          "label": "Published ref"
+        },
+        "frontend": {
+          "label": "Local invocation"
+        }
+      }
+    }
   },
   "lanes": [
     {

@@ -74,6 +74,29 @@ Use a clean export or a GitHub ref for installation tests.
 
 ## Runtime artifact and source ownership
 
+### Installation footprint
+
+The root skill distribution includes public contributor documentation and brand
+assets as well as runtime files. Retaining the diagram sources and readable
+HTML/SVG views in that installation is an accepted tradeoff for this release
+candidate: users can inspect the system locally, while maintainers keep one
+authoritative tree. Those files are not loaded during report generation.
+
+At branding revision `09af447`, the 160 tracked files total **10,186,956 bytes**,
+versus **1,213,888 bytes** across 122 files at its base `204f8b7`. Diagram HTML/SVG
+accounts for **7,226,932 bytes**, and the approved banner for **1,597,084 bytes**.
+These are uncompressed Git file contents, not measured download traffic, Git
+object storage or a new installed-footprint measurement. Later diagram edits
+change the exact total; the tree at the selected ref owns that inventory.
+
+Keep the approved banner pixels and current distribution structure. Reconsider
+packaging only when measured installation/update cost or sustained asset growth
+justifies a separate distribution layout. Release installation checks must
+record the actual installed footprint rather than treating these source totals
+as an installer guarantee.
+
+### Runtime files
+
 `bin/stellar.js` and `lib/` remain the canonical runner source. Root Just product
 commands execute that source with locked dependencies. `just build-runner`
 explicitly generates committed `bin/stellar.mjs` with esbuild and

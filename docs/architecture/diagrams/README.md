@@ -29,11 +29,14 @@ open docs/architecture/diagrams/run-verification.html
 ```
 
 Use the viewer's Find control to focus a node and inspect its relationships.
-The default is dark; the theme toggle and explicit saved choice remain available.
+The default stays dark through live OS theme changes; the theme toggle, saved
+choice and URL override remain available.
 
 ## Generate and check
 
-Reviewed generator: **Archify 2.17.0-dev.1**. Every source explicitly selects the
+Reviewed generator: **Archify 2.17.0-dev.1**, enforced by the exporter/checker.
+An upgrade changes that expectation and this guide in the same reviewed rebuild.
+Every source explicitly selects the
 `showcase` quality profile and English locale. The workflow uses schema version
 2; the other renderer types use their version 1 schemas. These are Archify source
 formats, independent of Stellar's work-map and continuity contracts.
@@ -61,10 +64,12 @@ A multi-diagram build is not a transaction: if one fails, inspect the results,
 repair it, and rebuild before updating the evidence record.
 
 After Archify delivery, the repository script replaces only the two system-theme
-fallback expressions with a dark default, then reruns all nine artifact checks.
+fallback expressions with a dark default and disables automatic OS theme changes,
+then reruns all nine artifact checks.
 This reproducible presentation adapter preserves URL theme overrides, saved user
 choices and the theme toggle. A fresh browser opens dark even when its OS is
-light. The installed Archify skill and authored topology are unchanged.
+light and keeps that default if the OS changes. The installed Archify skill and
+authored topology are unchanged.
 
 The script exports the single SVG and stylesheet from that final checked HTML.
 It resolves the delivered dark-theme color variables to literal values for
@@ -89,8 +94,9 @@ from automatic formatting to preserve reviewed bytes.
 Source filenames start with a lowercase letter and contain lowercase letters,
 digits, underscores or hyphens. Every `.json` file is checked or rejected by name,
 except `manifest.json` and Archify's `*.visual-check.json` browser receipts.
-An added source without matching HTML and SVG fails the gate. Inventory regression
-coverage lives in [diagrams.test.js](../../../test/diagrams.test.js).
+An added source without matching HTML and SVG fails the gate. Regression coverage
+for source/HTML/SVG/manifest drift, missing and orphan artifacts, generator identity,
+and non-mutation lives in [diagrams.test.js](../../../test/diagrams.test.js).
 
 ## Browser and perceptual review
 
@@ -106,9 +112,14 @@ light theme, plus light/dark endpoint screenshots. Require no viewport overflow,
 readable labels and unobstructed viewer controls. Inspect the actual screenshots
 for composition and semantics; the automated receipt keeps `visualReview` pending.
 Also inspect exported SVGs as images for Markdown use.
+The [browser regression](../../../test/browser/diagrams.test.js) waits for actual
+OS theme-change events before asserting the persistent dark default and explicit
+reader overrides across all maintained HTML artifacts. It runs in
+`just browser-check`, separately from structural consistency.
 
 Move generated `.visual-check.*` sidecars to ignored `outputs/canonical-docs/`
-after review. Keep them out of the maintained diagram inventory. Record hashes,
+after review. Git ignores these sidecars as a second protection against accidental
+staging. Keep them out of the maintained diagram inventory. Record hashes,
 structural results, source review, browser results and perceptual observations
 separately in a dated [validation record](../../validation/README.md). Changing
 source or HTML invalidates evidence bound to the previous hash. A generator

@@ -20,7 +20,8 @@ replacing earlier runs. Do not pre-create the numbered run directories.
 ## 1. Generate the first report
 
 ```sh
-stellar_demo="$(mktemp -d "${TMPDIR:-/tmp/}stellar-continuity.XXXXXX")"
+set -e
+stellar_demo="$(mktemp -d "${TMPDIR:-/tmp}/stellar-continuity.XXXXXX")"
 just normalize examples/mixed-capture.json "$stellar_demo/draft.json"
 just classify-draft "$stellar_demo/draft.json" examples/mixed-choices.json "$stellar_demo/01-first"
 just render "$stellar_demo/01-first/work-map.json" "$stellar_demo/01-first/stellar.html"

@@ -6,39 +6,224 @@
     "locale": "en",
     "animation": "none",
     "quality_profile": "showcase",
-    "viewBox": [1380, 600],
+    "viewBox": [
+      1040,
+      520
+    ],
     "legend": {
       "entries": {
-        "external": { "label": "Host-authored input" },
-        "backend": { "label": "Runner command" },
-        "database": { "label": "Private JSON artifact" },
-        "frontend": { "label": "Browser report" }
+        "external": {
+          "label": "Host-authored input"
+        },
+        "backend": {
+          "label": "Runner command"
+        },
+        "database": {
+          "label": "Private JSON artifact"
+        },
+        "frontend": {
+          "label": "Browser report"
+        }
       }
     },
     "views": [
-      { "id": "first-generation", "label": "First generation", "focus": ["native-capture", "unclassified-draft", "authored-choices", "apply-first", "current-map", "browser-report"], "note": "The host retains facts and authors choices; the runner validates and renders them." },
-      { "id": "saved-lineage", "label": "Continue a run", "focus": ["apply-first", "saved-state", "run-changes", "next-command"], "note": "Choose state.json for the next operation. HTML cannot reconstruct absent decisions or field ownership." }
+      {
+        "id": "first-generation",
+        "label": "First generation",
+        "focus": [
+          "native-capture",
+          "unclassified-draft",
+          "authored-choices",
+          "apply-first",
+          "current-map",
+          "browser-report"
+        ],
+        "note": "The host retains facts and authors choices; the runner validates and renders them."
+      },
+      {
+        "id": "saved-lineage",
+        "label": "Continue a run",
+        "focus": [
+          "apply-first",
+          "saved-state",
+          "run-changes",
+          "next-command"
+        ],
+        "note": "Choose state.json for the next operation. HTML cannot reconstruct absent decisions or field ownership."
+      }
     ]
   },
   "components": [
-    { "id": "native-capture", "type": "external", "label": "capture.json", "sublabel": "Native facts + coverage", "pos": [40, 230], "size": [200, 72] },
-    { "id": "unclassified-draft", "type": "database", "label": "draft.json", "sublabel": "Classification pending", "pos": [320, 230], "size": [200, 72] },
-    { "id": "authored-choices", "type": "external", "label": "choices.json", "sublabel": "Interpretation + rationale", "pos": [600, 60], "size": [200, 72] },
-    { "id": "apply-first", "type": "backend", "label": "classify-draft", "sublabel": "Reserve a fresh run", "pos": [600, 230], "size": [200, 72] },
-    { "id": "current-map", "type": "database", "label": "work-map.json", "sublabel": "Current facts + choices", "pos": [880, 230], "size": [200, 72] },
-    { "id": "browser-report", "type": "frontend", "label": "stellar.html", "sublabel": "Map + bundled viewer", "pos": [1160, 230], "size": [200, 72] },
-    { "id": "saved-state", "type": "database", "label": "state.json", "sublabel": "Current map + memory", "pos": [600, 440], "size": [200, 72] },
-    { "id": "run-changes", "type": "database", "label": "changes.json", "sublabel": "Operation summary", "pos": [880, 440], "size": [200, 72] },
-    { "id": "next-command", "type": "backend", "label": "Continue from state", "sublabel": "refresh / classify / revise", "tag": "Add new capture or choices", "pos": [290, 440], "size": [250, 72] }
+    {
+      "id": "native-capture",
+      "type": "external",
+      "label": "capture.json",
+      "sublabel": "Native facts + coverage",
+      "pos": [
+        20,
+        200
+      ],
+      "size": [
+        160,
+        72
+      ]
+    },
+    {
+      "id": "unclassified-draft",
+      "type": "database",
+      "label": "draft.json",
+      "sublabel": "Classification pending",
+      "pos": [
+        230,
+        200
+      ],
+      "size": [
+        160,
+        72
+      ]
+    },
+    {
+      "id": "authored-choices",
+      "type": "external",
+      "label": "choices.json",
+      "sublabel": "Interpretation + rationale",
+      "pos": [
+        440,
+        35
+      ],
+      "size": [
+        160,
+        72
+      ]
+    },
+    {
+      "id": "apply-first",
+      "type": "backend",
+      "label": "classify-draft",
+      "sublabel": "Reserve a fresh run",
+      "pos": [
+        440,
+        200
+      ],
+      "size": [
+        160,
+        72
+      ]
+    },
+    {
+      "id": "current-map",
+      "type": "database",
+      "label": "work-map.json",
+      "sublabel": "Current facts + choices",
+      "pos": [
+        650,
+        200
+      ],
+      "size": [
+        160,
+        72
+      ]
+    },
+    {
+      "id": "browser-report",
+      "type": "frontend",
+      "label": "stellar.html",
+      "sublabel": "Map + bundled viewer",
+      "pos": [
+        860,
+        200
+      ],
+      "size": [
+        160,
+        72
+      ]
+    },
+    {
+      "id": "saved-state",
+      "type": "database",
+      "label": "state.json",
+      "sublabel": "Current map + memory",
+      "pos": [
+        440,
+        380
+      ],
+      "size": [
+        160,
+        72
+      ]
+    },
+    {
+      "id": "run-changes",
+      "type": "database",
+      "label": "changes.json",
+      "sublabel": "Operation summary",
+      "pos": [
+        650,
+        380
+      ],
+      "size": [
+        160,
+        72
+      ]
+    },
+    {
+      "id": "next-command",
+      "type": "backend",
+      "label": "State + capture / choices",
+      "sublabel": "refresh / classify / revise",
+      "pos": [
+        160,
+        380
+      ],
+      "size": [
+        230,
+        72
+      ]
+    }
   ],
   "connections": [
-    { "id": "normalize-facts", "from": "native-capture", "to": "unclassified-draft", "label": "normalize" },
-    { "id": "supply-draft", "from": "unclassified-draft", "to": "apply-first" },
-    { "id": "supply-choices", "from": "authored-choices", "to": "apply-first" },
-    { "id": "write-map", "from": "apply-first", "to": "current-map" },
-    { "id": "render-report", "from": "current-map", "to": "browser-report", "label": "render" },
-    { "id": "write-state", "from": "apply-first", "to": "saved-state" },
-    { "id": "write-summary", "from": "apply-first", "to": "run-changes" },
-    { "id": "select-lineage", "from": "saved-state", "to": "next-command", "variant": "emphasis" }
+    {
+      "id": "normalize-facts",
+      "from": "native-capture",
+      "to": "unclassified-draft",
+      "label": "normalize"
+    },
+    {
+      "id": "supply-draft",
+      "from": "unclassified-draft",
+      "to": "apply-first"
+    },
+    {
+      "id": "supply-choices",
+      "from": "authored-choices",
+      "to": "apply-first"
+    },
+    {
+      "id": "write-map",
+      "from": "apply-first",
+      "to": "current-map"
+    },
+    {
+      "id": "render-report",
+      "from": "current-map",
+      "to": "browser-report",
+      "label": "render"
+    },
+    {
+      "id": "write-state",
+      "from": "apply-first",
+      "to": "saved-state"
+    },
+    {
+      "id": "write-summary",
+      "from": "apply-first",
+      "to": "run-changes"
+    },
+    {
+      "id": "select-lineage",
+      "from": "saved-state",
+      "to": "next-command",
+      "variant": "emphasis"
+    }
   ]
 }

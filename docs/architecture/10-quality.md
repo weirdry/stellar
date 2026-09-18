@@ -28,9 +28,9 @@ latency savings for a host.
 
 ## Verification responsibilities
 
-`just ci` runs documentation, formatting, JavaScript/shell lint, workflow syntax,
+`just ci` runs documentation structure and diagram consistency, formatting, JavaScript/shell lint, workflow syntax,
 Git whitespace, bundle currency and Node unit/CLI tests. `just browser-check`
-separately exercises the product in Chromium. The hosted workflow invokes both
+separately exercises the product and canonical diagram themes in Chromium. The hosted workflow invokes both
 with synthetic data; a local pass is not a hosted-CI result. Detailed visual
 regressions belong with the [viewer](../../assets/viewer/README.md), not in a
 second architecture-level test inventory.

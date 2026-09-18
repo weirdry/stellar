@@ -1,6 +1,8 @@
 # Stellar engineering standards
 
 Stellar owns its engineering rules in this repository.
+The authority change and its limited replacement of the foundation decision are
+recorded in [ADR-0007](../decisions/0007-own-canonical-documentation-policy.md).
 
 | Concern                                                  | Authority                                                                                       |
 | -------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
