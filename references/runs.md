@@ -137,12 +137,14 @@ capture/report must not be described as independently reconstructed collection.
 
 ## Record renderer identity
 
-For installed runs, record the Node version, installer/source URL and requested ref when known,
+For installed runs, record the Node and Stellar product versions, installer/source URL and requested ref when known,
 and SHA-256 hashes of the installed `bin/stellar.mjs` and all viewer files,
 including the locale catalogs. Do this when generating the report, before any
 skill update. An installed copy has no Git metadata; do not infer a commit from
 its directory name or claim that the current upstream head was installed.
-If the source ref is unknown, say so. There is no runner `--version` command.
+If the source ref is unknown, say so. `--version` reports the product version,
+including any development suffix; it does not prove a source commit or release.
+See [CLI diagnostics](cli.md) for version and installation checks.
 For development runs through `bin/stellar.js` or Just, record the checkout
 commit and any local source/resource changes instead; a bundle hash does not
 identify a source runner that was used without rebuilding that bundle.
@@ -153,6 +155,7 @@ output in the new run's README or a fresh evidence file:
 
 ```sh
 node --version
+node "$STELLAR_ROOT/bin/stellar.mjs" --version
 node --input-type=module - "$STELLAR_ROOT" <<'NODE'
 import { createHash } from 'node:crypto';
 import { readFile, readdir, stat } from 'node:fs/promises';

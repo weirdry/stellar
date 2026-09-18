@@ -7,12 +7,24 @@ var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
 var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __esm = (fn, res, err) => function __init() {
+  if (err) throw err[0];
+  try {
+    return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
+  } catch (e) {
+    throw err = [e], e;
+  }
+};
 var __commonJS = (cb, mod) => function __require() {
   try {
     return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
   } catch (e) {
     throw mod = 0, e;
   }
+};
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
 };
 var __copyProps = (to, from, except, desc) => {
   if (from && typeof from === "object" || typeof from === "function") {
@@ -30,6 +42,179 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
   mod
 ));
+
+// package.json
+var package_default;
+var init_package = __esm({
+  "package.json"() {
+    package_default = {
+      name: "stellar-work-map",
+      version: "0.1.2-dev.0",
+      private: true,
+      license: "MIT",
+      type: "module",
+      engines: {
+        node: "24.x"
+      },
+      packageManager: "pnpm@11.26.0",
+      scripts: {
+        format: "prettier --write .",
+        "format-check": "prettier --check .",
+        lint: "eslint .",
+        test: "node --test test/*.test.js",
+        "test:browser": "node --test test/browser/*.test.js",
+        "browser-install": "playwright install chromium",
+        stellar: "node bin/stellar.js"
+      },
+      dependencies: {
+        ajv: "8.20.0",
+        "ajv-formats": "3.0.1"
+      },
+      devDependencies: {
+        "@eslint/js": "10.0.1",
+        esbuild: "0.28.2",
+        eslint: "10.10.0",
+        globals: "17.12.0",
+        playwright: "1.63.0",
+        prettier: "3.9.6"
+      }
+    };
+  }
+});
+
+// lib/version.js
+var version;
+var init_version = __esm({
+  "lib/version.js"() {
+    init_package();
+    version = package_default.version;
+  }
+});
+
+// lib/installation.js
+var installation_exports = {};
+__export(installation_exports, {
+  doctor: () => doctor,
+  formatDoctor: () => formatDoctor,
+  manifestPath: () => manifestPath,
+  runtimeFiles: () => runtimeFiles,
+  sha256: () => sha256
+});
+import { createHash } from "node:crypto";
+import { readFile, realpath, stat } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
+import { join } from "node:path";
+async function doctor() {
+  const root = await realpath(fileURLToPath(new URL("../", import.meta.url)));
+  const checks = [];
+  const add = (id, status, message, fix) => checks.push({ id, status, message, ...fix ? { fix } : {} });
+  const supported = process.versions.node.split(".")[0] === "24";
+  add(
+    "node",
+    supported ? "pass" : "fail",
+    `Running Node.js ${process.versions.node}; required: 24.x.`,
+    supported ? void 0 : "Run Stellar with Node.js 24.x."
+  );
+  const read = async (path) => {
+    try {
+      if (!(await stat(join(root, path))).isFile()) {
+        add(path, "fail", "Required path is not a regular file.", remedy);
+        return null;
+      }
+      return await readFile(join(root, path));
+    } catch (error) {
+      add(
+        path,
+        "fail",
+        error.code === "ENOENT" ? "Required file is missing." : "Required file cannot be read.",
+        remedy
+      );
+      return null;
+    }
+  };
+  let manifest;
+  const bytes = await read(manifestPath);
+  if (bytes !== null) {
+    try {
+      const parsed = JSON.parse(bytes);
+      if (parsed?.version !== version || !parsed.files || typeof parsed.files !== "object" || Array.isArray(parsed.files) || Object.keys(parsed.files).length !== runtimeFiles.length || !runtimeFiles.every(
+        (path) => Object.hasOwn(parsed.files, path) && typeof parsed.files[path] === "string" && /^[a-f0-9]{64}$/.test(parsed.files[path])
+      ))
+        throw new Error("Invalid manifest");
+      manifest = parsed;
+      add(manifestPath, "pass", "Build manifest matches the running version.");
+    } catch {
+      add(
+        manifestPath,
+        "fail",
+        "Build manifest is invalid or for another version.",
+        remedy
+      );
+    }
+  }
+  for (const path of runtimeFiles) {
+    const content = await read(path);
+    if (content === null) continue;
+    if (!manifest) {
+      add(
+        path,
+        "skip",
+        "File is readable; integrity needs a valid build manifest."
+      );
+    } else if (sha256(content) !== manifest.files[path]) {
+      add(
+        path,
+        "fail",
+        "File differs from the bundled build manifest.",
+        remedy
+      );
+    } else {
+      add(path, "pass", "File matches the bundled build manifest.");
+    }
+  }
+  return {
+    version,
+    root,
+    ok: checks.every((check2) => check2.status === "pass"),
+    checks,
+    scope
+  };
+}
+function formatDoctor(result) {
+  return [
+    `Stellar ${result.version}`,
+    `Installation: ${result.root}`,
+    ...result.checks.map(
+      ({ id, status, message, fix }) => `${status.toUpperCase()} ${id}: ${message}${fix ? `
+  Next: ${fix}` : ""}`
+    ),
+    result.ok ? "Local installation checks passed." : "Local installation needs attention.",
+    result.scope
+  ].join("\n");
+}
+var runtimeFiles, manifestPath, sha256, remedy, scope;
+var init_installation = __esm({
+  "lib/installation.js"() {
+    init_version();
+    runtimeFiles = [
+      "bin/stellar.mjs",
+      "schemas/work-map.schema.json",
+      "schemas/capture.schema.json",
+      "schemas/choices.schema.json",
+      "schemas/state.schema.json",
+      "assets/viewer/shell.html",
+      "assets/viewer/style.css",
+      "assets/viewer/app.js",
+      "assets/viewer/stellar.svg",
+      "assets/viewer/locales/en.json",
+      "assets/viewer/locales/ko.json"
+    ];
+    manifestPath = "bin/stellar.manifest.json";
+    sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex");
+    remedy = "Reinstall the selected Stellar ref with the skills installer. In a checkout, run just build-runner after intentional source/resource changes.";
+    scope = "Local Node and build-manifest consistency only. This does not verify release authenticity, host skill discovery, source authentication, live collection, or browser behavior.";
+  }
+});
 
 // node_modules/.pnpm/ajv@8.20.0/node_modules/ajv/dist/compile/codegen/code.js
 var require_code = __commonJS({
@@ -88,23 +273,23 @@ var require_code = __commonJS({
     };
     exports._Code = _Code;
     exports.nil = new _Code("");
-    function _(strs, ...args) {
+    function _(strs, ...args2) {
       const code = [strs[0]];
       let i = 0;
-      while (i < args.length) {
-        addCodeArg(code, args[i]);
+      while (i < args2.length) {
+        addCodeArg(code, args2[i]);
         code.push(strs[++i]);
       }
       return new _Code(code);
     }
     exports._ = _;
     var plus = new _Code("+");
-    function str(strs, ...args) {
+    function str(strs, ...args2) {
       const expr = [safeStringify(strs[0])];
       let i = 0;
-      while (i < args.length) {
+      while (i < args2.length) {
         expr.push(plus);
-        addCodeArg(expr, args[i]);
+        addCodeArg(expr, args2[i]);
         expr.push(plus, safeStringify(strs[++i]));
       }
       optimize(expr);
@@ -659,10 +844,10 @@ var require_codegen = __commonJS({
       }
     };
     var Func = class extends BlockNode {
-      constructor(name, args, async) {
+      constructor(name, args2, async) {
         super();
         this.name = name;
-        this.args = args;
+        this.args = args2;
         this.async = async;
       }
       render(opts) {
@@ -937,8 +1122,8 @@ var require_codegen = __commonJS({
         return this;
       }
       // `function` heading (or definition if funcBody is passed)
-      func(name, args = code_1.nil, async, funcBody) {
-        this._blockNode(new Func(name, args, async));
+      func(name, args2 = code_1.nil, async, funcBody) {
+        this._blockNode(new Func(name, args2, async));
         if (funcBody)
           this.code(funcBody).endFunc();
         return this;
@@ -1032,13 +1217,13 @@ var require_codegen = __commonJS({
     }
     exports.not = not;
     var andCode = mappend(exports.operators.AND);
-    function and(...args) {
-      return args.reduce(andCode);
+    function and(...args2) {
+      return args2.reduce(andCode);
     }
     exports.and = and;
     var orCode = mappend(exports.operators.OR);
-    function or(...args) {
-      return args.reduce(orCode);
+    function or(...args2) {
+      return args2.reduce(orCode);
     }
     exports.or = or;
     function mappend(op) {
@@ -1771,8 +1956,8 @@ var require_code2 = __commonJS({
       ];
       if (it.opts.dynamicRef)
         valCxt.push([names_1.default.dynamicAnchors, names_1.default.dynamicAnchors]);
-      const args = (0, codegen_1._)`${dataAndSchema}, ${gen.object(...valCxt)}`;
-      return context !== codegen_1.nil ? (0, codegen_1._)`${func}.call(${context}, ${args})` : (0, codegen_1._)`${func}(${args})`;
+      const args2 = (0, codegen_1._)`${dataAndSchema}, ${gen.object(...valCxt)}`;
+      return context !== codegen_1.nil ? (0, codegen_1._)`${func}.call(${context}, ${args2})` : (0, codegen_1._)`${func}(${args2})`;
     }
     exports.callValidateCode = callValidateCode;
     var newRegExp = (0, codegen_1._)`new RegExp`;
@@ -3129,27 +3314,27 @@ var require_utils = __commonJS({
       }
       return BYTE_HEX[240 | cp >> 18] + BYTE_HEX[128 | cp >> 12 & 63] + BYTE_HEX[128 | cp >> 6 & 63] + BYTE_HEX[128 | cp & 63];
     }
-    function stringArrayToHexStripped(input2) {
+    function stringArrayToHexStripped(input) {
       let acc = "";
       let code = 0;
       let i = 0;
-      for (i = 0; i < input2.length; i++) {
-        code = input2[i].charCodeAt(0);
+      for (i = 0; i < input.length; i++) {
+        code = input[i].charCodeAt(0);
         if (code === 48) {
           continue;
         }
         if (!(code >= 48 && code <= 57 || code >= 65 && code <= 70 || code >= 97 && code <= 102)) {
           return "";
         }
-        acc += input2[i];
+        acc += input[i];
         break;
       }
-      for (i += 1; i < input2.length; i++) {
-        code = input2[i].charCodeAt(0);
+      for (i += 1; i < input.length; i++) {
+        code = input[i].charCodeAt(0);
         if (!(code >= 48 && code <= 57 || code >= 65 && code <= 70 || code >= 97 && code <= 102)) {
           return "";
         }
-        acc += input2[i];
+        acc += input[i];
       }
       return acc;
     }
@@ -3192,11 +3377,11 @@ var require_utils = __commonJS({
       const tail = hextets.slice(bestStart + bestLength).join(":");
       return head + "::" + tail;
     }
-    function normalizeIPv6Address(input2) {
-      const compression = input2.indexOf("::");
-      if (compression !== -1 && input2.indexOf("::", compression + 1) !== -1) return void 0;
-      const left = compression === -1 ? input2.split(":") : input2.slice(0, compression).split(":");
-      const right = compression === -1 ? [] : input2.slice(compression + 2).split(":");
+    function normalizeIPv6Address(input) {
+      const compression = input.indexOf("::");
+      if (compression !== -1 && input.indexOf("::", compression + 1) !== -1) return void 0;
+      const left = compression === -1 ? input.split(":") : input.slice(0, compression).split(":");
+      const right = compression === -1 ? [] : input.slice(compression + 2).split(":");
       if (compression !== -1) {
         if (left.length === 1 && left[0] === "") left.length = 0;
         if (right.length === 1 && right[0] === "") right.length = 0;
@@ -3229,23 +3414,23 @@ var require_utils = __commonJS({
       const bracketed = host[0] === "[" && host[host.length - 1] === "]";
       const hasBracket = host[0] === "[" || host[host.length - 1] === "]";
       if (hasBracket && !bracketed) return { host, isIPV6: false, error: true };
-      let input2 = bracketed ? host.slice(1, -1) : host;
-      if (bracketed && isIPvFuture(input2)) {
-        input2 = input2.toLowerCase();
-        return { host: `[${input2}]`, escapedHost: input2, isIPV6: false, isIPVFuture: true };
+      let input = bracketed ? host.slice(1, -1) : host;
+      if (bracketed && isIPvFuture(input)) {
+        input = input.toLowerCase();
+        return { host: `[${input}]`, escapedHost: input, isIPV6: false, isIPVFuture: true };
       }
-      if (findToken(input2, ":") < 2) {
+      if (findToken(input, ":") < 2) {
         return { host, isIPV6: false, error: bracketed };
       }
       let zoneIdentifier = "";
-      const zoneSeparator = input2.indexOf("%");
+      const zoneSeparator = input.indexOf("%");
       if (zoneSeparator !== -1) {
-        const separatorLength = input2.slice(zoneSeparator, zoneSeparator + 3).toLowerCase() === "%25" ? 3 : 1;
-        zoneIdentifier = input2.slice(zoneSeparator + separatorLength);
+        const separatorLength = input.slice(zoneSeparator, zoneSeparator + 3).toLowerCase() === "%25" ? 3 : 1;
+        zoneIdentifier = input.slice(zoneSeparator + separatorLength);
         if (!isZoneIdentifier(zoneIdentifier)) return { host, isIPV6: false, error: true };
-        input2 = input2.slice(0, zoneSeparator);
+        input = input.slice(0, zoneSeparator);
       }
-      const address = normalizeIPv6Address(input2);
+      const address = normalizeIPv6Address(input);
       if (address === void 0) return { host, isIPV6: false, error: true };
       return {
         host: address + (zoneIdentifier ? "%" + zoneIdentifier : ""),
@@ -3261,79 +3446,79 @@ var require_utils = __commonJS({
       return ind;
     }
     function removeDotSegments(path) {
-      let input2 = path;
-      const output2 = [];
+      let input = path;
+      const output = [];
       let nextSlash = -1;
       let len = 0;
-      while (len = input2.length) {
+      while (len = input.length) {
         if (len === 1) {
-          if (input2 === ".") {
+          if (input === ".") {
             break;
-          } else if (input2 === "/") {
-            output2.push("/");
+          } else if (input === "/") {
+            output.push("/");
             break;
           } else {
-            output2.push(input2);
+            output.push(input);
             break;
           }
         } else if (len === 2) {
-          if (input2[0] === ".") {
-            if (input2[1] === ".") {
+          if (input[0] === ".") {
+            if (input[1] === ".") {
               break;
-            } else if (input2[1] === "/") {
-              input2 = input2.slice(2);
+            } else if (input[1] === "/") {
+              input = input.slice(2);
               continue;
             }
-          } else if (input2[0] === "/") {
-            if (input2[1] === "." || input2[1] === "/") {
-              output2.push("/");
+          } else if (input[0] === "/") {
+            if (input[1] === "." || input[1] === "/") {
+              output.push("/");
               break;
             }
           }
         } else if (len === 3) {
-          if (input2 === "/..") {
-            if (output2.length !== 0) {
-              output2.pop();
+          if (input === "/..") {
+            if (output.length !== 0) {
+              output.pop();
             }
-            output2.push("/");
+            output.push("/");
             break;
           }
         }
-        if (input2[0] === ".") {
-          if (input2[1] === ".") {
-            if (input2[2] === "/") {
-              input2 = input2.slice(3);
+        if (input[0] === ".") {
+          if (input[1] === ".") {
+            if (input[2] === "/") {
+              input = input.slice(3);
               continue;
             }
-          } else if (input2[1] === "/") {
-            input2 = input2.slice(2);
+          } else if (input[1] === "/") {
+            input = input.slice(2);
             continue;
           }
-        } else if (input2[0] === "/") {
-          if (input2[1] === ".") {
-            if (input2[2] === "/") {
-              input2 = input2.slice(2);
+        } else if (input[0] === "/") {
+          if (input[1] === ".") {
+            if (input[2] === "/") {
+              input = input.slice(2);
               continue;
-            } else if (input2[2] === ".") {
-              if (input2[3] === "/") {
-                input2 = input2.slice(3);
-                if (output2.length !== 0) {
-                  output2.pop();
+            } else if (input[2] === ".") {
+              if (input[3] === "/") {
+                input = input.slice(3);
+                if (output.length !== 0) {
+                  output.pop();
                 }
                 continue;
               }
             }
           }
         }
-        if ((nextSlash = input2.indexOf("/", 1)) === -1) {
-          output2.push(input2);
+        if ((nextSlash = input.indexOf("/", 1)) === -1) {
+          output.push(input);
           break;
         } else {
-          output2.push(input2.slice(0, nextSlash));
-          input2 = input2.slice(nextSlash);
+          output.push(input.slice(0, nextSlash));
+          input = input.slice(nextSlash);
         }
       }
-      return output2.join("");
+      return output.join("");
     }
     var HOST_DELIMS = { "@": "%40", "/": "%2F", "?": "%3F", "#": "%23", ":": "%3A" };
     var HOST_DELIM_RE = /[@/?#:]/g;
@@ -3343,80 +3528,80 @@ var require_utils = __commonJS({
       re.lastIndex = 0;
       return host.replace(re, (ch) => HOST_DELIMS[ch]);
     }
-    function normalizePercentEncoding(input2, decodeUnreserved = false) {
-      if (input2.indexOf("%") === -1) {
-        return input2;
+    function normalizePercentEncoding(input, decodeUnreserved = false) {
+      if (input.indexOf("%") === -1) {
+        return input;
       }
-      let output2 = "";
-      for (let i = 0; i < input2.length; i++) {
-        if (input2[i] === "%" && i + 2 < input2.length) {
-          const hex = input2.slice(i + 1, i + 3);
+      let output = "";
+      for (let i = 0; i < input.length; i++) {
+        if (input[i] === "%" && i + 2 < input.length) {
+          const hex = input.slice(i + 1, i + 3);
           if (isHexPair(hex)) {
             const normalizedHex = hex.toUpperCase();
             const decoded = String.fromCharCode(parseInt(normalizedHex, 16));
             if (decodeUnreserved && isUnreserved(decoded)) {
-              output2 += decoded;
+              output += decoded;
             } else {
-              output2 += "%" + normalizedHex;
+              output += "%" + normalizedHex;
             }
             i += 2;
             continue;
           }
         }
-        output2 += input2[i];
+        output += input[i];
       }
-      return output2;
+      return output;
     }
-    function normalizePathEncoding(input2) {
-      let output2 = "";
-      for (let i = 0; i < input2.length; i++) {
-        const ch = input2[i];
-        if (ch === "%" && i + 2 < input2.length) {
-          const hex = input2.slice(i + 1, i + 3);
+    function normalizePathEncoding(input) {
+      let output = "";
+      for (let i = 0; i < input.length; i++) {
+        const ch = input[i];
+        if (ch === "%" && i + 2 < input.length) {
+          const hex = input.slice(i + 1, i + 3);
           if (isHexPair(hex)) {
             const normalizedHex = hex.toUpperCase();
             const decoded = String.fromCharCode(parseInt(normalizedHex, 16));
             if (decoded !== "." && isUnreserved(decoded)) {
-              output2 += decoded;
+              output += decoded;
             } else {
-              output2 += "%" + normalizedHex;
+              output += "%" + normalizedHex;
             }
             i += 2;
             continue;
           }
         }
         if (isPathCharacter(ch)) {
-          output2 += ch;
+          output += ch;
         } else {
-          const code = input2.charCodeAt(i);
+          const code = input.charCodeAt(i);
           if (code < 128) {
-            output2 += isEscapeSafe(code) ? ch : BYTE_HEX[code];
+            output += isEscapeSafe(code) ? ch : BYTE_HEX[code];
           } else if (code < 55296 || code > 57343) {
-            output2 += percentEncodeNonAscii(code);
-          } else if (code <= 56319 && i + 1 < input2.length) {
-            const low = input2.charCodeAt(i + 1);
+            output += percentEncodeNonAscii(code);
+          } else if (code <= 56319 && i + 1 < input.length) {
+            const low = input.charCodeAt(i + 1);
             if (low >= 56320 && low <= 57343) {
-              output2 += percentEncodeNonAscii(65536 + (code - 55296 << 10) + (low - 56320));
+              output += percentEncodeNonAscii(65536 + (code - 55296 << 10) + (low - 56320));
               i++;
             } else {
-              output2 += percentEncodeNonAscii(65533);
+              output += percentEncodeNonAscii(65533);
             }
           } else {
-            output2 += percentEncodeNonAscii(65533);
+            output += percentEncodeNonAscii(65533);
           }
         }
       }
-      return output2;
+      return output;
     }
-    function serializePathEncoding(input2, pathNoScheme = false) {
-      let output2 = "";
-      let firstSegment = pathNoScheme && input2[0] !== "/";
-      for (let i = 0; i < input2.length; i++) {
-        const ch = input2[i];
-        if (ch === "%" && i + 2 < input2.length) {
-          const hex = input2.slice(i + 1, i + 3);
+    function serializePathEncoding(input, pathNoScheme = false) {
+      let output = "";
+      let firstSegment = pathNoScheme && input[0] !== "/";
+      for (let i = 0; i < input.length; i++) {
+        const ch = input[i];
+        if (ch === "%" && i + 2 < input.length) {
+          const hex = input.slice(i + 1, i + 3);
           if (isHexPair(hex)) {
-            output2 += "%" + hex.toUpperCase();
+            output += "%" + hex.toUpperCase();
             i += 2;
             continue;
           }
@@ -3425,130 +3610,130 @@ var require_utils = __commonJS({
           firstSegment = false;
         }
         if (isPathCharacter(ch) && (ch !== ":" || !firstSegment)) {
-          output2 += ch;
+          output += ch;
         } else {
-          const code = input2.charCodeAt(i);
+          const code = input.charCodeAt(i);
           if (code < 128) {
-            output2 += BYTE_HEX[code];
+            output += BYTE_HEX[code];
           } else if (code < 55296 || code > 57343) {
-            output2 += percentEncodeNonAscii(code);
-          } else if (code <= 56319 && i + 1 < input2.length) {
-            const low = input2.charCodeAt(i + 1);
+            output += percentEncodeNonAscii(code);
+          } else if (code <= 56319 && i + 1 < input.length) {
+            const low = input.charCodeAt(i + 1);
             if (low >= 56320 && low <= 57343) {
-              output2 += percentEncodeNonAscii(65536 + (code - 55296 << 10) + (low - 56320));
+              output += percentEncodeNonAscii(65536 + (code - 55296 << 10) + (low - 56320));
               i++;
             } else {
-              output2 += percentEncodeNonAscii(65533);
+              output += percentEncodeNonAscii(65533);
             }
           } else {
-            output2 += percentEncodeNonAscii(65533);
+            output += percentEncodeNonAscii(65533);
           }
         }
       }
-      return output2;
+      return output;
     }
-    function encodeComponent(input2, isAllowed) {
-      let output2 = "";
-      for (let i = 0; i < input2.length; i++) {
-        const ch = input2[i];
-        if (ch === "%" && i + 2 < input2.length) {
-          const hex = input2.slice(i + 1, i + 3);
+    function encodeComponent(input, isAllowed) {
+      let output = "";
+      for (let i = 0; i < input.length; i++) {
+        const ch = input[i];
+        if (ch === "%" && i + 2 < input.length) {
+          const hex = input.slice(i + 1, i + 3);
           if (isHexPair(hex)) {
-            output2 += "%" + hex.toUpperCase();
+            output += "%" + hex.toUpperCase();
             i += 2;
             continue;
           }
         }
         if (isAllowed(ch)) {
-          output2 += ch;
+          output += ch;
         } else {
-          const code = input2.charCodeAt(i);
+          const code = input.charCodeAt(i);
           if (code < 128) {
-            output2 += BYTE_HEX[code];
+            output += BYTE_HEX[code];
           } else if (code < 55296 || code > 57343) {
-            output2 += percentEncodeNonAscii(code);
-          } else if (code <= 56319 && i + 1 < input2.length) {
-            const low = input2.charCodeAt(i + 1);
+            output += percentEncodeNonAscii(code);
+          } else if (code <= 56319 && i + 1 < input.length) {
+            const low = input.charCodeAt(i + 1);
             if (low >= 56320 && low <= 57343) {
-              output2 += percentEncodeNonAscii(65536 + (code - 55296 << 10) + (low - 56320));
+              output += percentEncodeNonAscii(65536 + (code - 55296 << 10) + (low - 56320));
               i++;
             } else {
-              output2 += percentEncodeNonAscii(65533);
+              output += percentEncodeNonAscii(65533);
             }
           } else {
-            output2 += percentEncodeNonAscii(65533);
+            output += percentEncodeNonAscii(65533);
           }
         }
       }
-      return output2;
+      return output;
     }
-    function encodeUserinfo(input2) {
-      return encodeComponent(input2, isUserinfoCharacter);
+    function encodeUserinfo(input) {
+      return encodeComponent(input, isUserinfoCharacter);
     }
-    function encodeQuery(input2) {
-      return encodeComponent(input2, isQueryFragmentCharacter);
+    function encodeQuery(input) {
+      return encodeComponent(input, isQueryFragmentCharacter);
     }
-    function encodeFragment(input2) {
-      return encodeComponent(input2, isQueryFragmentCharacter);
+    function encodeFragment(input) {
+      return encodeComponent(input, isQueryFragmentCharacter);
     }
     function isEscapeSafe(cp) {
       return cp >= 48 && cp <= 57 || cp >= 65 && cp <= 90 || cp >= 97 && cp <= 122 || cp === 42 || cp === 43 || cp === 45 || cp === 46 || cp === 47 || cp === 64 || cp === 95;
     }
-    function normalizeQueryFragmentEncoding(input2) {
-      let output2 = "";
-      for (let i = 0; i < input2.length; i++) {
-        const ch = input2[i];
-        if (ch === "%" && i + 2 < input2.length) {
-          const hex = input2.slice(i + 1, i + 3);
+    function normalizeQueryFragmentEncoding(input) {
+      let output = "";
+      for (let i = 0; i < input.length; i++) {
+        const ch = input[i];
+        if (ch === "%" && i + 2 < input.length) {
+          const hex = input.slice(i + 1, i + 3);
           if (isHexPair(hex)) {
             const normalizedHex = hex.toUpperCase();
             const decoded = String.fromCharCode(parseInt(normalizedHex, 16));
             if (isUnreserved(decoded)) {
-              output2 += decoded;
+              output += decoded;
             } else {
-              output2 += "%" + normalizedHex;
+              output += "%" + normalizedHex;
             }
             i += 2;
             continue;
           }
         }
         if (isQueryFragmentCharacter(ch)) {
-          output2 += ch;
+          output += ch;
         } else {
-          const code = input2.charCodeAt(i);
+          const code = input.charCodeAt(i);
           if (code < 128) {
-            output2 += isEscapeSafe(code) ? ch : BYTE_HEX[code];
+            output += isEscapeSafe(code) ? ch : BYTE_HEX[code];
           } else if (code < 55296 || code > 57343) {
-            output2 += percentEncodeNonAscii(code);
-          } else if (code <= 56319 && i + 1 < input2.length) {
-            const low = input2.charCodeAt(i + 1);
+            output += percentEncodeNonAscii(code);
+          } else if (code <= 56319 && i + 1 < input.length) {
+            const low = input.charCodeAt(i + 1);
             if (low >= 56320 && low <= 57343) {
-              output2 += percentEncodeNonAscii(65536 + (code - 55296 << 10) + (low - 56320));
+              output += percentEncodeNonAscii(65536 + (code - 55296 << 10) + (low - 56320));
               i++;
             } else {
-              output2 += percentEncodeNonAscii(65533);
+              output += percentEncodeNonAscii(65533);
             }
           } else {
-            output2 += percentEncodeNonAscii(65533);
+            output += percentEncodeNonAscii(65533);
           }
         }
       }
-      return output2;
+      return output;
     }
-    function escapePreservingEscapes(input2) {
-      let output2 = "";
-      for (let i = 0; i < input2.length; i++) {
-        if (input2[i] === "%" && i + 2 < input2.length) {
-          const hex = input2.slice(i + 1, i + 3);
+    function escapePreservingEscapes(input) {
+      let output = "";
+      for (let i = 0; i < input.length; i++) {
+        if (input[i] === "%" && i + 2 < input.length) {
+          const hex = input.slice(i + 1, i + 3);
           if (isHexPair(hex)) {
-            output2 += "%" + hex.toUpperCase();
+            output += "%" + hex.toUpperCase();
             i += 2;
             continue;
           }
         }
-        output2 += escape(input2[i]);
+        output += escape(input[i]);
       }
-      return output2;
+      return output;
     }
     function recomposeAuthority(component) {
       const uriTokens = [];
@@ -7196,31 +7381,8 @@ var require_dist = __commonJS({
   }
 });
 
-// lib/render.js
-import {
-  readFile,
-  writeFile,
-  rename,
-  mkdir,
-  rm,
-  realpath
-} from "node:fs/promises";
-import { dirname, resolve } from "node:path";
-import { randomUUID } from "node:crypto";
-
 // lib/validate.js
-var import_ajv = __toESM(require_ajv(), 1);
-var import_ajv_formats = __toESM(require_dist(), 1);
 import { readFileSync } from "node:fs";
-var schema = JSON.parse(
-  readFileSync(
-    new URL("../schemas/work-map.schema.json", import.meta.url),
-    "utf8"
-  )
-);
-var ajv = new import_ajv.default({ allErrors: true, strict: true });
-(0, import_ajv_formats.default)(ajv);
-var checkShape = ajv.compile(schema);
 function safeAttachmentURL(value) {
   if (/^https?:\/\//.test(value)) {
     try {
@@ -7421,20 +7583,46 @@ function validateWorkMap(data) {
   });
   return { valid: diagnostics.length === 0, diagnostics };
 }
-var WorkMapError = class extends Error {
-  constructor(diagnostics) {
-    super("Invalid work map");
-    this.name = "WorkMapError";
-    this.diagnostics = diagnostics;
-  }
-};
 function assertWorkMap(data) {
   const result = validateWorkMap(data);
   if (!result.valid) throw new WorkMapError(result.diagnostics);
   return data;
 }
+var import_ajv, import_ajv_formats, schema, ajv, checkShape, WorkMapError;
+var init_validate = __esm({
+  "lib/validate.js"() {
+    import_ajv = __toESM(require_ajv(), 1);
+    import_ajv_formats = __toESM(require_dist(), 1);
+    schema = JSON.parse(
+      readFileSync(
+        new URL("../schemas/work-map.schema.json", import.meta.url),
+        "utf8"
+      )
+    );
+    ajv = new import_ajv.default({ allErrors: true, strict: true });
+    (0, import_ajv_formats.default)(ajv);
+    checkShape = ajv.compile(schema);
+    WorkMapError = class extends Error {
+      constructor(diagnostics) {
+        super("Invalid work map");
+        this.name = "WorkMapError";
+        this.diagnostics = diagnostics;
+      }
+    };
+  }
+});
 
 // lib/render.js
+import {
+  readFile as readFile2,
+  writeFile,
+  rename,
+  mkdir,
+  rm,
+  realpath as realpath2
+} from "node:fs/promises";
+import { dirname, resolve } from "node:path";
+import { randomUUID } from "node:crypto";
 async function renderWorkMap(data) {
   assertWorkMap(data);
   const [shell, css, js, catalog, logo] = await Promise.all(
@@ -7445,7 +7633,7 @@ async function renderWorkMap(data) {
       `locales/${data.locale}.json`,
       "stellar.svg"
     ].map(
-      (name) => readFile(new URL("../assets/viewer/" + name, import.meta.url), "utf8")
+      (name) => readFile2(new URL("../assets/viewer/" + name, import.meta.url), "utf8")
     )
   );
   const serialize = (value) => JSON.stringify(value).replace(/</g, "\\u003c").replace(/\u2028/g, "\\u2028").replace(/\u2029/g, "\\u2029");
@@ -7484,8 +7672,8 @@ async function renderWorkMap(data) {
     }
   );
 }
-async function readWorkMap(path, input2 = "work-map") {
-  const text = await readFile(path, "utf8");
+async function readWorkMap(path, input = "work-map") {
+  const text = await readFile2(path, "utf8");
   try {
     return JSON.parse(text);
   } catch (error) {
@@ -7495,67 +7683,47 @@ async function readWorkMap(path, input2 = "work-map") {
       state: "Saved state",
       capture: "Capture",
       choices: "Choices input"
-    }[input2];
+    }[input];
     throw new WorkMapError([
       {
         code: "input-json",
-        input: input2,
+        input,
         path: "/",
         message: `${label} is not valid JSON.`,
-        fix: `Repair JSON syntax in the ${input2} input before retrying; keep other inputs and previous outputs.`
+        fix: `Repair JSON syntax in the ${input} input before retrying; keep other inputs and previous outputs.`
       }
     ]);
   }
 }
-async function renderFile(input2, output2) {
-  const html = await renderWorkMap(await readWorkMap(input2));
-  await writeArtifact(input2, output2, html);
+async function renderFile(input, output) {
+  const html = await renderWorkMap(await readWorkMap(input));
+  await writeArtifact(input, output, html);
   return { bytes: Buffer.byteLength(html) };
 }
-async function writeArtifact(input2, output2, content) {
-  if (resolve(input2) === resolve(output2) || await realpath(output2).catch(() => null) === await realpath(input2))
+async function writeArtifact(input, output, content) {
+  if (resolve(input) === resolve(output) || await realpath2(output).catch(() => null) === await realpath2(input))
     throw new Error("Input and output must be different files.");
-  await mkdir(dirname(resolve(output2)), { recursive: true });
-  const temp = resolve(dirname(output2), ".stellar-" + randomUUID() + ".tmp");
+  await mkdir(dirname(resolve(output)), { recursive: true });
+  const temp = resolve(dirname(output), ".stellar-" + randomUUID() + ".tmp");
   try {
     await writeFile(temp, content, {
       encoding: "utf8",
       flag: "wx",
       mode: 384
     });
-    await rename(temp, output2);
+    await rename(temp, output);
   } finally {
     await rm(temp, { force: true });
   }
 }
+var init_render = __esm({
+  "lib/render.js"() {
+    init_validate();
+  }
+});
 
 // lib/normalize.js
-var import_ajv2 = __toESM(require_ajv(), 1);
-var import_ajv_formats2 = __toESM(require_dist(), 1);
 import { readFileSync as readFileSync2 } from "node:fs";
-var workMapSchema = JSON.parse(
-  readFileSync2(
-    new URL("../schemas/work-map.schema.json", import.meta.url),
-    "utf8"
-  )
-);
-var captureSchema = JSON.parse(
-  readFileSync2(
-    new URL("../schemas/capture.schema.json", import.meta.url),
-    "utf8"
-  )
-);
-var ajv2 = new import_ajv2.default({ strict: true, allErrors: true });
-(0, import_ajv_formats2.default)(ajv2);
-ajv2.addSchema(workMapSchema, "work-map.schema.json");
-var checkCapture = ajv2.compile(captureSchema);
-var fail = (path, message, fix) => {
-  throw new WorkMapError([{ code: "capture", path, message, fix }]);
-};
-var nonblank = (value) => typeof value === "string" && /\S/.test(value);
-var keyOf = (source, native) => "i:" + Buffer.from(source).toString("base64url") + ":" + Buffer.from(native).toString("base64url");
-var nativeOf = (source, raw) => source.provider === "linear" ? raw.uuid || raw.id : raw.node_id;
-var displayOf = (source, raw) => source.provider === "linear" ? raw.id : "#" + raw.number;
 function normalizeCapture(capture) {
   if (!checkCapture(capture))
     throw new WorkMapError(
@@ -7995,61 +8163,43 @@ function normalizeStatus(source, raw) {
     type
   };
 }
-
-// lib/verify.js
-import { readFile as readFile2 } from "node:fs/promises";
-import { isDeepStrictEqual as equal2 } from "node:util";
+var import_ajv2, import_ajv_formats2, workMapSchema, captureSchema, ajv2, checkCapture, fail, nonblank, keyOf, nativeOf, displayOf;
+var init_normalize = __esm({
+  "lib/normalize.js"() {
+    import_ajv2 = __toESM(require_ajv(), 1);
+    import_ajv_formats2 = __toESM(require_dist(), 1);
+    init_validate();
+    workMapSchema = JSON.parse(
+      readFileSync2(
+        new URL("../schemas/work-map.schema.json", import.meta.url),
+        "utf8"
+      )
+    );
+    captureSchema = JSON.parse(
+      readFileSync2(
+        new URL("../schemas/capture.schema.json", import.meta.url),
+        "utf8"
+      )
+    );
+    ajv2 = new import_ajv2.default({ strict: true, allErrors: true });
+    (0, import_ajv_formats2.default)(ajv2);
+    ajv2.addSchema(workMapSchema, "work-map.schema.json");
+    checkCapture = ajv2.compile(captureSchema);
+    fail = (path, message, fix) => {
+      throw new WorkMapError([{ code: "capture", path, message, fix }]);
+    };
+    nonblank = (value) => typeof value === "string" && /\S/.test(value);
+    keyOf = (source, native) => "i:" + Buffer.from(source).toString("base64url") + ":" + Buffer.from(native).toString("base64url");
+    nativeOf = (source, raw) => source.provider === "linear" ? raw.uuid || raw.id : raw.node_id;
+    displayOf = (source, raw) => source.provider === "linear" ? raw.id : "#" + raw.number;
+  }
+});
 
 // lib/continuity.js
-var import_ajv3 = __toESM(require_ajv(), 1);
-var import_ajv_formats3 = __toESM(require_dist(), 1);
 import { readFileSync as readFileSync3 } from "node:fs";
 import { mkdir as mkdir2, open, unlink, rmdir } from "node:fs/promises";
-import { resolve as resolve2, dirname as dirname2, join } from "node:path";
+import { resolve as resolve2, dirname as dirname2, join as join2 } from "node:path";
 import { isDeepStrictEqual as equal } from "node:util";
-var schema2 = (name) => JSON.parse(
-  readFileSync3(
-    new URL(`../schemas/${name}.schema.json`, import.meta.url),
-    "utf8"
-  )
-);
-var ajv3 = new import_ajv3.default({ strict: true, allErrors: true });
-(0, import_ajv_formats3.default)(ajv3);
-ajv3.addSchema(schema2("work-map"), "work-map.schema.json");
-var checkState = ajv3.compile(schema2("state"));
-var checkChoices = ajv3.compile(schema2("choices"));
-var fail2 = (path, message, fix) => {
-  throw new WorkMapError([{ code: "continuity", path, message, fix }]);
-};
-var clone = (value) => structuredClone(value);
-var key = ({ provider, namespace, nativeId }) => JSON.stringify([provider, namespace, nativeId]);
-var identity = (map, issue) => {
-  const source = map.sources.find((s) => s.id === issue.sourceId);
-  return {
-    provider: source.provider,
-    namespace: source.namespace,
-    nativeId: issue.nativeId
-  };
-};
-var evidence = (issue) => ({
-  title: issue.title,
-  ...issue.description != null ? { description: issue.description } : {}
-});
-var blankChanges = () => ({
-  added: [],
-  returned: [],
-  updated: [],
-  notObserved: [],
-  review: [],
-  preservedUser: []
-});
-var currentReviews = (map, memory) => {
-  const saved = new Map(memory.map((entry) => [key(entry), entry]));
-  return map.issues.flatMap((issue) => {
-    const reason = saved.get(key(identity(map, issue)))?.reviewReason;
-    return reason ? [{ issueId: issue.id, reason }] : [];
-  });
-};
 function assertRunReferences(map, prefix = "") {
   for (const [n, attachment] of (map.attachments || []).entries())
     if (!/^https?:\/\//.test(attachment.href))
@@ -8061,8 +8211,8 @@ function assertRunReferences(map, prefix = "") {
 }
 function shape(check2, value) {
   if (!check2(value)) {
-    const input2 = check2 === checkState ? "state" : "choices";
-    const alternatives = input2 === "choices" ? check2.errors.filter(
+    const input = check2 === checkState ? "state" : "choices";
+    const alternatives = input === "choices" ? check2.errors.filter(
       (error) => error.keyword === "anyOf" && ["#/anyOf", "#/properties/issues/items/anyOf"].includes(
         error.schemaPath
       )
@@ -8077,10 +8227,10 @@ function shape(check2, value) {
         const property = error.params.missingProperty ?? error.params.additionalProperty;
         return {
           code: "continuity-schema",
-          input: input2,
+          input,
           path: (error.instancePath || "") + (property !== void 0 ? "/" + property.replace(/~/g, "~0").replace(/\//g, "~1") : "") || "/",
           message: alternatives.includes(error) ? error.instancePath === "" ? "Provide at least one nonempty domains, categories or issues array." : "Provide classification or targets (or both) for this issue choice." : error.message,
-          fix: input2 === "state" ? "Use a valid state produced by a continuity command; retain the original state and saved user choices." : "Match schemas/choices.schema.json and change only the requested interpretation fields."
+          fix: input === "state" ? "Use a valid state produced by a continuity command; retain the original state and saved user choices." : "Match schemas/choices.schema.json and change only the requested interpretation fields."
         };
       })
     );
@@ -8410,17 +8560,17 @@ async function writeRun(state, directory) {
     "work-map.json": JSON.stringify(state.map, null, 2) + "\n",
     "changes.json": JSON.stringify(state.changes, null, 2) + "\n"
   };
-  const output2 = resolve2(directory);
+  const output = resolve2(directory);
   const created = [];
   let parentReady = false;
   let ownsDirectory = false;
   try {
-    await mkdir2(dirname2(output2), { recursive: true });
+    await mkdir2(dirname2(output), { recursive: true });
     parentReady = true;
-    await mkdir2(output2, { mode: 448 });
+    await mkdir2(output, { mode: 448 });
     ownsDirectory = true;
     for (const [name, content] of Object.entries(files)) {
-      const path = join(output2, name);
+      const path = join2(output, name);
       const file = await open(path, "wx", 384);
       created.push(path);
       try {
@@ -8439,7 +8589,7 @@ async function writeRun(state, directory) {
         await unlink(path).catch(() => {
           cleanupFailed = true;
         });
-      await rmdir(output2).catch(() => {
+      await rmdir(output).catch(() => {
         cleanupFailed = true;
       });
     }
@@ -8459,7 +8609,7 @@ async function writeRun(state, directory) {
     throw failure;
   }
   return {
-    run: output2,
+    run: output,
     needsClassification: state.map.issues.filter(
       (i) => i.scope === "assigned" && !i.classification
     ).length,
@@ -8469,9 +8619,62 @@ async function writeRun(state, directory) {
     review: state.changes.review.length
   };
 }
+var import_ajv3, import_ajv_formats3, schema2, ajv3, checkState, checkChoices, fail2, clone, key, identity, evidence, blankChanges, currentReviews;
+var init_continuity = __esm({
+  "lib/continuity.js"() {
+    import_ajv3 = __toESM(require_ajv(), 1);
+    import_ajv_formats3 = __toESM(require_dist(), 1);
+    init_validate();
+    init_normalize();
+    schema2 = (name) => JSON.parse(
+      readFileSync3(
+        new URL(`../schemas/${name}.schema.json`, import.meta.url),
+        "utf8"
+      )
+    );
+    ajv3 = new import_ajv3.default({ strict: true, allErrors: true });
+    (0, import_ajv_formats3.default)(ajv3);
+    ajv3.addSchema(schema2("work-map"), "work-map.schema.json");
+    checkState = ajv3.compile(schema2("state"));
+    checkChoices = ajv3.compile(schema2("choices"));
+    fail2 = (path, message, fix) => {
+      throw new WorkMapError([{ code: "continuity", path, message, fix }]);
+    };
+    clone = (value) => structuredClone(value);
+    key = ({ provider, namespace, nativeId }) => JSON.stringify([provider, namespace, nativeId]);
+    identity = (map, issue) => {
+      const source = map.sources.find((s) => s.id === issue.sourceId);
+      return {
+        provider: source.provider,
+        namespace: source.namespace,
+        nativeId: issue.nativeId
+      };
+    };
+    evidence = (issue) => ({
+      title: issue.title,
+      ...issue.description != null ? { description: issue.description } : {}
+    });
+    blankChanges = () => ({
+      added: [],
+      returned: [],
+      updated: [],
+      notObserved: [],
+      review: [],
+      preservedUser: []
+    });
+    currentReviews = (map, memory) => {
+      const saved = new Map(memory.map((entry) => [key(entry), entry]));
+      return map.issues.flatMap((issue) => {
+        const reason = saved.get(key(identity(map, issue)))?.reviewReason;
+        return reason ? [{ issueId: issue.id, reason }] : [];
+      });
+    };
+  }
+});
 
 // lib/verify.js
-var escapePointer = (key2) => String(key2).replace(/~/g, "~0").replace(/\//g, "~1");
+import { readFile as readFile3 } from "node:fs/promises";
+import { isDeepStrictEqual as equal2 } from "node:util";
 function difference(expected, actual, path = "") {
   if (equal2(expected, actual)) return null;
   if (expected && actual && typeof expected === "object" && typeof actual === "object" && Array.isArray(expected) === Array.isArray(actual)) {
@@ -8506,23 +8709,19 @@ function keyedDifference(expected, actual, path, project = (value) => value) {
   }
   return byId.size ? path : null;
 }
-var relationKey = ({ kind, source, target }) => JSON.stringify([
-  kind,
-  ...kind === "related" ? [source, target].sort() : [source, target]
-]);
 function factsDifference(draft, map) {
   return difference(draft.owner, map.owner, "/owner") || keyedDifference(draft.sources, map.sources, "/sources") || keyedDifference(draft.issues, map.issues, "/issues", sourceIssue) || (!equal2(
     draft.relations.map(relationKey).sort(),
     map.relations.map(relationKey).sort()
   ) ? "/relations" : null);
 }
-function withRole(input2, operation) {
+function withRole(input, operation) {
   try {
     return operation();
   } catch (error) {
     if (error instanceof WorkMapError)
       throw new WorkMapError(
-        error.diagnostics.map((diagnostic) => ({ ...diagnostic, input: input2 }))
+        error.diagnostics.map((diagnostic) => ({ ...diagnostic, input }))
       );
     throw error;
   }
@@ -8533,10 +8732,10 @@ async function verifyRun({ capture, map, html, state }) {
   if (state !== void 0) withRole("state", () => assertState(state));
   const checks = {};
   const diagnostics = [];
-  const check2 = (name, path, input2, message, fix) => {
+  const check2 = (name, path, input, message, fix) => {
     checks[name] = path ? "fail" : "pass";
     if (path)
-      diagnostics.push({ code: "run-mismatch", input: input2, path, message, fix });
+      diagnostics.push({ code: "run-mismatch", input, path, message, fix });
   };
   check2(
     "captureFacts",
@@ -8593,15 +8792,15 @@ async function verifyRun({ capture, map, html, state }) {
     ]
   };
 }
-async function readInput(path, input2) {
+async function readInput(path, input) {
   try {
-    return input2 === "html" ? await readFile2(path) : await readWorkMap(path, input2);
+    return input === "html" ? await readFile3(path) : await readWorkMap(path, input);
   } catch (error) {
     if (error instanceof WorkMapError) throw error;
     throw new WorkMapError([
       {
         code: "input-read",
-        input: input2,
+        input,
         path: "/",
         message: "The verification input could not be read.",
         fix: "Check this input argument, file existence and read permissions; keep previous inputs and reports."
@@ -8617,20 +8816,23 @@ async function verifyRunFiles(capture, map, html, state) {
     ...state === void 0 ? {} : { state: await readInput(state, "state") }
   });
 }
+var escapePointer, relationKey;
+var init_verify = __esm({
+  "lib/verify.js"() {
+    init_normalize();
+    init_continuity();
+    init_validate();
+    init_render();
+    escapePointer = (key2) => String(key2).replace(/~/g, "~0").replace(/\//g, "~1");
+    relationKey = ({ kind, source, target }) => JSON.stringify([
+      kind,
+      ...kind === "related" ? [source, target].sort() : [source, target]
+    ]);
+  }
+});
 
 // lib/reading.js
-import { createHash } from "node:crypto";
-var PAGE = 20;
-var PREVIEW = 80;
-var CHUNK = 4e3;
-var characters = (text) => Array.from(text);
-var preview = (text) => {
-  const points = characters(text);
-  return {
-    preview: points.slice(0, PREVIEW).join(""),
-    previewTruncated: points.length > PREVIEW
-  };
-};
+import { createHash as createHash2 } from "node:crypto";
 function fail3(path, message, fix) {
   throw new WorkMapError([{ path, code: "reading", message, fix }]);
 }
@@ -8685,7 +8887,7 @@ function metadata(issue) {
     status: issue.status,
     descriptionPresent: issue.description !== void 0,
     descriptionCharacters: characters(body).length,
-    descriptionHash: createHash("sha256").update(JSON.stringify(body)).digest("hex")
+    descriptionHash: createHash2("sha256").update(JSON.stringify(body)).digest("hex")
   };
 }
 function bodyBlocks(text) {
@@ -8852,15 +9054,33 @@ function searchIssue(map, selector, query, offset = 0) {
     items: matches
   };
 }
+var PAGE, PREVIEW, CHUNK, characters, preview;
+var init_reading = __esm({
+  "lib/reading.js"() {
+    init_validate();
+    init_render();
+    PAGE = 20;
+    PREVIEW = 80;
+    CHUNK = 4e3;
+    characters = (text) => Array.from(text);
+    preview = (text) => {
+      const points = characters(text);
+      return {
+        preview: points.slice(0, PREVIEW).join(""),
+        previewTruncated: points.length > PREVIEW
+      };
+    };
+  }
+});
 
 // lib/evidence.js
-import { readFile as readFile3, open as open2, mkdir as mkdir3, rm as rm2 } from "node:fs/promises";
+import { readFile as readFile4, open as open2, mkdir as mkdir3, rm as rm2 } from "node:fs/promises";
 import { dirname as dirname3 } from "node:path";
-import { createHash as createHash2 } from "node:crypto";
-async function retainResponse(input2, output2) {
+import { createHash as createHash3 } from "node:crypto";
+async function retainResponse(input, output) {
   let bytes;
   try {
-    bytes = await readFile3(input2);
+    bytes = await readFile4(input);
   } catch {
     throw new WorkMapError([
       {
@@ -8874,16 +9094,16 @@ async function retainResponse(input2, output2) {
   let file;
   let creatingParents = true;
   try {
-    await mkdir3(dirname3(output2), { recursive: true, mode: 448 });
+    await mkdir3(dirname3(output), { recursive: true, mode: 448 });
     creatingParents = false;
-    file = await open2(output2, "wx", 384);
+    file = await open2(output, "wx", 384);
     await file.writeFile(bytes);
     await file.close();
   } catch (error) {
     if (file) {
       await file.close().catch(() => {
       });
-      await rm2(output2).catch(() => {
+      await rm2(output).catch(() => {
       });
     }
     let code = "response-output";
@@ -8907,87 +9127,396 @@ async function retainResponse(input2, output2) {
   return {
     retained: true,
     bytes: bytes.length,
-    sha256: createHash2("sha256").update(bytes).digest("hex"),
+    sha256: createHash3("sha256").update(bytes).digest("hex"),
     sourceFidelity: "not-verified"
   };
 }
+var init_evidence = __esm({
+  "lib/evidence.js"() {
+    init_validate();
+  }
+});
+
+// lib/cli-commands.js
+var cli_commands_exports = {};
+__export(cli_commands_exports, {
+  runCommand: () => runCommand
+});
+async function runCommand(command2, args2) {
+  const [input, output, ...extra] = args2;
+  try {
+    if (command2 === "retain-response") {
+      console.log(JSON.stringify(await retainResponse(input, output)));
+    } else if (command2 === "inspect") {
+      console.log(
+        JSON.stringify(
+          inspectMap(await readReadingMap(input), output, extra[0]),
+          null,
+          2
+        )
+      );
+    } else if (["read-issue", "search-issue"].includes(command2)) {
+      const operation = command2 === "read-issue" ? readIssue : searchIssue;
+      console.log(
+        JSON.stringify(
+          operation(await readReadingMap(input), output, extra[0], extra[1]),
+          null,
+          2
+        )
+      );
+    } else if (command2 === "verify-run") {
+      const result = await verifyRunFiles(input, output, extra[0], extra[1]);
+      console.log(JSON.stringify(result, null, 2));
+      if (!result.valid) process.exitCode = 1;
+    } else if (command2 === "remember") {
+      console.log(
+        JSON.stringify(
+          await writeRun(rememberMap(await readWorkMap(input)), output)
+        )
+      );
+    } else if (command2 === "classify-draft") {
+      const draft = await readWorkMap(input), choices = await readWorkMap(output, "choices");
+      console.log(
+        JSON.stringify(await writeRun(classifyDraft(draft, choices), extra[0]))
+      );
+    } else if (["refresh", "classify", "revise"].includes(command2)) {
+      const previous = await readWorkMap(input, "state"), next = await readWorkMap(
+        output,
+        command2 === "refresh" ? "capture" : "choices"
+      );
+      const state = command2 === "refresh" ? refreshState(previous, next) : applyChoices(
+        previous,
+        next,
+        command2 === "revise" ? "user" : "agent"
+      );
+      console.log(JSON.stringify(await writeRun(state, extra[0])));
+    } else if (command2 === "normalize") {
+      const data = normalizeCapture(await readWorkMap(input, "capture"));
+      await writeArtifact(input, output, JSON.stringify(data, null, 2) + "\n");
+      console.log(
+        JSON.stringify({
+          normalized: true,
+          issues: data.issues.length,
+          relations: data.relations.length,
+          needsClassification: data.issues.filter((i) => i.scope === "assigned").length
+        })
+      );
+    } else if (command2 === "validate") {
+      const result = validateWorkMap(await readWorkMap(input));
+      console.log(JSON.stringify(result, null, 2));
+      if (!result.valid) process.exitCode = 1;
+    } else if (command2 === "render") {
+      const result = await renderFile(input, output);
+      console.log(JSON.stringify({ rendered: true, ...result }));
+    } else {
+      throw new Error("Unsupported runtime command.");
+    }
+  } catch (error) {
+    if (error instanceof WorkMapError)
+      console.error(
+        JSON.stringify(
+          { valid: false, diagnostics: error.diagnostics },
+          null,
+          2
+        )
+      );
+    else
+      console.error(
+        error instanceof SyntaxError ? "Input is not valid JSON." : error.message
+      );
+    process.exitCode = 1;
+  }
+}
+var init_cli_commands = __esm({
+  "lib/cli-commands.js"() {
+    init_render();
+    init_validate();
+    init_normalize();
+    init_verify();
+    init_reading();
+    init_evidence();
+    init_continuity();
+  }
+});
 
 // bin/stellar.js
-var usage = "Usage: stellar inspect MAP.json [ISSUE [OFFSET]] | stellar read-issue MAP.json ISSUE BLOCK [OFFSET] | stellar search-issue MAP.json ISSUE TEXT [OFFSET] | stellar retain-response RESPONSE_FILE NEW_FILE | stellar normalize CAPTURE.json DRAFT.json | stellar classify-draft DRAFT.json CHOICES.json RUN_DIR | stellar validate INPUT.json | stellar render INPUT.json OUTPUT.html | stellar verify-run CAPTURE.json MAP.json HTML [STATE.json] | stellar remember MAP.json RUN_DIR | stellar refresh STATE.json CAPTURE.json RUN_DIR | stellar classify STATE.json CHOICES.json RUN_DIR | stellar revise STATE.json CHOICES.json RUN_DIR";
-var [command, input, output, ...extra] = process.argv.slice(2);
-try {
-  if (command === "--help" && !input) console.log(usage);
-  else if (command === "retain-response" && input && output && !extra.length) {
-    console.log(JSON.stringify(await retainResponse(input, output)));
-  } else if (command === "inspect" && input && extra.length <= 1) {
-    console.log(
-      JSON.stringify(
-        inspectMap(await readReadingMap(input), output, extra[0]),
-        null,
-        2
-      )
-    );
-  } else if (["read-issue", "search-issue"].includes(command) && input && output && extra.length >= 1 && extra.length <= 2) {
-    const operation = command === "read-issue" ? readIssue : searchIssue;
-    console.log(
-      JSON.stringify(
-        operation(await readReadingMap(input), output, extra[0], extra[1]),
-        null,
-        2
-      )
-    );
-  } else if (command === "verify-run" && input && output && extra.length >= 1 && extra.length <= 2) {
-    const result = await verifyRunFiles(input, output, extra[0], extra[1]);
-    console.log(JSON.stringify(result, null, 2));
-    if (!result.valid) process.exitCode = 1;
-  } else if (command === "remember" && input && output && !extra.length) {
-    console.log(
-      JSON.stringify(
-        await writeRun(rememberMap(await readWorkMap(input)), output)
-      )
-    );
-  } else if (command === "classify-draft" && input && output && extra.length === 1) {
-    const draft = await readWorkMap(input), choices = await readWorkMap(output, "choices");
-    console.log(
-      JSON.stringify(await writeRun(classifyDraft(draft, choices), extra[0]))
-    );
-  } else if (["refresh", "classify", "revise"].includes(command) && input && output && extra.length === 1) {
-    const previous = await readWorkMap(input, "state"), next = await readWorkMap(
-      output,
-      command === "refresh" ? "capture" : "choices"
-    );
-    const state = command === "refresh" ? refreshState(previous, next) : applyChoices(previous, next, command === "revise" ? "user" : "agent");
-    console.log(JSON.stringify(await writeRun(state, extra[0])));
-  } else if (command === "normalize" && input && output && !extra.length) {
-    const data = normalizeCapture(await readWorkMap(input, "capture"));
-    await writeArtifact(input, output, JSON.stringify(data, null, 2) + "\n");
-    console.log(
-      JSON.stringify({
-        normalized: true,
-        issues: data.issues.length,
-        relations: data.relations.length,
-        needsClassification: data.issues.filter((i) => i.scope === "assigned").length
-      })
-    );
-  } else if (command === "validate" && input && !output) {
-    const result = validateWorkMap(await readWorkMap(input));
-    console.log(JSON.stringify(result, null, 2));
-    if (!result.valid) process.exitCode = 1;
-  } else if (command === "render" && input && output && !extra.length) {
-    const result = await renderFile(input, output);
-    console.log(JSON.stringify({ rendered: true, ...result }));
-  } else {
-    console.error(usage);
-    process.exitCode = 2;
+init_version();
+
+// lib/cli-help.js
+var commands = {
+  doctor: {
+    usage: "doctor [--json]",
+    summary: "Diagnose the local runtime and installed product files without changing them.",
+    min: 0,
+    max: 1,
+    arguments: [
+      "--json  Print structured check results instead of a text summary."
+    ],
+    output: "Version, installation root, per-check status/remedy, and diagnostic scope. No network, repair, authentication, or host-discovery check.",
+    example: "doctor --json"
+  },
+  inspect: {
+    usage: "inspect MAP.json [ISSUE [OFFSET]]",
+    summary: "Read a bounded issue index or the source-block index for one issue.",
+    min: 1,
+    max: 3,
+    arguments: [
+      "MAP.json  Normalized draft or work map.",
+      "ISSUE  Internal issue ID; omit or use an empty string for the issue index.",
+      "OFFSET  Zero-based page offset; default 0."
+    ],
+    output: "JSON index with bounded previews and pagination. Does not modify the map.",
+    example: "inspect draft.json"
+  },
+  "read-issue": {
+    usage: "read-issue MAP.json ISSUE BLOCK [OFFSET]",
+    summary: "Read an exact, bounded chunk of a source block.",
+    min: 3,
+    max: 4,
+    arguments: [
+      "MAP.json  Normalized draft or work map.",
+      "ISSUE  Internal issue ID from inspect.",
+      "BLOCK  Zero-based block index from inspect.",
+      "OFFSET  Character offset within the block; default 0."
+    ],
+    output: "JSON with exact source text and continuation information. Does not summarize or classify.",
+    example: "read-issue draft.json ISSUE_ID 0"
+  },
+  "search-issue": {
+    usage: "search-issue MAP.json ISSUE TEXT [OFFSET]",
+    summary: "Find literal source text within one issue.",
+    min: 3,
+    max: 4,
+    arguments: [
+      "MAP.json  Normalized draft or work map.",
+      "ISSUE  Internal issue ID from inspect.",
+      "TEXT  Literal search text; quote text containing spaces.",
+      "OFFSET  Match-list offset; default 0."
+    ],
+    output: "JSON with paginated literal matches and context; source data stays unchanged.",
+    example: 'search-issue draft.json ISSUE_ID "acceptance criteria"'
+  },
+  "retain-response": {
+    usage: "retain-response RESPONSE_FILE NEW_FILE",
+    summary: "Retain host-provided response bytes in a fresh private file.",
+    min: 2,
+    max: 2,
+    arguments: [
+      "RESPONSE_FILE  Existing response file supplied by the host.",
+      "NEW_FILE  New destination; an existing path is refused."
+    ],
+    output: "JSON byte count and digest, without reprinting the payload. Copies bytes; does not prove source authenticity.",
+    example: "retain-response host-response.json run/evidence/response.json"
+  },
+  normalize: {
+    usage: "normalize CAPTURE.json DRAFT.json",
+    summary: "Normalize native source facts into a draft that the agent can classify.",
+    min: 2,
+    max: 2,
+    arguments: [
+      "CAPTURE.json  Host capture matching schemas/capture.schema.json.",
+      "DRAFT.json  Output draft path, different from the capture; an existing output can be replaced."
+    ],
+    output: "Writes the draft and prints a JSON summary. Assigned issues still need authored classifications.",
+    example: "normalize capture.json draft.json"
+  },
+  "classify-draft": {
+    usage: "classify-draft DRAFT.json CHOICES.json RUN_DIR",
+    summary: "Apply authored first-run decisions and create a complete classified run.",
+    min: 3,
+    max: 3,
+    arguments: [
+      "DRAFT.json  Normalized first-run draft.",
+      "CHOICES.json  Agent-authored choices matching schemas/choices.schema.json.",
+      "RUN_DIR  Fresh directory; an existing path is refused."
+    ],
+    output: "Writes work-map.json, state.json, and changes.json; prints a JSON run summary. Does not render HTML.",
+    example: "classify-draft draft.json choices.json first-run"
+  },
+  validate: {
+    usage: "validate MAP.json",
+    summary: "Check work-map schema and semantic invariants without writing files.",
+    min: 1,
+    max: 1,
+    arguments: [
+      "MAP.json  Work map to validate; pending assigned classifications fail."
+    ],
+    output: "JSON validity and diagnostics. Does not validate source authenticity or classification meaning.",
+    example: "validate first-run/work-map.json"
+  },
+  render: {
+    usage: "render MAP.json OUTPUT.html",
+    summary: "Render a complete work map using the bundled viewer.",
+    min: 2,
+    max: 2,
+    arguments: [
+      "MAP.json  Complete, valid work map.",
+      "OUTPUT.html  Destination, different from input; replaces an existing report only on success."
+    ],
+    output: "Writes standalone HTML and prints a JSON byte count. The report embeds issue data but not private continuity memory.",
+    example: "render first-run/work-map.json first-run/stellar.html"
+  },
+  "verify-run": {
+    usage: "verify-run CAPTURE.json MAP.json HTML [STATE.json]",
+    summary: "Compare capture facts, embedded map, bundled viewer, and optional saved state.",
+    min: 3,
+    max: 4,
+    arguments: [
+      "CAPTURE.json  Retained capture selected for this run.",
+      "MAP.json  Work map used for the report.",
+      "HTML  Generated standalone report.",
+      "STATE.json  Optional saved state associated with this run."
+    ],
+    output: "JSON consistency checks; exit 1 on a failed comparison. Reads only; does not establish semantic or visual acceptance.",
+    example: "verify-run capture.json first-run/work-map.json first-run/stellar.html first-run/state.json"
+  },
+  remember: {
+    usage: "remember MAP.json RUN_DIR",
+    summary: "Create initial saved state for an existing complete map.",
+    min: 2,
+    max: 2,
+    arguments: [
+      "MAP.json  Complete map without a saved continuation state.",
+      "RUN_DIR  Fresh directory; an existing path is refused."
+    ],
+    output: "Writes work-map.json, state.json, and changes.json; prints a JSON run summary. Report-relative references are refused.",
+    example: "remember work-map.json remembered-run"
+  },
+  refresh: {
+    usage: "refresh STATE.json CAPTURE.json RUN_DIR",
+    summary: "Apply a fresh source observation while retaining saved user choices.",
+    min: 3,
+    max: 3,
+    arguments: [
+      "STATE.json  Selected previous successful saved state.",
+      "CAPTURE.json  Fresh host capture.",
+      "RUN_DIR  Fresh directory; an existing path is refused."
+    ],
+    output: "Writes a new map, state, and change summary. Pending classifications may require classify before validation/rendering.",
+    example: "refresh first-run/state.json fresh-capture.json refreshed-run"
+  },
+  classify: {
+    usage: "classify STATE.json CHOICES.json RUN_DIR",
+    summary: "Apply agent decisions to saved state while protecting explicit user choices.",
+    min: 3,
+    max: 3,
+    arguments: [
+      "STATE.json  Saved state to continue.",
+      "CHOICES.json  Agent-authored choices; user-owned values cannot be overwritten.",
+      "RUN_DIR  Fresh directory; an existing path is refused."
+    ],
+    output: "Writes a new map, state, and change summary; prints JSON. Leaves previous runs intact.",
+    example: "classify refreshed-run/state.json choices.json classified-run"
+  },
+  revise: {
+    usage: "revise STATE.json CHOICES.json RUN_DIR",
+    summary: "Record an explicit user correction with user ownership.",
+    min: 3,
+    max: 3,
+    arguments: [
+      "STATE.json  Saved state to continue.",
+      "CHOICES.json  Choices representing the user's explicit request.",
+      "RUN_DIR  Fresh directory; an existing path is refused."
+    ],
+    output: "Writes a new map, state, and change summary; prints JSON. Leaves previous runs intact.",
+    example: "revise first-run/state.json user-choices.json revised-run"
+  },
+  help: {
+    usage: "help [COMMAND]",
+    summary: "Show global or command-specific usage without executing a workflow.",
+    min: 0,
+    max: 1,
+    arguments: ["COMMAND  Command name; omit to list all commands."],
+    output: "Plain-text help. COMMAND --help is equivalent to help COMMAND.",
+    example: "help doctor"
   }
-} catch (error) {
-  if (error instanceof WorkMapError)
-    console.error(
-      JSON.stringify({ valid: false, diagnostics: error.diagnostics }, null, 2)
+};
+function commandInfo(name) {
+  return Object.hasOwn(commands, name) ? commands[name] : void 0;
+}
+function helpText(name) {
+  const info = commandInfo(name);
+  const exitCodes = "Exit codes: 0 success; 1 failed check or execution error; 2 invalid command usage.";
+  const invocation = 'Installed invocation: node "$STELLAR_ROOT/bin/stellar.mjs" <command> [arguments]';
+  if (!info)
+    return [
+      "Stellar \u2014 inspect, classify, and render local work maps.",
+      "Usage: stellar <command> [arguments]",
+      "",
+      ...Object.entries(commands).map(
+        ([command2, entry]) => `  ${command2.padEnd(17)} ${entry.summary}`
+      ),
+      "",
+      "Options: --version, -V  Print the product version; --help  Show this help.",
+      "Run stellar help <command> or stellar <command> --help for arguments and examples.",
+      invocation,
+      exitCodes
+    ].join("\n");
+  return [
+    info.summary,
+    `Usage: stellar ${info.usage}`,
+    "",
+    "Arguments:",
+    ...info.arguments.map((argument) => `  ${argument}`),
+    "",
+    `Output: ${info.output}`,
+    `Example: stellar ${info.example}`,
+    invocation,
+    exitCodes
+  ].join("\n");
+}
+
+// bin/stellar.js
+var [command, ...args] = process.argv.slice(2);
+function usageError(message, name) {
+  console.error(
+    `${message} Run stellar ${commandInfo(name) ? `help ${name}` : "--help"} for usage.`
+  );
+  process.exitCode = 2;
+}
+async function main() {
+  if (command === "--version" || command === "-V") {
+    if (args.length) return usageError("Version flags take no arguments.");
+    console.log(`stellar ${version}`);
+    return;
+  }
+  if (command === "--help" || command === "help") {
+    if (command === "--help" && args.length)
+      return usageError("Global --help takes no arguments.");
+    if (args.length > 1 || args.length && !commandInfo(args[0]) && args[0] !== "--help")
+      return usageError("Unknown help topic or too many arguments.", "help");
+    console.log(helpText(args[0] === "--help" ? "help" : args[0]));
+    return;
+  }
+  const info = commandInfo(command);
+  if (!info)
+    return usageError(command ? "Unknown command." : "A command is required.");
+  if (args.length === 1 && args[0] === "--help") {
+    console.log(helpText(command));
+    return;
+  }
+  if (args.length < info.min || args.length > info.max || // Empty reader search/block values keep their established data diagnostics.
+  args.slice(0, Math.min(info.min, 2)).some((arg) => !arg))
+    return usageError("Invalid arguments.", command);
+  if (command === "doctor") {
+    if (args.length && args[0] !== "--json")
+      return usageError("Unknown doctor option.", command);
+    const { doctor: doctor2, formatDoctor: formatDoctor2 } = await Promise.resolve().then(() => (init_installation(), installation_exports));
+    const result = await doctor2();
+    console.log(
+      args[0] === "--json" ? JSON.stringify(result, null, 2) : formatDoctor2(result)
     );
-  else
-    console.error(
-      error instanceof SyntaxError ? "Input is not valid JSON." : error.message
-    );
+    if (!result.ok) process.exitCode = 1;
+    return;
+  }
+  const { runCommand: runCommand2 } = await Promise.resolve().then(() => (init_cli_commands(), cli_commands_exports));
+  await runCommand2(command, args);
+}
+try {
+  await main();
+} catch {
+  console.error(
+    "Stellar could not load its runtime. Run stellar doctor for installation diagnostics."
+  );
   process.exitCode = 1;
 }

@@ -3,6 +3,8 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { isBuiltin } from 'node:module';
+import { runtimeFiles, manifestPath, sha256 } from '../lib/installation.js';
+import { version } from '../lib/version.js';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const check = process.argv[2] === '--check';
@@ -80,6 +82,12 @@ const artifacts = new Map([
   ['bin/stellar.mjs', result.outputFiles[0].text],
   ['THIRD_PARTY_NOTICES.txt', notices],
 ]);
+const files = {};
+for (const path of runtimeFiles)
+  files[path] = sha256(
+    artifacts.get(path) ?? (await readFile(join(root, path))),
+  );
+artifacts.set(manifestPath, JSON.stringify({ version, files }, null, 2) + '\n');
 for (const [path, content] of artifacts) {
   if (check) {
     const existing = await readFile(join(root, path), 'utf8').catch((error) => {
@@ -97,6 +105,6 @@ for (const [path, content] of artifacts) {
 if (!process.exitCode)
   console.log(
     check
-      ? 'Runner bundle and notices are current.'
-      : 'Runner bundle and notices generated.',
+      ? 'Runner bundle, integrity manifest, and notices are current.'
+      : 'Runner bundle, integrity manifest, and notices generated.',
   );

@@ -4,7 +4,8 @@ State: **As-built**
 
 | Building block      | Owns                                                                                                         | Evidence                                                                                                                        |
 | ------------------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
-| CLI                 | Argument handling, native normalization, validation diagnostics, render invocation                           | [bin/stellar.js](../../bin/stellar.js)                                                                                          |
+| CLI                 | Version/help dispatch, argument handling and deferred workflow execution                                     | [bin/stellar.js](../../bin/stellar.js), [command catalog](../../lib/cli-help.js), [runtime dispatch](../../lib/cli-commands.js) |
+| Installation doctor | Read-only Node and installed-build consistency diagnostics                                                   | [installation.js](../../lib/installation.js), [CLI checks](../../test/cli-diagnostics.test.js)                                  |
 | Work-map schema     | Report, issue, classification, relation and reference shape                                                  | [schemas](../../schemas/README.md)                                                                                              |
 | Validator           | Unique identities, references, primary classification, source-parent and URL invariants                      | [validate.js](../../lib/validate.js)                                                                                            |
 | Renderer            | Locale selection, owner-derived branding, safe HTML embedding and preservation of previous output on failure | [render.js](../../lib/render.js)                                                                                                |
@@ -19,6 +20,12 @@ State: **As-built**
 The installed runner is generated from the same CLI and library source by
 [build-runner.js](../../scripts/build-runner.js), with dependencies included in
 [stellar.mjs](../../bin/stellar.mjs) and full third-party notices retained.
+The build embeds the product version from [package.json](../../package.json) and
+generates [stellar.manifest.json](../../bin/stellar.manifest.json) from the runner
+and fixed schema/viewer inventory. The doctor reads this local manifest and
+compares file hashes; it does not authenticate a release. CLI version and help
+requests finish before runtime modules read schemas, so broken resources do not
+prevent diagnosis. [CLI guidance](../../references/cli.md) owns the interface.
 Schemas and viewer assets keep their authoritative paths beside it. Installed
 usage needs Node 24; contributor tooling is separate. See
 [distribution](../development/distribution.md).

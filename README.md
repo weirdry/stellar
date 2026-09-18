@@ -45,6 +45,14 @@ directory is `~/.agents/skills/stellar`; Claude Code links to it from
 `~/.claude/skills/stellar`. Use `npx skills list -g` to confirm the actual path,
 then set `STELLAR_ROOT` to that directory for manual commands.
 
+Check the product version with `node "$STELLAR_ROOT/bin/stellar.mjs" --version`.
+After installation/update or when troubleshooting, run
+`node "$STELLAR_ROOT/bin/stellar.mjs" doctor` (add `--json` for structured output).
+Use `node "$STELLAR_ROOT/bin/stellar.mjs" help render` for command-specific usage.
+These commands describe this source revision; older tagged releases may not
+include them. See [CLI diagnostics and help](references/cli.md) for check scope,
+exit codes, and development-version identity.
+
 Use `npx skills update stellar -g` to check and apply updates through the installer.
 An exact-SHA or immutable-tag installation stays pinned; install the new tag or
 SHA with `skills add` to change it. Reports and saved state live outside the
