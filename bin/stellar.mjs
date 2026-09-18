@@ -7437,8 +7437,14 @@ function assertWorkMap(data) {
 // lib/render.js
 async function renderWorkMap(data) {
   assertWorkMap(data);
-  const [shell, css, js, catalog] = await Promise.all(
-    ["shell.html", "style.css", "app.js", `locales/${data.locale}.json`].map(
+  const [shell, css, js, catalog, logo] = await Promise.all(
+    [
+      "shell.html",
+      "style.css",
+      "app.js",
+      `locales/${data.locale}.json`,
+      "stellar.svg"
+    ].map(
       (name) => readFile(new URL("../assets/viewer/" + name, import.meta.url), "utf8")
     )
   );
@@ -7461,13 +7467,15 @@ async function renderWorkMap(data) {
     __CSS__: css,
     __JS__: js,
     __DATA__: serialize(data),
-    __MESSAGES__: serialize(messages)
+    __MESSAGES__: serialize(messages),
+    __LOGO__: logo,
+    __FAVICON__: "data:image/svg+xml;base64," + Buffer.from(logo).toString("base64")
   };
   for (const token of Object.keys(values))
     if (shell.split(token).length !== 2)
       throw new Error("Viewer template must contain each slot exactly once.");
   return shell.replace(
-    /__TITLE__|__LOCALE__|__CSS__|__JS__|__DATA__|__MESSAGES__|\{\{ui\.([\w.]+)\}\}/g,
+    /__TITLE__|__LOCALE__|__CSS__|__JS__|__DATA__|__MESSAGES__|__LOGO__|__FAVICON__|\{\{ui\.([\w.]+)\}\}/g,
     (token, key2) => {
       if (!key2) return values[token];
       if (typeof messages[key2] !== "string")

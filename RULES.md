@@ -8,8 +8,8 @@ and the affected canonical architecture before substantive changes.
 
 - Follow the self-contained contribution rules in root CONTRIBUTING.md. Keep
   their adopted commit and branch conventions explicit in this repository.
-  Other engineering standards and their provenance are indexed locally. Do not
-  install retired central Golden Path tooling.
+  Follow the repository-owned [engineering standards](docs/development/standards.md)
+  and [canonical documentation policy](docs/development/documentation.md).
 - Manage Stellar development and maintenance through GitHub Issues and the
   linked GitHub Project. Follow the [issue workflow](CONTRIBUTING.md#issue-management)
   and [work template](.github/ISSUE_TEMPLATE/work.md); keep issue bodies and Project

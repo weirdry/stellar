@@ -15,6 +15,14 @@ init:
 docs-check:
     bash scripts/docs/check-contract.sh --target .
 
+# Regeneration is explicit and requires a reviewed local Archify installation.
+diagrams-build:
+    mise exec --locked -- node scripts/docs/diagrams.mjs build
+
+# Read-only hashes and exact HTML-to-SVG export comparison; no Archify required.
+diagrams-check:
+    mise exec --locked -- node scripts/docs/diagrams.mjs check
+
 # Read-only JavaScript and repository checks.
 lint:
     mise exec --locked -- bash scripts/check.sh
@@ -90,7 +98,7 @@ bundle-check:
     mise exec --locked -- node scripts/build-runner.js --check
 
 # Browser QA is a separate gate.
-check: docs-check format-check lint bundle-check test
+check: docs-check diagrams-check format-check lint bundle-check test
 
 ci: check
 

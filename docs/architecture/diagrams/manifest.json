@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "diagrams": [
+    {
+      "name": "artifact-ownership",
+      "type": "architecture",
+      "generator": "archify 2.17.0-dev.1",
+      "sourceSha256": "57845d4d5ee87911b389c8358d09cf4a9ee7105ee1258a3b8364861774463198",
+      "generatedHtmlSha256": "52666f4be4b6678f392f189aeffb775b264021d8a439d3aefad4f39067868ce4",
+      "htmlSha256": "777818269512fcf3419c804913bd2fe3818a25e8addf5b752809e5ddb8dbbddf",
+      "htmlBytes": 709989,
+      "svgSha256": "1e6d9f314a47f882b7837ce499d8f23d2e7b7f85c22fdf5f480b581789576963"
+    },
+    {
+      "name": "first-report",
+      "type": "sequence",
+      "generator": "archify 2.17.0-dev.1",
+      "sourceSha256": "2d0a712d4cc942ff8f833f6886cb56040710ecdd3c2fa12d596925d9e5d4da5a",
+      "generatedHtmlSha256": "3f602c69b5eefd029a021c7c68ae5001e582d3dde121ce14ee40a930d569ca8b",
+      "htmlSha256": "d5d68e146faab82ae0be8413d3515956828e5dc312f70791d1c101b583334e3f",
+      "htmlBytes": 709445,
+      "svgSha256": "1e82ee8c886e74b0baa820a0fa8d0585d5323454058072be81c5d720c7a780bb"
+    },
+    {
+      "name": "refresh-continuity",
+      "type": "architecture",
+      "generator": "archify 2.17.0-dev.1",
+      "sourceSha256": "1e1380fc5e1b7c2f5db6f39306a326ca6ac9e4ada0afdc013132687bf8c7acf0",
+      "generatedHtmlSha256": "d6952bf3ff6f633549095d8b60121eb27077764d2da350523f2473128a0a8f1d",
+      "htmlSha256": "375bd3c853c23388be8fa9341a6548e8be7e1f4708bf4fcee29c8103bab1d060",
+      "htmlBytes": 706228,
+      "svgSha256": "307f60a27c01f654785f3b63bed69aac9cc6a7909dcd00d179885bfb7bd82bd3"
+    },
+    {
+      "name": "run-output",
+      "type": "lifecycle",
+      "generator": "archify 2.17.0-dev.1",
+      "sourceSha256": "8bfa92ef8a03a0a56e253040214b4c4a56b73eb59b6189d0d2bdfa347ba48d31",
+      "generatedHtmlSha256": "b392313c3231a2e34eea655d4c0d39d4e4a560a18bb5953b22825e9d1c36e960",
+      "htmlSha256": "6044010d316c68865ea8bc413067ef18ca307d8fb55da48ee8b058ace3d4fa85",
+      "htmlBytes": 707755,
+      "svgSha256": "b6f8ac9685799e8204857b9bb04fb551a2d1132d12497dd624fa1e43982f2826"
+    },
+    {
+      "name": "run-verification",
+      "type": "dataflow",
+      "generator": "archify 2.17.0-dev.1",
+      "sourceSha256": "89f027385d04f1bf7b8133d9280b60c317c79a66eb123e5f8db6b51dbd3b3b54",
+      "generatedHtmlSha256": "936e9f1ccf94365fff9353dc3cab860e692bf10f279ee3acf64c90a9bb9ff585",
+      "htmlSha256": "4a73875ea69d747d31b84705c8276072734bd8e042091fc307abad96959067a7",
+      "htmlBytes": 711445,
+      "svgSha256": "a65ee10137e1d259dcd174496eab3ea8bf4314dc569709e68e86e647622a5d70"
+    },
+    {
+      "name": "skill-delivery",
+      "type": "workflow",
+      "generator": "archify 2.17.0-dev.1",
+      "sourceSha256": "f6e3a9540460443a6187eac428bd89cef01a3426aa32f64cc4b35cc5a99aa359",
+      "generatedHtmlSha256": "311ad3691dfb47eba106a81019d4e837155d2751e8d565f83b281c7b6038de4f",
+      "htmlSha256": "56f5f1970e6ef215de96f9d19f653a1b14fa25e3420c62450e91bd932026521e",
+      "htmlBytes": 709284,
+      "svgSha256": "b1fb49f952c4b5a993e7f2dddd184c0fef803626a3cd8f2ac04c8498a8188830"
+    },
+    {
+      "name": "system-context",
+      "type": "architecture",
+      "generator": "archify 2.17.0-dev.1",
+      "sourceSha256": "7bebbc7556da7ff2d5ec34bc9e289a255d476d19e17e109760ecfc2f6236c5e6",
+      "generatedHtmlSha256": "fb3efcf917a08af9302d9bb832cd0ac232daead208f32601d70f33d151441c91",
+      "htmlSha256": "8bacfc2c88cf52da945ee2add20d03deb570b6ddea535ff1ab77b58cc618454c",
+      "htmlBytes": 707020,
+      "svgSha256": "ef09fdff36694fac7a1ce0322a011c70e2f3fa1403c78eed73287e747d783b95"
+    },
+    {
+      "name": "viewer-rendering",
+      "type": "architecture",
+      "generator": "archify 2.17.0-dev.1",
+      "sourceSha256": "bd583d0c15addb30cc7c45fd17bb9ef423d975d1fe1f375831a8ab24d662e419",
+      "generatedHtmlSha256": "d204d59f8217303d410b18ac9d2dca63a8012c98bed67eea68d66d46bd39f0ca",
+      "htmlSha256": "d76efe1c7a3e2126583c63140d21c99f0a4c3e8fe86c4310ee2789a60dfc33b0",
+      "htmlBytes": 705053,
+      "svgSha256": "2f37e46754af237cbfa85c3b961f6e62383ab93d7bb47b2859b127549bffe9f0"
+    }
+  ]
+}

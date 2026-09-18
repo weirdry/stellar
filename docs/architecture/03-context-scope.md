@@ -1,6 +1,15 @@
 # 3. Context and scope
 
-State: **Target**
+State: **As-built**
+
+![Stellar context: source access, agent judgment, local processing and exploration](diagrams/system-context.svg)
+
+[Explore HTML](diagrams/system-context.html) · [JSON source](diagrams/system-context.json)
+
+Only the host source tools access Linear or GitHub. File operations and report
+exploration are local; source facts retain their source ownership. The diagram
+summarizes [SKILL.md](../../SKILL.md), the [capture contract](../../references/capture.md),
+[CLI](../../bin/stellar.js) and [renderer](../../lib/render.js).
 
 | Participant     | Responsibility and boundary                                                |
 | --------------- | -------------------------------------------------------------------------- |

@@ -1,0 +1,153 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Skill delivery: source, release, installation",
+    "locale": "en",
+    "quality_profile": "showcase"
+  },
+  "lanes": [
+    {
+      "id": "contributor",
+      "label": "Contributor checkout"
+    },
+    {
+      "id": "release",
+      "label": "Release maintainer"
+    },
+    {
+      "id": "user",
+      "label": "User installation"
+    }
+  ],
+  "mainPath": [
+    "build",
+    "checks",
+    "integrate",
+    "promote",
+    "tag",
+    "install",
+    "invoke"
+  ],
+  "nodes": [
+    {
+      "id": "build",
+      "lane": "contributor",
+      "col": 0,
+      "type": "backend",
+      "label": "Build runner",
+      "sublabel": "just build-runner",
+      "width": 120
+    },
+    {
+      "id": "checks",
+      "lane": "contributor",
+      "col": 1,
+      "type": "security",
+      "label": "Validate",
+      "sublabel": "CI + browser checks",
+      "width": 120
+    },
+    {
+      "id": "integrate",
+      "lane": "contributor",
+      "col": 2,
+      "type": "backend",
+      "label": "Integrate dev",
+      "sublabel": "Direct commit or rebase PR",
+      "width": 150
+    },
+    {
+      "id": "promote",
+      "lane": "release",
+      "col": 2,
+      "type": "backend",
+      "label": "Promote main",
+      "sublabel": "Fast-forward only",
+      "width": 120
+    },
+    {
+      "id": "tag",
+      "lane": "release",
+      "col": 3,
+      "type": "cloud",
+      "label": "Publish tag",
+      "sublabel": "Immutable GitHub release",
+      "width": 145
+    },
+    {
+      "id": "install",
+      "lane": "user",
+      "col": 3,
+      "type": "backend",
+      "label": "Install skill",
+      "sublabel": "main or exact release tag",
+      "width": 145
+    },
+    {
+      "id": "invoke",
+      "lane": "user",
+      "col": 4,
+      "type": "frontend",
+      "label": "Invoke locally",
+      "sublabel": "Node + bundled resources",
+      "width": 145
+    }
+  ],
+  "edges": [
+    {
+      "from": "build",
+      "to": "checks",
+      "label": "bundle ready",
+      "role": "main"
+    },
+    {
+      "from": "checks",
+      "to": "integrate",
+      "label": "checks pass",
+      "role": "main"
+    },
+    {
+      "from": "integrate",
+      "to": "promote",
+      "label": "validated revision",
+      "role": "main"
+    },
+    {
+      "from": "promote",
+      "to": "tag",
+      "label": "release decision",
+      "role": "main"
+    },
+    {
+      "from": "tag",
+      "to": "install",
+      "label": "selected Git ref",
+      "role": "main"
+    },
+    {
+      "from": "install",
+      "to": "invoke",
+      "label": "host loads skill",
+      "role": "main"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "violet",
+      "title": "Distinct evidence",
+      "items": [
+        "Local checks, hosted CI, promotion, publication, and installation are separate.",
+        "dev has no deployment target; main is the release boundary."
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Distribution boundary",
+      "items": [
+        "Install from GitHub. The runner is not an npm package or hosted service.",
+        "User reports remain outside the installation and survive skill updates."
+      ]
+    }
+  ]
+}

@@ -1,10 +1,10 @@
 # 2. Constraints
 
-State: **Target**
+State: **As-built**
 
 - Keep the agent's interpretation separate from deterministic UI implementation.
-- Preserve the prototype's tree, graph, and inspector interaction model during
-  the first import, then verify a second dataset without viewer edits.
+- Keep tree, graph and inspector behavior in the bundled viewer. New datasets
+  supply data; they do not receive an independently generated UI.
 - Source project names and labels must not dictate the classification hierarchy.
 - Bundle viewer resources with the skill; ordinary generation must not depend
   on the author's machine, a sibling checkout, or a live Archify installation.
@@ -14,8 +14,8 @@ State: **Target**
 
 State: **As-built**
 
-Stellar adopts the linked [organization standards](../development/standards.md)
-through repository-owned configuration. The Node-native application
+Stellar follows its own [engineering standards](../development/standards.md)
+and [documentation policy](../development/documentation.md). The Node-native application
 manifest and locks are implemented; there is no deployed service environment.
 The first public skill distribution boundary is `v0.1.0`. Source is hosted in
 the public `weirdry/stellar` GitHub repository.

@@ -15,8 +15,9 @@ references are data. The renderer derives the Stellar title from the owner and
 selects bundled UI messages from the explicit locale. Source links and reference documents are opened only by
 user action. The first HTML generation path requires no Archify installation.
 
-Archify remains a reference for typed authoring, fixed visual implementation,
-and actionable diagnostics, rather than a product runtime dependency.
+Archify generates the maintained [engineering diagrams](diagrams/README.md).
+It is also a reference for typed authoring, fixed visual implementation and
+actionable diagnostics. It is not a product runtime dependency.
 See [ADR-0002](../decisions/0002-use-a-canonical-work-map-and-bundled-viewer.md).
 
 ## Skill and sources
@@ -49,3 +50,22 @@ records this separation. Background synchronization remains Open. MIT licensing
 and the installable Node runner are implemented; see
 [skill distribution](07-deployment-view.md#skill-distribution) for the current
 installation and release boundary.
+
+## Choices and trade-offs
+
+These are the current consequences of accepted decisions. The ADRs retain their
+original context, including follow-up work that has since shipped; the current
+chapters and their executable owners establish what exists now.
+
+| Choice                                                                   | Why it serves the product                                                                                                                            | Cost or boundary                                                                                                                                                                                | Decision and current detail                                                                                                              |
+| ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Agent-authored interpretation; fixed schema and viewer                   | Work can be grouped by purpose without regenerating the interface for each person. Code can check references and render the same input consistently. | Structural validity cannot establish whether a category or rationale is meaningful. The agent must read evidence and review membership.                                                         | [ADR-0002](../decisions/0002-use-a-canonical-work-map-and-bundled-viewer.md), [classification guide](../../references/classification.md) |
+| Host-owned collection; source-qualified identities and explicit coverage | Existing host access can combine Linear and multiple GitHub repositories while retaining provenance and repeated issue numbers.                      | Permissions, pagination and relation support differ by host. A valid capture can still be incomplete; opening HTML never refreshes it.                                                          | [ADR-0004](../decisions/0004-bundle-a-source-aware-agent-skill.md), [collection](06-runtime-view.md#source-collection)                   |
+| Standalone HTML with embedded data and SVG viewer                        | A report can be opened offline, copied and reproduced without a server or source credentials.                                                        | The artifact contains the report's data and needs the same privacy treatment as its inputs. Fonts and viewport affect pixels; dense views require navigation.                                   | [ADR-0002](../decisions/0002-use-a-canonical-work-map-and-bundled-viewer.md), [cross-cutting concepts](08-crosscutting-concepts.md)      |
+| Explicit report locale and bundled text catalogs                         | The chosen language and owner-derived title travel with the report, independent of browser settings.                                                 | Only Korean and English are implemented. Source text remains literal, and each additional locale needs reviewed copy and browser evidence.                                                      | [ADR-0003](../decisions/0003-bind-viewer-language-to-the-work-map.md), [viewer guide](../../assets/viewer/README.md)                     |
+| Private state with field-level user ownership and fresh runs             | User corrections survive refresh while facts come from the new capture. Earlier decisions remain available when issues are temporarily absent.       | The caller must select a state lineage and retain it. HTML alone cannot recover that memory; changed agent evidence can require review, and branches are not merged automatically.              | [ADR-0005](../decisions/0005-preserve-classification-on-refresh.md), [continuity guide](../../references/continuity.md)                  |
+| One Node-ready skill distributed through GitHub                          | Users run a bundled runner without contributor dependencies or a custom installer.                                                                   | Users still need Node 24. Maintainers must keep the generated runner current and verify installation from the published tag; installation alone does not prove host discovery or source access. | [ADR-0006](../decisions/0006-distribute-a-node-ready-skill.md), [deployment view](07-deployment-view.md)                                 |
+
+Archify applies the same separation of authored meaning and fixed presentation
+to engineering documentation. Its build and review costs belong to contributors;
+it does not enter report generation or installed-skill execution.

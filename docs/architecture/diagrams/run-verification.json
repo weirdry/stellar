@@ -1,0 +1,178 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "Run verification: paired inputs and comparisons",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1080,
+      610
+    ]
+  },
+  "stages": [
+    {
+      "label": "Inputs: same work map"
+    },
+    {
+      "label": "Read"
+    },
+    {
+      "label": "Checks"
+    },
+    {
+      "label": "Compare"
+    },
+    {
+      "label": "Result"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "capture",
+      "type": "database",
+      "label": "Capture + map",
+      "sublabel": "Normalized facts vs map",
+      "stage": 0,
+      "row": 0,
+      "width": 120,
+      "height": 66
+    },
+    {
+      "id": "map",
+      "type": "database",
+      "label": "HTML + map",
+      "sublabel": "Embedded JSON vs map",
+      "stage": 0,
+      "row": 1,
+      "width": 120,
+      "height": 66
+    },
+    {
+      "id": "html",
+      "type": "database",
+      "label": "HTML + map",
+      "sublabel": "Current runner + assets",
+      "stage": 0,
+      "row": 2,
+      "width": 120,
+      "height": 66
+    },
+    {
+      "id": "state",
+      "type": "database",
+      "label": "State + map",
+      "sublabel": "state.map vs map; optional",
+      "stage": 0,
+      "row": 3,
+      "width": 120,
+      "height": 66
+    },
+    {
+      "id": "facts",
+      "type": "security",
+      "label": "Source fidelity",
+      "sublabel": "Normalize; compare facts",
+      "stage": 2,
+      "row": 0,
+      "width": 180,
+      "height": 66
+    },
+    {
+      "id": "embedded",
+      "type": "security",
+      "label": "Embedded map",
+      "sublabel": "Exactly one matching JSON",
+      "stage": 2,
+      "row": 1,
+      "width": 180,
+      "height": 66
+    },
+    {
+      "id": "bytes",
+      "type": "security",
+      "label": "Bundled viewer",
+      "sublabel": "Compare rendered bytes",
+      "stage": 2,
+      "row": 2,
+      "width": 180,
+      "height": 66
+    },
+    {
+      "id": "state-map",
+      "type": "security",
+      "label": "State and map",
+      "sublabel": "Equal when state provided",
+      "stage": 2,
+      "row": 3,
+      "width": 180,
+      "height": 66
+    },
+    {
+      "id": "result",
+      "type": "backend",
+      "label": "Verification result",
+      "sublabel": "Checks + scoped diagnostics",
+      "stage": 4,
+      "row": 1,
+      "width": 180,
+      "height": 66
+    }
+  ],
+  "flows": [
+    {
+      "from": "capture",
+      "to": "facts",
+      "label": "normalize facts"
+    },
+    {
+      "from": "map",
+      "to": "embedded",
+      "label": "extract JSON"
+    },
+    {
+      "from": "html",
+      "to": "bytes",
+      "label": "render map"
+    },
+    {
+      "from": "state",
+      "to": "state-map",
+      "label": "when provided"
+    },
+    {
+      "from": "facts",
+      "to": "result",
+      "label": "captureFacts"
+    },
+    {
+      "from": "embedded",
+      "to": "result",
+      "label": "embeddedMap",
+      "route": "straight",
+      "labelAt": [
+        670,
+        265
+      ]
+    },
+    {
+      "from": "bytes",
+      "to": "result",
+      "label": "bundledViewer",
+      "labelAt": [
+        670,
+        379
+      ]
+    },
+    {
+      "from": "state-map",
+      "to": "result",
+      "label": "stateMap",
+      "labelAt": [
+        670,
+        493
+      ]
+    }
+  ],
+  "cards": []
+}

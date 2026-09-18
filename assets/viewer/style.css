@@ -125,9 +125,16 @@ button.icon:hover:not(:disabled) {
   text-decoration: none;
 }
 .brand-mark {
-  font-size: 28px;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
   color: var(--accent);
-  font-weight: 300;
+}
+.brand-mark svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  color: inherit;
 }
 .brand b {
   font-size: 14px;
@@ -1416,7 +1423,8 @@ body.light {
     gap: 6px;
   }
   .brand-mark {
-    font-size: 23px;
+    width: 23px;
+    height: 23px;
   }
   .brand span:not(.brand-mark) {
     font-size: 7px;

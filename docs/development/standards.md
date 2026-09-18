@@ -1,86 +1,38 @@
-# Organization standard adoption
+# Stellar engineering standards
 
-Stellar is maintained by ed. It adopts the engineering conventions below by
-explicit project direction.
+Stellar owns its engineering rules in this repository.
 
-## Reviewed source
+| Concern                                                  | Authority                                                                                       |
+| -------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| Language, issues, commits, branches, review and releases | [Contribution policy](../../CONTRIBUTING.md)                                                    |
+| Agent instructions and product boundaries                | [Shared rules](../../RULES.md)                                                                  |
+| Canonical documentation, state and diagram lifecycle     | [Documentation policy](documentation.md)                                                        |
+| Architecture and accepted direction                      | [Architecture current view](../architecture/README.md)                                          |
+| Tool setup and truthful local commands                   | [Development guide](README.md), [Justfile](../../justfile)                                      |
+| Exact runtimes and dependencies                          | [mise configuration](../../mise.toml), [package manifest](../../package.json), repository locks |
+| Hosted checks                                            | [CI workflow](../../.github/workflows/ci.yml) and its actual run results                        |
+| Skill installation and publication                       | [Distribution guide](distribution.md)                                                           |
 
-Reviewed on 2026-09-12 against `5010-dev/.github` main at
-[`9411f3ee4adc5cbb7f7a951e4cee1a1602fffc39`](https://github.com/5010-dev/.github/tree/9411f3ee4adc5cbb7f7a951e4cee1a1602fffc39).
-The local reference checkout matched that live remote commit. The recorded
-commit identifies this adoption review. Stellar's applicable contribution rules
-are written directly in root CONTRIBUTING.md; that file is the local authority
-for commit, branch, review, and release workflow. The remaining links identify
-the engineering standards and reference material used by this repository.
+The single native root uses Node ESM JavaScript, exact runtime and dependency
+selectors, frozen installation, Prettier, flat ESLint, the Node test runner and
+separate Playwright browser checks. There is no TypeScript artifact requiring a
+typecheck or published Stellar npm package. The installed runner is a reproducible
+bundle generated explicitly and checked for currency; schemas and viewer assets
+remain colocated authoritative inputs.
 
-| Source                                                                                                                                        | Stellar application                                                     |
-| --------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| 5010-dev/.github CONTRIBUTING.md, reviewed source above                                                                                       | Applicable rules incorporated directly into Stellar CONTRIBUTING.md     |
-| [Developer Tooling Standard](https://github.com/5010-dev/.github/blob/main/docs/standards/developer-tooling/README.md)                        | Truthful Just commands, exact selectors/locks, local validation and CI  |
-| [Golden Path bootstrap](https://github.com/5010-dev/.github/blob/main/docs/guides/bootstrap-new-repository.md)                                | Repository-owned implementation sized to actual capabilities            |
-| [Golden Path examples](https://github.com/5010-dev/.github/blob/main/docs/golden-path/reference-examples.md)                                  | Reviewed action pins and thin CI shape, adapted once                    |
-| [Engineering documentation](https://github.com/5010-dev/.github/blob/main/docs/standards/engineering-documentation/README.md)                 | One L0 corpus using 5010-arc42-v1                                       |
-| [Documentation lifecycle](https://github.com/5010-dev/.github/blob/main/docs/standards/engineering-documentation/lifecycle-and-validation.md) | Same-change completion, evidence distinctions, structural/link checking |
+Quality gates are read-only. Installation, formatting, generation, publication
+and deployment are separate actions. Tool configuration does not establish that
+a command passed; a hosted workflow does not establish branch enforcement.
+Hosting enforcement and dependency remediation ownership remain
+[open concerns](../architecture/11-risks-technical-debt.md).
 
-Developer tooling standard reviewed: `2026.08.8`. Documentation profile adopted:
-`5010-arc42-v1`. Contribution policy is maintained locally. Other adopted
-engineering standards retain their stated authority; this provenance record
-does not create an automatic policy update mechanism.
+One L0 arc42 corpus is sufficient for the current skill and viewer. Archify is
+used to explain that system, with JSON/HTML/SVG consistency checked locally.
+It is not bundled into the product or needed to render a user's work map.
 
-## Current applicability
-
-The Node profile now applies to the repository-native JavaScript CLI and
-bundled viewer: exact Node 24, pnpm 11, Prettier 3.9, flat ESLint 10, and frozen
-locks. The profile permits the built-in Node test runner for a small native CLI;
-Playwright supplies separately named browser checks. There is no TypeScript
-artifact requiring typecheck or published npm library. The installed runner is
-a reproducible esbuild bundle, generated explicitly and checked for currency in CI.
-The root package is private to prevent accidental registry publication.
-No native-root map, release-unit map, central agent, or reusable conformance
-workflow is needed for this single native root.
-
-Source hosting is public under `weirdry/stellar`. The repository owns its hosted
-CI definition and permits rebase merge only. Actual CI results are recorded in
-GitHub Actions; workflow presence does not establish merge enforcement.
-Branch rules, dependency visibility and remediation routing remain **Open**.
-Stellar uses MIT licensing and GitHub-hosted skill distribution; the
-[distribution guide](distribution.md) owns the manual validated-main release
-path and installation checks. Immutable GitHub release tags identify published
-skill versions; no Stellar npm publication is involved.
-
-## Copy-once provenance
-
-- `scripts/docs/check-contract.sh` is adapted from the organization's
-  [reference checker at the reviewed commit](https://github.com/5010-dev/.github/blob/9411f3ee4adc5cbb7f7a951e4cee1a1602fffc39/scripts/docs/check-contract.sh).
-  Stellar extends the scan to tracked-source locations outside `docs` and
-  checks that all L0 chapters appear in the architecture index. The common
-  minimum remains intact. Link checking verifies local file targets; fragment
-  meaning and factual correctness require review.
-- [.github/pull_request_template.md](../../.github/pull_request_template.md)
-  was initially copied without content changes from the organization's
-  [template at the reviewed commit](https://github.com/5010-dev/.github/blob/9411f3ee4adc5cbb7f7a951e4cee1a1602fffc39/pull_request_template.md).
-  Root CONTRIBUTING.md requires this local template for PR authoring, including
-  its applicable sections and checklists. The 2026-09-16 adaptation adds explicit
-  English authoring and `Refs` guidance for issue tracking on `dev`. No automatic
-  upstream sync is used.
-- The issue workflow, [work template](../../.github/ISSUE_TEMPLATE/work.md), and
-  shared [agent rules structure](../../RULES.md) were adapted on 2026-09-16 from
-  [`weirdry/crew` at `97f2a76`](https://github.com/weirdry/crew/tree/97f2a76c3018b80f80886cab6590deca510847c5).
-  Stellar retains its own product/privacy constraints and canonical documentation
-  owners. Its hosted Project uses the same workflow and priority options, with
-  table and board views; actual settings and visibility require GitHub read-back.
-  This is a copy-once reference, not a runtime dependency on Crew.
-- Canonical CI follows the organization example. Its action tags and the mise
-  Linux release asset were checked at adoption; exact pins live in the workflow.
-
-These are repository-owned source files. No command downloads policy or
-regenerates them from a sibling checkout during normal checks.
-
-## Diagram boundary
-
-Use Archify by default for new canonical engineering diagrams and the documented
-Mermaid fallback when applicable. No diagrams are required for this foundation.
-When diagrams are added, keep authored source, generated views, regeneration
-procedure, and applicable review evidence together. Stellar's product viewer
-is its own implementation; Archify is a design/toolchain reference, not an
-inherited runtime dependency.
+MIT licensing and GitHub-hosted skill distribution are implemented. `dev` has
+no deployment target; validated `main` and immutable published tags define the
+distribution boundary. [Release evidence](../validation/2026-09-19-v0.1.0-release.md)
+separates publication, installation and host acceptance. Earlier dated records
+and accepted ADRs retain their historical context; this document describes the
+current local rules and does not create automatic policy synchronization.

@@ -4,6 +4,9 @@ Dated records identify the source or artifact, commands, observed result, and
 untested scope. They support the architecture without silently changing its
 meaning.
 
+- [2026-09-19 branding review for pull request preparation](2026-09-19-branding-pr.md)
+- [2026-09-19 architecture content and continuity walkthrough](2026-09-19-architecture-content.md)
+- [2026-09-19 canonical documentation and diagrams](2026-09-19-canonical-documentation.md)
 - [2026-09-19 v0.1.0 publication and installation acceptance](2026-09-19-v0.1.0-release.md)
 - [2026-09-18 Node-ready skill installation](2026-09-18-skill-installation.md)
 - [2026-09-18 fallback-font area placement](2026-09-18-fallback-font-placement.md)

@@ -43,6 +43,15 @@ records the explicit synthetic invocation and its limits.
 
 State: **As-built**
 
+![Contributors validate the bundle before integration, promotion, publication and installation](diagrams/skill-delivery.svg)
+
+[Explore HTML](diagrams/skill-delivery.html) · [JSON source](diagrams/skill-delivery.json)
+
+The diagram follows the tagged release path. Installation can also select
+validated `main` without waiting for a tag. Bundle generation, local checks,
+hosted checks, promotion, publication, installation and invocation each need
+their own evidence; moving through one box does not establish later outcomes.
+
 Stellar is MIT licensed. The public skills CLI installs the root skill from a
 GitHub revision; Stellar itself is not published to npm. Instructions invoke the
 committed Node.js 24 runner with bundled JavaScript dependencies. Its schemas,
