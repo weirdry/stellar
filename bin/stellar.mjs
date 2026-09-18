@@ -8561,8 +8561,8 @@ async function verifyRun({ capture, map, html, state }) {
     "bundledViewer",
     htmlBytes.equals(Buffer.from(await renderWorkMap(map), "utf8")) ? null : "/",
     "html",
-    "HTML differs from this checkout's bundled renderer output.",
-    "Verify with the renderer revision used for this report, or render a separate new HTML file with this checkout. Keep the original report."
+    "HTML differs from this runner's bundled renderer output.",
+    "If available, verify with the original runner and viewer files recorded for this report. Otherwise render a separate new HTML file with this runner; this does not verify the original HTML. Keep the original report."
   );
   checks.stateMap = "not-provided";
   if (state !== void 0)

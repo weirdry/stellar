@@ -16,7 +16,7 @@ support is implemented; the first public release and promotion to `main` are pen
 
 ## Install and use
 
-With **Node.js 24.x** available, install the skill through the
+With **Node.js 24.x** (including npm/npx) and **Git** available, install the skill through the
 [skills CLI](https://github.com/vercel-labs/skills):
 
 ```sh
@@ -36,10 +36,20 @@ schemas, viewer and guides. No developer checkout, mise, Just, pnpm, or Git hook
 are needed to generate reports. Node must remain available. The host resolves the
 installed skill root and calls `node "$STELLAR_ROOT/bin/stellar.mjs"` from the
 user's task directory. Do not run `just init` in an installed copy.
+Git is needed for installation and updates, not for running installed reports.
+For a global Codex/Claude Code installation with `skills@1.7.0`, the canonical
+directory is `~/.agents/skills/stellar`; Claude Code links to it from
+`~/.claude/skills/stellar`. Use `npx skills list -g` to confirm the actual path,
+then set `STELLAR_ROOT` to that directory for manual commands.
 
 Use `npx skills update stellar -g` to check and apply updates through the installer.
-Reports and saved state live outside the installation and are retained. To remove
-the skill, use `npx skills remove stellar -g`; this does not delete report folders.
+An exact-SHA or immutable-tag installation stays pinned; install the new tag or
+SHA with `skills add` to change it. Reports and saved state live outside the
+installation and are retained. To remove the skill interactively, use
+`npx skills remove stellar -g`. For a non-interactive removal, use
+`npx --yes skills remove stellar -g -y`; without `-y`, the confirmation prompt
+may exit successfully without removing anything. Neither command deletes report
+folders outside the installation.
 See [distribution and release](docs/development/distribution.md) for exact-ref
 installs, contributor linking, validation, and the release procedure.
 

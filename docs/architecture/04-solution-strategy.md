@@ -45,5 +45,7 @@ run directories. The runner preserves explicit user grouping, retains absent
 decisions outside the current map, and requires reconsideration of agent
 classification when full issue text changes. Current facts come exclusively from
 new normalization. [ADR-0005](../decisions/0005-preserve-classification-on-refresh.md)
-records this separation. Background synchronization, packaged distribution and
-licensing remain Open.
+records this separation. Background synchronization remains Open. MIT licensing
+and the installable Node runner are implemented; see
+[skill distribution](07-deployment-view.md#skill-distribution) for the current
+installation and pending release boundary.

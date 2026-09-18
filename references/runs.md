@@ -127,7 +127,7 @@ provenance. Keep previous reports and states. Do not pre-create the continuity
 destination to store raw responses. New standalone runs can use a newly created
 private directory.
 
-The README identifies the selected capture, renderer revision used, output/state
+The README identifies the selected capture, [renderer identity](#record-renderer-identity), output/state
 paths, freshness and lookup limits, plus checks actually performed. If providing
 a reconstruction script, include all its inputs and use paths relative to this
 folder; verify it in a separate temporary output location. A script depending on
@@ -135,14 +135,58 @@ an external host transcript, spilled result or missing index is not a portable
 reconstruction. If that evidence cannot be retained, state the limit; a usable
 capture/report must not be described as independently reconstructed collection.
 
-## Check the final artifacts
+## Record renderer identity
 
-From the skill root, select the matching native capture, map and HTML, adding
-the actual state path when one exists:
+For installed runs, record the Node version, installer/source URL and requested ref when known,
+and SHA-256 hashes of the installed `bin/stellar.mjs` and all viewer files,
+including the locale catalogs. Do this when generating the report, before any
+skill update. An installed copy has no Git metadata; do not infer a commit from
+its directory name or claim that the current upstream head was installed.
+If the source ref is unknown, say so. There is no runner `--version` command.
+For development runs through `bin/stellar.js` or Just, record the checkout
+commit and any local source/resource changes instead; a bundle hash does not
+identify a source runner that was used without rebuilding that bundle.
+
+From the task directory, these read-only commands print the runtime version and
+file hashes. Set `STELLAR_ROOT` to the absolute installed path, then retain the
+output in the new run's README or a fresh evidence file:
 
 ```sh
-node "$STELLAR_ROOT/bin/stellar.mjs" verify-run CAPTURE.json MAP.json REPORT.html
-node "$STELLAR_ROOT/bin/stellar.mjs" verify-run CAPTURE.json MAP.json REPORT.html STATE.json
+node --version
+node --input-type=module - "$STELLAR_ROOT" <<'NODE'
+import { createHash } from 'node:crypto';
+import { readFile, readdir, stat } from 'node:fs/promises';
+import { join } from 'node:path';
+
+const root = process.argv[2];
+const files = ['bin/stellar.mjs', ...(await readdir(join(root, 'assets/viewer'),
+  { recursive: true })).map(name => join('assets/viewer', name))].sort();
+for (const file of files) {
+  const path = join(root, file);
+  if (!(await stat(path)).isFile()) continue;
+  console.log(createHash('sha256').update(await readFile(path)).digest('hex') + '  ' + file);
+}
+NODE
+```
+
+Hashes identify the files, not their Git provenance, and cannot restore a past
+installation. This record is not a new work-map/state field or a verifier input.
+For a known ref, an isolated installation of that ref can recover the original
+runner and resources; compare recorded hashes before using it for verification.
+If the original files cannot be recovered, disclose that original-renderer
+verification is unavailable. Generate and verify a separate new report with the
+current runner if needed; keep the original HTML and its verification history.
+
+## Check the final artifacts
+
+From the task directory, select the matching native capture, map and HTML using
+absolute paths, adding the actual state path when one exists:
+
+```sh
+node "$STELLAR_ROOT/bin/stellar.mjs" verify-run \
+  /absolute/capture.json /absolute/map.json /absolute/report.html
+node "$STELLAR_ROOT/bin/stellar.mjs" verify-run \
+  /absolute/capture.json /absolute/map.json /absolute/report.html /absolute/state.json
 ```
 
 Use one invocation, not both. This read-only command returns JSON on stdout;
@@ -166,9 +210,12 @@ The checks are:
 - `embeddedMap`: exactly one bundled data slot parses to the final map.
 - `bundledViewer`: the original HTML bytes match this installed runner's renderer output
   encoded as UTF-8 for that map. Decoding for JSON inspection is separate and
-  cannot hide invalid UTF-8 bytes. A report from another renderer revision may
-  fail this check; verify with its original revision or generate a separate new
-  report, preserving the old one. Supplied HTML is never executed.
+  cannot hide invalid UTF-8 bytes. A report from another renderer may fail this
+  check; a mismatch alone does not distinguish an update from altered HTML.
+  Use the [recorded renderer identity](#record-renderer-identity) to recover and
+  verify with the original files when available. Otherwise generate a separate
+  new report, preserving the old one; verifying the new report does not verify
+  the original HTML. Supplied HTML is never executed.
 - `stateMap`: the optional state validates and its map equals the final map.
   Without a state it is `not-provided`, not a pass.
 
