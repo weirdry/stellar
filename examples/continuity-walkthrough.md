@@ -16,16 +16,21 @@ contributor `just` commands; installed skills use the equivalent bundled-runner
 commands in [SKILL.md](../SKILL.md). Only a temporary directory of synthetic
 files is created. A new directory makes the walkthrough repeatable without
 replacing earlier runs. Do not pre-create the numbered run directories.
+Continue to the next block only after the current step succeeds, except for the
+expected validation rejection described in step 3. If setup fails, stop and
+correct the error before retrying. These blocks do not change shell options.
 
 ## 1. Generate the first report
 
 ```sh
-set -e
-stellar_demo="$(mktemp -d "${TMPDIR:-/tmp}/stellar-continuity.XXXXXX")"
-just normalize examples/mixed-capture.json "$stellar_demo/draft.json"
-just classify-draft "$stellar_demo/draft.json" examples/mixed-choices.json "$stellar_demo/01-first"
-just render "$stellar_demo/01-first/work-map.json" "$stellar_demo/01-first/stellar.html"
-just verify-run examples/mixed-capture.json "$stellar_demo/01-first/work-map.json" "$stellar_demo/01-first/stellar.html" "$stellar_demo/01-first/state.json"
+if stellar_demo="$(mktemp -d "${TMPDIR:-/tmp}/stellar-continuity.XXXXXX")"; then
+  just normalize examples/mixed-capture.json "$stellar_demo/draft.json" &&
+    just classify-draft "$stellar_demo/draft.json" examples/mixed-choices.json "$stellar_demo/01-first" &&
+    just render "$stellar_demo/01-first/work-map.json" "$stellar_demo/01-first/stellar.html" &&
+    just verify-run examples/mixed-capture.json "$stellar_demo/01-first/work-map.json" "$stellar_demo/01-first/stellar.html" "$stellar_demo/01-first/state.json"
+else
+  printf '%s\n' 'Temporary directory creation failed. Stop here and correct TMPDIR before retrying.' >&2
+fi
 ```
 
 The first run contains four assigned issues and one context issue. All four
