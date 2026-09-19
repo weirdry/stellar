@@ -205,6 +205,14 @@ state without restoring old issues or relations to the current report. Changed
 full text withholds an agent classification until reconsidered; user decisions
 are reapplied. `classify` protects user-owned fields; `revise` applies explicit
 user corrections. Both update state and map together.
+After input validation, choice application builds issue-ID and canonical
+source-identity indexes once over its cloned state. Each choice updates the
+existing objects through those indexes; issue/memory array order, canonical
+identity encoding and actor checks remain unchanged. Parent-cycle validation
+tracks a discovered cycle directly instead of repeatedly searching unrelated
+earlier diagnostics. It still reports the first cycle in traversal order and
+continues later validation. These are internal processing changes; saved-file
+contracts are unchanged.
 Null and omitted descriptions are equivalent purpose evidence, while current
 source fields retain their original representation. Syntax errors identify the
 input role; continuity-schema errors point to the offending field and explain

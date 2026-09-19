@@ -1,0 +1,86 @@
+# CLI performance measurements
+
+The optional `just benchmark` command measures the actual installed bundle on
+invented inputs. It is a contributor experiment, separate from `just ci` and
+browser responsiveness checks. Requires macOS or Linux, Python 3.11+ from the
+contributor's environment (standard library only), and the repository-pinned
+Node installed by `just init`. Python is not a product/install dependency or a
+tool installed by `just init`.
+
+## Run and compare
+
+Choose fresh directories under a disposable parent. The benchmark refuses an
+existing output directory and never accepts real captures or saved user state.
+The default run generates 1,000, 10,000 and 50,000 assigned issues and takes
+several minutes and a few GiB of disk/RAM. Keep other CPU-intensive work idle.
+
+```sh
+just init
+just benchmark /tmp/stellar-before
+
+# After a source change, explicitly regenerate the bundle before comparing.
+just build-runner
+just benchmark /tmp/stellar-after /tmp/stellar-before/results.json
+```
+
+`just benchmark` first checks bundle currency, then copies the committed-format
+runner, manifest and resources into its fresh output directory and checks every
+manifest hash. The source checkout is not used for timed product execution.
+Setup, fixture authoring and verification are outside timing samples. The
+benchmark neither installs a skill nor modifies an existing installation.
+
+A small harness smoke test uses the same protocol with fewer inputs/trials:
+
+```sh
+just benchmark /tmp/stellar-smoke '' 100 1
+```
+
+Sizes must be distinct multiples of 20, at least 100; trials must be positive.
+Use matching sizes, trial count and fixture script bytes for a comparison.
+Reference mode rejects any differing synthetic input or expected output hash,
+as well as a differing artifact inventory. It is intentionally strict: use it
+for behavior-preserving changes with unchanged schemas/viewer content. Changed
+output contracts need a separately justified comparison rather than disabling
+the mismatch.
+
+## Work and evidence
+
+[fixtures.mjs](../../scripts/bench/fixtures.mjs) owns the generator and explicit
+synthetic classifications. Half the issues come from each of two invented
+Linear/GitHub sources. Each source has a balanced parent hierarchy; the graph
+has 2N blocks edges and N−2 parent edges. Initial classifications are user-owned
+for one quarter of issues. A seed map is authored from the normalized draft and
+validated through `remember`; this does not measure initial `classify-draft`.
+
+The steady case changes statuses and selected user-owned titles without pending
+agent review. Churn at sizes up to 10,000 replaces 10% of identities and changes
+selected purpose text, then applies explicit choices for pending classifications.
+Both cases assert user classification/target preservation. `verify-run` must
+pass capture facts, embedded map, exact bundled viewer and state/map consistency.
+Every timed output must match its corresponding setup artifact byte for byte;
+reference mode additionally compares those artifacts across implementations.
+
+[benchmark.py](../../scripts/bench/benchmark.py) launches fresh processes serially,
+with deterministically shuffled operation order and warm OS file caches. It
+reports all raw wall/CPU/peak-RSS samples, medians and min/max wall times, protocol,
+environment, revision, harness hashes, runtime hashes, artifact hashes and
+verification receipts in `results.json`. An uncommitted implementation can share
+its parent's Git revision; the runner/resource hashes identify the actual timed
+bytes. Wall time includes startup, reading, validation/computation, serialization,
+writing and exit. macOS `wait4` peak RSS is bytes; Linux reports KiB. Results
+normalize both to MiB. This is full-process peak RSS, not retained heap size.
+
+`refresh` includes normalization: do not add its time to `normalize` to describe
+a saved-state workflow. `render` measures HTML generation, not browser layout or
+interaction. CPU profiles, when needed, are separate executions and must not be
+mixed into the timing samples. The staged runner and generated fixture files are
+retained for those investigations; repeated trial outputs are removed only after
+their hashes match. All retained benchmark inputs are synthetic and disposable.
+
+Commit small, reviewed JSON measurements and a dated interpretation under
+[validation](../validation/README.md), not generated multi-megabyte inputs or
+reports. Preserve the hardware model/RAM and uncontrolled conditions in that
+record; the environment block is not a complete hardware inventory. Three
+samples are exploratory observations, not universal speed guarantees or CI
+timing limits. Native-language mocks, fresh-host installation, live source access
+and release/runtime acceptance require separate evidence.
