@@ -140,9 +140,14 @@ Before generating or comparing artifacts, the build independently enumerates
 `schemas/*.schema.json`, `assets/viewer/*.{html,css,js,svg}`, and
 `assets/viewer/locales/*.json`, plus the generated runner. It compares that set
 with the fixed `runtimeFiles` list in [installation.js](../../lib/installation.js).
-An unlisted resource, absent listed resource, or duplicate entry fails before
-artifact writes and identifies the inventory to correct. Restore missing files
-or deliberately update the list before regenerating; the check never adds entries
+Names starting with `.` are skipped before filesystem inspection, so editor lock
+symlinks (such as `.#app.js`) and OS metadata (such as `._app.js`) do not enter
+the inventory. Runtime resources must use non-hidden names.
+An unlisted resource, absent listed resource, duplicate entry, or non-file
+resource path fails before artifact writes. Diagnostics name the affected paths,
+including duplicate entries, and inventory mismatches identify the list to
+correct. Restore missing files or deliberately update the list before
+regenerating; the check never adds entries
 or repairs artifacts. Installed doctor continues to read only the fixed list.
 
 These are the current runtime directory and extension conventions, not a scan
