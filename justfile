@@ -107,6 +107,10 @@ build-runner:
 bundle-check:
     mise exec --locked -- node scripts/build-runner.js --check
 
+# Optional synthetic CLI measurements (macOS/Linux, Python 3.11+); fresh output.
+benchmark output reference="" sizes="1000,10000,50000" trials="3": bundle-check
+    python3 scripts/bench/benchmark.py --node "$(mise exec --locked -- node -p process.execPath)" --output {{ quote(output) }} {{ if reference == "" { "" } else { "--reference " + quote(reference) } }} --sizes {{ quote(sizes) }} --trials {{ quote(trials) }}
+
 # Browser QA is a separate gate.
 check: docs-check diagrams-check format-check lint bundle-check test
 

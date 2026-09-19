@@ -7523,6 +7523,7 @@ function validateWorkMap(data) {
       parentPaths.set(edge.target, path);
     }
   });
+  let parentCycle = false;
   for (const id of parents.keys()) {
     const path = /* @__PURE__ */ new Set();
     let at = id;
@@ -7534,12 +7535,13 @@ function validateWorkMap(data) {
           "Source parent hierarchy contains a cycle.",
           "Correct parent direction or endpoints against the source."
         );
+        parentCycle = true;
         break;
       }
       path.add(at);
       at = parents.get(at);
     }
-    if (diagnostics.some((d) => d.code === "parent-cycle")) break;
+    if (parentCycle) break;
   }
   (data.attachments || []).forEach((attachment, n) => {
     if (!safeAttachmentURL(attachment.href))
@@ -8455,6 +8457,8 @@ function applyChoices(previous, choices, actor) {
       }
     }
   }
+  const issues = new Map(map.issues.map((issue) => [issue.id, issue]));
+  const memory = new Map(state.memory.map((entry) => [key(entry), entry]));
   const seen = /* @__PURE__ */ new Set();
   for (const [n, choice] of (choices.issues || []).entries()) {
     if (seen.has(choice.issueId))
@@ -8464,16 +8468,14 @@ function applyChoices(previous, choices, actor) {
         "Supply one choice per current issue."
       );
     seen.add(choice.issueId);
-    const issue = map.issues.find((i) => i.id === choice.issueId);
+    const issue = issues.get(choice.issueId);
     if (!issue)
       fail2(
         `/issues/${n}/issueId`,
         "Choice does not identify a current issue.",
         "Use the issueId from this state work-map; do not match a title or issue number."
       );
-    const saved = state.memory.find(
-      (entry) => key(entry) === key(identity(map, issue))
-    );
+    const saved = memory.get(key(identity(map, issue)));
     if (choice.classification) {
       if (!map.categories.some(
         (category) => category.id === choice.classification.category

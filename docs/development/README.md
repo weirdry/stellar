@@ -88,6 +88,15 @@ for constrained local environments; default checks use Playwright's pinned
 browser. The browser gate fails if Chromium is unavailable; it does not skip.
 Private regression inputs and scripts must remain in ignored local locations.
 
+## Optional CLI performance measurements
+
+`just benchmark OUTPUT [REFERENCE_RESULTS [SIZES [TRIALS]]]` measures the real
+bundled CLI on generated synthetic data and compares complete output hashes.
+The [performance guide](performance.md) owns prerequisites, workload, reproduction
+and interpretation. Python 3.11+ is optional contributor tooling for this command
+only; it is not installed by `just init` or required by the product or CI.
+Timing samples and peak RSS are dated observations, not pass/fail timing gates.
+
 ## Work tracking and agent instructions
 
 Use the [issue workflow](../../CONTRIBUTING.md#issue-management),

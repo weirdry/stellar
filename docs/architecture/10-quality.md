@@ -61,6 +61,20 @@ separate these observations from automated assertions and release acceptance.
 A report's own collection, interpretation and visual review remain necessary
 where relevant even when repository checks pass.
 
+## CLI performance evidence
+
+The optional [performance procedure](../development/performance.md) compares the
+actual bundled CLI on generated synthetic inputs. It records raw timing and
+peak-RSS samples independently from correctness gates. Before/after artifact
+hashes and `verify-run` receipts protect full output equivalence; focused
+[processing regressions](../../test/processing.test.js) protect identity matching,
+ordering, input preservation and diagnostic behavior. Workstation timings do not
+set CI thresholds or imply browser performance, production capacity or native
+language migration gains.
+The [initial processing comparison](../validation/2026-09-20-cli-processing-costs.md)
+records targeted improvements, unchanged artifacts, timing variability, memory
+limits and the decision to retain eager schema preparation.
+
 ## Documentation quality
 
 The [canonical policy](../development/documentation.md) governs ownership,

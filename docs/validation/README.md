@@ -4,6 +4,7 @@ Dated records identify the source or artifact, commands, observed result, and
 untested scope. They support the architecture without silently changing its
 meaning.
 
+- [2026-09-20 CLI classification and validation processing costs](2026-09-20-cli-processing-costs.md)
 - [2026-09-19 resource inventory review corrections](2026-09-19-resource-inventory-review.md)
 - [2026-09-19 CLI short help, version bundling, and resource coverage](2026-09-19-cli-help-resource-checks.md)
 - [2026-09-19 CLI independent-review corrections](2026-09-19-cli-review-corrections.md)
