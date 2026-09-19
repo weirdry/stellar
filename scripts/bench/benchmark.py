@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 import platform
 import random
+import re
 import shutil
 import statistics
 import subprocess
@@ -37,10 +38,24 @@ if (sys.platform not in ('darwin', 'linux') or sys.version_info < (3, 11)
     parser.error('Requires macOS/Linux, Python >=3.11, distinct sizes >=100 divisible by 20, and positive trials.')
 
 repo = Path(__file__).resolve().parents[2]
-reference = json.loads(args.reference.read_text()) if args.reference else None
+reference = None
 protocol = {'sizes': sizes, 'trials': args.trials, 'fixture': digest(Path(__file__).with_name('fixtures.mjs'))}
-if reference and reference['protocol'] != protocol:
-    parser.error('Reference protocol differs (sizes, trials or fixture source).')
+if args.reference is not None:
+    try:
+        reference = json.loads(args.reference.read_text(encoding='utf-8'))
+    except (OSError, ValueError):
+        parser.error('Reference must be a readable UTF-8 JSON results file.')
+    if (not isinstance(reference, dict)
+            or not isinstance(reference.get('protocol'), dict)
+            or not isinstance(reference.get('artifacts'), dict)
+            or not reference['artifacts']):
+        parser.error('Reference must contain protocol and nonempty artifacts objects.')
+    if reference['protocol'] != protocol:
+        parser.error('Reference protocol differs (sizes, trials or fixture source).')
+    if any(not name or not isinstance(value, str)
+           or re.fullmatch(r'[0-9a-f]{64}', value) is None
+           for name, value in reference['artifacts'].items()):
+        parser.error('Reference artifacts must map nonempty names to SHA-256 hex digests.')
 root = args.output.resolve()
 root.mkdir()  # Fresh directory only; never reuse or clean a caller-owned path.
 (root / 'data').mkdir()
@@ -91,7 +106,7 @@ def fixture(*arguments):
 
 def fingerprint(name, path):
     actual = digest(path)
-    if reference and reference['artifacts'].get(name) != actual:
+    if reference is not None and reference['artifacts'].get(name) != actual:
         raise RuntimeError(f'Reference artifact differs: {name}')
     fingerprints[name] = actual
 
@@ -157,7 +172,7 @@ for n in sizes:
             else:
                 dest.unlink()
 
-if reference and fingerprints.keys() != reference['artifacts'].keys():
+if reference is not None and fingerprints.keys() != reference['artifacts'].keys():
     raise RuntimeError('Reference artifact inventory differs.')
 summary = []
 for n in sizes:
@@ -174,7 +189,7 @@ result = {
     'runtime_files': manifest['files'],
     'runner_version': manifest['version'],
     'harness': {p.name: digest(p) for p in [Path(__file__), Path(__file__).with_name('fixtures.mjs')]},
-    'reference_matched': bool(reference),
+    'reference_matched': reference is not None,
     'artifacts': fingerprints, 'rows': rows, 'summary': summary, 'receipts': receipts,
 }
 write_json(root / 'results.json', result)
