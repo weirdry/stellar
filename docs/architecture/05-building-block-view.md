@@ -25,7 +25,12 @@ generates [stellar.manifest.json](../../bin/stellar.manifest.json) from the runn
 and fixed schema/viewer inventory. The doctor reads this local manifest and
 compares file hashes; it does not authenticate a release. CLI version and help
 requests finish before runtime modules read schemas, so broken resources do not
-prevent diagnosis. [CLI guidance](../../references/cli.md) owns the interface.
+prevent diagnosis. Mixed help/positional arguments are rejected before workflow
+loading, while `search-issue` retains literal search text. The
+[diagnostic helper](../../lib/cli-diagnostics.js) prints executable invocation
+pointers and safe runtime error categories/code locations without resource
+excerpts. [CLI guidance](../../references/cli.md) owns the interface and explains
+how to investigate a runtime failure when local manifest checks pass.
 Schemas and viewer assets keep their authoritative paths beside it. Installed
 usage needs Node 24; contributor tooling is separate. See
 [distribution](../development/distribution.md).

@@ -9242,6 +9242,30 @@ var init_cli_commands = __esm({
 // bin/stellar.js
 init_version();
 
+// lib/cli-diagnostics.js
+function cliInvocation() {
+  const quote = (value) => `'${value.replaceAll("'", "'\\''")}'`;
+  return `${quote(process.execPath)} ${quote(process.argv[1])}`;
+}
+function errorSummary(error) {
+  const kind = [SyntaxError, ReferenceError, TypeError, RangeError].find(
+    (type) => error instanceof type
+  )?.name ?? "Error";
+  const code = ["ENOENT", "EACCES", "EPERM", "ERR_MODULE_NOT_FOUND"].includes(
+    error?.code
+  ) ? ` (${error.code})` : "";
+  if (!(error instanceof Error)) return kind;
+  const header = `${error.name}: ${error.message}`;
+  const frames = error.stack?.startsWith(header) ? error.stack.slice(header.length).split("\n") : [];
+  const root = new URL("../", import.meta.url).href;
+  for (const frame of frames) {
+    if (!frame.startsWith("    at ") || !frame.includes(root)) continue;
+    const location = frame.slice(frame.indexOf(root) + root.length).match(/^((?:bin|lib)\/[\w./%-]+:\d+:\d+)\)?$/)?.[1];
+    if (location) return `${kind}${code} at ${location}`;
+  }
+  return `${kind}${code}`;
+}
+
 // lib/cli-help.js
 var commands = {
   doctor: {
@@ -9290,7 +9314,7 @@ var commands = {
     arguments: [
       "MAP.json  Normalized draft or work map.",
       "ISSUE  Internal issue ID from inspect.",
-      "TEXT  Literal search text; quote text containing spaces.",
+      "TEXT  Literal search text, including --help; quote text containing spaces.",
       "OFFSET  Match-list offset; default 0."
     ],
     output: "JSON with paginated literal matches and context; source data stays unchanged.",
@@ -9437,31 +9461,29 @@ function commandInfo(name) {
 function helpText(name) {
   const info = commandInfo(name);
   const exitCodes = "Exit codes: 0 success; 1 failed check or execution error; 2 invalid command usage.";
-  const invocation = 'Installed invocation: node "$STELLAR_ROOT/bin/stellar.mjs" <command> [arguments]';
+  const invocation = cliInvocation();
   if (!info)
     return [
       "Stellar \u2014 inspect, classify, and render local work maps.",
-      "Usage: stellar <command> [arguments]",
+      `Usage: ${invocation} <command> [arguments]`,
       "",
       ...Object.entries(commands).map(
         ([command2, entry]) => `  ${command2.padEnd(17)} ${entry.summary}`
       ),
       "",
       "Options: --version, -V  Print the product version; --help  Show this help.",
-      "Run stellar help <command> or stellar <command> --help for arguments and examples.",
-      invocation,
+      `Run ${invocation} help <command> or ${invocation} <command> --help for arguments and examples.`,
       exitCodes
     ].join("\n");
   return [
     info.summary,
-    `Usage: stellar ${info.usage}`,
+    `Usage: ${invocation} ${info.usage}`,
     "",
     "Arguments:",
     ...info.arguments.map((argument) => `  ${argument}`),
     "",
     `Output: ${info.output}`,
-    `Example: stellar ${info.example}`,
-    invocation,
+    `Example: ${invocation} ${info.example}`,
     exitCodes
   ].join("\n");
 }
@@ -9470,7 +9492,7 @@ function helpText(name) {
 var [command, ...args] = process.argv.slice(2);
 function usageError(message, name) {
   console.error(
-    `${message} Run stellar ${commandInfo(name) ? `help ${name}` : "--help"} for usage.`
+    `${message} Run ${cliInvocation()} ${commandInfo(name) ? `help ${name}` : "--help"} for usage.`
   );
   process.exitCode = 2;
 }
@@ -9495,6 +9517,13 @@ async function main() {
     console.log(helpText(command));
     return;
   }
+  if (args.some(
+    (arg, index) => arg === "--help" && !(command === "search-issue" && index === 2)
+  ))
+    return usageError(
+      "--help cannot be combined with other arguments.",
+      command
+    );
   if (args.length < info.min || args.length > info.max || // Empty reader search/block values keep their established data diagnostics.
   args.slice(0, Math.min(info.min, 2)).some((arg) => !arg))
     return usageError("Invalid arguments.", command);
@@ -9509,14 +9538,26 @@ async function main() {
     if (!result.ok) process.exitCode = 1;
     return;
   }
-  const { runCommand: runCommand2 } = await Promise.resolve().then(() => (init_cli_commands(), cli_commands_exports));
+  let runCommand2;
+  try {
+    ({ runCommand: runCommand2 } = await Promise.resolve().then(() => (init_cli_commands(), cli_commands_exports)));
+  } catch (error) {
+    console.error(
+      `Stellar could not load its runtime (${errorSummary(error)}).`
+    );
+    console.error(
+      `Run ${cliInvocation()} doctor for installation diagnostics. If doctor passes, investigate the runtime code/dependencies at the reported location; doctor checks installed file consistency, not runtime execution or current checkout source.`
+    );
+    process.exitCode = 1;
+    return;
+  }
   await runCommand2(command, args);
 }
 try {
   await main();
-} catch {
+} catch (error) {
   console.error(
-    "Stellar could not load its runtime. Run stellar doctor for installation diagnostics."
+    `Stellar CLI failed (${errorSummary(error)}). Run ${cliInvocation()} help for command usage.`
   );
   process.exitCode = 1;
 }

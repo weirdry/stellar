@@ -22,7 +22,11 @@ actual revision, commands, results and remaining scope.
 Installed diagnostics have separate [CLI tests](../../test/cli-diagnostics.test.js):
 version/help remain available with missing schemas, doctor reports missing,
 unreadable or changed files without executing them, and invalid usage does not
-start a workflow. Source and installed entry points share the help catalog.
+start a workflow. Mixed `--help` requests cannot create or overwrite outputs;
+literal `search-issue` text stays usable. Error pointers execute with quoted
+paths, and runtime loading failures retain safe cause/location information
+without printing damaged schema contents. Source and installed entry points
+share the help catalog.
 The build gate also checks the generated integrity manifest against current
 source/resource bytes. These observations concern local consistency, not release
 authenticity, automatic repair or host authentication.
