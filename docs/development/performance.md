@@ -37,11 +37,22 @@ just benchmark /tmp/stellar-smoke '' 100 1
 
 Sizes must be distinct multiples of 20, at least 100; trials must be positive.
 Use matching sizes, trial count and fixture script bytes for a comparison.
+An explicitly supplied reference must be readable UTF-8 JSON with a matching
+`protocol` object and a nonempty `artifacts` object mapping names to SHA-256
+hex digests. Invalid references (including `{}`, `[]` and `null`) exit 2 before
+the harness creates its output directory or launches a workload process. Omit the reference argument
+only when intentionally collecting a new baseline.
 Reference mode rejects any differing synthetic input or expected output hash,
 as well as a differing artifact inventory. It is intentionally strict: use it
 for behavior-preserving changes with unchanged schemas/viewer content. Changed
 output contracts need a separately justified comparison rather than disabling
 the mismatch.
+
+Run `just benchmark-test` after editing this optional tooling. It checks invalid
+references before output creation, baseline and reference-mode execution on 100
+synthetic issues, and hash/inventory mismatch detection. This standard-library
+Python suite has no timing thresholds and is separate from `just ci`; the
+default product/contributor gates do not acquire a Python requirement.
 
 ## Work and evidence
 

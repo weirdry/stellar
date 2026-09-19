@@ -74,6 +74,11 @@ language migration gains.
 The [initial processing comparison](../validation/2026-09-20-cli-processing-costs.md)
 records targeted improvements, unchanged artifacts, timing variability, memory
 limits and the decision to retain eager schema preparation.
+Explicit benchmark references must pass structural/protocol validation before
+the harness creates output or starts a child process. The optional
+`just benchmark-test` suite protects rejection of invalid references and actual
+artifact comparison; [review correction evidence](../validation/2026-09-20-benchmark-reference-review.md)
+records its checks separately from the product CI gate.
 
 ## Documentation quality
 

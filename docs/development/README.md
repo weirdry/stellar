@@ -96,6 +96,8 @@ The [performance guide](performance.md) owns prerequisites, workload, reproducti
 and interpretation. Python 3.11+ is optional contributor tooling for this command
 only; it is not installed by `just init` or required by the product or CI.
 Timing samples and peak RSS are dated observations, not pass/fail timing gates.
+Use `just benchmark-test` for the optional harness's reference-validation and
+small synthetic comparison regressions, separately from `just ci`.
 
 ## Work tracking and agent instructions
 

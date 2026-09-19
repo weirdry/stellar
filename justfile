@@ -111,6 +111,10 @@ bundle-check:
 benchmark output reference="" sizes="1000,10000,50000" trials="3": bundle-check
     python3 scripts/bench/benchmark.py --node "$(mise exec --locked -- node -p process.execPath)" --output {{ quote(output) }} {{ if reference == "" { "" } else { "--reference " + quote(reference) } }} --sizes {{ quote(sizes) }} --trials {{ quote(trials) }}
 
+# Exercise optional benchmark tooling without imposing timing limits on CI.
+benchmark-test: bundle-check
+    python3 scripts/bench/test_reference.py --node "$(mise exec --locked -- node -p process.execPath)"
+
 # Browser QA is a separate gate.
 check: docs-check diagrams-check format-check lint bundle-check test
 
