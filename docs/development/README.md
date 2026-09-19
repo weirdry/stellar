@@ -41,7 +41,7 @@ SVG export, browser review and evidence retention.
 | `just lint`                                 | ESLint, Just format, Bash syntax, ShellCheck, actionlint, Git whitespace                                                     |
 | `just test`                                 | Deterministic Node unit and CLI integration tests                                                                            |
 | `just build-runner`                         | Explicitly regenerate the installed runner, integrity manifest and dependency notices                                        |
-| `just bundle-check`                         | Read-only byte comparison of the generated runner, integrity manifest and notices against locked source inputs               |
+| `just bundle-check`                         | Read-only runtime resource inventory and byte comparison of the generated runner, integrity manifest and notices             |
 | `just version`                              | Print the product version from its authoritative source                                                                      |
 | `just doctor [--json]`                      | Read-only runtime and installed-build consistency diagnostics                                                                |
 | `just help [COMMAND]`                       | Global or command-specific CLI usage                                                                                         |

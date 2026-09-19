@@ -47,38 +47,7 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 var package_default;
 var init_package = __esm({
   "package.json"() {
-    package_default = {
-      name: "stellar-work-map",
-      version: "0.1.2-dev.0",
-      private: true,
-      license: "MIT",
-      type: "module",
-      engines: {
-        node: "24.x"
-      },
-      packageManager: "pnpm@11.26.0",
-      scripts: {
-        format: "prettier --write .",
-        "format-check": "prettier --check .",
-        lint: "eslint .",
-        test: "node --test test/*.test.js",
-        "test:browser": "node --test test/browser/*.test.js",
-        "browser-install": "playwright install chromium",
-        stellar: "node bin/stellar.js"
-      },
-      dependencies: {
-        ajv: "8.20.0",
-        "ajv-formats": "3.0.1"
-      },
-      devDependencies: {
-        "@eslint/js": "10.0.1",
-        esbuild: "0.28.2",
-        eslint: "10.10.0",
-        globals: "17.12.0",
-        playwright: "1.63.0",
-        prettier: "3.9.6"
-      }
-    };
+    package_default = { version: "0.1.2-dev.0" };
   }
 });
 
@@ -9267,6 +9236,7 @@ function errorSummary(error) {
 }
 
 // lib/cli-help.js
+var isHelpFlag = (value) => value === "--help" || value === "-h";
 var commands = {
   doctor: {
     usage: "doctor [--json]",
@@ -9314,7 +9284,7 @@ var commands = {
     arguments: [
       "MAP.json  Normalized draft or work map.",
       "ISSUE  Internal issue ID from inspect.",
-      "TEXT  Literal search text, including --help; quote text containing spaces.",
+      "TEXT  Literal search text, including --help and -h; quote text containing spaces.",
       "OFFSET  Match-list offset; default 0."
     ],
     output: "JSON with paginated literal matches and context; source data stays unchanged.",
@@ -9451,7 +9421,7 @@ var commands = {
     min: 0,
     max: 1,
     arguments: ["COMMAND  Command name; omit to list all commands."],
-    output: "Plain-text help. COMMAND --help is equivalent to help COMMAND.",
+    output: "Plain-text help. COMMAND --help and COMMAND -h are equivalent to help COMMAND.",
     example: "help doctor"
   }
 };
@@ -9471,8 +9441,8 @@ function helpText(name) {
         ([command2, entry]) => `  ${command2.padEnd(17)} ${entry.summary}`
       ),
       "",
-      "Options: --version, -V  Print the product version; --help  Show this help.",
-      `Run ${invocation} help <command> or ${invocation} <command> --help for arguments and examples.`,
+      "Options: --version, -V  Print the product version; --help, -h  Show this help.",
+      `Run ${invocation} help <command> or ${invocation} <command> --help (alias -h) for arguments and examples.`,
       exitCodes
     ].join("\n");
   return [
@@ -9502,26 +9472,26 @@ async function main() {
     console.log(`stellar ${version}`);
     return;
   }
-  if (command === "--help" || command === "help") {
-    if (command === "--help" && args.length)
-      return usageError("Global --help takes no arguments.");
-    if (args.length > 1 || args.length && !commandInfo(args[0]) && args[0] !== "--help")
+  if (isHelpFlag(command) || command === "help") {
+    if (isHelpFlag(command) && args.length)
+      return usageError("Global help flags take no arguments.");
+    if (args.length > 1 || args.length && !commandInfo(args[0]) && !isHelpFlag(args[0]))
       return usageError("Unknown help topic or too many arguments.", "help");
-    console.log(helpText(args[0] === "--help" ? "help" : args[0]));
+    console.log(helpText(isHelpFlag(args[0]) ? "help" : args[0]));
     return;
   }
   const info = commandInfo(command);
   if (!info)
     return usageError(command ? "Unknown command." : "A command is required.");
-  if (args.length === 1 && args[0] === "--help") {
+  if (args.length === 1 && isHelpFlag(args[0])) {
     console.log(helpText(command));
     return;
   }
   if (args.some(
-    (arg, index) => arg === "--help" && !(command === "search-issue" && index === 2)
+    (arg, index) => isHelpFlag(arg) && !(command === "search-issue" && index === 2)
   ))
     return usageError(
-      "--help cannot be combined with other arguments.",
+      "Help flags (--help, -h) cannot be combined with other arguments.",
       command
     );
   if (args.length < info.min || args.length > info.max || // Empty reader search/block values keep their established data diagnostics.

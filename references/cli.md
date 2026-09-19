@@ -66,22 +66,27 @@ Node 24.x remains the supported prerequisite.
 
 ```sh
 node "$STELLAR_ROOT/bin/stellar.mjs" --help
+node "$STELLAR_ROOT/bin/stellar.mjs" -h
 node "$STELLAR_ROOT/bin/stellar.mjs" help render
 node "$STELLAR_ROOT/bin/stellar.mjs" render --help
+node "$STELLAR_ROOT/bin/stellar.mjs" render -h
 ```
 
-`help COMMAND` and `COMMAND --help` produce identical descriptions, arguments,
+`--help` and `-h` are equivalent global help flags. `help COMMAND`,
+`COMMAND --help`, and `COMMAND -h` produce identical descriptions, arguments,
 output behavior, examples, and exit-code guidance. They need no normal input
 files and do not execute the requested workflow. Help and error pointers print
 the running Node executable and entry-file paths, quoted for a POSIX shell;
 they work without a `stellar` PATH launcher, including paths with spaces or
 single quotes. The
 [command catalog](../lib/cli-help.js) owns help text and argument counts.
-Use exact help forms without additional positional arguments. A bare `--help`
+Use exact help forms without additional positional arguments. A bare `--help` or `-h`
 mixed with other arguments is rejected before loading the workflow or writing
 files (exit `2`). The exception is `search-issue`'s `TEXT` argument: it remains
-literal text, so `search-issue MAP.json ISSUE "--help"` searches for that string.
-Use `./--help` when intentionally naming a file or directory `--help`.
+literal text, so `search-issue MAP.json ISSUE "--help"` or
+`search-issue MAP.json ISSUE "-h"` searches for that string.
+Use `./--help` or `./-h` when intentionally naming a file or directory after a
+help flag. Shell quoting alone does not turn a bare help flag into a path.
 
 | Exit code | Meaning                                                                   |
 | --------- | ------------------------------------------------------------------------- |

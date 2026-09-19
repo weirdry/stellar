@@ -20,12 +20,16 @@ State: **As-built**
 The installed runner is generated from the same CLI and library source by
 [build-runner.js](../../scripts/build-runner.js), with dependencies included in
 [stellar.mjs](../../bin/stellar.mjs) and full third-party notices retained.
-The build embeds the product version from [package.json](../../package.json) and
+The build embeds only the product version from the root [package.json](../../package.json) and
 generates [stellar.manifest.json](../../bin/stellar.manifest.json) from the runner
-and fixed schema/viewer inventory. The doctor reads this local manifest and
-compares file hashes; it does not authenticate a release. CLI version and help
+and fixed schema/viewer inventory. Before generation or comparison, the build
+checks that the fixed list covers the schema/viewer directory conventions,
+including locales; contributor metadata and optional assets are excluded. The
+doctor retains its fixed allowlist and compares file hashes with this local
+manifest; it does not authenticate a release. CLI version and help
 requests finish before runtime modules read schemas, so broken resources do not
-prevent diagnosis. Mixed help/positional arguments are rejected before workflow
+prevent diagnosis. Global and per-command `-h` are aliases of `--help`.
+Mixed help/positional arguments are rejected before workflow
 loading, while `search-issue` retains literal search text. The
 [diagnostic helper](../../lib/cli-diagnostics.js) prints executable invocation
 pointers and safe runtime error categories/code locations without resource
