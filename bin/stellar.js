@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { version } from '../lib/version.js';
-import { commandInfo, helpText } from '../lib/cli-help.js';
+import { commandInfo, helpText, isHelpFlag } from '../lib/cli-help.js';
 import { cliInvocation, errorSummary } from '../lib/cli-diagnostics.js';
 
 const [command, ...args] = process.argv.slice(2);
@@ -17,33 +17,33 @@ async function main() {
     console.log(`stellar ${version}`);
     return;
   }
-  if (command === '--help' || command === 'help') {
-    if (command === '--help' && args.length)
-      return usageError('Global --help takes no arguments.');
+  if (isHelpFlag(command) || command === 'help') {
+    if (isHelpFlag(command) && args.length)
+      return usageError('Global help flags take no arguments.');
     if (
       args.length > 1 ||
-      (args.length && !commandInfo(args[0]) && args[0] !== '--help')
+      (args.length && !commandInfo(args[0]) && !isHelpFlag(args[0]))
     )
       return usageError('Unknown help topic or too many arguments.', 'help');
-    console.log(helpText(args[0] === '--help' ? 'help' : args[0]));
+    console.log(helpText(isHelpFlag(args[0]) ? 'help' : args[0]));
     return;
   }
   const info = commandInfo(command);
   if (!info)
     return usageError(command ? 'Unknown command.' : 'A command is required.');
-  if (args.length === 1 && args[0] === '--help') {
+  if (args.length === 1 && isHelpFlag(args[0])) {
     console.log(helpText(command));
     return;
   }
-  // TEXT is literal data for search-issue, even when its value is "--help".
+  // TEXT is literal data for search-issue, even when it looks like a help flag.
   if (
     args.some(
       (arg, index) =>
-        arg === '--help' && !(command === 'search-issue' && index === 2),
+        isHelpFlag(arg) && !(command === 'search-issue' && index === 2),
     )
   )
     return usageError(
-      '--help cannot be combined with other arguments.',
+      'Help flags (--help, -h) cannot be combined with other arguments.',
       command,
     );
   if (

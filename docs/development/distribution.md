@@ -83,7 +83,7 @@ such as `-dev.0` until a release is deliberately prepared. A version label does
 not prove a Git commit or publication.
 
 `doctor` / `doctor --json` check Node and installed build consistency using a
-generated integrity manifest. `help COMMAND` and `COMMAND --help` describe
+generated integrity manifest. `help COMMAND`, `COMMAND --help`, and `COMMAND -h` describe
 individual commands without loading their data-processing runtime.
 [CLI diagnostics and help](../../references/cli.md) owns the commands, outputs,
 exit codes, remedies, and limits; [run identity](../../references/runs.md#record-renderer-identity)
@@ -122,10 +122,34 @@ runtime JavaScript dependencies, with Node built-ins remaining external.
 The pinned platform-specific esbuild executable is a development dependency;
 its postinstall script is disabled and it is not needed by installed users.
 
+The build narrows only the root `package.json` import to its `version` field.
+Source commands still read the authoritative package version directly; installed
+commands need no package manifest. Scripts, descriptions, and development
+dependency declarations do not enter the bundle. With installed dependencies,
+runtime inputs, and build tools unchanged, metadata-only edits leave the bundle,
+manifest, and notices byte-identical. Changing the product version or actual
+runtime/build inputs still requires regeneration; this does not exempt dependency
+upgrades from their usual locked install and validation.
+
 The same build generates `bin/stellar.manifest.json`, containing the product
 version and SHA-256 hashes of the runner and fixed runtime resource inventory.
 Doctor detects missing or altered installed files against this local manifest;
 it does not authenticate that manifest or establish source/build correctness.
+
+Before generating or comparing artifacts, the build independently enumerates
+`schemas/*.schema.json`, `assets/viewer/*.{html,css,js,svg}`, and
+`assets/viewer/locales/*.json`, plus the generated runner. It compares that set
+with the fixed `runtimeFiles` list in [installation.js](../../lib/installation.js).
+An unlisted resource, absent listed resource, or duplicate entry fails before
+artifact writes and identifies the inventory to correct. Restore missing files
+or deliberately update the list before regenerating; the check never adds entries
+or repairs artifacts. Installed doctor continues to read only the fixed list.
+
+These are the current runtime directory and extension conventions, not a scan
+of arbitrary future resource reads. Documentation, optional images, and brand
+assets outside these patterns are excluded. If runtime code starts consuming a
+new directory or file type, update discovery and the fixed list together, with
+coverage tests. Merely adding an optional asset does not make it a runtime input.
 
 The bundle remains in `bin/`, preserving the source modules' paths to authoritative
 `schemas/` and `assets/viewer/`. These resources are installed alongside it, not

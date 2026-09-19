@@ -73,6 +73,10 @@ test('version and every help topic work without schemas, resources, installer me
       assert.equal(a.status, 0, a.stderr);
       assert.equal(b.status, 0, b.stderr);
       assert.equal(a.stdout, b.stdout);
+      const short = run([command, '-h'], cli);
+      assert.equal(short.status, 0, short.stderr);
+      assert.equal(short.stdout, a.stdout);
+      assert.equal(short.stderr, '');
       for (const section of [
         'Usage:',
         'Arguments:',
@@ -85,6 +89,9 @@ test('version and every help topic work without schemas, resources, installer me
     const global = run(['--help'], cli);
     assert.equal(global.status, 0);
     assert.equal(global.stdout, run(['help'], cli).stdout);
+    const short = run(['-h'], cli);
+    assert.equal(short.status, 0, short.stderr);
+    assert.equal(short.stdout, global.stdout);
     for (const command of Object.keys(commands))
       assert.ok(global.stdout.includes(command));
   }
@@ -253,6 +260,9 @@ test('invalid argument counts and unknown topics fail before loading runtime or 
     ['__proto__'],
     ['help', 'unknown'],
     ['--help', 'render'],
+    ['-h', 'render'],
+    ['-h', '--help'],
+    ['help', '-h', 'extra'],
     ['--version', 'extra'],
     ['-V', '--json'],
     ['doctor', '--fix'],
@@ -263,7 +273,10 @@ test('invalid argument counts and unknown topics fail before loading runtime or 
     ['help', 'render', 'extra'],
     ['render', 'missing.json', '--help'],
     ['render', '--help', 'out.html'],
+    ['render', 'missing.json', '-h'],
+    ['normalize', 'missing.json', '-h'],
     ['search-issue', 'missing.json', 'ISSUE', '--help', '--help'],
+    ['search-issue', 'missing.json', 'ISSUE', '--help', '-h'],
   ]) {
     const result = run(args);
     assert.equal(result.status, 2, JSON.stringify(args));
@@ -290,7 +303,9 @@ test('mixed help requests cannot create or overwrite outputs with valid workflow
     assert.equal(result.status, 0, result.stderr);
   }
   for (const existing of [false, true]) {
-    if (existing) await writeFile(join(work, '--help'), 'KEEP EXISTING OUTPUT');
+    if (existing)
+      for (const flag of ['--help', '-h'])
+        await writeFile(join(work, flag), 'KEEP EXISTING OUTPUT');
     const before = await snapshot(dir);
     for (const cli of [
       join(root, 'bin/stellar.js'),
@@ -311,22 +326,25 @@ test('mixed help requests cannot create or overwrite outputs with valid workflow
         ['verify-run', 'capture.json', 'map.json', '--help'],
         ['doctor', '--json', '--help'],
       ]) {
-        const result = run(args, cli);
-        assert.equal(result.status, 2, JSON.stringify(args));
-        assert.equal(result.stdout, '');
-        assert.match(result.stderr, /--help cannot be combined/);
+        for (const flag of ['--help', '-h']) {
+          const invocation = args.map((arg) => (arg === '--help' ? flag : arg));
+          const result = run(invocation, cli);
+          assert.equal(result.status, 2, JSON.stringify(invocation));
+          assert.equal(result.stdout, '');
+          assert.match(result.stderr, /cannot be combined/);
+        }
       }
     }
     assert.deepEqual(await snapshot(dir), before);
   }
 });
 
-test('search-issue preserves --help as literal text and explicit ./--help remains a file path', async (t) => {
+test('search-issue preserves help flags as literal text and explicit relative paths remain usable', async (t) => {
   const { dir, installed, work, run } = await setup(t);
   const map = JSON.parse(
     await readFile(join(root, 'examples/museum.json'), 'utf8'),
   );
-  map.issues[0].description = 'Read --help before starting.';
+  map.issues[0].description = 'Read --help or -h before starting.';
   await writeFile(join(work, 'map.json'), JSON.stringify(map));
   const before = await snapshot(dir);
   for (const cli of [
@@ -334,21 +352,23 @@ test('search-issue preserves --help as literal text and explicit ./--help remain
     join(installed, 'bin/stellar.mjs'),
   ]) {
     for (const offset of [[], ['0']]) {
-      const result = run(
-        ['search-issue', 'map.json', map.issues[0].id, '--help', ...offset],
-        cli,
-      );
-      assert.equal(result.status, 0, result.stderr);
-      assert.equal(JSON.parse(result.stdout).total, 1);
+      for (const flag of ['--help', '-h']) {
+        const result = run(
+          ['search-issue', 'map.json', map.issues[0].id, flag, ...offset],
+          cli,
+        );
+        assert.equal(result.status, 0, result.stderr);
+        // Literal "-h" also occurs within "--help".
+        assert.equal(JSON.parse(result.stdout).total, flag === '-h' ? 2 : 1);
+      }
     }
   }
   assert.deepEqual(await snapshot(dir), before);
-  const explicit = run(['render', 'map.json', './--help']);
-  assert.equal(explicit.status, 0, explicit.stderr);
-  assert.match(
-    await readFile(join(work, '--help'), 'utf8'),
-    /<!doctype html>/i,
-  );
+  for (const flag of ['--help', '-h']) {
+    const explicit = run(['render', 'map.json', `./${flag}`]);
+    assert.equal(explicit.status, 0, explicit.stderr);
+    assert.match(await readFile(join(work, flag), 'utf8'), /<!doctype html>/i);
+  }
 });
 
 test(
