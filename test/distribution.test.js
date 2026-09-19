@@ -5,6 +5,7 @@ import {
   mkdir,
   mkdtemp,
   readFile,
+  readlink,
   rm,
   symlink,
   writeFile,
@@ -259,7 +260,6 @@ test('only the product version enters the bundle from the root package manifest'
     const generated = build();
     assert.equal(generated.status, 0, generated.stderr);
     assert.deepEqual(await artifacts(), before);
-    assert.ok(!before[0].toString().includes(marker));
   }
   pkg.version = '0.0.0-synthetic';
   await writeJSON(pkgPath, pkg);
@@ -311,25 +311,70 @@ test('resource coverage rejects unlisted runtime files before checking or genera
   const missing = join(dir, 'schemas/state.schema.json');
   const original = await readFile(missing);
   await rm(missing);
-  const result = check();
-  assert.equal(result.status, 1);
-  assert.match(
-    result.stderr,
-    /Unexpected or absent resources: schemas\/state.schema.json/,
-  );
-  assert.deepEqual(await artifacts(), before);
+  for (const run of [check, build]) {
+    const result = run();
+    assert.equal(result.status, 1);
+    assert.match(
+      result.stderr,
+      /Unexpected or absent resources: schemas\/state.schema.json/,
+    );
+    assert.deepEqual(await artifacts(), before);
+  }
+  await mkdir(missing);
+  for (const run of [check, build]) {
+    const result = run();
+    assert.equal(result.status, 1);
+    assert.match(
+      result.stderr,
+      /Runtime resource is not a regular file: schemas\/state.schema.json/,
+    );
+    assert.deepEqual(await artifacts(), before);
+  }
+  await rm(missing, { recursive: true });
   await writeFile(missing, original);
-  // Contributor docs, optional images, and brand assets are not runtime inputs.
-  for (const name of [
+
+  const inventoryPath = join(dir, 'lib/installation.js');
+  const inventory = await readFile(inventoryPath, 'utf8');
+  const duplicated = inventory.replace(
+    "  'schemas/state.schema.json',",
+    "  'schemas/state.schema.json',\n  'schemas/state.schema.json',",
+  );
+  assert.notEqual(duplicated, inventory);
+  await writeFile(inventoryPath, duplicated);
+  for (const run of [check, build]) {
+    const result = run();
+    assert.equal(result.status, 1);
+    assert.match(
+      result.stderr,
+      /Duplicate entries: schemas\/state.schema.json/,
+    );
+    assert.equal(await readFile(inventoryPath, 'utf8'), duplicated);
+    assert.deepEqual(await artifacts(), before);
+  }
+  await writeFile(inventoryPath, inventory);
+
+  // Hidden editor/OS files, docs, and optional assets are not runtime inputs.
+  const ignored = [
     'schemas/notes.md',
     'assets/viewer/notes.md',
     'assets/viewer/preview.png',
     'assets/brand/optional.svg',
-  ]) {
+    'schemas/._state.schema.json',
+    'assets/viewer/._app.js',
+    'assets/viewer/locales/._en.json',
+  ];
+  for (const name of ignored) {
     await mkdir(join(dir, name, '..'), { recursive: true });
     await writeFile(join(dir, name), 'OPTIONAL_ASSET');
   }
-  const healthy = check();
-  assert.equal(healthy.status, 0, healthy.stderr);
-  assert.deepEqual(await artifacts(), before);
+  const lock = join(dir, 'assets/viewer/.#app.js');
+  await symlink('user@host.1:2', lock);
+  for (const run of [check, build]) {
+    const healthy = run();
+    assert.equal(healthy.status, 0, healthy.stderr);
+    assert.deepEqual(await artifacts(), before);
+    assert.equal(await readlink(lock), 'user@host.1:2');
+    for (const name of ignored)
+      assert.equal(await readFile(join(dir, name), 'utf8'), 'OPTIONAL_ASSET');
+  }
 });

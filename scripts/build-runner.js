@@ -21,7 +21,8 @@ for (const [directory, pattern] of [
   ['assets/viewer/locales', /\.json$/],
 ]) {
   for (const name of (await readdir(join(root, directory))).sort()) {
-    if (!pattern.test(name)) continue;
+    // Editor locks and OS metadata are not runtime inputs; skip before stat.
+    if (name.startsWith('.') || !pattern.test(name)) continue;
     const path = `${directory}/${name}`;
     if (!(await stat(join(root, path))).isFile())
       throw new Error(`Runtime resource is not a regular file: ${path}`);
@@ -30,16 +31,16 @@ for (const [directory, pattern] of [
 }
 const missing = discovered.filter((path) => !runtimeFiles.includes(path));
 const unexpected = runtimeFiles.filter((path) => !discovered.includes(path));
-if (
-  missing.length ||
-  unexpected.length ||
-  new Set(runtimeFiles).size !== runtimeFiles.length
-)
+const duplicates = runtimeFiles.filter(
+  (path, index) => runtimeFiles.indexOf(path) !== index,
+);
+if (missing.length || unexpected.length || duplicates.length)
   throw new Error(
     [
       'Runtime resource inventory is out of date; no artifacts were generated.',
       `Missing from runtimeFiles: ${missing.join(', ') || 'none'}.`,
       `Unexpected or absent resources: ${unexpected.join(', ') || 'none'}.`,
+      `Duplicate entries: ${duplicates.join(', ') || 'none'}.`,
       'Update the fixed runtimeFiles list in lib/installation.js to match the runtime files, remove duplicate entries, or restore missing resources.',
     ].join('\n'),
   );
