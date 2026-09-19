@@ -18,12 +18,13 @@ import { fileURLToPath } from 'node:url';
 import { commands } from '../lib/cli-help.js';
 import { manifestPath, runtimeFiles, sha256 } from '../lib/installation.js';
 import { version } from '../lib/version.js';
+import { errorSummary } from '../lib/cli-diagnostics.js';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 async function setup(t, complete = true) {
   const dir = await mkdtemp(join(tmpdir(), 'stellar-diagnostics-'));
   t.after(() => rm(dir, { recursive: true, force: true }));
-  const installed = join(dir, 'installed skill');
+  const installed = join(dir, "installed skill's copy");
   const work = join(dir, 'unrelated work');
   await mkdir(work);
   for (const path of complete
@@ -260,6 +261,9 @@ test('invalid argument counts and unknown topics fail before loading runtime or 
     ['validate', 'missing.json', 'extra'],
     ['normalize', ''],
     ['help', 'render', 'extra'],
+    ['render', 'missing.json', '--help'],
+    ['render', '--help', 'out.html'],
+    ['search-issue', 'missing.json', 'ISSUE', '--help', '--help'],
   ]) {
     const result = run(args);
     assert.equal(result.status, 2, JSON.stringify(args));
@@ -268,4 +272,163 @@ test('invalid argument counts and unknown topics fail before loading runtime or 
     assert.ok(!result.stderr.includes('ENOENT'));
   }
   assert.deepEqual(await snapshot(dir), before);
+});
+
+test('mixed help requests cannot create or overwrite outputs with valid workflow inputs', async (t) => {
+  const { dir, installed, work, run } = await setup(t);
+  for (const [source, target] of [
+    ['museum.json', 'map.json'],
+    ['mixed-capture.json', 'capture.json'],
+    ['mixed-choices.json', 'choices.json'],
+  ])
+    await cp(join(root, 'examples', source), join(work, target));
+  for (const args of [
+    ['normalize', 'capture.json', 'draft.json'],
+    ['classify-draft', 'draft.json', 'choices.json', 'first'],
+  ]) {
+    const result = run(args);
+    assert.equal(result.status, 0, result.stderr);
+  }
+  for (const existing of [false, true]) {
+    if (existing) await writeFile(join(work, '--help'), 'KEEP EXISTING OUTPUT');
+    const before = await snapshot(dir);
+    for (const cli of [
+      join(root, 'bin/stellar.js'),
+      join(installed, 'bin/stellar.mjs'),
+    ]) {
+      for (const args of [
+        ['render', 'map.json', '--help'],
+        ['render', '--help', 'out.html'],
+        ['normalize', 'capture.json', '--help'],
+        ['retain-response', 'capture.json', '--help'],
+        ['classify-draft', 'draft.json', 'choices.json', '--help'],
+        ['remember', 'map.json', '--help'],
+        ['refresh', 'first/state.json', 'capture.json', '--help'],
+        ['classify', 'first/state.json', 'choices.json', '--help'],
+        ['revise', 'first/state.json', 'choices.json', '--help'],
+        ['inspect', 'map.json', '--help'],
+        ['read-issue', 'map.json', 'MUS-1', '--help'],
+        ['verify-run', 'capture.json', 'map.json', '--help'],
+        ['doctor', '--json', '--help'],
+      ]) {
+        const result = run(args, cli);
+        assert.equal(result.status, 2, JSON.stringify(args));
+        assert.equal(result.stdout, '');
+        assert.match(result.stderr, /--help cannot be combined/);
+      }
+    }
+    assert.deepEqual(await snapshot(dir), before);
+  }
+});
+
+test('search-issue preserves --help as literal text and explicit ./--help remains a file path', async (t) => {
+  const { dir, installed, work, run } = await setup(t);
+  const map = JSON.parse(
+    await readFile(join(root, 'examples/museum.json'), 'utf8'),
+  );
+  map.issues[0].description = 'Read --help before starting.';
+  await writeFile(join(work, 'map.json'), JSON.stringify(map));
+  const before = await snapshot(dir);
+  for (const cli of [
+    join(root, 'bin/stellar.js'),
+    join(installed, 'bin/stellar.mjs'),
+  ]) {
+    for (const offset of [[], ['0']]) {
+      const result = run(
+        ['search-issue', 'map.json', map.issues[0].id, '--help', ...offset],
+        cli,
+      );
+      assert.equal(result.status, 0, result.stderr);
+      assert.equal(JSON.parse(result.stdout).total, 1);
+    }
+  }
+  assert.deepEqual(await snapshot(dir), before);
+  const explicit = run(['render', 'map.json', './--help']);
+  assert.equal(explicit.status, 0, explicit.stderr);
+  assert.match(
+    await readFile(join(work, '--help'), 'utf8'),
+    /<!doctype html>/i,
+  );
+});
+
+test(
+  'usage pointers execute without a PATH launcher, including paths with spaces and quotes',
+  { skip: process.platform === 'win32' },
+  async (t) => {
+    const { installed, work, run } = await setup(t, false);
+    for (const cli of [
+      join(root, 'bin/stellar.js'),
+      join(installed, 'bin/stellar.mjs'),
+    ]) {
+      const bad = run(['render'], cli);
+      assert.equal(bad.status, 2);
+      const pointer = bad.stderr.match(/Run (.+) for usage\./)?.[1];
+      assert.ok(pointer);
+      const result = spawnSync('/bin/sh', ['-c', pointer], {
+        cwd: work,
+        env: {},
+        encoding: 'utf8',
+      });
+      assert.equal(result.status, 0, result.stderr);
+      assert.equal(result.stdout, run(['help', 'render'], cli).stdout);
+      assert.ok(!result.stdout.includes('Usage: stellar '));
+      assert.ok(!result.stdout.includes('Run stellar '));
+    }
+    assert.deepEqual(await readdir(work), []);
+  },
+);
+
+test('runtime load diagnostics retain a safe cause and location when doctor passes', async (t) => {
+  const { installed, run } = await setup(t);
+  for (const path of ['lib', 'bin/stellar.js', 'package.json'])
+    await cp(join(root, path), join(installed, path), { recursive: true });
+  await symlink(join(root, 'node_modules'), join(installed, 'node_modules'));
+  const reader = join(installed, 'lib/reading.js');
+  const original = await readFile(reader, 'utf8');
+  await writeFile(
+    reader,
+    'const broken = undefinedValue.property;\n' + original,
+  );
+  const cli = join(installed, 'bin/stellar.js');
+  const result = run(['inspect', 'not-read.json'], cli);
+  assert.equal(result.status, 1);
+  assert.equal(result.stdout, '');
+  assert.match(result.stderr, /ReferenceError at lib\/reading.js:1:\d+/);
+  assert.match(result.stderr, /If doctor passes, investigate/);
+  assert.match(
+    result.stderr,
+    /not runtime execution or current checkout source/,
+  );
+  const doctor = run(['doctor', '--json'], cli);
+  assert.equal(doctor.status, 0, doctor.stderr);
+  assert.equal(JSON.parse(doctor.stdout).ok, true);
+  await writeFile(reader, original);
+  const schemaPath = join(installed, 'schemas/work-map.schema.json');
+  for (const content of [
+    '{ "PRIVATE_SCHEMA_SENTINEL":',
+    JSON.stringify({ type: 'PRIVATE_SCHEMA_SENTINEL' }),
+  ]) {
+    await writeFile(schemaPath, content);
+    for (const entry of [cli, join(installed, 'bin/stellar.mjs')]) {
+      const broken = run(['inspect', 'not-read.json'], entry);
+      assert.equal(broken.status, 1);
+      assert.match(broken.stderr, /could not load its runtime/);
+      assert.match(
+        broken.stderr,
+        /(?:bin\/stellar.mjs|lib\/validate.js):\d+:\d+/,
+      );
+      assert.ok(!broken.stderr.includes('PRIVATE_SCHEMA_SENTINEL'));
+    }
+  }
+});
+
+test('safe error summaries omit multiline messages and forged stack frames', () => {
+  const secret = 'PRIVATE_ERROR_SENTINEL';
+  const message = `${secret}\n    at ${new URL(`../lib/${secret}.js:1:1`, import.meta.url).href}`;
+  for (const error of [
+    new SyntaxError(message),
+    new Error(message),
+    new ReferenceError(message),
+  ])
+    assert.ok(!errorSummary(error).includes(secret));
 });

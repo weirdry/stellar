@@ -35,7 +35,7 @@ Use this after installation/update or when investigating execution failures.
 It is not a prerequisite before each ordinary report. The default output is a
 readable summary. JSON contains `version`, the resolved installation `root`,
 `ok`, per-file/runtime `checks`, and a statement of `scope`. Each check has an
-`id`, `status` (`pass`, `fail`, or `skip`), a message, and a remedy when relevant.
+`id`, `status` (`pass`, `fail`, or `skip`), `message`, and a `fix` remedy when relevant.
 
 Doctor checks the running Node major version and compares the bundled runner,
 four input schemas, and required viewer resources with the generated
@@ -72,10 +72,16 @@ node "$STELLAR_ROOT/bin/stellar.mjs" render --help
 
 `help COMMAND` and `COMMAND --help` produce identical descriptions, arguments,
 output behavior, examples, and exit-code guidance. They need no normal input
-files and do not execute the requested workflow. Help examples abbreviate the
-invocation as `stellar`; use the full installed runner path above. The
+files and do not execute the requested workflow. Help and error pointers print
+the running Node executable and entry-file paths, quoted for a POSIX shell;
+they work without a `stellar` PATH launcher, including paths with spaces or
+single quotes. The
 [command catalog](../lib/cli-help.js) owns help text and argument counts.
-Use exact help forms without additional positional arguments.
+Use exact help forms without additional positional arguments. A bare `--help`
+mixed with other arguments is rejected before loading the workflow or writing
+files (exit `2`). The exception is `search-issue`'s `TEXT` argument: it remains
+literal text, so `search-issue MAP.json ISSUE "--help"` searches for that string.
+Use `./--help` when intentionally naming a file or directory `--help`.
 
 | Exit code | Meaning                                                                   |
 | --------- | ------------------------------------------------------------------------- |
@@ -85,9 +91,18 @@ Use exact help forms without additional positional arguments.
 
 Machine-readable results go to stdout; execution/usage diagnostics go to stderr.
 Doctor emits its requested result format even when checks fail (exit `1`).
-If the runtime cannot load, follow the doctor pointer rather than retrying data
-operations blindly. Existing workflow-specific JSON diagnostics retain their
-input paths and repair guidance. Commands never need an interactive prompt.
+Runtime import failures report an error category, selected filesystem/module
+error codes, and a repository-relative code location when available. Original
+exception messages and resource excerpts are omitted because schema parsing or
+compilation errors can contain file contents. The
+[diagnostic helper](../lib/cli-diagnostics.js) owns this formatting.
+Follow the executable doctor pointer to check installed files. If doctor passes,
+investigate the reported runtime code/dependency failure; a healthy manifest
+does not establish executable correctness or validate current checkout source.
+Contributors can use `just ci` to investigate source/build failures. Installed
+users should report the version and safe diagnostic to the maintainer.
+Existing workflow-specific JSON diagnostics retain their input paths and repair
+guidance. Commands never need an interactive prompt.
 
 ## Contributor equivalents
 

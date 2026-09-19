@@ -4,6 +4,7 @@ Dated records identify the source or artifact, commands, observed result, and
 untested scope. They support the architecture without silently changing its
 meaning.
 
+- [2026-09-19 CLI independent-review corrections](2026-09-19-cli-review-corrections.md)
 - [2026-09-19 CLI identity, diagnostics, and help](2026-09-19-cli-diagnostics.md)
 - [2026-09-19 v0.1.1 publication and installation acceptance](2026-09-19-v0.1.1-release.md)
 - [2026-09-19 interactive walkthrough correction](2026-09-19-walkthrough-shell.md)

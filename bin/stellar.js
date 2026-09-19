@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 import { version } from '../lib/version.js';
 import { commandInfo, helpText } from '../lib/cli-help.js';
+import { cliInvocation, errorSummary } from '../lib/cli-diagnostics.js';
 
 const [command, ...args] = process.argv.slice(2);
 function usageError(message, name) {
   console.error(
-    `${message} Run stellar ${commandInfo(name) ? `help ${name}` : '--help'} for usage.`,
+    `${message} Run ${cliInvocation()} ${commandInfo(name) ? `help ${name}` : '--help'} for usage.`,
   );
   process.exitCode = 2;
 }
@@ -34,6 +35,17 @@ async function main() {
     console.log(helpText(command));
     return;
   }
+  // TEXT is literal data for search-issue, even when its value is "--help".
+  if (
+    args.some(
+      (arg, index) =>
+        arg === '--help' && !(command === 'search-issue' && index === 2),
+    )
+  )
+    return usageError(
+      '--help cannot be combined with other arguments.',
+      command,
+    );
   if (
     args.length < info.min ||
     args.length > info.max ||
@@ -56,15 +68,27 @@ async function main() {
   }
   // Runtime imports read schemas. Keep them behind the non-executing commands
   // so a damaged installation still exposes version, help, and doctor.
-  const { runCommand } = await import('../lib/cli-commands.js');
+  let runCommand;
+  try {
+    ({ runCommand } = await import('../lib/cli-commands.js'));
+  } catch (error) {
+    console.error(
+      `Stellar could not load its runtime (${errorSummary(error)}).`,
+    );
+    console.error(
+      `Run ${cliInvocation()} doctor for installation diagnostics. If doctor passes, investigate the runtime code/dependencies at the reported location; doctor checks installed file consistency, not runtime execution or current checkout source.`,
+    );
+    process.exitCode = 1;
+    return;
+  }
   await runCommand(command, args);
 }
 
 try {
   await main();
-} catch {
+} catch (error) {
   console.error(
-    'Stellar could not load its runtime. Run stellar doctor for installation diagnostics.',
+    `Stellar CLI failed (${errorSummary(error)}). Run ${cliInvocation()} help for command usage.`,
   );
   process.exitCode = 1;
 }
