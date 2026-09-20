@@ -115,6 +115,14 @@ benchmark output reference="" sizes="1000,10000,50000" trials="3": bundle-check
 benchmark-test: bundle-check
     python3 scripts/bench/test_reference.py --node "$(mise exec --locked -- node -p process.execPath)"
 
+# CPU/allocation attribution on retained synthetic benchmark artifacts; not timings.
+profile benchmark output trials="3": bundle-check
+    python3 scripts/bench/profile.py --node "$(mise exec --locked -- node -p process.execPath)" --benchmark {{ quote(benchmark) }} --output {{ quote(output) }} --trials {{ quote(trials) }}
+
+# Deterministic attribution arithmetic; optional Python, outside default CI.
+profile-test:
+    python3 scripts/bench/test_profile.py
+
 # Browser QA is a separate gate.
 check: docs-check diagrams-check format-check lint bundle-check test
 
