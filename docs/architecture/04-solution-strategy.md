@@ -51,6 +51,23 @@ and the installable Node runner are implemented; see
 [skill distribution](07-deployment-view.md#skill-distribution) for the current
 installation and release boundary.
 
+## Source-language planning
+
+State: **Target**
+
+Retain the Node runtime and current distribution while planning TypeScript adoption
+for static type safety. [Issue #33](https://github.com/weirdry/stellar/issues/33)
+owns the plan; the As-built source remains JavaScript with runtime schema and
+semantic validation. Type checking complements those input checks and does not
+itself promise better runtime performance.
+
+The [standalone experiment](../validation/2026-09-21-standalone-normalize-comparison.md)
+does not justify native executable distribution for the current workload. Go is
+excluded from current candidates and Rust migration is deferred. Reconsidering
+Rust requires a concrete latency, memory or installation problem that justifies
+maintaining the selected OS/architecture targets. The archived prototypes are
+research evidence, not an accepted alternative product runtime.
+
 ## Choices and trade-offs
 
 These are the current consequences of accepted decisions. The ADRs retain their

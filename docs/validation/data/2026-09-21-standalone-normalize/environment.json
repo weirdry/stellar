@@ -1,0 +1,84 @@
+{
+  "platform": "macOS-26.5-arm64-arm-64bit-Mach-O",
+  "machine": "arm64",
+  "python": "3.14.7",
+  "toolchains": {
+    "node": {
+      "exit": 0,
+      "stdout": "v24.19.0",
+      "stderr": ""
+    },
+    "go": {
+      "exit": 0,
+      "stdout": "go version go1.26.8 darwin/arm64",
+      "stderr": ""
+    },
+    "rust": {
+      "exit": 0,
+      "stdout": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+      "stderr": ""
+    },
+    "cargo": {
+      "exit": 0,
+      "stdout": "cargo 1.96.0 (30a34c682 2026-05-25)",
+      "stderr": ""
+    },
+    "hardware": {
+      "exit": 1,
+      "stdout": "",
+      "stderr": "sysctl: sysctl fmt -1 1024 1: Operation not permitted"
+    },
+    "ram": {
+      "exit": 1,
+      "stdout": "",
+      "stderr": "sysctl: sysctl fmt -1 1024 1: Operation not permitted"
+    },
+    "os": {
+      "exit": 0,
+      "stdout": "ProductName:\t\tmacOS\nProductVersion:\t\t26.5\nBuildVersion:\t\t25F71",
+      "stderr": ""
+    }
+  },
+  "inputs": {
+    "1000": {
+      "bytes": 1082361,
+      "sha256": "277c788f026876e49c6b585d0bbfc83622b39ae8cf243368c22d0a4973380b45",
+      "records": 1000,
+      "issues": 1000,
+      "relations": 2998,
+      "providers": [
+        "linear",
+        "github"
+      ]
+    },
+    "10000": {
+      "bytes": 10930867,
+      "sha256": "94604110e873ca24ee79e0ce18820647813940393db01f6bcbbb320d3bcf9ef4",
+      "records": 10000,
+      "issues": 10000,
+      "relations": 29998,
+      "providers": [
+        "linear",
+        "github"
+      ]
+    },
+    "50000": {
+      "bytes": 55150867,
+      "sha256": "f3cdfa461cc863aec4d94dd5f6f104b2643989db0efc2329fad1cf78eb5d515a",
+      "records": 50000,
+      "issues": 50000,
+      "relations": 149998,
+      "providers": [
+        "linear",
+        "github"
+      ]
+    }
+  },
+  "runtime_environment_overrides": {
+    "GOMAXPROCS": null,
+    "GOMEMLIMIT": null,
+    "GOGC": null,
+    "NODE_OPTIONS": null,
+    "RUSTFLAGS": null
+  }
+}

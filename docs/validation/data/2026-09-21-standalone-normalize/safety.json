@@ -1,0 +1,156 @@
+[
+  {
+    "engine": "node-cli",
+    "case": "new private file",
+    "exit": 0,
+    "expected_success": true,
+    "input_preserved": true
+  },
+  {
+    "engine": "node-cli",
+    "case": "replace existing output",
+    "exit": 0,
+    "expected_success": true,
+    "input_preserved": true
+  },
+  {
+    "engine": "node-cli",
+    "case": "same input path",
+    "exit": 1,
+    "expected_success": false,
+    "input_preserved": true
+  },
+  {
+    "engine": "node-cli",
+    "case": "symlink to input",
+    "exit": 1,
+    "expected_success": false,
+    "input_preserved": true
+  },
+  {
+    "engine": "node-cli",
+    "case": "output is directory",
+    "exit": 1,
+    "expected_success": false,
+    "input_preserved": true
+  },
+  {
+    "engine": "node-focused",
+    "case": "new private file",
+    "exit": 0,
+    "expected_success": true,
+    "input_preserved": true
+  },
+  {
+    "engine": "node-focused",
+    "case": "replace existing output",
+    "exit": 0,
+    "expected_success": true,
+    "input_preserved": true
+  },
+  {
+    "engine": "node-focused",
+    "case": "same input path",
+    "exit": 1,
+    "expected_success": false,
+    "input_preserved": true
+  },
+  {
+    "engine": "node-focused",
+    "case": "symlink to input",
+    "exit": 1,
+    "expected_success": false,
+    "input_preserved": true
+  },
+  {
+    "engine": "node-focused",
+    "case": "output is directory",
+    "exit": 1,
+    "expected_success": false,
+    "input_preserved": true
+  },
+  {
+    "engine": "go",
+    "case": "new private file",
+    "exit": 0,
+    "expected_success": true,
+    "input_preserved": true
+  },
+  {
+    "engine": "go",
+    "case": "replace existing output",
+    "exit": 0,
+    "expected_success": true,
+    "input_preserved": true
+  },
+  {
+    "engine": "go",
+    "case": "same input path",
+    "exit": 1,
+    "expected_success": false,
+    "input_preserved": true
+  },
+  {
+    "engine": "go",
+    "case": "symlink to input",
+    "exit": 1,
+    "expected_success": false,
+    "input_preserved": true
+  },
+  {
+    "engine": "go",
+    "case": "output is directory",
+    "exit": 1,
+    "expected_success": false,
+    "input_preserved": true
+  },
+  {
+    "engine": "go",
+    "case": "no Node discoverable on PATH",
+    "exit": 0,
+    "expected_success": true,
+    "input_preserved": true
+  },
+  {
+    "engine": "rust",
+    "case": "new private file",
+    "exit": 0,
+    "expected_success": true,
+    "input_preserved": true
+  },
+  {
+    "engine": "rust",
+    "case": "replace existing output",
+    "exit": 0,
+    "expected_success": true,
+    "input_preserved": true
+  },
+  {
+    "engine": "rust",
+    "case": "same input path",
+    "exit": 1,
+    "expected_success": false,
+    "input_preserved": true
+  },
+  {
+    "engine": "rust",
+    "case": "symlink to input",
+    "exit": 1,
+    "expected_success": false,
+    "input_preserved": true
+  },
+  {
+    "engine": "rust",
+    "case": "output is directory",
+    "exit": 1,
+    "expected_success": false,
+    "input_preserved": true
+  },
+  {
+    "engine": "rust",
+    "case": "no Node discoverable on PATH",
+    "exit": 0,
+    "expected_success": true,
+    "input_preserved": true
+  }
+]

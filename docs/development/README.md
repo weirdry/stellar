@@ -104,6 +104,12 @@ The optional [native-worker experiment](../../scripts/bench/native/README.md) ad
 comparison. It requires explicit native compilers and includes the cost of
 retained Node validation and JSON transfer; it does not change the skill runtime.
 
+The separate [standalone archive](../../scripts/bench/standalone/README.md) retains
+the full-command prototypes and evidence. `just standalone-check` checks the
+historical data without executing native code; `just standalone-replay` rebuilds
+and checks it in a fresh directory on macOS. These optional commands do not add
+Go/Rust to the product or default CI, and do not approve a native migration.
+
 ## Work tracking and agent instructions
 
 Use the [issue workflow](../../CONTRIBUTING.md#issue-management),

@@ -1,0 +1,69 @@
+{
+  "baseline_revision": "ad8ef5292dc18947e1e23277e69bea6ea7abcd05",
+  "replay_baseline_revision": "77ee2b9ba2d62f6523f0f0272ca714b1b920fa3b",
+  "original_files": {
+    "README.md": {
+      "bytes": 4097,
+      "sha256": "a29bb8995c70340d0894b14c55566212c46ff88bc55a35117a95c2d0369e1457"
+    },
+    "REPORT.md": {
+      "bytes": 11227,
+      "sha256": "dbd46f7392c26b9dde36118ffcd9e7bb6f237b80b75666176e0418ed9e782911"
+    },
+    "build-focused.mjs": {
+      "bytes": 311,
+      "sha256": "cbfd7b8ea6e47b2fb04b82bddd755de5c85e541a3b1b66a057704c3d6fc5c94f"
+    },
+    "focused-entry.mjs": {
+      "bytes": 708,
+      "sha256": "08d10ba023791d7bd49c2a613abc1271a8329a448244777f4be47fc5c22d0ede"
+    },
+    "cases.mjs": {
+      "bytes": 5672,
+      "sha256": "99c04b9912ddaf6810d3136b15e7d2c951143e544b8589bf72e7c8e33afd6672"
+    },
+    "benchmark.py": {
+      "bytes": 2316,
+      "sha256": "c2c3c054e7c2aedadf7e860679d2a3f6ee83db9785849e89192e52c4310dfa75"
+    },
+    "differential.py": {
+      "bytes": 2657,
+      "sha256": "7df3e7384313dde52985f32c94e58d64b7c60754f82edb3d01830b5ac4782b4f"
+    },
+    "safety.py": {
+      "bytes": 1614,
+      "sha256": "6495560eb059113e7b7245bc834d12ff7037b9c399881df6638f33de2b566799"
+    },
+    "results/benchmark.json": {
+      "bytes": 32055,
+      "sha256": "5fd8a7dffb70f725f256a331820386766db57db4b11d003b7f741876b0c4ae12"
+    },
+    "results/summary.json": {
+      "bytes": 4442,
+      "sha256": "cd6f3687aed7f8ead6b56ede659f0299932921ca193599139d745f5583a16834"
+    },
+    "results/environment.json": {
+      "bytes": 1918,
+      "sha256": "586bfb67b1333f9a6831632bd2e210cc3ef742f4b7d522c441fc13a6dfa8c022"
+    },
+    "results/artifacts.json": {
+      "bytes": 3009,
+      "sha256": "a2152ff4aaa2274b735cc69427391bfd8c69e128e937c9bf1a9f4e30ef369055"
+    },
+    "results/correctness-final.json": {
+      "bytes": 222996,
+      "sha256": "645cd13bfc1043265fa40b71900990c801f5d2c91aa2d9a1ab33d2fd1316a1e3"
+    },
+    "results/safety.json": {
+      "bytes": 4438,
+      "sha256": "e14f84c450592e288b99488b578041d5c228bb78942ece70787e8707dc84a664"
+    }
+  },
+  "notes": [
+    "Native source and dependency lock bytes are retained exactly.",
+    "Raw benchmark, summary, environment, artifacts and baseline identity are retained exactly.",
+    "Public correctness and safety receipts omit stderr; all other fields are retained.",
+    "Replay scripts replace host paths and parameterize sizes/trials; safety replay refuses an occupied fixture directory.",
+    "The original report generator, intermediate Rust implementation, binaries, generated inputs/outputs and console logs remain local."
+  ]
+}
