@@ -102,3 +102,20 @@ record; the environment block is not a complete hardware inventory. Three
 samples are exploratory observations, not universal speed guarantees or CI
 timing limits. Native-language mocks, fresh-host installation, live source access
 and release/runtime acceptance require separate evidence.
+
+## Experiment with native workers
+
+The optional [Go/Rust experiment](../../scripts/bench/native/README.md) measures
+whole normalization commands with a native worker for identity resolution,
+issue materialization and relation deduplication. Capture/source validation,
+URL resolution, final validation and atomic writing remain in Node. JSON transfer
+and process overhead are included; this is not a standalone native CLI benchmark.
+
+Use `just native-build FRESH_OUTPUT` and
+`just native-compare BUILD BENCHMARK FRESH_OUTPUT [TRIALS]` after generating the
+synthetic baseline above. Native compilers are explicit optional prerequisites,
+not requirements for the product or default CI. The harness requires output and
+diagnostic parity before timing, rejects timed native fallbacks, and records
+sampled process-tree RSS separately from uninstrumented wall/CPU measurements.
+See the [native comparison record](../validation/2026-09-20-native-normalize-comparison.md)
+for observed results and the limits of the recommendation.

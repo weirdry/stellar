@@ -1,0 +1,13 @@
+[package]
+name = "stellar-normalize-probe"
+version = "0.0.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+serde_json = { version = "=1.0.145", features = ["preserve_order"] }
+base64 = "=0.22.1"
+
+[profile.release]
+lto = true
+codegen-units = 1

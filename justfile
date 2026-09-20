@@ -123,3 +123,10 @@ ci: check
 # Link this checkout for user-level Codex discovery; never replace another skill.
 skill-link:
     mise exec --locked -- node scripts/link-skill.js
+
+# Optional local Go/Rust experiment; compilers are explicit prerequisites.
+native-build output: bundle-check
+    bash scripts/bench/native/build.sh {{ quote(output) }}
+
+native-compare build benchmark output trials="5":
+    python3 scripts/bench/native/compare.py --node "$(mise exec --locked -- node -p process.execPath)" --build {{ quote(build) }} --benchmark {{ quote(benchmark) }} --output {{ quote(output) }} --trials {{ quote(trials) }}

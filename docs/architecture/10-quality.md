@@ -84,6 +84,15 @@ record these checks separately from the product CI gate. The generated workload
 has no native-ID collisions across providers or namespaces; the focused processing
 tests own that coverage, independently of the benchmark artifact comparisons.
 
+The separate [native-worker study](../validation/2026-09-20-native-normalize-comparison.md)
+compares the current Node CLI with experimental Go/Rust workers at a specific
+hybrid boundary. Its optional harness checks exact draft bytes and diagnostics,
+records native fallbacks, and includes process/JSON transfer in whole-command
+timings. Separate process-tree RSS sampling is an approximate observation,
+not a CI memory threshold. Native compilers and this experimental code are not
+product dependencies, and the study does not establish standalone-native or
+installation readiness.
+
 ## Documentation quality
 
 The [canonical policy](../development/documentation.md) governs ownership,

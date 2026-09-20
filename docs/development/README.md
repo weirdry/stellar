@@ -99,6 +99,11 @@ Timing samples and peak RSS are dated observations, not pass/fail timing gates.
 Use `just benchmark-test` for the optional harness's reference-validation and
 small synthetic comparison regressions, separately from `just ci`.
 
+The optional [native-worker experiment](../../scripts/bench/native/README.md) adds
+`just native-build` and `just native-compare` for a synthetic Node/Go/Rust
+comparison. It requires explicit native compilers and includes the cost of
+retained Node validation and JSON transfer; it does not change the skill runtime.
+
 ## Work tracking and agent instructions
 
 Use the [issue workflow](../../CONTRIBUTING.md#issue-management),
