@@ -1,4 +1,4 @@
-"""Regression checks for the optional benchmark; no performance thresholds."""
+"""Argument and reference checks for the optional benchmark; no timing limits."""
 
 import argparse
 import hashlib
@@ -21,20 +21,52 @@ protocol = {
 }
 
 
-class ReferenceTests(unittest.TestCase):
+class BenchmarkTests(unittest.TestCase):
     def setUp(self):
         self.directory = tempfile.TemporaryDirectory(prefix='stellar-benchmark-test-')
         self.addCleanup(self.directory.cleanup)
         self.root = Path(self.directory.name)
 
-    def run_benchmark(self, output, reference=None, node=None):
+    def run_benchmark(self, output, reference=None, node=None, sizes='100'):
         command = [
             sys.executable, str(script), '--node', node or args.node,
-            '--output', str(output), '--sizes', '100', '--trials', '1',
+            '--output', str(output), '--sizes', sizes, '--trials', '1',
         ]
         if reference is not None:
             command += ['--reference', str(reference)]
         return subprocess.run(command, capture_output=True, text=True, timeout=60)
+
+    def assert_usage_error(self, result, message):
+        self.assertEqual(result.returncode, 2, result.stderr)
+        self.assertEqual(result.stdout, '')
+        self.assertIn(f'error: {message}', result.stderr)
+        self.assertNotIn('Traceback', result.stderr)
+
+    def test_invalid_sizes_fail_before_output_or_node_execution(self):
+        for sizes in ['abc', '', '100,', '100,abc']:
+            with self.subTest(sizes=sizes):
+                output = self.root / 'output'
+                result = self.run_benchmark(
+                    output, node=str(self.root / 'absent-node'), sizes=sizes)
+                self.assert_usage_error(result, 'Sizes must be a comma-separated list of integers.')
+                self.assertFalse(output.exists())
+
+    def test_existing_output_is_preserved(self):
+        for kind in ['file', 'directory']:
+            with self.subTest(kind=kind):
+                output = self.root / kind
+                if kind == 'directory':
+                    output.mkdir()
+                    retained = output / 'keep.bin'
+                else:
+                    retained = output
+                original = b'Existing caller-owned bytes.\x00\xff'
+                retained.write_bytes(original)
+                result = self.run_benchmark(output, node=str(self.root / 'absent-node'))
+                self.assert_usage_error(result, 'Output directory already exists; choose a fresh path.')
+                self.assertEqual(retained.read_bytes(), original)
+                if kind == 'directory':
+                    self.assertEqual(list(output.iterdir()), [retained])
 
     def test_invalid_references_fail_before_output_or_node_execution(self):
         valid = {'protocol': protocol, 'artifacts': {'100/draft.json': 'a' * 64}}
@@ -64,16 +96,15 @@ class ReferenceTests(unittest.TestCase):
                 reference = self.root / f'{name}.json'
                 reference.write_bytes(raw)
                 self.assert_rejected(reference, self.root / name)
-        self.assert_rejected(self.root / 'absent.json', self.root / 'missing')
-        self.assert_rejected(self.root, self.root / 'directory')
+        with self.subTest(name='absent'):
+            self.assert_rejected(self.root / 'absent.json', self.root / 'missing')
+        with self.subTest(name='directory'):
+            self.assert_rejected(self.root, self.root / 'directory')
 
     def assert_rejected(self, reference, output):
         # An invalid reference must be rejected before even a Node probe.
         result = self.run_benchmark(output, reference, node=str(self.root / 'absent-node'))
-        self.assertEqual(result.returncode, 2, result.stderr)
-        self.assertEqual(result.stdout, '')
-        self.assertIn('error: Reference', result.stderr)
-        self.assertNotIn('Traceback', result.stderr)
+        self.assert_usage_error(result, 'Reference')
         self.assertFalse(output.exists())
 
     def test_baseline_comparison_and_mismatch_detection(self):

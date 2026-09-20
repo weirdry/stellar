@@ -97,6 +97,15 @@ baseline inputs and compared every output byte. Results overlap substantially:
 command measurements. This did not reproduce a consistent regression in those
 paths; it does not establish precise equivalence or a capacity guarantee.
 
+Evidence limitation clarified during independent review: this supplemental file
+retains samples, summaries and missing-schema outcomes, but no protocol,
+runtime/harness hashes, environment block or output-comparison receipts. The
+byte comparisons described above are a recorded observation without retained
+per-output hashes in that file. Treat it as supporting evidence alongside this
+record, not as a standalone result attributable to exact executable bytes. The
+main baseline/candidate files retain that provenance. Historical samples are
+unchanged; missing metadata has not been reconstructed from assumptions.
+
 ## Startup evaluation and retained behavior
 
 A disposable source-copy experiment removed eager imports of `verify.js` and

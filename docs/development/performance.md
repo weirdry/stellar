@@ -9,8 +9,9 @@ tool installed by `just init`.
 
 ## Run and compare
 
-Choose fresh directories under a disposable parent. The benchmark refuses an
-existing output directory and never accepts real captures or saved user state.
+Choose fresh directories under a disposable parent. An existing output file or
+directory is preserved and rejected with a usage diagnostic and exit 2, without
+a Python traceback. The benchmark never accepts real captures or saved user state.
 The default run generates 1,000, 10,000 and 50,000 assigned issues and takes
 several minutes and a few GiB of disk/RAM. Keep other CPU-intensive work idle.
 
@@ -36,6 +37,8 @@ just benchmark /tmp/stellar-smoke '' 100 1
 ```
 
 Sizes must be distinct multiples of 20, at least 100; trials must be positive.
+Malformed size lists also exit 2 with a usage diagnostic before output creation
+or workload execution.
 Use matching sizes, trial count and fixture script bytes for a comparison.
 An explicitly supplied reference must be readable UTF-8 JSON with a matching
 `protocol` object and a nonempty `artifacts` object mapping names to SHA-256
@@ -48,8 +51,9 @@ for behavior-preserving changes with unchanged schemas/viewer content. Changed
 output contracts need a separately justified comparison rather than disabling
 the mismatch.
 
-Run `just benchmark-test` after editing this optional tooling. It checks invalid
-references before output creation, baseline and reference-mode execution on 100
+Run `just benchmark-test` after editing this optional tooling. It checks malformed
+size lists, preservation of existing output paths, invalid references before
+output creation, baseline and reference-mode execution on 100
 synthetic issues, and hash/inventory mismatch detection. This standard-library
 Python suite has no timing thresholds and is separate from `just ci`; the
 default product/contributor gates do not acquire a Python requirement.
@@ -70,6 +74,9 @@ Both cases assert user classification/target preservation. `verify-run` must
 pass capture facts, embedded map, exact bundled viewer and state/map consistency.
 Every timed output must match its corresponding setup artifact byte for byte;
 reference mode additionally compares those artifacts across implementations.
+Generated native IDs never collide across providers or namespaces. The focused
+[processing tests](../../test/processing.test.js) cover identity-qualification
+regressions that this benchmark comparison cannot detect.
 
 [benchmark.py](../../scripts/bench/benchmark.py) launches fresh processes serially,
 with deterministically shuffled operation order and warm OS file caches. It

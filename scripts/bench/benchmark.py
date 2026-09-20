@@ -31,7 +31,10 @@ parser.add_argument('--reference', type=Path)
 parser.add_argument('--sizes', default='1000,10000,50000')
 parser.add_argument('--trials', type=int, default=3)
 args = parser.parse_args()
-sizes = [int(n) for n in args.sizes.split(',')]
+try:
+    sizes = [int(n) for n in args.sizes.split(',')]
+except ValueError:
+    parser.error('Sizes must be a comma-separated list of integers.')
 if (sys.platform not in ('darwin', 'linux') or sys.version_info < (3, 11)
         or not sizes or len(set(sizes)) != len(sizes)
         or any(n < 100 or n % 20 for n in sizes) or args.trials < 1):
@@ -57,7 +60,10 @@ if args.reference is not None:
            for name, value in reference['artifacts'].items()):
         parser.error('Reference artifacts must map nonempty names to SHA-256 hex digests.')
 root = args.output.resolve()
-root.mkdir()  # Fresh directory only; never reuse or clean a caller-owned path.
+try:
+    root.mkdir()  # Fresh directory only; never reuse or clean a caller-owned path.
+except FileExistsError:
+    parser.error('Output directory already exists; choose a fresh path.')
 (root / 'data').mkdir()
 (root / 'runs').mkdir()
 stage = root / 'staged-skill'

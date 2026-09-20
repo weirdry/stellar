@@ -76,9 +76,13 @@ records targeted improvements, unchanged artifacts, timing variability, memory
 limits and the decision to retain eager schema preparation.
 Explicit benchmark references must pass structural/protocol validation before
 the harness creates output or starts a child process. The optional
-`just benchmark-test` suite protects rejection of invalid references and actual
-artifact comparison; [review correction evidence](../validation/2026-09-20-benchmark-reference-review.md)
-records its checks separately from the product CI gate.
+`just benchmark-test` suite protects rejection of invalid references and malformed
+size lists, preservation of existing output paths, and actual artifact comparison.
+[Reference correction evidence](../validation/2026-09-20-benchmark-reference-review.md)
+and [independent-review corrections](../validation/2026-09-20-benchmark-review-corrections.md)
+record these checks separately from the product CI gate. The generated workload
+has no native-ID collisions across providers or namespaces; the focused processing
+tests own that coverage, independently of the benchmark artifact comparisons.
 
 ## Documentation quality
 
