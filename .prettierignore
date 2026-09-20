@@ -17,3 +17,8 @@ docs/architecture/diagrams/*.svg
 
 # Preserve the recorded native comparison bytes and their evidence hash.
 docs/validation/data/2026-09-20-native-normalize/results.json
+
+# Preserve archived measurements and byte-identical measured JavaScript sources.
+docs/validation/data/2026-09-21-standalone-normalize/
+scripts/bench/standalone/cases.mjs
+scripts/bench/standalone/focused-entry.mjs

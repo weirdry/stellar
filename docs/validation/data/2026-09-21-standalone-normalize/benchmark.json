@@ -1,0 +1,1298 @@
+[
+  {
+    "wall_ms": 25.019333,
+    "cpu_ms": 23.061,
+    "peak_rss_mib": 22.484375,
+    "output_bytes": 1153958,
+    "summary": {
+      "normalized": true,
+      "issues": 1000,
+      "relations": 2998,
+      "needsClassification": 1000
+    },
+    "size": 1000,
+    "engine": "rust",
+    "round": 0,
+    "warmup": true,
+    "semantic_match": true,
+    "sha256": "fb694601e0b5b692d1e328a50a466e1c3ee28eaa5689aa2580fff3eb0d534ed7"
+  },
+  {
+    "wall_ms": 38.917125,
+    "cpu_ms": 54.809,
+    "peak_rss_mib": 27.078125,
+    "output_bytes": 1153958,
+    "summary": {
+      "issues": 1000,
+      "needsClassification": 1000,
+      "normalized": true,
+      "relations": 2998
+    },
+    "size": 1000,
+    "engine": "go",
+    "round": 0,
+    "warmup": true,
+    "semantic_match": true,
+    "sha256": "ecb83ffac33438e5d541fd75cdb000e8bae162f28642a8c9c2d5d061a5e726f2"
+  },
+  {
+    "wall_ms": 120.097667,
+    "cpu_ms": 163.349,
+    "peak_rss_mib": 99.46875,
+    "output_bytes": 1153958,
+    "summary": {
+      "normalized": true,
+      "issues": 1000,
+      "relations": 2998,
+      "needsClassification": 1000
+    },
+    "size": 1000,
+    "engine": "node-cli",
+    "round": 0,
+    "warmup": true,
+    "semantic_match": true,
+    "sha256": "fb694601e0b5b692d1e328a50a466e1c3ee28eaa5689aa2580fff3eb0d534ed7"
+  },
+  {
+    "wall_ms": 103.172375,
+    "cpu_ms": 141.555,
+    "peak_rss_mib": 95.53125,
+    "output_bytes": 1153958,
+    "summary": {
+      "normalized": true,
+      "issues": 1000,
+      "relations": 2998,
+      "needsClassification": 1000
+    },
+    "size": 1000,
+    "engine": "node-focused",
+    "round": 0,
+    "warmup": true,
+    "semantic_match": true,
+    "sha256": "fb694601e0b5b692d1e328a50a466e1c3ee28eaa5689aa2580fff3eb0d534ed7"
+  },
+  {
+    "wall_ms": 106.855333,
+    "cpu_ms": 145.188,
+    "peak_rss_mib": 95.640625,
+    "output_bytes": 1153958,
+    "summary": {
+      "normalized": true,
+      "issues": 1000,
+      "relations": 2998,
+      "needsClassification": 1000
+    },
+    "size": 1000,
+    "engine": "node-focused",
+    "round": 1,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "fb694601e0b5b692d1e328a50a466e1c3ee28eaa5689aa2580fff3eb0d534ed7"
+  },
+  {
+    "wall_ms": 38.495042,
+    "cpu_ms": 53.958,
+    "peak_rss_mib": 26.84375,
+    "output_bytes": 1153958,
+    "summary": {
+      "issues": 1000,
+      "needsClassification": 1000,
+      "normalized": true,
+      "relations": 2998
+    },
+    "size": 1000,
+    "engine": "go",
+    "round": 1,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "ecb83ffac33438e5d541fd75cdb000e8bae162f28642a8c9c2d5d061a5e726f2"
+  },
+  {
+    "wall_ms": 23.463542,
+    "cpu_ms": 22.366999999999997,
+    "peak_rss_mib": 22.5625,
+    "output_bytes": 1153958,
+    "summary": {
+      "normalized": true,
+      "issues": 1000,
+      "relations": 2998,
+      "needsClassification": 1000
+    },
+    "size": 1000,
+    "engine": "rust",
+    "round": 1,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "fb694601e0b5b692d1e328a50a466e1c3ee28eaa5689aa2580fff3eb0d534ed7"
+  },
+  {
+    "wall_ms": 120.752417,
+    "cpu_ms": 163.51699999999997,
+    "peak_rss_mib": 99.828125,
+    "output_bytes": 1153958,
+    "summary": {
+      "normalized": true,
+      "issues": 1000,
+      "relations": 2998,
+      "needsClassification": 1000
+    },
+    "size": 1000,
+    "engine": "node-cli",
+    "round": 1,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "fb694601e0b5b692d1e328a50a466e1c3ee28eaa5689aa2580fff3eb0d534ed7"
+  },
+  {
+    "wall_ms": 39.016083,
+    "cpu_ms": 52.80799999999999,
+    "peak_rss_mib": 26.375,
+    "output_bytes": 1153958,
+    "summary": {
+      "issues": 1000,
+      "needsClassification": 1000,
+      "normalized": true,
+      "relations": 2998
+    },
+    "size": 1000,
+    "engine": "go",
+    "round": 2,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "ecb83ffac33438e5d541fd75cdb000e8bae162f28642a8c9c2d5d061a5e726f2"
+  },
+  {
+    "wall_ms": 120.534084,
+    "cpu_ms": 162.535,
+    "peak_rss_mib": 99.8125,
+    "output_bytes": 1153958,
+    "summary": {
+      "normalized": true,
+      "issues": 1000,
+      "relations": 2998,
+      "needsClassification": 1000
+    },
+    "size": 1000,
+    "engine": "node-cli",
+    "round": 2,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "fb694601e0b5b692d1e328a50a466e1c3ee28eaa5689aa2580fff3eb0d534ed7"
+  },
+  {
+    "wall_ms": 103.981416,
+    "cpu_ms": 142.41099999999997,
+    "peak_rss_mib": 95.421875,
+    "output_bytes": 1153958,
+    "summary": {
+      "normalized": true,
+      "issues": 1000,
+      "relations": 2998,
+      "needsClassification": 1000
+    },
+    "size": 1000,
+    "engine": "node-focused",
+    "round": 2,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "fb694601e0b5b692d1e328a50a466e1c3ee28eaa5689aa2580fff3eb0d534ed7"
+  },
+  {
+    "wall_ms": 22.9065,
+    "cpu_ms": 21.838,
+    "peak_rss_mib": 22.546875,
+    "output_bytes": 1153958,
+    "summary": {
+      "normalized": true,
+      "issues": 1000,
+      "relations": 2998,
+      "needsClassification": 1000
+    },
+    "size": 1000,
+    "engine": "rust",
+    "round": 2,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "fb694601e0b5b692d1e328a50a466e1c3ee28eaa5689aa2580fff3eb0d534ed7"
+  },
+  {
+    "wall_ms": 22.975208,
+    "cpu_ms": 21.885,
+    "peak_rss_mib": 22.515625,
+    "output_bytes": 1153958,
+    "summary": {
+      "normalized": true,
+      "issues": 1000,
+      "relations": 2998,
+      "needsClassification": 1000
+    },
+    "size": 1000,
+    "engine": "rust",
+    "round": 3,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "fb694601e0b5b692d1e328a50a466e1c3ee28eaa5689aa2580fff3eb0d534ed7"
+  },
+  {
+    "wall_ms": 120.92175,
+    "cpu_ms": 164.283,
+    "peak_rss_mib": 99.375,
+    "output_bytes": 1153958,
+    "summary": {
+      "normalized": true,
+      "issues": 1000,
+      "relations": 2998,
+      "needsClassification": 1000
+    },
+    "size": 1000,
+    "engine": "node-cli",
+    "round": 3,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "fb694601e0b5b692d1e328a50a466e1c3ee28eaa5689aa2580fff3eb0d534ed7"
+  },
+  {
+    "wall_ms": 104.833208,
+    "cpu_ms": 144.73899999999998,
+    "peak_rss_mib": 95.578125,
+    "output_bytes": 1153958,
+    "summary": {
+      "normalized": true,
+      "issues": 1000,
+      "relations": 2998,
+      "needsClassification": 1000
+    },
+    "size": 1000,
+    "engine": "node-focused",
+    "round": 3,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "fb694601e0b5b692d1e328a50a466e1c3ee28eaa5689aa2580fff3eb0d534ed7"
+  },
+  {
+    "wall_ms": 37.956083,
+    "cpu_ms": 51.913,
+    "peak_rss_mib": 25.46875,
+    "output_bytes": 1153958,
+    "summary": {
+      "issues": 1000,
+      "needsClassification": 1000,
+      "normalized": true,
+      "relations": 2998
+    },
+    "size": 1000,
+    "engine": "go",
+    "round": 3,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "ecb83ffac33438e5d541fd75cdb000e8bae162f28642a8c9c2d5d061a5e726f2"
+  },
+  {
+    "wall_ms": 22.435333,
+    "cpu_ms": 21.486,
+    "peak_rss_mib": 22.53125,
+    "output_bytes": 1153958,
+    "summary": {
+      "normalized": true,
+      "issues": 1000,
+      "relations": 2998,
+      "needsClassification": 1000
+    },
+    "size": 1000,
+    "engine": "rust",
+    "round": 4,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "fb694601e0b5b692d1e328a50a466e1c3ee28eaa5689aa2580fff3eb0d534ed7"
+  },
+  {
+    "wall_ms": 117.817,
+    "cpu_ms": 165.48,
+    "peak_rss_mib": 100.078125,
+    "output_bytes": 1153958,
+    "summary": {
+      "normalized": true,
+      "issues": 1000,
+      "relations": 2998,
+      "needsClassification": 1000
+    },
+    "size": 1000,
+    "engine": "node-cli",
+    "round": 4,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "fb694601e0b5b692d1e328a50a466e1c3ee28eaa5689aa2580fff3eb0d534ed7"
+  },
+  {
+    "wall_ms": 108.038042,
+    "cpu_ms": 149.769,
+    "peak_rss_mib": 96.796875,
+    "output_bytes": 1153958,
+    "summary": {
+      "normalized": true,
+      "issues": 1000,
+      "relations": 2998,
+      "needsClassification": 1000
+    },
+    "size": 1000,
+    "engine": "node-focused",
+    "round": 4,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "fb694601e0b5b692d1e328a50a466e1c3ee28eaa5689aa2580fff3eb0d534ed7"
+  },
+  {
+    "wall_ms": 41.273916,
+    "cpu_ms": 58.544999999999995,
+    "peak_rss_mib": 25.390625,
+    "output_bytes": 1153958,
+    "summary": {
+      "issues": 1000,
+      "needsClassification": 1000,
+      "normalized": true,
+      "relations": 2998
+    },
+    "size": 1000,
+    "engine": "go",
+    "round": 4,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "ecb83ffac33438e5d541fd75cdb000e8bae162f28642a8c9c2d5d061a5e726f2"
+  },
+  {
+    "wall_ms": 113.834833,
+    "cpu_ms": 155.00900000000001,
+    "peak_rss_mib": 95.71875,
+    "output_bytes": 1153958,
+    "summary": {
+      "normalized": true,
+      "issues": 1000,
+      "relations": 2998,
+      "needsClassification": 1000
+    },
+    "size": 1000,
+    "engine": "node-focused",
+    "round": 5,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "fb694601e0b5b692d1e328a50a466e1c3ee28eaa5689aa2580fff3eb0d534ed7"
+  },
+  {
+    "wall_ms": 121.233875,
+    "cpu_ms": 163.951,
+    "peak_rss_mib": 99.671875,
+    "output_bytes": 1153958,
+    "summary": {
+      "normalized": true,
+      "issues": 1000,
+      "relations": 2998,
+      "needsClassification": 1000
+    },
+    "size": 1000,
+    "engine": "node-cli",
+    "round": 5,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "fb694601e0b5b692d1e328a50a466e1c3ee28eaa5689aa2580fff3eb0d534ed7"
+  },
+  {
+    "wall_ms": 38.164584,
+    "cpu_ms": 52.394999999999996,
+    "peak_rss_mib": 24.453125,
+    "output_bytes": 1153958,
+    "summary": {
+      "issues": 1000,
+      "needsClassification": 1000,
+      "normalized": true,
+      "relations": 2998
+    },
+    "size": 1000,
+    "engine": "go",
+    "round": 5,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "ecb83ffac33438e5d541fd75cdb000e8bae162f28642a8c9c2d5d061a5e726f2"
+  },
+  {
+    "wall_ms": 23.177875,
+    "cpu_ms": 22.195,
+    "peak_rss_mib": 22.53125,
+    "output_bytes": 1153958,
+    "summary": {
+      "normalized": true,
+      "issues": 1000,
+      "relations": 2998,
+      "needsClassification": 1000
+    },
+    "size": 1000,
+    "engine": "rust",
+    "round": 5,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "fb694601e0b5b692d1e328a50a466e1c3ee28eaa5689aa2580fff3eb0d534ed7"
+  },
+  {
+    "wall_ms": 340.998666,
+    "cpu_ms": 534.265,
+    "peak_rss_mib": 312.453125,
+    "output_bytes": 11651458,
+    "summary": {
+      "normalized": true,
+      "issues": 10000,
+      "relations": 29998,
+      "needsClassification": 10000
+    },
+    "size": 10000,
+    "engine": "node-focused",
+    "round": 0,
+    "warmup": true,
+    "semantic_match": true,
+    "sha256": "95899f0916df793823b83b453a44387881a601bcca0419efe6aac5b95db31206"
+  },
+  {
+    "wall_ms": 224.029667,
+    "cpu_ms": 221.111,
+    "peak_rss_mib": 173.015625,
+    "output_bytes": 11651458,
+    "summary": {
+      "normalized": true,
+      "issues": 10000,
+      "relations": 29998,
+      "needsClassification": 10000
+    },
+    "size": 10000,
+    "engine": "rust",
+    "round": 0,
+    "warmup": true,
+    "semantic_match": true,
+    "sha256": "95899f0916df793823b83b453a44387881a601bcca0419efe6aac5b95db31206"
+  },
+  {
+    "wall_ms": 319.50875,
+    "cpu_ms": 469.493,
+    "peak_rss_mib": 154.40625,
+    "output_bytes": 11651458,
+    "summary": {
+      "issues": 10000,
+      "needsClassification": 10000,
+      "normalized": true,
+      "relations": 29998
+    },
+    "size": 10000,
+    "engine": "go",
+    "round": 0,
+    "warmup": true,
+    "semantic_match": true,
+    "sha256": "f50a938cad592baa4e921b8c2db48dce6d4ebbaaad36b191b9f28f6db7f76471"
+  },
+  {
+    "wall_ms": 359.389833,
+    "cpu_ms": 560.064,
+    "peak_rss_mib": 317.9375,
+    "output_bytes": 11651458,
+    "summary": {
+      "normalized": true,
+      "issues": 10000,
+      "relations": 29998,
+      "needsClassification": 10000
+    },
+    "size": 10000,
+    "engine": "node-cli",
+    "round": 0,
+    "warmup": true,
+    "semantic_match": true,
+    "sha256": "95899f0916df793823b83b453a44387881a601bcca0419efe6aac5b95db31206"
+  },
+  {
+    "wall_ms": 362.451125,
+    "cpu_ms": 560.616,
+    "peak_rss_mib": 318.96875,
+    "output_bytes": 11651458,
+    "summary": {
+      "normalized": true,
+      "issues": 10000,
+      "relations": 29998,
+      "needsClassification": 10000
+    },
+    "size": 10000,
+    "engine": "node-cli",
+    "round": 1,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "95899f0916df793823b83b453a44387881a601bcca0419efe6aac5b95db31206"
+  },
+  {
+    "wall_ms": 315.468333,
+    "cpu_ms": 460.28899999999993,
+    "peak_rss_mib": 155.9375,
+    "output_bytes": 11651458,
+    "summary": {
+      "issues": 10000,
+      "needsClassification": 10000,
+      "normalized": true,
+      "relations": 29998
+    },
+    "size": 10000,
+    "engine": "go",
+    "round": 1,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "f50a938cad592baa4e921b8c2db48dce6d4ebbaaad36b191b9f28f6db7f76471"
+  },
+  {
+    "wall_ms": 355.930041,
+    "cpu_ms": 573.8050000000001,
+    "peak_rss_mib": 352.265625,
+    "output_bytes": 11651458,
+    "summary": {
+      "normalized": true,
+      "issues": 10000,
+      "relations": 29998,
+      "needsClassification": 10000
+    },
+    "size": 10000,
+    "engine": "node-focused",
+    "round": 1,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "95899f0916df793823b83b453a44387881a601bcca0419efe6aac5b95db31206"
+  },
+  {
+    "wall_ms": 223.791542,
+    "cpu_ms": 220.724,
+    "peak_rss_mib": 172.96875,
+    "output_bytes": 11651458,
+    "summary": {
+      "normalized": true,
+      "issues": 10000,
+      "relations": 29998,
+      "needsClassification": 10000
+    },
+    "size": 10000,
+    "engine": "rust",
+    "round": 1,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "95899f0916df793823b83b453a44387881a601bcca0419efe6aac5b95db31206"
+  },
+  {
+    "wall_ms": 316.407167,
+    "cpu_ms": 455.249,
+    "peak_rss_mib": 155.75,
+    "output_bytes": 11651458,
+    "summary": {
+      "issues": 10000,
+      "needsClassification": 10000,
+      "normalized": true,
+      "relations": 29998
+    },
+    "size": 10000,
+    "engine": "go",
+    "round": 2,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "f50a938cad592baa4e921b8c2db48dce6d4ebbaaad36b191b9f28f6db7f76471"
+  },
+  {
+    "wall_ms": 219.559208,
+    "cpu_ms": 216.501,
+    "peak_rss_mib": 173.078125,
+    "output_bytes": 11651458,
+    "summary": {
+      "normalized": true,
+      "issues": 10000,
+      "relations": 29998,
+      "needsClassification": 10000
+    },
+    "size": 10000,
+    "engine": "rust",
+    "round": 2,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "95899f0916df793823b83b453a44387881a601bcca0419efe6aac5b95db31206"
+  },
+  {
+    "wall_ms": 367.159375,
+    "cpu_ms": 558.486,
+    "peak_rss_mib": 312.5625,
+    "output_bytes": 11651458,
+    "summary": {
+      "normalized": true,
+      "issues": 10000,
+      "relations": 29998,
+      "needsClassification": 10000
+    },
+    "size": 10000,
+    "engine": "node-cli",
+    "round": 2,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "95899f0916df793823b83b453a44387881a601bcca0419efe6aac5b95db31206"
+  },
+  {
+    "wall_ms": 356.01975,
+    "cpu_ms": 552.4469999999999,
+    "peak_rss_mib": 312.578125,
+    "output_bytes": 11651458,
+    "summary": {
+      "normalized": true,
+      "issues": 10000,
+      "relations": 29998,
+      "needsClassification": 10000
+    },
+    "size": 10000,
+    "engine": "node-focused",
+    "round": 2,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "95899f0916df793823b83b453a44387881a601bcca0419efe6aac5b95db31206"
+  },
+  {
+    "wall_ms": 321.55975,
+    "cpu_ms": 465.29900000000004,
+    "peak_rss_mib": 154.953125,
+    "output_bytes": 11651458,
+    "summary": {
+      "issues": 10000,
+      "needsClassification": 10000,
+      "normalized": true,
+      "relations": 29998
+    },
+    "size": 10000,
+    "engine": "go",
+    "round": 3,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "f50a938cad592baa4e921b8c2db48dce6d4ebbaaad36b191b9f28f6db7f76471"
+  },
+  {
+    "wall_ms": 226.913,
+    "cpu_ms": 223.716,
+    "peak_rss_mib": 173.0625,
+    "output_bytes": 11651458,
+    "summary": {
+      "normalized": true,
+      "issues": 10000,
+      "relations": 29998,
+      "needsClassification": 10000
+    },
+    "size": 10000,
+    "engine": "rust",
+    "round": 3,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "95899f0916df793823b83b453a44387881a601bcca0419efe6aac5b95db31206"
+  },
+  {
+    "wall_ms": 345.676125,
+    "cpu_ms": 543.9119999999999,
+    "peak_rss_mib": 313.21875,
+    "output_bytes": 11651458,
+    "summary": {
+      "normalized": true,
+      "issues": 10000,
+      "relations": 29998,
+      "needsClassification": 10000
+    },
+    "size": 10000,
+    "engine": "node-focused",
+    "round": 3,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "95899f0916df793823b83b453a44387881a601bcca0419efe6aac5b95db31206"
+  },
+  {
+    "wall_ms": 368.867209,
+    "cpu_ms": 575.3499999999999,
+    "peak_rss_mib": 317.984375,
+    "output_bytes": 11651458,
+    "summary": {
+      "normalized": true,
+      "issues": 10000,
+      "relations": 29998,
+      "needsClassification": 10000
+    },
+    "size": 10000,
+    "engine": "node-cli",
+    "round": 3,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "95899f0916df793823b83b453a44387881a601bcca0419efe6aac5b95db31206"
+  },
+  {
+    "wall_ms": 355.509542,
+    "cpu_ms": 555.3009999999999,
+    "peak_rss_mib": 317.65625,
+    "output_bytes": 11651458,
+    "summary": {
+      "normalized": true,
+      "issues": 10000,
+      "relations": 29998,
+      "needsClassification": 10000
+    },
+    "size": 10000,
+    "engine": "node-cli",
+    "round": 4,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "95899f0916df793823b83b453a44387881a601bcca0419efe6aac5b95db31206"
+  },
+  {
+    "wall_ms": 339.195125,
+    "cpu_ms": 525.265,
+    "peak_rss_mib": 312.84375,
+    "output_bytes": 11651458,
+    "summary": {
+      "normalized": true,
+      "issues": 10000,
+      "relations": 29998,
+      "needsClassification": 10000
+    },
+    "size": 10000,
+    "engine": "node-focused",
+    "round": 4,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "95899f0916df793823b83b453a44387881a601bcca0419efe6aac5b95db31206"
+  },
+  {
+    "wall_ms": 316.175833,
+    "cpu_ms": 452.132,
+    "peak_rss_mib": 154.421875,
+    "output_bytes": 11651458,
+    "summary": {
+      "issues": 10000,
+      "needsClassification": 10000,
+      "normalized": true,
+      "relations": 29998
+    },
+    "size": 10000,
+    "engine": "go",
+    "round": 4,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "f50a938cad592baa4e921b8c2db48dce6d4ebbaaad36b191b9f28f6db7f76471"
+  },
+  {
+    "wall_ms": 224.769625,
+    "cpu_ms": 221.76000000000002,
+    "peak_rss_mib": 173.0625,
+    "output_bytes": 11651458,
+    "summary": {
+      "normalized": true,
+      "issues": 10000,
+      "relations": 29998,
+      "needsClassification": 10000
+    },
+    "size": 10000,
+    "engine": "rust",
+    "round": 4,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "95899f0916df793823b83b453a44387881a601bcca0419efe6aac5b95db31206"
+  },
+  {
+    "wall_ms": 228.291208,
+    "cpu_ms": 225.18999999999997,
+    "peak_rss_mib": 172.984375,
+    "output_bytes": 11651458,
+    "summary": {
+      "normalized": true,
+      "issues": 10000,
+      "relations": 29998,
+      "needsClassification": 10000
+    },
+    "size": 10000,
+    "engine": "rust",
+    "round": 5,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "95899f0916df793823b83b453a44387881a601bcca0419efe6aac5b95db31206"
+  },
+  {
+    "wall_ms": 312.744208,
+    "cpu_ms": 444.796,
+    "peak_rss_mib": 142.875,
+    "output_bytes": 11651458,
+    "summary": {
+      "issues": 10000,
+      "needsClassification": 10000,
+      "normalized": true,
+      "relations": 29998
+    },
+    "size": 10000,
+    "engine": "go",
+    "round": 5,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "f50a938cad592baa4e921b8c2db48dce6d4ebbaaad36b191b9f28f6db7f76471"
+  },
+  {
+    "wall_ms": 356.938542,
+    "cpu_ms": 554.315,
+    "peak_rss_mib": 316.546875,
+    "output_bytes": 11651458,
+    "summary": {
+      "normalized": true,
+      "issues": 10000,
+      "relations": 29998,
+      "needsClassification": 10000
+    },
+    "size": 10000,
+    "engine": "node-cli",
+    "round": 5,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "95899f0916df793823b83b453a44387881a601bcca0419efe6aac5b95db31206"
+  },
+  {
+    "wall_ms": 345.71925,
+    "cpu_ms": 539.129,
+    "peak_rss_mib": 312.78125,
+    "output_bytes": 11651458,
+    "summary": {
+      "normalized": true,
+      "issues": 10000,
+      "relations": 29998,
+      "needsClassification": 10000
+    },
+    "size": 10000,
+    "engine": "node-focused",
+    "round": 5,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "95899f0916df793823b83b453a44387881a601bcca0419efe6aac5b95db31206"
+  },
+  {
+    "wall_ms": 1385.65025,
+    "cpu_ms": 1948.263,
+    "peak_rss_mib": 1006.5,
+    "output_bytes": 58896455,
+    "summary": {
+      "normalized": true,
+      "issues": 50000,
+      "relations": 149998,
+      "needsClassification": 50000
+    },
+    "size": 50000,
+    "engine": "node-focused",
+    "round": 0,
+    "warmup": true,
+    "semantic_match": true,
+    "sha256": "289b2afd87f22cd080903a626c730560d71eacd4cc48f484fb07db046852054f"
+  },
+  {
+    "wall_ms": 1165.762667,
+    "cpu_ms": 1160.169,
+    "peak_rss_mib": 853.859375,
+    "output_bytes": 58896455,
+    "summary": {
+      "normalized": true,
+      "issues": 50000,
+      "relations": 149998,
+      "needsClassification": 50000
+    },
+    "size": 50000,
+    "engine": "rust",
+    "round": 0,
+    "warmup": true,
+    "semantic_match": true,
+    "sha256": "289b2afd87f22cd080903a626c730560d71eacd4cc48f484fb07db046852054f"
+  },
+  {
+    "wall_ms": 1637.932959,
+    "cpu_ms": 2368.132,
+    "peak_rss_mib": 709.890625,
+    "output_bytes": 58896455,
+    "summary": {
+      "issues": 50000,
+      "needsClassification": 50000,
+      "normalized": true,
+      "relations": 149998
+    },
+    "size": 50000,
+    "engine": "go",
+    "round": 0,
+    "warmup": true,
+    "semantic_match": true,
+    "sha256": "41d346a4fae5c12b8330b22c52f212171e3bc60033bb585b7a5a8695fb1eb8a3"
+  },
+  {
+    "wall_ms": 1410.810834,
+    "cpu_ms": 1924.865,
+    "peak_rss_mib": 1098.0625,
+    "output_bytes": 58896455,
+    "summary": {
+      "normalized": true,
+      "issues": 50000,
+      "relations": 149998,
+      "needsClassification": 50000
+    },
+    "size": 50000,
+    "engine": "node-cli",
+    "round": 0,
+    "warmup": true,
+    "semantic_match": true,
+    "sha256": "289b2afd87f22cd080903a626c730560d71eacd4cc48f484fb07db046852054f"
+  },
+  {
+    "wall_ms": 1409.452417,
+    "cpu_ms": 1922.78,
+    "peak_rss_mib": 1096.71875,
+    "output_bytes": 58896455,
+    "summary": {
+      "normalized": true,
+      "issues": 50000,
+      "relations": 149998,
+      "needsClassification": 50000
+    },
+    "size": 50000,
+    "engine": "node-cli",
+    "round": 1,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "289b2afd87f22cd080903a626c730560d71eacd4cc48f484fb07db046852054f"
+  },
+  {
+    "wall_ms": 1176.779209,
+    "cpu_ms": 1174.8639999999998,
+    "peak_rss_mib": 855.734375,
+    "output_bytes": 58896455,
+    "summary": {
+      "normalized": true,
+      "issues": 50000,
+      "relations": 149998,
+      "needsClassification": 50000
+    },
+    "size": 50000,
+    "engine": "rust",
+    "round": 1,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "289b2afd87f22cd080903a626c730560d71eacd4cc48f484fb07db046852054f"
+  },
+  {
+    "wall_ms": 1429.681875,
+    "cpu_ms": 1984.5230000000001,
+    "peak_rss_mib": 1006.40625,
+    "output_bytes": 58896455,
+    "summary": {
+      "normalized": true,
+      "issues": 50000,
+      "relations": 149998,
+      "needsClassification": 50000
+    },
+    "size": 50000,
+    "engine": "node-focused",
+    "round": 1,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "289b2afd87f22cd080903a626c730560d71eacd4cc48f484fb07db046852054f"
+  },
+  {
+    "wall_ms": 1630.921541,
+    "cpu_ms": 2283.673,
+    "peak_rss_mib": 702.0,
+    "output_bytes": 58896455,
+    "summary": {
+      "issues": 50000,
+      "needsClassification": 50000,
+      "normalized": true,
+      "relations": 149998
+    },
+    "size": 50000,
+    "engine": "go",
+    "round": 1,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "41d346a4fae5c12b8330b22c52f212171e3bc60033bb585b7a5a8695fb1eb8a3"
+  },
+  {
+    "wall_ms": 1411.824208,
+    "cpu_ms": 1975.172,
+    "peak_rss_mib": 1007.546875,
+    "output_bytes": 58896455,
+    "summary": {
+      "normalized": true,
+      "issues": 50000,
+      "relations": 149998,
+      "needsClassification": 50000
+    },
+    "size": 50000,
+    "engine": "node-focused",
+    "round": 2,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "289b2afd87f22cd080903a626c730560d71eacd4cc48f484fb07db046852054f"
+  },
+  {
+    "wall_ms": 1636.367917,
+    "cpu_ms": 2317.292,
+    "peak_rss_mib": 709.828125,
+    "output_bytes": 58896455,
+    "summary": {
+      "issues": 50000,
+      "needsClassification": 50000,
+      "normalized": true,
+      "relations": 149998
+    },
+    "size": 50000,
+    "engine": "go",
+    "round": 2,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "41d346a4fae5c12b8330b22c52f212171e3bc60033bb585b7a5a8695fb1eb8a3"
+  },
+  {
+    "wall_ms": 1170.398208,
+    "cpu_ms": 1167.194,
+    "peak_rss_mib": 853.859375,
+    "output_bytes": 58896455,
+    "summary": {
+      "normalized": true,
+      "issues": 50000,
+      "relations": 149998,
+      "needsClassification": 50000
+    },
+    "size": 50000,
+    "engine": "rust",
+    "round": 2,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "289b2afd87f22cd080903a626c730560d71eacd4cc48f484fb07db046852054f"
+  },
+  {
+    "wall_ms": 1369.701459,
+    "cpu_ms": 1870.098,
+    "peak_rss_mib": 1097.125,
+    "output_bytes": 58896455,
+    "summary": {
+      "normalized": true,
+      "issues": 50000,
+      "relations": 149998,
+      "needsClassification": 50000
+    },
+    "size": 50000,
+    "engine": "node-cli",
+    "round": 2,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "289b2afd87f22cd080903a626c730560d71eacd4cc48f484fb07db046852054f"
+  },
+  {
+    "wall_ms": 1634.518583,
+    "cpu_ms": 2392.486,
+    "peak_rss_mib": 717.671875,
+    "output_bytes": 58896455,
+    "summary": {
+      "issues": 50000,
+      "needsClassification": 50000,
+      "normalized": true,
+      "relations": 149998
+    },
+    "size": 50000,
+    "engine": "go",
+    "round": 3,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "41d346a4fae5c12b8330b22c52f212171e3bc60033bb585b7a5a8695fb1eb8a3"
+  },
+  {
+    "wall_ms": 1173.775208,
+    "cpu_ms": 1168.113,
+    "peak_rss_mib": 855.859375,
+    "output_bytes": 58896455,
+    "summary": {
+      "normalized": true,
+      "issues": 50000,
+      "relations": 149998,
+      "needsClassification": 50000
+    },
+    "size": 50000,
+    "engine": "rust",
+    "round": 3,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "289b2afd87f22cd080903a626c730560d71eacd4cc48f484fb07db046852054f"
+  },
+  {
+    "wall_ms": 1400.313375,
+    "cpu_ms": 1950.075,
+    "peak_rss_mib": 1001.90625,
+    "output_bytes": 58896455,
+    "summary": {
+      "normalized": true,
+      "issues": 50000,
+      "relations": 149998,
+      "needsClassification": 50000
+    },
+    "size": 50000,
+    "engine": "node-focused",
+    "round": 3,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "289b2afd87f22cd080903a626c730560d71eacd4cc48f484fb07db046852054f"
+  },
+  {
+    "wall_ms": 1401.566292,
+    "cpu_ms": 1897.04,
+    "peak_rss_mib": 1097.234375,
+    "output_bytes": 58896455,
+    "summary": {
+      "normalized": true,
+      "issues": 50000,
+      "relations": 149998,
+      "needsClassification": 50000
+    },
+    "size": 50000,
+    "engine": "node-cli",
+    "round": 3,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "289b2afd87f22cd080903a626c730560d71eacd4cc48f484fb07db046852054f"
+  },
+  {
+    "wall_ms": 1396.161667,
+    "cpu_ms": 1953.136,
+    "peak_rss_mib": 1005.21875,
+    "output_bytes": 58896455,
+    "summary": {
+      "normalized": true,
+      "issues": 50000,
+      "relations": 149998,
+      "needsClassification": 50000
+    },
+    "size": 50000,
+    "engine": "node-focused",
+    "round": 4,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "289b2afd87f22cd080903a626c730560d71eacd4cc48f484fb07db046852054f"
+  },
+  {
+    "wall_ms": 1377.557125,
+    "cpu_ms": 1880.196,
+    "peak_rss_mib": 1096.953125,
+    "output_bytes": 58896455,
+    "summary": {
+      "normalized": true,
+      "issues": 50000,
+      "relations": 149998,
+      "needsClassification": 50000
+    },
+    "size": 50000,
+    "engine": "node-cli",
+    "round": 4,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "289b2afd87f22cd080903a626c730560d71eacd4cc48f484fb07db046852054f"
+  },
+  {
+    "wall_ms": 1638.279792,
+    "cpu_ms": 2364.7309999999998,
+    "peak_rss_mib": 719.890625,
+    "output_bytes": 58896455,
+    "summary": {
+      "issues": 50000,
+      "needsClassification": 50000,
+      "normalized": true,
+      "relations": 149998
+    },
+    "size": 50000,
+    "engine": "go",
+    "round": 4,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "41d346a4fae5c12b8330b22c52f212171e3bc60033bb585b7a5a8695fb1eb8a3"
+  },
+  {
+    "wall_ms": 1145.86825,
+    "cpu_ms": 1138.301,
+    "peak_rss_mib": 853.890625,
+    "output_bytes": 58896455,
+    "summary": {
+      "normalized": true,
+      "issues": 50000,
+      "relations": 149998,
+      "needsClassification": 50000
+    },
+    "size": 50000,
+    "engine": "rust",
+    "round": 4,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "289b2afd87f22cd080903a626c730560d71eacd4cc48f484fb07db046852054f"
+  },
+  {
+    "wall_ms": 1614.026958,
+    "cpu_ms": 2351.645,
+    "peak_rss_mib": 690.34375,
+    "output_bytes": 58896455,
+    "summary": {
+      "issues": 50000,
+      "needsClassification": 50000,
+      "normalized": true,
+      "relations": 149998
+    },
+    "size": 50000,
+    "engine": "go",
+    "round": 5,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "41d346a4fae5c12b8330b22c52f212171e3bc60033bb585b7a5a8695fb1eb8a3"
+  },
+  {
+    "wall_ms": 1464.942916,
+    "cpu_ms": 2002.084,
+    "peak_rss_mib": 1098.1875,
+    "output_bytes": 58896455,
+    "summary": {
+      "normalized": true,
+      "issues": 50000,
+      "relations": 149998,
+      "needsClassification": 50000
+    },
+    "size": 50000,
+    "engine": "node-cli",
+    "round": 5,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "289b2afd87f22cd080903a626c730560d71eacd4cc48f484fb07db046852054f"
+  },
+  {
+    "wall_ms": 1438.167542,
+    "cpu_ms": 2024.9189999999996,
+    "peak_rss_mib": 1007.328125,
+    "output_bytes": 58896455,
+    "summary": {
+      "normalized": true,
+      "issues": 50000,
+      "relations": 149998,
+      "needsClassification": 50000
+    },
+    "size": 50000,
+    "engine": "node-focused",
+    "round": 5,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "289b2afd87f22cd080903a626c730560d71eacd4cc48f484fb07db046852054f"
+  },
+  {
+    "wall_ms": 1149.529583,
+    "cpu_ms": 1138.426,
+    "peak_rss_mib": 853.890625,
+    "output_bytes": 58896455,
+    "summary": {
+      "normalized": true,
+      "issues": 50000,
+      "relations": 149998,
+      "needsClassification": 50000
+    },
+    "size": 50000,
+    "engine": "rust",
+    "round": 5,
+    "warmup": false,
+    "semantic_match": true,
+    "sha256": "289b2afd87f22cd080903a626c730560d71eacd4cc48f484fb07db046852054f"
+  }
+]

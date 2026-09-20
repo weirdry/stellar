@@ -130,3 +130,10 @@ native-build output: bundle-check
 
 native-compare build benchmark output trials="5":
     python3 scripts/bench/native/compare.py --node "$(mise exec --locked -- node -p process.execPath)" --build {{ quote(build) }} --benchmark {{ quote(benchmark) }} --output {{ quote(output) }} --trials {{ quote(trials) }}
+
+# Optional frozen standalone experiment; no native dependency in product CI.
+standalone-check:
+    python3 -B scripts/bench/standalone/check_archive.py
+
+standalone-replay output sizes="1000,10000,50000" trials="5": bundle-check
+    python3 -B scripts/bench/standalone/replay.py --node "$(mise exec --locked -- node -p process.execPath)" --output {{ quote(output) }} --sizes {{ quote(sizes) }} --trials {{ quote(trials) }}

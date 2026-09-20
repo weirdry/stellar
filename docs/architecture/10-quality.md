@@ -97,6 +97,15 @@ cases and timed native invocations separately require native-success receipts.
 The [review corrections](../validation/2026-09-21-native-review-corrections.md)
 also verify insertion-anchor rejection before the stager creates its output.
 
+The later [standalone normalization archive](../validation/2026-09-21-standalone-normalize-comparison.md)
+measures Go/Rust owning input, validation, normalization and output without Node.
+It preserves the measured source/locks, raw samples and public correctness receipts.
+Its 169-case comparison has one known native acceptance difference, and native
+diagnostics/draft validation do not provide full CLI equivalence. The optional
+`just standalone-check` validates archive consistency; `just standalone-replay`
+checks regenerated input hashes and expected outcomes before separate measurements.
+Neither is a default CI dependency or evidence of product/native installation.
+
 ## Documentation quality
 
 The [canonical policy](../development/documentation.md) governs ownership,
