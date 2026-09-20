@@ -4,6 +4,7 @@ Dated records identify the source or artifact, commands, observed result, and
 untested scope. They support the architecture without silently changing its
 meaning.
 
+- [2026-09-20 benchmark independent-review corrections](2026-09-20-benchmark-review-corrections.md)
 - [2026-09-20 benchmark reference validation correction](2026-09-20-benchmark-reference-review.md)
 - [2026-09-20 CLI classification and validation processing costs](2026-09-20-cli-processing-costs.md)
 - [2026-09-19 resource inventory review corrections](2026-09-19-resource-inventory-review.md)
