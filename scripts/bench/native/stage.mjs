@@ -6,17 +6,17 @@ import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 const root = fileURLToPath(new URL('../../../', import.meta.url));
 const output = resolve(process.argv[2]);
+const source = await readFile(join(root, 'lib/normalize.js'), 'utf8');
+const anchor =
+  '  // Index explicit native/identifier pairs before resolving identifier-only';
+if (source.split(anchor).length !== 2)
+  throw new Error('Normalizer insertion boundary moved');
 await mkdir(output); // Fresh only.
 await mkdir(join(output, 'bin'));
 for (const name of ['schemas', 'assets'])
   await cp(join(root, name), join(output, name), { recursive: true });
 for (const name of ['stellar.mjs', 'stellar.manifest.json'])
   await cp(join(root, 'bin', name), join(output, 'bin', name));
-const source = await readFile(join(root, 'lib/normalize.js'), 'utf8');
-const anchor =
-  '  // Index explicit native/identifier pairs before resolving identifier-only';
-if (source.split(anchor).length !== 2)
-  throw new Error('Normalizer insertion boundary moved');
 const injection = `
   if (process.env.STELLAR_NATIVE_WORKER) {
     try {
@@ -82,6 +82,7 @@ await mkdir(join(output, 'test'));
 for (const name of ['normalize.test.js', 'fixtures.js'])
   await cp(join(root, 'test', name), join(output, 'test', name));
 await cp(join(root, 'package.json'), join(output, 'package.json'));
+// The canonical CLI test invokes bin/stellar.js; use the probe in this isolated copy.
 await writeFile(join(output, 'bin/stellar.js'), result.outputFiles[0].text);
 const names = [
   'lib/normalize.js',

@@ -92,6 +92,10 @@ timings. Separate process-tree RSS sampling is an approximate observation,
 not a CI memory threshold. Native compilers and this experimental code are not
 product dependencies, and the study does not establish standalone-native or
 installation readiness.
+Its canonical suite covers mixed native/fallback behavior; designated differential
+cases and timed native invocations separately require native-success receipts.
+The [review corrections](../validation/2026-09-21-native-review-corrections.md)
+also verify insertion-anchor rejection before the stager creates its output.
 
 ## Documentation quality
 
