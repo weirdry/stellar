@@ -98,6 +98,10 @@ only; it is not installed by `just init` or required by the product or CI.
 Timing samples and peak RSS are dated observations, not pass/fail timing gates.
 Use `just benchmark-test` for the optional harness's reference-validation and
 small synthetic comparison regressions, separately from `just ci`.
+Use `just profile BENCHMARK_DIRECTORY OUTPUT [TRIALS]` for separate CPU and
+allocation sampling of its retained synthetic artifacts, and `just profile-test`
+for deterministic attribution checks. Profiled timings include instrumentation
+overhead; the performance guide owns interpretation and output-retention limits.
 
 The optional [native-worker experiment](../../scripts/bench/native/README.md) adds
 `just native-build` and `just native-compare` for a synthetic Node/Go/Rust

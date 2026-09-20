@@ -15,6 +15,10 @@ docs/architecture/diagrams/*.json
 docs/architecture/diagrams/*.html
 docs/architecture/diagrams/*.svg
 
+# Preserve recorded measurement bytes and the profiler's baseline-file hash.
+docs/validation/data/2026-09-20-post-optimization/commands.json
+docs/validation/data/2026-09-20-post-optimization/profiles.json
+
 # Preserve the recorded native comparison bytes and their evidence hash.
 docs/validation/data/2026-09-20-native-normalize/results.json
 

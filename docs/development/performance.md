@@ -103,6 +103,59 @@ samples are exploratory observations, not universal speed guarantees or CI
 timing limits. Native-language mocks, fresh-host installation, live source access
 and release/runtime acceptance require separate evidence.
 
+## Attribute remaining costs
+
+After a successful synthetic benchmark, run profiles against its retained stage
+and inputs in a separate fresh directory:
+
+```sh
+just profile /tmp/stellar-after /tmp/stellar-profile
+just profile-test
+```
+
+`just profile BENCHMARK_DIRECTORY OUTPUT [TRIALS]` defaults to three trials per
+case and profiling mode. It verifies the benchmark fixture identity, recorded
+input/setup hashes and staged runtime against the checkout's integrity manifest.
+It profiles normalization and refresh at the smallest and largest available
+sizes, rendering at the largest size, and classification at the largest size
+up to 10,000. Equal cases are deduplicated. A size-100 benchmark with one profile
+trial gives eight instrumented executions as a small smoke check.
+
+CPU and allocation sampling run in separate, serial processes in a reproducibly
+shuffled order. Every profiled output must match the benchmark's recorded setup
+hash before a result is accepted. The profiler retains its raw files, logs and
+outputs locally; allow additional disk space beyond the baseline run. The final
+`results.json` records runtime, fixture, baseline-result and profiler hashes,
+environment, protocol, output hashes, and per-trial summaries. Machine-specific
+file URLs are normalized in summaries; raw profiles are local artifacts.
+
+- [Node CPU sampling](https://github.com/nodejs/node/blob/main/doc/api/cli.md#--cpu-prof)
+  uses a 1,000-microsecond interval. Self attribution weights each sampled frame
+  by its time delta; inclusive attribution also credits its ancestors, counting
+  a recursive frame only once per sample. Percentages use total sampled time,
+  including idle and GC. They are not POSIX CPU accounting or a separate timer
+  for every operation, and inclusive percentages overlap.
+- Allocation sampling starts in a Node preload with a 512-KiB interval and
+  [includes objects collected by major and minor GC](https://chromedevtools.github.io/devtools-protocol/v8/HeapProfiler/#method-startSampling).
+  Estimated allocation volume includes temporary objects during the sampled
+  interval; it is neither retained heap nor process peak RSS, and does not
+  account for every native/external allocation or pre-preload startup object.
+- Instrumented wall/CPU/RSS observations include profiler overhead. Use the
+  separate, uninstrumented benchmark for command timings and process peak RSS.
+  Parsing, stringification and native work can be charged to their JavaScript
+  caller; source inspection is required, and sampling alone does not split every
+  native operation or asynchronous file wait into an exact independent cost.
+- Summaries retain the top 20 self frames, the top 30 inclusive frames plus named
+  product paths, and all unlisted self weight. Raw-profile hashes identify the
+  complete local profiles. `just profile-test` checks weighted attribution,
+  recursion handling and conservation of self weight with invented profiles;
+  actual staged execution/output parity is a separate smoke check.
+
+The [post-optimization study](../validation/2026-09-20-post-optimization-profile.md)
+records measured costs and the original proposal for a native comparison boundary.
+The later hybrid and standalone studies below have their own protocols and results;
+the profiling study does not adopt another language or establish a native speedup.
+
 ## Experiment with native workers
 
 The optional [Go/Rust experiment](../../scripts/bench/native/README.md) measures

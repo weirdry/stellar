@@ -83,6 +83,12 @@ and [independent-review corrections](../validation/2026-09-20-benchmark-review-c
 record these checks separately from the product CI gate. The generated workload
 has no native-ID collisions across providers or namespaces; the focused processing
 tests own that coverage, independently of the benchmark artifact comparisons.
+Optional CPU/allocation [profiling](../development/performance.md#attribute-remaining-costs)
+preserves those benchmark outputs while attributing remaining costs. Weighted
+CPU samples and estimated allocation volume are distinct from uninstrumented
+latency and peak RSS. The [post-optimization study](../validation/2026-09-20-post-optimization-profile.md)
+records the original candidate boundary, separately from the later experiments
+and language direction below.
 
 The separate [native-worker study](../validation/2026-09-20-native-normalize-comparison.md)
 compares the current Node CLI with experimental Go/Rust workers at a specific
