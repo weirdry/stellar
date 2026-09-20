@@ -50,6 +50,10 @@ PATH, network access for a fresh locked Cargo download, and permission to run
 `ps` for read-only PID/PPID/RSS sampling. It does not install compilers globally.
 The recorded run used Go 1.26.8 and Rust/Cargo 1.96.0 on macOS arm64. No Windows
 support is claimed. All paths below must be fresh, and their parent must exist.
+The stager checks that its normalizer insertion anchor occurs exactly once
+before creating the stage directory or copying resources. A missing or repeated
+anchor leaves the requested stage path absent. This does not promise cleanup of
+the outer native-build directory or failures later in staging.
 
 ```sh
 just init
@@ -77,8 +81,12 @@ runner, experimental bundle, worker binaries and inputs are fingerprinted in
 `results.json`. Build/preparation time is outside execution samples.
 
 The comparison first runs the unchanged canonical normalization tests against
-isolated copies of the experimental modules and CLI. It then compares exit code,
-stdout, stderr and output bytes against the committed CLI on a separate synthetic
+isolated copies of the experimental modules and CLI. In Go/Rust modes, this suite
+mixes native execution, JavaScript fallback and pre-worker rejection; it checks
+normalization behavior, not a native-success receipt for each assertion. Actual
+native execution is required separately for designated differential cases and
+every timed native result. The comparison then checks exit code, stdout, stderr
+and output bytes against the committed CLI on a separate synthetic
 corpus, including existing-output sentinels on failure. Source/identity collisions,
 late aliases, Unicode ordering, malformed inputs and metadata are included.
 Every timed output also matches the retained baseline draft SHA-256. Generated

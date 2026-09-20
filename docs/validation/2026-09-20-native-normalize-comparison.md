@@ -104,6 +104,10 @@ RSS figures. `wait4` RSS is retained in the raw results only as a platform metri
   mapping, diagnostics, same-file/symlink refusal and preservation
   of previous output on failure. The isolated CLI in those tests is the
   experimental CLI; no-worker runs exercise its unchanged JavaScript branch.
+  Go/Rust suite modes mix native execution, JavaScript fallback and pre-worker
+  rejection; suite success alone does not establish native execution. Native
+  receipts are enforced separately in designated differential cases and timed
+  native invocations.
 - A second corpus exercised **58 cases × 4 modes = 232 CLI invocations**, with
   174 comparisons against the 58 committed-runner results. Exit code, stdout,
   stderr and complete output bytes matched. Existing-output sentinels remained
@@ -162,5 +166,9 @@ does not rerun this benchmark. No browser behavior or rendering contract was
 changed, so no new local browser/visual acceptance is claimed. No standalone
 native CLI, FFI, persistent worker, installer, fresh host, live connector, Windows,
 Linux native performance or release/runtime acceptance was exercised.
+
+The [review correction record](2026-09-21-native-review-corrections.md) clarifies
+the suite boundary and verifies an earlier staging guard without rewriting these
+historical measurements or their source hashes.
 
 Refs #31. The preceding profiling work is tracked separately in #29 / PR #30.
