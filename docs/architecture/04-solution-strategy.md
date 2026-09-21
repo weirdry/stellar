@@ -61,6 +61,13 @@ owns the plan; the As-built source remains JavaScript with runtime schema and
 semantic validation. Type checking complements those input checks and does not
 itself promise better runtime performance.
 
+The [adoption plan](../development/typescript-adoption.md) proposes converting
+the full core/CLI path first, deriving declarations from the canonical schemas,
+and adding strict no-emit checking to the existing Just/CI gate. Viewer and
+existing tooling/test source typing are deferred with their required caller
+updates identified. [ADR-0008](../decisions/0008-type-core-without-changing-runtime.md)
+records this proposed design; neither the configuration nor the checks exist yet.
+
 The [standalone experiment](../validation/2026-09-21-standalone-normalize-comparison.md)
 does not justify native executable distribution for the current workload. Go is
 excluded from current candidates and Rust migration is deferred. Reconsidering

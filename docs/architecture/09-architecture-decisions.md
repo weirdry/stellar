@@ -17,3 +17,13 @@ Accepted decisions are indexed in [the ADR history](../decisions/README.md).
 This chapter is the current-view index. Accepted ADRs preserve rationale;
 future consequential changes add a new decision and update the current view.
 An Accepted ADR can describe a Target that is not implemented yet.
+
+## Source-language proposal
+
+State: **Target**
+
+[ADR-0008](../decisions/0008-type-core-without-changing-runtime.md) is Proposed:
+type the complete core/CLI path using schema-derived contracts while preserving
+the Node-ready distribution. The [adoption plan](../development/typescript-adoption.md)
+defines its implementation scope and checks. The current executable source is
+still JavaScript; plan approval does not establish implementation completion.

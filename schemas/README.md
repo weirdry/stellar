@@ -9,6 +9,11 @@ State: **As-built**
 A version token alone is not release evidence; that record identifies the boundary.
 There are no readers or migrations for prototype intermediate shapes.
 
+The [TypeScript adoption plan](../docs/development/typescript-adoption.md#contract-authority-and-narrowing)
+is **Target**: derive static declarations from these schemas while retaining all
+runtime shape and semantic checks. No generated type declarations exist yet;
+this plan does not change the published JSON contracts or saved-state files.
+
 ## Authoring
 
 Start from [museum.json](../examples/museum.json) or

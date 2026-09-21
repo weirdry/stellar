@@ -8,6 +8,11 @@ published library, or backend exists.
 Node's built-in test runner covers the small native CLI; Playwright drives
 separately named browser verification.
 
+The [TypeScript adoption plan](typescript-adoption.md) is **Target**. It proposes
+strict typing for the core/CLI with schema-derived declarations while retaining
+Node and the installed JavaScript runner. Its proposed type commands are not
+available yet; the command inventory below describes the current implementation.
+
 ## Initialization
 
 Follow [the root setup instructions](../../README.md). `just init` installs
