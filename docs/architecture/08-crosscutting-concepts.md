@@ -161,3 +161,15 @@ Work-map and state version 1 belong to the first public skill distribution
 boundary, `v0.1.0`. Existing user files remain untouched. Future changes must
 account for the exact published contracts and durable files that remain in use;
 there is no migration for an unconsumed development intermediate.
+
+## Static contract views
+
+State: **Target**
+
+The [TypeScript plan](../development/typescript-adoption.md#contract-authority-and-narrowing)
+derives static declarations from all four canonical schemas. Parsed input stays
+unknown until validated; capture-native fields require further narrowing, and
+shape-valid drafts still require semantic validation before rendering. Static
+types do not enforce every JSON Schema or graph invariant. The proposal preserves
+published JSON/state contracts and user files, with no schema version change or
+state migration. No generated declarations or type-checking gate exist yet.

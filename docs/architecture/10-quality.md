@@ -2,7 +2,20 @@
 
 State: **As-built**
 
+## Planned static checking
+
+State: **Target**
+
+The [TypeScript plan](../development/typescript-adoption.md#implementation-acceptance)
+defines strict core/CLI coverage, declaration-drift detection, negative type
+fixtures and behavioral comparison requirements. These checks are not part of
+the current gate. Implementation must retain runtime validation, file safety,
+user-choice continuity and the minimal installed-layout/browser suites; a passing
+compiler would not prove input validity, performance or release acceptance.
+
 ## Product quality scenarios
+
+State: **As-built**
 
 The [product priorities](01-introduction-goals.md#quality-priorities) become the
 following observable outcomes. Evidence owners define the checks; a linked test

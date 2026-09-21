@@ -43,6 +43,17 @@ The single native root is the repository's Node package. The viewer is bundled
 source, not an independently deployed service. No L1 boundary or multi-package
 workspace is necessary for these directories.
 
+## Planned source typing
+
+State: **Target**
+
+The [TypeScript scope](../development/typescript-adoption.md#baseline-and-first-scope)
+includes the source CLI and all 12 current core modules together, with generated
+schema declarations and strict checks. It preserves these runtime owners and the
+installed JavaScript runner. Viewer and existing tooling/test source typing are
+deferred; their imports and source-path consumers still require coordinated
+updates. The blocks above remain As-built JavaScript until implementation.
+
 ## Agent workflow
 
 State: **As-built**

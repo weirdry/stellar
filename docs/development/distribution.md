@@ -172,6 +172,12 @@ validate their behavior. Re-run `just build-runner` after formatting source.
 
 ## Verification
 
+The [TypeScript adoption plan](typescript-adoption.md#execution-build-and-distribution)
+is a Target for contributor source and checks. It preserves the installed `.mjs`
+runner, Node prerequisite and runtime resources described above; it does not add
+a compiler or platform-specific Stellar executable to installed requirements.
+The current source/build path remains JavaScript.
+
 - `just init` and `just ci`: frozen development install, bundle currency, source
   tests, and an isolated runtime test with only the bundle, schemas, viewer, and
   license files. The test exercises first classification, user revision, refresh,
