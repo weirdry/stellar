@@ -43,12 +43,15 @@ tree. The generated `bin/stellar.mjs` remains the installed entry point.
 | `scripts/build-runner.js`, other existing JS/MJS/Python/shell tooling | Remain in their current languages. Update imports, entry point, generated banner and diagnostic paths that name renamed source; retain existing lint/tests.              |
 | Native comparison implementations and retained experiment data        | Remain historical research. Do not rewrite measured implementations, timings or receipts to resemble a TS implementation. See the archive treatment below.               |
 
-Declare `bin/stellar.ts`, all `lib/**/*.ts`, `types/generated/**/*.d.ts`,
+Declare all `bin/**/*.ts`, `lib/**/*.ts`, `types/generated/**/*.d.ts`,
 `scripts/types/**/*.ts` and `test/types/**/*.ts` as the compiler scope. Review
-`tsc --listFilesOnly` against this inventory; fail the type gate if a handwritten
-JS module remains or reappears under the core/CLI ownership boundary. Third-party
-JavaScript still uses its package declarations. `allowJs: false` alone does not
-prove that the intended source files were converted or included.
+`tsc --listFilesOnly` against the on-disk inventory of those owned paths. Fail
+the type gate if any first-party `.ts` or `.d.ts` file is absent from the compiler
+program, including an unimported CLI sibling, or if a handwritten JS module
+remains or reappears under the core/CLI ownership boundary. Keep the generated
+`bin/stellar.mjs` outside source coverage. Third-party JavaScript still uses its
+package declarations. `allowJs: false` alone does not prove that the intended
+source files were converted or included.
 
 ## Contract authority and narrowing
 
@@ -60,6 +63,16 @@ generated-file banner without a blanket lint-disable comment. Do not put `tsType
 overrides into schemas or maintain a second handwritten copy of their shapes.
 The generator options and limitations are documented by its
 [maintainer](https://github.com/bcherny/json-schema-to-typescript).
+
+The pinned generator owns declaration formatting. In the implementation, add
+`/types/generated/` to `.prettierignore`; both `just format` and
+`just format-check` must leave that generated directory alone. Keep handwritten
+TS files under the repository's normal Prettier rules. Do not run a second
+formatter over generated declarations: `types-build` writes the generator's
+bytes and `types-check` compares those same bytes. This avoids conflicting
+generator and repository Prettier defaults. The exclusion does not disable
+declaration drift detection or compiler checking. No ignore rule is added by
+this planning PR.
 
 Generate each schema into its own declaration module. Alias the exported root
 types in `lib/contracts.ts`; derive subtypes through indexed access rather than
@@ -146,7 +159,7 @@ Proposed `tsconfig.json` settings, not an active configuration:
     "isolatedModules": true
   },
   "include": [
-    "bin/stellar.ts",
+    "bin/**/*.ts",
     "lib/**/*.ts",
     "types/generated/**/*.d.ts",
     "scripts/types/**/*.ts",
@@ -170,7 +183,8 @@ coverage. A necessary narrow assertion needs its invariant, reason and behaviora
 test reviewed at that line; it is not a substitute for input validation.
 Allow documented `@ts-expect-error` only for intentional negative type fixtures,
 where an unused directive must fail. Exclude generated declarations from style
-lint explicitly, but include them in compiler checking with `skipLibCheck: false`.
+lint explicitly and from Prettier as specified above, but include them in
+compiler checking with `skipLibCheck: false`.
 
 ## Execution, build and distribution
 
@@ -211,12 +225,12 @@ proved by the minimal installed-layout test, not by assuming a packaging filter.
 
 The following commands are proposed additions, not available commands today:
 
-| Proposed command/change  | Observable behavior                                                                                                 |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------- |
-| `just types-build`       | Explicitly generate declarations from schemas with pinned tools and deterministic formatting                        |
-| `just types-check`       | Generate in memory, compare inventory and bytes; fail on drift without repairing anything                           |
-| `just typecheck`         | Verify the source inventory and run `tsc --noEmit`, including type fixtures; no emitted JS/cache                    |
-| `just check` / `just ci` | Add declaration currency and type checking to existing documentation, diagram, format, lint, bundle and Node checks |
+| Proposed command/change  | Observable behavior                                                                                                                                                   |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `just types-build`       | Explicitly generate declarations from schemas with pinned tools; the generator owns their formatting                                                                  |
+| `just types-check`       | Generate in memory, compare inventory and bytes; fail on drift without repairing anything                                                                             |
+| `just typecheck`         | Compare all owned TS/declaration files against the compiler program, reject leftover core/CLI JS, and run `tsc --noEmit` including type fixtures; no emitted JS/cache |
+| `just check` / `just ci` | Add declaration currency and type checking to existing documentation, diagram, format, lint, bundle and Node checks                                                   |
 
 Continue running the same `just ci` through hooks and the existing CI job after
 frozen `just init`; no separate per-module pipeline is necessary. Type-aware lint
@@ -240,9 +254,16 @@ they name renamed files, following the normal diagram policy.
 Keep optional ordinary benchmark/profile commands pointed at the actual bundled
 CLI; language adoption does not introduce a timing gate. The hybrid stager reads
 `lib/normalize.js`, patches a source anchor and compiles `bin/stellar.js` from its
-checkout. Document reproduction from this plan's pre-conversion baseline for
-that historical experiment instead of adding a second implementation or silently
-adapting its measured code. The standalone replay already extracts pinned
+checkout. For historical hybrid reproduction, pin the archive checkout to
+`0fe3abb5bf044812bc63a6519fe188e7c5fefbee`, which retains the reviewed JavaScript
+stager and product source. The [experiment correction record](../validation/2026-09-21-native-review-corrections.md)
+distinguishes its corrected staging procedure from the original measured source
+identities; retain those original receipts. This historical checkout is not the
+baseline for a later TypeScript conversion, and does not claim to reproduce
+that future conversion's immediate predecessor. Do not adapt the archived
+implementation or rewrite its measurements for the source-language change.
+
+The standalone replay already extracts pinned
 `77ee2b9ba2d62f6523f0f0272ca714b1b920fa3b` source and rejects changed dependency
 manifests: use the archived PR checkout, as its guide requires, once TS dev
 dependencies change. Update both experiment guides and the performance guide to
@@ -258,17 +279,23 @@ convert source and callers, then integrate the read-only checks and documentatio
 in the same reviewable change. Do not merge intermediate unchecked copies as
 completed type coverage.
 
-| Required evidence for that implementation                      | Existing owner or planned check                                                                                                                                                                                                             |
-| -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Complete, strict core/CLI program with no unchecked JS islands | File inventory, compiler file list, type-aware lint and `just typecheck`                                                                                                                                                                    |
-| Types follow schema authority                                  | Regeneration is byte-identical; a schema/declaration mismatch fails `types-check` without writes; fixtures check version/locale unions, required fields, choices alternatives, shared refs, nullable/optional fields and raw unknown values |
-| Same accepted/rejected inputs and diagnostics                  | Existing normalization, core, continuity-diagnostics and CLI suites; malformed JSON, invalid schema and semantically invalid maps still fail at runtime; do not relax tests to accommodate TS                                               |
-| Same command boundary                                          | Source and bundled version/help/doctor/workflows retain exit codes, output streams, literal help-like path/query arguments, lazy loading and safe error summaries; source locations may reflect the renamed files                           |
-| Same user-visible vertical path                                | Synthetic normalize → classify-draft → revise → refresh → classify/reject → render → verify-run; all four comparisons pass, user fields survive and refused agent overwrite writes nothing                                                  |
-| Same artifact and file safety                                  | Compare ordered JSON/state and HTML against the pre-conversion baseline for that replay; retain atomic replacement, input-alias refusal, occupied-run refusal, owner-only permissions and no-write failure tests                            |
-| Same dependency-free runtime                                   | Minimal installed-layout test without source/types/node_modules, from an unrelated cwd; regenerate artifacts then pass `bundle-check`, doctor damage cases and all existing distribution tests                                              |
-| Existing viewer behavior preserved                             | `just browser-check` on synthetic data even though viewer source stays JS; no visual redesign is included                                                                                                                                   |
-| Checks remain read-only and reproducible                       | Frozen install, `just ci`, explicit browser gate and clean tracked-file state afterward; type-only edits do not pull compiler tooling into runtime resources                                                                                |
+Record the full pre-change `dev` commit and its runner hash as the baseline for
+the conversion's JS-to-TS behavior comparison. Refresh that baseline and repeat
+the comparison if the implementation is rebased onto changed product code.
+Use that recorded revision for artifact/behavior parity, independently of the
+fixed historical experiment checkouts above.
+
+| Required evidence for that implementation                        | Existing owner or planned check                                                                                                                                                                                                                                                                                                         |
+| ---------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Complete, strict core/CLI program with no unchecked source files | Compare all owned TS/declaration files with the compiler file list, including an unimported CLI sibling; reject leftover core/CLI JS; type-aware lint and `just typecheck` must pass                                                                                                                                                    |
+| Types follow schema authority                                    | Regeneration is byte-identical; a schema/declaration mismatch fails `types-check` without writes; repository formatting leaves generated bytes unchanged while still checking handwritten TS; fixtures check version/locale unions, required fields, choices alternatives, shared refs, nullable/optional fields and raw unknown values |
+| Same accepted/rejected inputs and diagnostics                    | Existing normalization, core, continuity-diagnostics and CLI suites; malformed JSON, invalid schema and semantically invalid maps still fail at runtime; do not relax tests to accommodate TS                                                                                                                                           |
+| Same command boundary                                            | Source and bundled version/help/doctor/workflows retain exit codes, output streams, literal help-like path/query arguments, lazy loading and safe error summaries; source locations may reflect the renamed files                                                                                                                       |
+| Same user-visible vertical path                                  | Synthetic normalize → classify-draft → revise → refresh → classify/reject → render → verify-run; all four comparisons pass, user fields survive and refused agent overwrite writes nothing                                                                                                                                              |
+| Same artifact and file safety                                    | Compare ordered JSON/state and HTML against the conversion's recorded pre-change commit; retain atomic replacement, input-alias refusal, occupied-run refusal, owner-only permissions and no-write failure tests                                                                                                                        |
+| Same dependency-free runtime                                     | Minimal installed-layout test without source/types/node_modules, from an unrelated cwd; regenerate artifacts then pass `bundle-check`, doctor damage cases and all existing distribution tests                                                                                                                                          |
+| Existing viewer behavior preserved                               | `just browser-check` on synthetic data even though viewer source stays JS; no visual redesign is included                                                                                                                                                                                                                               |
+| Checks remain read-only and reproducible                         | Frozen install, `just ci`, explicit browser gate and clean tracked-file state afterward; type-only edits do not pull compiler tooling into runtime resources                                                                                                                                                                            |
 
 Update the development command guide, distribution guide, schema authority note
 and architecture chapters 4, 5, 8, 9 and 10 with executable owners and actual
