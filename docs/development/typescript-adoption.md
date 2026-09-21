@@ -9,7 +9,7 @@ This planning change does not convert source, add dependencies or activate check
 ## Baseline and first scope
 
 The reviewed baseline is `0fe3abb5bf044812bc63a6519fe188e7c5fefbee`.
-[package.json](../../package.json), [Justfile](../../Justfile),
+[package.json](../../package.json), [Justfile](../../justfile),
 [the builder](../../scripts/build-runner.js) and
 [the source CLI](../../bin/stellar.js) currently execute JavaScript with Node
 24.19.0 contributor tooling and a Node 24.x installed-runtime prerequisite.
