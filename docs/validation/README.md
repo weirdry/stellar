@@ -4,6 +4,7 @@ Dated records identify the source or artifact, commands, observed result, and
 untested scope. They support the architecture without silently changing its
 meaning.
 
+- [2026-09-21 standalone archive review corrections](2026-09-21-standalone-review-corrections.md)
 - [2026-09-21 standalone normalization and core-language direction](2026-09-21-standalone-normalize-comparison.md)
 - [2026-09-21 native experiment review corrections](2026-09-21-native-review-corrections.md)
 - [2026-09-20 Node, Go and Rust normalization comparison](2026-09-20-native-normalize-comparison.md)

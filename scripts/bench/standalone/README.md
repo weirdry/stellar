@@ -8,7 +8,7 @@ controls are the product Node CLI and a bundle containing only its unchanged
 normalizer, validator and writer. Browser rendering is outside all four paths.
 
 The [dated record](../../../docs/validation/2026-09-21-standalone-normalize-comparison.md)
-owns the results, known surrogate difference and accepted language direction.
+owns the results, known surrogate/numeric-format differences and accepted language direction.
 These prototypes are not product dependencies or installed skill commands.
 
 ## Retained material
@@ -38,10 +38,19 @@ just standalone-check
 ```
 
 Requires Python 3.11+ from the contributor environment. This read-only check
-verifies retained source/lock and raw-data hashes, the 72-sample randomized order,
+requires the fixed ten-entry measured-source inventory before checking its hashes.
+It also verifies retained raw-data hashes, the 72-sample randomized order,
 all twelve calculated summaries and the correctness/storage receipts. It does
 not execute the native programs or establish new performance results. Python
 and native compilers remain outside the product and default CI dependencies.
+Both check and replay refuse Python optimization (`-O` or nonzero
+`PYTHONOPTIMIZE`) before doing any evidence or output work: their assertions are
+required verification logic. The storage helper independently enforces this too.
+
+Run `just standalone-test` for the optional Python fault-injection suite, without
+native compilers. It covers optimization refusal, source/receipt corruption,
+missing/unexpected source inventory even after repinning the manifest, and
+prefix-independent detection of leftover files on successful and failed writes.
 
 ## Reproduce in a fresh directory
 
@@ -62,6 +71,7 @@ RSS conversion uses macOS `wait4` bytes. It makes no Linux/Windows claim.
 ```sh
 just init
 just standalone-check
+just standalone-test
 just standalone-replay /tmp/stellar-standalone-replay
 
 # A smaller timing replay still runs all 169 cases and 22 storage checks.
@@ -87,8 +97,11 @@ The command:
 4. Compares all decoded JSON fields, array order, acceptance and success summaries.
    All receipts must match the retained projection: only native rejection of the
    lone-surrogate case is expected. Any additional difference aborts before timing.
-5. Runs the 22 storage/standalone checks and generates the timing inputs. At the
-   three original sizes, capture hashes must equal the historical ones.
+5. Runs the 22 storage/standalone checks. A successful write may add only the
+   destination and its required parent directories; failure must preserve the
+   directory inventory. This detects leftover files regardless of their prefix,
+   including Rust's `.tmp…` names. Generates the timing inputs; at the three
+   original sizes, capture hashes must equal the historical ones.
 6. Launches fresh processes serially, with one warmup and five measured trials per
    size/engine by default. Every timed output must equal its full reference draft.
 
@@ -111,3 +124,7 @@ flushing, CPU pinning or exclusive-host reservation is performed.
 The native draft validator is specialized, diagnostics are simplified, and semantic
 JSON equality permits object-key/escape differences. Finite parity is not full CLI
 compatibility, and normalization timing is not whole-workflow or browser performance.
+Outside the frozen corpus, Rust also renders accepted numeric spellings such as
+`7.0`/`7e0` differently from JavaScript when creating identifiers or status labels.
+See the [review correction record](../../../docs/validation/2026-09-21-standalone-review-corrections.md).
+The measured kernels, corpus and original observations remain unchanged.

@@ -135,5 +135,8 @@ native-compare build benchmark output trials="5":
 standalone-check:
     python3 -B scripts/bench/standalone/check_archive.py
 
+standalone-test:
+    python3 -B scripts/bench/standalone/test_checks.py
+
 standalone-replay output sizes="1000,10000,50000" trials="5": bundle-check
     python3 -B scripts/bench/standalone/replay.py --node "$(mise exec --locked -- node -p process.execPath)" --output {{ quote(output) }} --sizes {{ quote(sizes) }} --trials {{ quote(trials) }}
