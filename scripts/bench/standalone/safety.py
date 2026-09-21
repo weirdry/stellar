@@ -1,4 +1,8 @@
 import json,subprocess,os
+
+if not __debug__:
+ raise SystemExit('Storage verification requires assertions; run without -O or PYTHONOPTIMIZE.')
+
 from differential import ROOT,command
 work=ROOT/'results/safety';work.mkdir()
 results=[]
@@ -10,8 +14,13 @@ for engine in os.environ.get('PROBE_ENGINES','node-cli,node-focused,go,rust').sp
   p=subprocess.run(command(engine,src,dst),capture_output=True,text=True,env=env,timeout=20)
   r={'engine':engine,'case':name,'exit':p.returncode,'expected_success':expect,'input_preserved':src.read_bytes()==original,'stderr':p.stderr[:200]}
   assert (p.returncode==0)==expect and r['input_preserved'],r
-  assert not list(d.rglob('.stellar-*.tmp')),r
-  if not expect:assert before==set(d.rglob('*')),r
+  expected=before.copy()
+  if expect:
+   expected.update(path for path in (dst,*dst.parents) if path!=d and path.is_relative_to(d))
+  after=set(d.rglob('*'))
+  assert after==expected,dict(r,
+   unexpected_paths=sorted(str(path.relative_to(d)) for path in after-expected),
+   missing_paths=sorted(str(path.relative_to(d)) for path in expected-after))
   results.append(r)
  dst=d/'nested/new/output.json';execute('new private file',dst,True);assert dst.stat().st_mode&0o777==0o600
  dst.write_text('SENTINEL');execute('replace existing output',dst,True);assert json.loads(dst.read_text())['schemaVersion']==1

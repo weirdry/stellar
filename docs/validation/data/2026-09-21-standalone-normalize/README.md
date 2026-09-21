@@ -30,6 +30,9 @@ An original hash is historical evidence, not a promise that every named file
 exists in the current repository or that new binaries have identical hashes.
 
 Run `just standalone-check` to check source/lock and retained raw-data identity,
-sample order, calculated summaries and receipt consistency. Re-execution uses
+sample order, calculated summaries and receipt consistency. It requires exactly
+ten measured-source entries (eight Go/Rust source/lock paths plus `cases.mjs`
+and `focused-entry.mjs`) before checking their fingerprints; a replacement
+manifest cannot silently omit these entries. Re-execution uses
 `just standalone-replay` and writes separate results. Neither command modifies
 this historical dataset.

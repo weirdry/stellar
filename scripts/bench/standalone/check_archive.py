@@ -6,10 +6,18 @@ import random
 import statistics
 from pathlib import Path
 
+if not __debug__:
+    raise SystemExit('Archive verification requires assertions; run without -O or PYTHONOPTIMIZE.')
+
 ROOT = Path(__file__).resolve().parents[3]
 SOURCE = ROOT / 'scripts/bench/standalone'
 DATA = ROOT / 'docs/validation/data/2026-09-21-standalone-normalize'
 ENGINES = ['node-cli', 'node-focused', 'go', 'rust']
+EXPECTED_SOURCES = {
+    'go/cli.go', 'go/core.go', 'go/go.mod', 'go/go.sum',
+    'rust/Cargo.lock', 'rust/Cargo.toml', 'rust/src/cli.rs', 'rust/src/main.rs',
+    'cases.mjs', 'focused-entry.mjs',
+}
 
 
 def load(path):
@@ -52,9 +60,14 @@ def verify_correctness(rows):
 
 def check():
     artifacts = load(DATA / 'artifacts.json')
-    for name, identity in artifacts.items():
-        if name.startswith(('go/', 'rust/')) or name in ['cases.mjs', 'focused-entry.mjs']:
-            assert fingerprint(SOURCE / name) == identity, name
+    sources = {name for name in artifacts
+               if name.startswith(('go/', 'rust/')) or name in ['cases.mjs', 'focused-entry.mjs']}
+    assert sources == EXPECTED_SOURCES, (
+        f'Source inventory mismatch: missing={sorted(EXPECTED_SOURCES - sources)}, '
+        f'unexpected={sorted(sources - EXPECTED_SOURCES)}'
+    )
+    for name in sorted(EXPECTED_SOURCES):
+        assert fingerprint(SOURCE / name) == artifacts[name], name
     provenance = load(DATA / 'archive-provenance.json')
     for name in ['benchmark.json', 'summary.json', 'environment.json', 'artifacts.json']:
         assert fingerprint(DATA / name) == provenance['original_files']['results/' + name], name

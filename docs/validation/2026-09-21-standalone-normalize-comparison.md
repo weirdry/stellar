@@ -87,13 +87,16 @@ Original correctness observations:
 - Both natives reject all 101 reference-rejected inputs without replacing previous
   output. All fields and every array's order match for the 67 supported accepted
   inputs. Object-key order and equivalent escape spellings may differ.
-- The known difference is an unpaired UTF-16 surrogate: Node accepts it, Go explicitly
+- Within this corpus, the known difference is an unpaired UTF-16 surrogate: Node accepts it, Go explicitly
   rejects it to avoid replacement, and Rust's parser rejects it. Valid escaped pairs
   and literal backslash-u strings have separate passing cases. No fallback is used.
 - **22 storage/standalone checks** cover 0600 new files, replacement after success,
   direct/symlink input-overwrite refusal and output-directory failure without input
-  changes or leftover temporary files. Native programs also work with Node absent
-  from PATH. This is macOS behavior, not crash durability or symlink-race proof.
+  changes. Failure paths require an unchanged directory inventory. The original
+  success-path leftover check recognized only `.stellar-*.tmp`, missing Rust's
+  `.tmp…` convention; the [review corrections](2026-09-21-standalone-review-corrections.md)
+  add complete inventory checks and a new replay. Native programs also work with
+  Node absent from PATH. This is macOS behavior, not crash durability or symlink-race proof.
 - All **72 benchmark invocations** produce complete decoded JSON equal to the
   reference draft. This is semantic equality, not byte equality across engines.
 
@@ -124,11 +127,22 @@ creates missing-classification diagnostics which normalization filters; native
 draft validators avoid creating them. This is a meaningful implementation
 difference, not complete feature equivalence.
 
+Review also demonstrated a Rust numeric-format difference outside the frozen
+169-case corpus. An accepted GitHub `number` written as `7.0` or `7e0` yields
+identifier `#7.0` in Rust, versus `#7` in both Node controls and Go. A closed
+record with `state_reason: 7.0` yields `closed · 7.0` versus `closed · 7`.
+Rust formats `serde_json::Number` directly on these paths rather than reproducing
+JavaScript's `String(number)` behavior. The
+[correction record](2026-09-21-standalone-review-corrections.md) records targeted
+reproduction. These additional probes do not revise historical 168/169 counts,
+source bytes, input hashes or timing results.
+
 The prototypes simplify diagnostics, generally stopping at the first failure.
-Go's URL parser is not WHATWG. URL corners, malformed UTF-8, numeric/coercion
-extremes beyond the corpus, filesystem fault injection, other platforms/CPUs and
-all other CLI workflows remain unverified. The known surrogate difference alone
-rules out describing these binaries as drop-in replacements. No rendering,
+Go's URL parser is not WHATWG. URL corners, malformed UTF-8, other numeric/coercion
+cases beyond the tested probes, filesystem faults beyond the recorded checks,
+other platforms/CPUs and all other CLI workflows remain unverified. The known
+surrogate and numeric-format differences rule out describing these binaries as
+drop-in replacements. No rendering,
 classification, refresh, continuity, installer or live-source outcome is claimed.
 
 ## Provenance and archival replay
@@ -147,6 +161,8 @@ manual setup, console logs, binaries, large captures/drafts and compiler caches
 remain local. The replay adapter regenerates the exact 169 input hashes, checks
 the known mismatch before timing and writes new results to a fresh directory.
 It does not overwrite historical results or claim reproducible binary hashes.
+The later [review corrections](2026-09-21-standalone-review-corrections.md) strengthen
+the archive/replay checks without changing those measured inputs or implementations.
 
 See the [reproduction procedure](../../scripts/bench/standalone/README.md) and
 [data inventory](data/2026-09-21-standalone-normalize/README.md).
