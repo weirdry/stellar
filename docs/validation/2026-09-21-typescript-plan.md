@@ -7,6 +7,9 @@ Scope: documentation and a temporary tool-feasibility probe for
 Source baseline: `0fe3abb5bf044812bc63a6519fe188e7c5fefbee`.
 The [adoption plan](../development/typescript-adoption.md) remains Target;
 [ADR-0008](../decisions/0008-type-core-without-changing-runtime.md) is Proposed.
+The later [review correction record](2026-09-21-typescript-plan-review.md)
+checks generated formatting, compiler-file coverage and baseline attribution;
+the original feasibility observations below are retained.
 
 ## Source inspection
 
