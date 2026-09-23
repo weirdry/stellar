@@ -1,3 +1,5 @@
+import { isObject, required } from './contracts.ts';
+import type { InputRole } from './contracts.ts';
 import {
   readFile,
   writeFile,
@@ -8,11 +10,11 @@ import {
 } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { randomUUID } from 'node:crypto';
-import { assertWorkMap, WorkMapError } from './validate.js';
+import { assertWorkMap, WorkMapError } from './validate.ts';
 
-export async function renderWorkMap(data) {
-  assertWorkMap(data);
-  const [shell, css, js, catalog, logo] = await Promise.all(
+export async function renderWorkMap(input: unknown) {
+  const data = assertWorkMap(input);
+  const resources = await Promise.all(
     [
       'shell.html',
       'style.css',
@@ -23,13 +25,18 @@ export async function renderWorkMap(data) {
       readFile(new URL('../assets/viewer/' + name, import.meta.url), 'utf8'),
     ),
   );
+  const shell = required(resources[0], 'Viewer shell is loaded.');
+  const css = required(resources[1], 'Viewer styles are loaded.');
+  const js = required(resources[2], 'Viewer script is loaded.');
+  const catalog = required(resources[3], 'Viewer catalog is loaded.');
+  const logo = required(resources[4], 'Viewer logo is loaded.');
   // Escape every '<', including closing-script and HTML comment sequences.
-  const serialize = (value) =>
+  const serialize = (value: object) =>
     JSON.stringify(value)
       .replace(/</g, '\\u003c')
       .replace(/\u2028/g, '\\u2028')
       .replace(/\u2029/g, '\\u2029');
-  const escapeHTML = (value) =>
+  const escapeHTML = (value: string) =>
     value.replace(
       /[&<>"']/g,
       (char) =>
@@ -39,11 +46,13 @@ export async function renderWorkMap(data) {
           '>': '&gt;',
           '"': '&quot;',
           "'": '&#39;',
-        })[char],
+        })[char] ?? char,
     );
-  const messages = JSON.parse(catalog);
+  const messages: unknown = JSON.parse(catalog);
+  if (!isObject(messages) || typeof messages['brand.title'] !== 'string')
+    throw new Error('Missing UI message: brand.title');
   const title = messages['brand.title'].replace('{owner}', () => data.owner);
-  const values = {
+  const values: Record<string, string> = {
     __TITLE__: escapeHTML(title),
     __LOCALE__: data.locale,
     __CSS__: css,
@@ -60,8 +69,8 @@ export async function renderWorkMap(data) {
   // One pass: user text that resembles a template slot remains literal data.
   return shell.replace(
     /__TITLE__|__LOCALE__|__CSS__|__JS__|__DATA__|__MESSAGES__|__LOGO__|__FAVICON__|\{\{ui\.([\w.]+)\}\}/g,
-    (token, key) => {
-      if (!key) return values[token];
+    (token: string, key: string | undefined) => {
+      if (!key) return required(values[token], 'Viewer slot is declared.');
       if (typeof messages[key] !== 'string')
         throw new Error(`Missing UI message: ${key}`);
       return escapeHTML(messages[key]);
@@ -69,10 +78,14 @@ export async function renderWorkMap(data) {
   );
 }
 
-export async function readWorkMap(path, input = 'work-map') {
+export async function readWorkMap(
+  path: string,
+  input: InputRole = 'work-map',
+): Promise<unknown> {
   const text = await readFile(path, 'utf8');
   try {
-    return JSON.parse(text);
+    const parsed: unknown = JSON.parse(text);
+    return parsed;
   } catch (error) {
     if (!(error instanceof SyntaxError)) throw error;
     const label = {
@@ -93,13 +106,17 @@ export async function readWorkMap(path, input = 'work-map') {
   }
 }
 
-export async function renderFile(input, output) {
+export async function renderFile(input: string, output: string) {
   const html = await renderWorkMap(await readWorkMap(input));
   await writeArtifact(input, output, html);
   return { bytes: Buffer.byteLength(html) };
 }
 
-export async function writeArtifact(input, output, content) {
+export async function writeArtifact(
+  input: string,
+  output: string,
+  content: string,
+) {
   if (
     resolve(input) === resolve(output) ||
     (await realpath(output).catch(() => null)) === (await realpath(input))

@@ -13,17 +13,20 @@ Accepted decisions are indexed in [the ADR history](../decisions/README.md).
 | [ADR-0005: Preserve classification on refresh](../decisions/0005-preserve-classification-on-refresh.md)                  | Separates private remembered choices from current source facts and protects explicit user decisions                   |
 | [ADR-0006: Distribute a Node-ready skill](../decisions/0006-distribute-a-node-ready-skill.md)                            | Defines MIT licensing, GitHub installation and a reproducible bundled runner                                          |
 | [ADR-0007: Own the canonical documentation policy](../decisions/0007-own-canonical-documentation-policy.md)              | Defines repository-owned policy and the stellar-arc42-v1 documentation profile, preserving ADR-0001's other decisions |
+| [ADR-0008: Type the core without changing the runtime](../decisions/0008-type-core-without-changing-runtime.md)          | Implements strict schema-derived core/CLI types while retaining Node and runtime validation                           |
 
 This chapter is the current-view index. Accepted ADRs preserve rationale;
 future consequential changes add a new decision and update the current view.
 An Accepted ADR can describe a Target that is not implemented yet.
 
-## Source-language proposal
+## Source-language decision
 
-State: **Target**
+State: **As-built**
 
-[ADR-0008](../decisions/0008-type-core-without-changing-runtime.md) is Proposed:
-type the complete core/CLI path using schema-derived contracts while preserving
-the Node-ready distribution. The [adoption plan](../development/typescript-adoption.md)
-defines its implementation scope and checks. The current executable source is
-still JavaScript; plan approval does not establish implementation completion.
+[ADR-0008](../decisions/0008-type-core-without-changing-runtime.md) is Accepted.
+The complete core/CLI and type tooling use strict TypeScript with schema-derived
+contracts; Node-ready distribution and runtime validation remain intact.
+The [implementation guide](../development/typescript-adoption.md) identifies
+actual owners, active checks and deferred viewer/test/tooling typing. The
+[dated record](../validation/2026-09-23-typescript-core.md) owns execution evidence;
+source conversion does not establish release or installation acceptance.

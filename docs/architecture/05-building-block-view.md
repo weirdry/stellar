@@ -4,14 +4,14 @@ State: **As-built**
 
 | Building block      | Owns                                                                                                         | Evidence                                                                                                                        |
 | ------------------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
-| CLI                 | Version/help dispatch, argument handling and deferred workflow execution                                     | [bin/stellar.js](../../bin/stellar.js), [command catalog](../../lib/cli-help.js), [runtime dispatch](../../lib/cli-commands.js) |
-| Installation doctor | Read-only Node and installed-build consistency diagnostics                                                   | [installation.js](../../lib/installation.js), [CLI checks](../../test/cli-diagnostics.test.js)                                  |
+| CLI                 | Version/help dispatch, argument handling and deferred workflow execution                                     | [bin/stellar.ts](../../bin/stellar.ts), [command catalog](../../lib/cli-help.ts), [runtime dispatch](../../lib/cli-commands.ts) |
+| Installation doctor | Read-only Node and installed-build consistency diagnostics                                                   | [installation.ts](../../lib/installation.ts), [CLI checks](../../test/cli-diagnostics.test.js)                                  |
 | Work-map schema     | Report, issue, classification, relation and reference shape                                                  | [schemas](../../schemas/README.md)                                                                                              |
-| Validator           | Unique identities, references, primary classification, source-parent and URL invariants                      | [validate.js](../../lib/validate.js)                                                                                            |
-| Renderer            | Locale selection, owner-derived branding, safe HTML embedding and preservation of previous output on failure | [render.js](../../lib/render.js)                                                                                                |
-| Run verifier        | Native-capture facts, embedded data, exact bundled output and optional state-map consistency                 | [verify.js](../../lib/verify.js), [tests](../../test/verify.test.js)                                                            |
-| Evidence transfer   | Fresh private file copy and digest without payload re-emission; not source authentication                    | [evidence.js](../../lib/evidence.js)                                                                                            |
-| Evidence reader     | Structural indexes, literal search and exact source excerpts; no semantic ranking                            | [reading.js](../../lib/reading.js), [tests](../../test/reading.test.js)                                                         |
+| Validator           | Unique identities, references, primary classification, source-parent and URL invariants                      | [validate.ts](../../lib/validate.ts)                                                                                            |
+| Renderer            | Locale selection, owner-derived branding, safe HTML embedding and preservation of previous output on failure | [render.ts](../../lib/render.ts)                                                                                                |
+| Run verifier        | Native-capture facts, embedded data, exact bundled output and optional state-map consistency                 | [verify.ts](../../lib/verify.ts), [tests](../../test/verify.test.js)                                                            |
+| Evidence transfer   | Fresh private file copy and digest without payload re-emission; not source authentication                    | [evidence.ts](../../lib/evidence.ts)                                                                                            |
+| Evidence reader     | Structural indexes, literal search and exact source excerpts; no semantic ranking                            | [reading.ts](../../lib/reading.ts), [tests](../../test/reading.test.js)                                                         |
 | Viewer              | Styling, SVG components, layout, navigation, inspector and export                                            | [assets/viewer](../../assets/viewer/README.md)                                                                                  |
 | Locale catalogs     | Bundled Korean and English fixed UI text and naming patterns                                                 | [Korean](../../assets/viewer/locales/ko.json), [English](../../assets/viewer/locales/en.json)                                   |
 | Examples and tests  | Public reuse and behavior evidence using invented data                                                       | [examples](../../examples/README.md), [core tests](../../test/core.test.js), [browser tests](../../test/browser/viewer.test.js) |
@@ -31,7 +31,7 @@ requests finish before runtime modules read schemas, so broken resources do not
 prevent diagnosis. Global and per-command `-h` are aliases of `--help`.
 Mixed help/positional arguments are rejected before workflow
 loading, while `search-issue` retains literal search text. The
-[diagnostic helper](../../lib/cli-diagnostics.js) prints executable invocation
+[diagnostic helper](../../lib/cli-diagnostics.ts) prints executable invocation
 pointers and safe runtime error categories/code locations without resource
 excerpts. [CLI guidance](../../references/cli.md) owns the interface and explains
 how to investigate a runtime failure when local manifest checks pass.
@@ -43,16 +43,19 @@ The single native root is the repository's Node package. The viewer is bundled
 source, not an independently deployed service. No L1 boundary or multi-package
 workspace is necessary for these directories.
 
-## Planned source typing
+## Typed source ownership
 
-State: **Target**
+State: **As-built**
 
 The [TypeScript scope](../development/typescript-adoption.md#baseline-and-first-scope)
-includes the source CLI and all 12 current core modules together, with generated
-schema declarations and strict checks. It preserves these runtime owners and the
-installed JavaScript runner. Viewer and existing tooling/test source typing are
-deferred; their imports and source-path consumers still require coordinated
-updates. The blocks above remain As-built JavaScript until implementation.
+covers the CLI, all twelve original library modules and the new
+[contract helpers](../../lib/contracts.ts). The
+[declaration generator](../../scripts/types/declarations.ts) derives static views
+from canonical schemas, and the [compiler gate](../../scripts/types/check.ts)
+checks every owned TS/declaration file plus leftover core/CLI JS. No second source
+tree is maintained. These responsibilities still build the same installed
+JavaScript entry. Viewer and existing behavior tests/ordinary tools stay in their
+current languages, with updated source imports and damage-test paths.
 
 ## Agent workflow
 
@@ -60,9 +63,9 @@ State: **As-built**
 
 [SKILL.md](../../SKILL.md) owns common collection, classification, repair and
 handoff guidance. Source-specific references define host retrieval and capture
-boundaries. [normalize.js](../../lib/normalize.js) translates native facts into
+boundaries. [normalize.ts](../../lib/normalize.ts) translates native facts into
 one canonical work-map draft; [classification guidance](../../references/classification.md)
-keeps judgment with the agent. [continuity.js](../../lib/continuity.js) owns
+keeps judgment with the agent. [continuity.ts](../../lib/continuity.ts) owns
 first-draft choice application, saved choices, refresh matching and actor-specific updates; its state contains
 a current work map plus private remembered interpretation. [link-skill.js](../../scripts/link-skill.js) safely
 registers this checkout in the user's local discovery directory. It does not
@@ -112,7 +115,7 @@ All data-bearing derivatives need the privacy treatment of their inputs.
 
 [Explore HTML](diagrams/viewer-rendering.html) · [JSON source](diagrams/viewer-rendering.json)
 
-[renderWorkMap](../../lib/render.js) validates input, selects the bundled locale,
+[renderWorkMap](../../lib/render.ts) validates input, selects the bundled locale,
 escapes embedded JSON and titles, and inserts the fixed shell, styles and viewer.
 The [Open Star SVG](../../assets/viewer/stellar.svg) is the single vector source
 for the inline header and data-URL favicon. The header inherits its theme accent;

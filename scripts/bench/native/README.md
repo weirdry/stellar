@@ -5,7 +5,8 @@ State: **As-built** experimental tooling; not part of the installed Stellar skil
 This compares the complete `normalize CAPTURE OUTPUT` invocation of the committed
 Node runner with an experimental Node runner using a short-lived Go or Rust
 worker. It is **not** a standalone native CLI implementation or a language ranking.
-The product remains JavaScript, and no runtime dependency or package is changed.
+The measured product was JavaScript; the current core uses TypeScript while
+retaining Node. No native runtime dependency is introduced by this archive.
 
 ## Exact boundary
 
@@ -44,6 +45,20 @@ The final validator and the existing balanced hierarchy algorithm are unchanged;
 there is no parallel graph algorithm or omitted validation credited as a speedup.
 
 ## Reproduce
+
+Use a separate checkout at `0fe3abb5bf044812bc63a6519fe188e7c5fefbee` and run
+its own frozen setup. That revision retains the reviewed JavaScript source and
+staging anchor; the current TypeScript checkout is not a hybrid staging target.
+For example, from a full-history clone, choose a fresh worktree path:
+
+```sh
+git worktree add --detach /tmp/stellar-hybrid-archive 0fe3abb5bf044812bc63a6519fe188e7c5fefbee
+cd /tmp/stellar-hybrid-archive
+```
+
+This corrected staging checkout is separate from the original measured source
+identities; do not replace original receipts or claim timing equivalence merely
+because the source can be staged. Continue with the commands below there.
 
 Requires the repository's `just init` setup, Python 3.11+, Go and Cargo/Rust on
 PATH, network access for a fresh locked Cargo download, and permission to run

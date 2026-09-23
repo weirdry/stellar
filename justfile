@@ -23,7 +23,7 @@ diagrams-build:
 diagrams-check:
     mise exec --locked -- node scripts/docs/diagrams.mjs check
 
-# Read-only JavaScript and repository checks.
+# Read-only source and repository checks.
 lint:
     mise exec --locked -- bash scripts/check.sh
     mise exec --locked -- corepack pnpm lint
@@ -33,6 +33,16 @@ format:
 
 format-check:
     mise exec --locked -- corepack pnpm format-check
+
+# Explicit generation is separate from read-only checking.
+types-build:
+    mise exec --locked -- corepack pnpm types-build
+
+types-check:
+    mise exec --locked -- corepack pnpm types-check
+
+typecheck:
+    mise exec --locked -- corepack pnpm typecheck
 
 test:
     mise exec --locked -- corepack pnpm test
@@ -46,58 +56,58 @@ browser-check:
 
 # Installed-skill diagnostics and usage, using canonical source in a checkout.
 version:
-    mise exec --locked -- node bin/stellar.js --version
+    mise exec --locked -- node bin/stellar.ts --version
 
 doctor format="":
-    mise exec --locked -- node bin/stellar.js doctor {{ if format == "" { "" } else { quote(format) } }}
+    mise exec --locked -- node bin/stellar.ts doctor {{ if format == "" { "" } else { quote(format) } }}
 
 help command="":
-    mise exec --locked -- node bin/stellar.js help {{ if command == "" { "" } else { quote(command) } }}
+    mise exec --locked -- node bin/stellar.ts help {{ if command == "" { "" } else { quote(command) } }}
 
 validate input:
-    mise exec --locked -- node bin/stellar.js validate {{ quote(input) }}
+    mise exec --locked -- node bin/stellar.ts validate {{ quote(input) }}
 
 # Read-only capture/map/HTML consistency; saved state is optional.
 verify-run capture map html state="":
-    mise exec --locked -- node bin/stellar.js verify-run {{ quote(capture) }} {{ quote(map) }} {{ quote(html) }} {{ if state == "" { "" } else { quote(state) } }}
+    mise exec --locked -- node bin/stellar.ts verify-run {{ quote(capture) }} {{ quote(map) }} {{ quote(html) }} {{ if state == "" { "" } else { quote(state) } }}
 
 normalize input output:
-    mise exec --locked -- node bin/stellar.js normalize {{ quote(input) }} {{ quote(output) }}
+    mise exec --locked -- node bin/stellar.ts normalize {{ quote(input) }} {{ quote(output) }}
 
 # Retain a host-provided response file without printing its content.
 retain-response input output:
-    mise exec --locked -- node bin/stellar.js retain-response {{ quote(input) }} {{ quote(output) }}
+    mise exec --locked -- node bin/stellar.ts retain-response {{ quote(input) }} {{ quote(output) }}
 
 # Empty issue selects the issue index; offsets page through that index or a body.
 inspect input issue="" offset="0":
-    mise exec --locked -- node bin/stellar.js inspect {{ quote(input) }} {{ quote(issue) }} {{ quote(offset) }}
+    mise exec --locked -- node bin/stellar.ts inspect {{ quote(input) }} {{ quote(issue) }} {{ quote(offset) }}
 
 # Read an exact source block in bounded chunks.
 read-issue input issue block offset="0":
-    mise exec --locked -- node bin/stellar.js read-issue {{ quote(input) }} {{ quote(issue) }} {{ quote(block) }} {{ quote(offset) }}
+    mise exec --locked -- node bin/stellar.ts read-issue {{ quote(input) }} {{ quote(issue) }} {{ quote(block) }} {{ quote(offset) }}
 
 # Locate literal source text across the body, returning paginated matches.
 search-issue input issue query offset="0":
-    mise exec --locked -- node bin/stellar.js search-issue {{ quote(input) }} {{ quote(issue) }} {{ quote(query) }} {{ quote(offset) }}
+    mise exec --locked -- node bin/stellar.ts search-issue {{ quote(input) }} {{ quote(issue) }} {{ quote(query) }} {{ quote(offset) }}
 
 # Continuity commands write a new private run directory and never replace one.
 classify-draft draft choices run:
-    mise exec --locked -- node bin/stellar.js classify-draft {{ quote(draft) }} {{ quote(choices) }} {{ quote(run) }}
+    mise exec --locked -- node bin/stellar.ts classify-draft {{ quote(draft) }} {{ quote(choices) }} {{ quote(run) }}
 
 remember input run:
-    mise exec --locked -- node bin/stellar.js remember {{ quote(input) }} {{ quote(run) }}
+    mise exec --locked -- node bin/stellar.ts remember {{ quote(input) }} {{ quote(run) }}
 
 refresh state capture run:
-    mise exec --locked -- node bin/stellar.js refresh {{ quote(state) }} {{ quote(capture) }} {{ quote(run) }}
+    mise exec --locked -- node bin/stellar.ts refresh {{ quote(state) }} {{ quote(capture) }} {{ quote(run) }}
 
 classify state choices run:
-    mise exec --locked -- node bin/stellar.js classify {{ quote(state) }} {{ quote(choices) }} {{ quote(run) }}
+    mise exec --locked -- node bin/stellar.ts classify {{ quote(state) }} {{ quote(choices) }} {{ quote(run) }}
 
 revise state choices run:
-    mise exec --locked -- node bin/stellar.js revise {{ quote(state) }} {{ quote(choices) }} {{ quote(run) }}
+    mise exec --locked -- node bin/stellar.ts revise {{ quote(state) }} {{ quote(choices) }} {{ quote(run) }}
 
 render input output:
-    mise exec --locked -- node bin/stellar.js render {{ quote(input) }} {{ quote(output) }}
+    mise exec --locked -- node bin/stellar.ts render {{ quote(input) }} {{ quote(output) }}
 
 # Regenerate the committed installed runner and dependency notices explicitly.
 build-runner:
@@ -124,7 +134,7 @@ profile-test:
     python3 scripts/bench/test_profile.py
 
 # Browser QA is a separate gate.
-check: docs-check diagrams-check format-check lint bundle-check test
+check: docs-check diagrams-check format-check types-check typecheck lint bundle-check test
 
 ci: check
 

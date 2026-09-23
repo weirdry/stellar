@@ -9,7 +9,7 @@ State: **As-built**
 Only the host source tools access Linear or GitHub. File operations and report
 exploration are local; source facts retain their source ownership. The diagram
 summarizes [SKILL.md](../../SKILL.md), the [capture contract](../../references/capture.md),
-[CLI](../../bin/stellar.js) and [renderer](../../lib/render.js).
+[CLI](../../bin/stellar.ts) and [renderer](../../lib/render.ts).
 
 | Participant     | Responsibility and boundary                                                |
 | --------------- | -------------------------------------------------------------------------- |
@@ -22,7 +22,7 @@ summarizes [SKILL.md](../../SKILL.md), the [capture contract](../../references/c
 State: **As-built**
 
 [The local skill](../../SKILL.md) guides source collection, normalization,
-classification, validation and rendering. [Native normalizers](../../lib/normalize.js)
+classification, validation and rendering. [Native normalizers](../../lib/normalize.ts)
 accept Linear connector and GitHub REST captures, including mixed-source reports.
 Authentication, pagination and actual API availability belong to the host's
 existing tools. Stellar has no standalone OAuth service or network client.

@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { applyChoices, rememberMap } from '../lib/continuity.js';
-import { validateWorkMap } from '../lib/validate.js';
+import { applyChoices, rememberMap } from '../lib/continuity.ts';
+import { validateWorkMap } from '../lib/validate.ts';
 import { mixedMap } from './fixtures.js';
 
 test('batch choices preserve source-qualified identity, array order and absent memory', () => {

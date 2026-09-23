@@ -13,9 +13,9 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import { mixedCapture, mixedMap } from './fixtures.js';
-import { rememberMap, refreshState, applyChoices } from '../lib/continuity.js';
-import { renderFile, renderWorkMap } from '../lib/render.js';
-import { verifyRun } from '../lib/verify.js';
+import { rememberMap, refreshState, applyChoices } from '../lib/continuity.ts';
+import { renderFile, renderWorkMap } from '../lib/render.ts';
+import { verifyRun } from '../lib/verify.ts';
 
 const captureFixture = () => {
   const capture = mixedCapture();
@@ -27,7 +27,7 @@ const captureFixture = () => {
   capture.records[1].data.relations.duplicateOf = { id: 'OBS-1' };
   return capture;
 };
-const cli = fileURLToPath(new URL('../bin/stellar.js', import.meta.url));
+const cli = fileURLToPath(new URL('../bin/stellar.ts', import.meta.url));
 const run = (...args) =>
   spawnSync(process.execPath, [cli, 'verify-run', ...args], {
     encoding: 'utf8',

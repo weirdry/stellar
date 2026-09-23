@@ -194,8 +194,8 @@ Run `just ci` after a rebase and before handing off a change or opening/updating
 a multi-commit PR. The pre-commit hook invokes the same gate; the commit-message
 hook validates the subject. Do not bypass hooks with `git commit --no-verify`.
 
-The current local gate validates documentation structure and diagram consistency, formatting, JavaScript and
-repository tooling, and Node unit/CLI tests. Run `just browser-check` for changes
+The current local gate validates documentation structure and diagram consistency, formatting, schema-derived declarations, strict core/CLI TypeScript coverage,
+type-aware lint, repository tooling, and Node unit/CLI tests. Run `just browser-check` for changes
 to viewer behavior, rendering, or its input contract; install Chromium explicitly
 with `just browser-install` first. Hosted CI runs both gates on synthetic inputs.
 Neither gate proves live source access, skill installation, or publication.

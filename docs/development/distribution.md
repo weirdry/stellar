@@ -113,8 +113,8 @@ as an installer guarantee.
 
 ### Runtime files
 
-`bin/stellar.js`, `lib/`, and the product version in `package.json` remain the canonical runner source. Root Just product
-commands execute that source with locked dependencies. `just build-runner`
+`bin/stellar.ts`, `lib/`, and the product version in `package.json` remain the canonical runner source. Root Just product
+commands execute erasable TS source with locked dependencies and no runtime loader. `just build-runner`
 explicitly generates committed `bin/stellar.mjs` with esbuild and
 `THIRD_PARTY_NOTICES.txt` from the included packages' full license texts. The
 bundle is readable JavaScript, not a platform binary. It contains Ajv and other
@@ -139,7 +139,7 @@ it does not authenticate that manifest or establish source/build correctness.
 Before generating or comparing artifacts, the build independently enumerates
 `schemas/*.schema.json`, `assets/viewer/*.{html,css,js,svg}`, and
 `assets/viewer/locales/*.json`, plus the generated runner. It compares that set
-with the fixed `runtimeFiles` list in [installation.js](../../lib/installation.js).
+with the fixed `runtimeFiles` list in [installation.ts](../../lib/installation.ts).
 Names starting with `.` are skipped before filesystem inspection, so editor lock
 symlinks (such as `.#app.js`) and OS metadata (such as `._app.js`) do not enter
 the inventory. Runtime resources must use non-hidden names.
@@ -172,11 +172,11 @@ validate their behavior. Re-run `just build-runner` after formatting source.
 
 ## Verification
 
-The [TypeScript adoption plan](typescript-adoption.md#execution-build-and-distribution)
-is a Target for contributor source and checks. It preserves the installed `.mjs`
-runner, Node prerequisite and runtime resources described above; it does not add
-a compiler or platform-specific Stellar executable to installed requirements.
-The current source/build path remains JavaScript.
+The [typed source/build path](typescript-adoption.md#execution-build-and-distribution)
+is implemented for the core/CLI. It preserves the installed `.mjs` runner, Node
+prerequisite and runtime resources above. Type declarations, compiler, generator
+and linter are contributor-only; source execution does not replace `just typecheck`.
+No platform-specific Stellar executable is distributed.
 
 - `just init` and `just ci`: frozen development install, bundle currency, source
   tests, and an isolated runtime test with only the bundle, schemas, viewer, and

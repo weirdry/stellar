@@ -1,19 +1,29 @@
+import { isObject, required } from './contracts.ts';
+import type {
+  WorkMap,
+  Issue,
+  Relation,
+  InputRole,
+  Diagnostic,
+} from './contracts.ts';
 import { readFile } from 'node:fs/promises';
 import { isDeepStrictEqual as equal } from 'node:util';
-import { normalizeCapture } from './normalize.js';
-import { assertState } from './continuity.js';
-import { assertWorkMap, WorkMapError } from './validate.js';
-import { readWorkMap, renderWorkMap } from './render.js';
+import { normalizeCapture } from './normalize.ts';
+import { assertState } from './continuity.ts';
+import { assertWorkMap, WorkMapError } from './validate.ts';
+import { readWorkMap, renderWorkMap } from './render.ts';
 
-const escapePointer = (key) =>
+const escapePointer = (key: string) =>
   String(key).replace(/~/g, '~0').replace(/\//g, '~1');
-function difference(expected, actual, path = '') {
+function difference(
+  expected: unknown,
+  actual: unknown,
+  path = '',
+): string | null {
   if (equal(expected, actual)) return null;
   if (
-    expected &&
-    actual &&
-    typeof expected === 'object' &&
-    typeof actual === 'object' &&
+    isObject(expected) &&
+    isObject(actual) &&
     Array.isArray(expected) === Array.isArray(actual)
   ) {
     const keys = new Set([...Object.keys(expected), ...Object.keys(actual)]);
@@ -28,18 +38,24 @@ function difference(expected, actual, path = '') {
   return path || '/';
 }
 
-function sourceIssue(issue) {
-  const result = Object.fromEntries(
+function sourceIssue(issue: Issue) {
+  const result: Record<string, unknown> = Object.fromEntries(
     Object.entries(issue).filter(
       ([key]) =>
         !['classification', 'classificationEvidence', 'targets'].includes(key),
     ),
   );
   // This label is generated UI copy, not an observed source status.
-  if (issue.detail === 'unqueried') result.status = { type: issue.status.type };
+  if (issue.detail === 'unqueried')
+    result['status'] = { type: issue.status.type };
   return result;
 }
-function keyedDifference(expected, actual, path, project = (value) => value) {
+function keyedDifference<T extends { id: string }>(
+  expected: T[],
+  actual: T[],
+  path: string,
+  project: (value: T) => unknown = (value) => value,
+) {
   const byId = new Map(expected.map((item) => [item.id, item]));
   for (const [index, item] of actual.entries()) {
     const prior = byId.get(item.id);
@@ -50,12 +66,12 @@ function keyedDifference(expected, actual, path, project = (value) => value) {
   }
   return byId.size ? path : null;
 }
-const relationKey = ({ kind, source, target }) =>
+const relationKey = ({ kind, source, target }: Relation) =>
   JSON.stringify([
     kind,
     ...(kind === 'related' ? [source, target].sort() : [source, target]),
   ]);
-function factsDifference(draft, map) {
+function factsDifference(draft: WorkMap, map: WorkMap) {
   return (
     difference(draft.owner, map.owner, '/owner') ||
     keyedDifference(draft.sources, map.sources, '/sources') ||
@@ -68,7 +84,7 @@ function factsDifference(draft, map) {
       : null)
   );
 }
-function withRole(input, operation) {
+function withRole<T>(input: InputRole, operation: () => T): T {
   try {
     return operation();
   } catch (error) {
@@ -82,13 +98,35 @@ function withRole(input, operation) {
 
 // Pure artifact checks: no browser, source requests, execution of supplied HTML,
 // output writes, or inference about the correctness of an agent's taxonomy.
-export async function verifyRun({ capture, map, html, state }) {
+export async function verifyRun({
+  capture,
+  map: inputMap,
+  html,
+  state: inputState,
+}: {
+  capture: unknown;
+  map: unknown;
+  html: string | Buffer;
+  state?: unknown;
+}) {
   const draft = withRole('capture', () => normalizeCapture(capture));
-  withRole('work-map', () => assertWorkMap(map));
-  if (state !== undefined) withRole('state', () => assertState(state));
-  const checks = {};
-  const diagnostics = [];
-  const check = (name, path, input, message, fix) => {
+  const map = withRole('work-map', () => assertWorkMap(inputMap));
+  const state =
+    inputState === undefined
+      ? undefined
+      : withRole('state', () => assertState(inputState));
+  type CheckName =
+    'captureFacts' | 'embeddedMap' | 'bundledViewer' | 'stateMap';
+  const checks: Partial<Record<CheckName, 'pass' | 'fail' | 'not-provided'>> =
+    {};
+  const diagnostics: Diagnostic[] = [];
+  const check = (
+    name: CheckName,
+    path: string | null,
+    input: InputRole | 'html',
+    message: string,
+    fix: string,
+  ) => {
     checks[name] = path ? 'fail' : 'pass';
     if (path)
       diagnostics.push({ code: 'run-mismatch', input, path, message, fix });
@@ -110,10 +148,13 @@ export async function verifyRun({ capture, map, html, state }) {
         /<script type="application\/json" id="data">([\s\S]*?)<\/script>/g,
       ),
   ];
-  let embeddedPath = '/data';
+  let embeddedPath: string | null = '/data';
   if (slots.length === 1) {
     try {
-      embeddedPath = difference(map, JSON.parse(slots[0][1]), '/data');
+      const embedded: unknown = JSON.parse(
+        required(slots[0]?.[1], 'The embedded JSON slot exists.'),
+      );
+      embeddedPath = difference(map, embedded, '/data');
     } catch {
       /* Invalid embedded JSON is a mismatch, never a parser excerpt. */
     }
@@ -156,7 +197,12 @@ export async function verifyRun({ capture, map, html, state }) {
   };
 }
 
-async function readInput(path, input) {
+function readInput(path: string, input: 'html'): Promise<Buffer>;
+function readInput(path: string, input: InputRole): Promise<unknown>;
+async function readInput(
+  path: string,
+  input: InputRole | 'html',
+): Promise<unknown> {
   try {
     return input === 'html'
       ? await readFile(path)
@@ -174,7 +220,12 @@ async function readInput(path, input) {
     ]);
   }
 }
-export async function verifyRunFiles(capture, map, html, state) {
+export async function verifyRunFiles(
+  capture: string,
+  map: string,
+  html: string,
+  state?: string,
+) {
   return verifyRun({
     capture: await readInput(capture, 'capture'),
     map: await readInput(map, 'work-map'),

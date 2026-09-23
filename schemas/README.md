@@ -3,16 +3,18 @@
 State: **As-built**
 
 [work-map.schema.json](work-map.schema.json) owns the JSON shape.
-[validate.js](../lib/validate.js) owns cross-reference and semantic checks.
+[validate.ts](../lib/validate.ts) owns cross-reference and semantic checks.
 `schemaVersion: 1` is the work-map contract included in the
 [v0.1.0 public skill distribution](../docs/validation/2026-09-19-v0.1.0-release.md).
 A version token alone is not release evidence; that record identifies the boundary.
 There are no readers or migrations for prototype intermediate shapes.
 
-The [TypeScript adoption plan](../docs/development/typescript-adoption.md#contract-authority-and-narrowing)
-is **Target**: derive static declarations from these schemas while retaining all
-runtime shape and semantic checks. No generated type declarations exist yet;
-this plan does not change the published JSON contracts or saved-state files.
+The [TypeScript core](../docs/development/typescript-adoption.md#contract-authority-and-narrowing)
+uses [generated declarations](../types/generated/work-map.d.ts) from these four
+schemas. Run `just types-build` explicitly after an intentional schema change;
+`just types-check` detects inventory/byte drift without repair. Runtime shape and
+semantic checks remain authoritative, including constraints static types cannot
+express. Source typing does not change published JSON contracts or saved files.
 
 ## Authoring
 
@@ -93,7 +95,7 @@ Cross-source endpoints are allowed when the relation is actually registered;
 co-membership in a category or a URL mention is insufficient evidence.
 
 `node "$STELLAR_ROOT/bin/stellar.mjs" normalize CAPTURE DRAFT` converts Linear connector and GitHub REST issue
-records using [normalize.js](../lib/normalize.js). The
+records using [normalize.ts](../lib/normalize.ts). The
 [capture schema](capture.schema.json) references the canonical metadata definitions.
 The output uses this same work-map shape, with empty taxonomy and unclassified
 issues. Only missing classifications are allowed at that stage. Author domains,

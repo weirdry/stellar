@@ -1,3 +1,7 @@
 minimumReleaseAge: 1440
+# Quality commands must report stale dependencies instead of installing them.
+verifyDepsBeforeRun: error
 allowBuilds:
   esbuild: false
+patchedDependencies:
+  '@apidevtools/json-schema-ref-parser@11.9.3': patches/@apidevtools__json-schema-ref-parser@11.9.3.patch

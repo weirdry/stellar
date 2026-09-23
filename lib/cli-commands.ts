@@ -1,28 +1,32 @@
-import { readWorkMap, renderFile, writeArtifact } from './render.js';
-import { validateWorkMap, WorkMapError } from './validate.js';
-import { normalizeCapture } from './normalize.js';
-import { verifyRunFiles } from './verify.js';
+import { required, property } from './contracts.ts';
+import { readWorkMap, renderFile, writeArtifact } from './render.ts';
+import { validateWorkMap, WorkMapError } from './validate.ts';
+import { normalizeCapture } from './normalize.ts';
+import { verifyRunFiles } from './verify.ts';
 import {
   inspectMap,
   readIssue,
   searchIssue,
   readReadingMap,
-} from './reading.js';
-import { retainResponse } from './evidence.js';
+} from './reading.ts';
+import { retainResponse } from './evidence.ts';
 import {
   rememberMap,
   classifyDraft,
   refreshState,
   applyChoices,
   writeRun,
-} from './continuity.js';
+} from './continuity.ts';
 
-// bin/stellar.js validates argument counts before loading these schema readers.
-export async function runCommand(command, args) {
-  const [input, output, ...extra] = args;
+// bin/stellar.ts validates argument counts before loading these schema readers.
+export async function runCommand(command: string, args: string[]) {
+  const input = required(args[0], 'CLI argument count was validated.');
+  const [, output, ...extra] = args;
+  const second = () => required(output, 'CLI output argument was validated.');
+  const third = () => required(extra[0], 'CLI third argument was validated.');
   try {
     if (command === 'retain-response') {
-      console.log(JSON.stringify(await retainResponse(input, output)));
+      console.log(JSON.stringify(await retainResponse(input, second())));
     } else if (command === 'inspect') {
       console.log(
         JSON.stringify(
@@ -41,25 +45,25 @@ export async function runCommand(command, args) {
         ),
       );
     } else if (command === 'verify-run') {
-      const result = await verifyRunFiles(input, output, extra[0], extra[1]);
+      const result = await verifyRunFiles(input, second(), third(), extra[1]);
       console.log(JSON.stringify(result, null, 2));
       if (!result.valid) process.exitCode = 1;
     } else if (command === 'remember') {
       console.log(
         JSON.stringify(
-          await writeRun(rememberMap(await readWorkMap(input)), output),
+          await writeRun(rememberMap(await readWorkMap(input)), second()),
         ),
       );
     } else if (command === 'classify-draft') {
       const draft = await readWorkMap(input),
-        choices = await readWorkMap(output, 'choices');
+        choices = await readWorkMap(second(), 'choices');
       console.log(
-        JSON.stringify(await writeRun(classifyDraft(draft, choices), extra[0])),
+        JSON.stringify(await writeRun(classifyDraft(draft, choices), third())),
       );
     } else if (['refresh', 'classify', 'revise'].includes(command)) {
       const previous = await readWorkMap(input, 'state'),
         next = await readWorkMap(
-          output,
+          second(),
           command === 'refresh' ? 'capture' : 'choices',
         );
       const state =
@@ -70,10 +74,14 @@ export async function runCommand(command, args) {
               next,
               command === 'revise' ? 'user' : 'agent',
             );
-      console.log(JSON.stringify(await writeRun(state, extra[0])));
+      console.log(JSON.stringify(await writeRun(state, third())));
     } else if (command === 'normalize') {
       const data = normalizeCapture(await readWorkMap(input, 'capture'));
-      await writeArtifact(input, output, JSON.stringify(data, null, 2) + '\n');
+      await writeArtifact(
+        input,
+        second(),
+        JSON.stringify(data, null, 2) + '\n',
+      );
       console.log(
         JSON.stringify({
           normalized: true,
@@ -88,7 +96,7 @@ export async function runCommand(command, args) {
       console.log(JSON.stringify(result, null, 2));
       if (!result.valid) process.exitCode = 1;
     } else if (command === 'render') {
-      const result = await renderFile(input, output);
+      const result = await renderFile(input, second());
       console.log(JSON.stringify({ rendered: true, ...result }));
     } else {
       throw new Error('Unsupported runtime command.');
@@ -107,7 +115,7 @@ export async function runCommand(command, args) {
       console.error(
         error instanceof SyntaxError
           ? 'Input is not valid JSON.'
-          : error.message,
+          : property(error, 'message'),
       );
     process.exitCode = 1;
   }

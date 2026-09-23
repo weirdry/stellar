@@ -1,51 +1,83 @@
-import { readFileSync } from 'node:fs';
-import Ajv from 'ajv';
+import { Ajv } from 'ajv';
+import {
+  loadSchema,
+  isObject,
+  isArray,
+  property,
+  required,
+} from './contracts.ts';
+import type { Capture, WorkMap, Source, Relation, Issue } from './contracts.ts';
 import addFormats from 'ajv-formats';
-import { assertWorkMap, validateWorkMap, WorkMapError } from './validate.js';
+import { assertWorkMap, WorkMapError } from './validate.ts';
 
-const workMapSchema = JSON.parse(
-  readFileSync(
-    new URL('../schemas/work-map.schema.json', import.meta.url),
-    'utf8',
-  ),
+type Raw = Record<string, unknown>;
+type Entry = Capture['records'][number];
+interface Observation {
+  ref: unknown;
+  path: string;
+  kind: Relation['kind'];
+  reverse?: boolean;
+}
+interface Identity {
+  id: string;
+  source: Source;
+  native: string;
+  refs: { ref: Raw; path: string }[];
+}
+interface ResolvedObservation extends Omit<Observation, 'ref'> {
+  ref: Raw;
+  source: Source;
+  identity?: Identity;
+}
+interface RecordObservation {
+  entry: Entry;
+  source: Source;
+  path: string;
+  relations: ResolvedObservation[];
+  identity?: Identity;
+}
+const workMapSchema = loadSchema(
+  new URL('../schemas/work-map.schema.json', import.meta.url),
 );
-const captureSchema = JSON.parse(
-  readFileSync(
-    new URL('../schemas/capture.schema.json', import.meta.url),
-    'utf8',
-  ),
+const captureSchema = loadSchema(
+  new URL('../schemas/capture.schema.json', import.meta.url),
 );
 const ajv = new Ajv({ strict: true, allErrors: true });
-addFormats(ajv);
+addFormats.default(ajv);
 ajv.addSchema(workMapSchema, 'work-map.schema.json');
-const checkCapture = ajv.compile(captureSchema);
-const fail = (path, message, fix) => {
+const checkCapture = ajv.compile<Capture>(captureSchema);
+function fail(path: string, message: string, fix: string): never {
   throw new WorkMapError([{ code: 'capture', path, message, fix }]);
-};
-const nonblank = (value) => typeof value === 'string' && /\S/.test(value);
-const keyOf = (source, native) =>
+}
+const nonblank = (value: unknown): value is string =>
+  typeof value === 'string' && /\S/.test(value);
+const keyOf = (source: string, native: string) =>
   'i:' +
   Buffer.from(source).toString('base64url') +
   ':' +
   Buffer.from(native).toString('base64url');
-const nativeOf = (source, raw) =>
-  source.provider === 'linear' ? raw.uuid || raw.id : raw.node_id;
-const displayOf = (source, raw) =>
-  source.provider === 'linear' ? raw.id : '#' + raw.number;
+const nativeOf = (source: Source, raw: Raw) =>
+  source.provider === 'linear' ? raw['uuid'] || raw['id'] : raw['node_id'];
+const displayOf = (source: Source, raw: Raw) =>
+  source.provider === 'linear' ? raw['id'] : '#' + String(raw['number']);
+
+// Native metadata is deliberately open. Preserve the existing JS text
+// coercion for truthy status reasons, including non-string JSON values.
+const sourceText = (value: unknown): string => String(value);
 
 // Host tools own authentication, pagination and retrieval. This function only
 // translates captured facts; it never calls a source or decides a taxonomy.
-export function normalizeCapture(capture) {
+export function normalizeCapture(capture: unknown): WorkMap {
   if (!checkCapture(capture))
     throw new WorkMapError(
-      checkCapture.errors.map((error) => ({
+      (checkCapture.errors ?? []).map((error) => ({
         code: 'capture-schema',
         path: error.instancePath || '/',
-        message: error.message,
+        message: error.message ?? '',
         fix: 'Match schemas/capture.schema.json. Keep native records intact and record lookup limits.',
       })),
     );
-  const map = {
+  const map: Omit<WorkMap, 'issues'> & { issues: Raw[] } = {
     schemaVersion: 1,
     owner: capture.owner,
     locale: capture.locale,
@@ -60,25 +92,26 @@ export function normalizeCapture(capture) {
   // cause valid native records to be interpreted against an invalid namespace.
   assertWorkMap(map);
   const sources = new Map(capture.sources.map((source) => [source.id, source]));
-  const aliases = new Map(),
-    records = [];
+  const aliases = new Map<string, string>(),
+    records: RecordObservation[] = [];
   // These paths describe the caller's capture, not the transient work-map draft.
   const origins = new Map([
     ['/issues', '/records'],
     ['/relations', '/records'],
   ]);
-  const capturePath = (path) => {
+  const capturePath = (path: string) => {
     for (
       let prefix = path;
       prefix;
       prefix = prefix.slice(0, prefix.lastIndexOf('/'))
     )
-      if (origins.has(prefix)) return origins.get(prefix);
+      if (origins.has(prefix))
+        return required(origins.get(prefix), 'Capture origin exists.');
     return path; // Shared metadata already has the same path in both contracts.
   };
-  const aliasKey = (source, native) =>
+  const aliasKey = (source: Source, native: unknown) =>
     JSON.stringify([source.id, String(native)]);
-  const bind = (source, alias, id, path) => {
+  const bind = (source: Source, alias: unknown, id: string, path: string) => {
     if (!nonblank(alias)) return;
     const key = aliasKey(source, alias);
     if (aliases.has(key) && aliases.get(key) !== id)
@@ -105,29 +138,30 @@ export function normalizeCapture(capture) {
         'No native normalizer exists for this provider.',
         'Use the documented canonical work-map contract for another provider.',
       );
-    if (!nonblank(raw.title) || !nonblank(nativeOf(source, raw)))
+    if (!nonblank(raw['title']) || !nonblank(nativeOf(source, raw)))
       fail(
         path + '/data',
         'Issue title or native identity is missing.',
         'Fetch issue detail; Linear requires id and GitHub REST requires node_id.',
       );
-    if (source.provider === 'linear' && !nonblank(raw.id))
+    if (source.provider === 'linear' && !nonblank(raw['id']))
       fail(
         path,
         'Linear identifier is missing.',
         'Preserve the id field from the connector.',
       );
     if (source.provider === 'github') {
-      if (raw.pull_request)
+      if (raw['pull_request'])
         fail(
           path,
           'A pull request was captured as an issue.',
           'Exclude pull_request records from GitHub issue results.',
         );
       if (
-        !Number.isSafeInteger(raw.number) ||
-        raw.number < 1 ||
-        !['open', 'closed'].includes(raw.state)
+        typeof raw['number'] !== 'number' ||
+        !Number.isSafeInteger(raw['number']) ||
+        raw['number'] < 1 ||
+        (raw['state'] !== 'open' && raw['state'] !== 'closed')
       )
         fail(
           path,
@@ -142,15 +176,14 @@ export function normalizeCapture(capture) {
           'Declare the matching host/owner/repository namespace and sourceId.',
         );
     }
-    const relations = collectRelations(source, entry, path).map((relation) => ({
-      ...relation,
-      source: endpointSource(
-        capture.sources,
-        source,
-        relation.ref,
-        relation.path,
-      ),
-    }));
+    const relations = collectRelations(source, entry, path).map((relation) => {
+      const ref = endpointReference(relation.ref, relation.path);
+      return {
+        ...relation,
+        ref,
+        source: endpointSource(capture.sources, source, ref, relation.path),
+      };
+    });
     records.push({ entry, source, path, relations });
   }
   // Index explicit native/identifier pairs before resolving identifier-only
@@ -163,7 +196,7 @@ export function normalizeCapture(capture) {
     ]) {
       const { source: observedSource, ref, path: observedPath } = observation;
       const native =
-        observedSource.provider === 'linear' ? ref.uuid : ref.node_id;
+        observedSource.provider === 'linear' ? ref['uuid'] : ref['node_id'];
       if (!nonblank(native)) continue;
       bind(observedSource, native, native, observedPath);
       bind(
@@ -174,15 +207,21 @@ export function normalizeCapture(capture) {
       );
     }
   }
-  const identities = new Map();
-  const identify = (source, ref, path) => {
+  const identities = new Map<string, Identity>();
+  const identify = (source: Source, ref: Raw, path: string): Identity => {
     const native =
       aliases.get(aliasKey(source, nativeOf(source, ref))) ||
       nativeOf(source, ref);
+    // Full records and endpoints have already passed the nonblank identity check.
+    if (!nonblank(native))
+      throw new Error('Validated native identity is missing.');
     const id = keyOf(source.id, native);
     if (!identities.has(id))
       identities.set(id, { id, source, native, refs: [] });
-    const identity = identities.get(id);
+    const identity = required(
+      identities.get(id),
+      'Identity was inserted before use.',
+    );
     identity.refs.push({ ref, path });
     return identity;
   };
@@ -202,7 +241,7 @@ export function normalizeCapture(capture) {
   const fullIds = new Set();
   for (const { entry, source, path, identity } of records) {
     const raw = entry.data,
-      { id, native } = identity;
+      { id, native } = required(identity, 'Record identity has been resolved.');
     if (fullIds.has(id))
       fail(
         path,
@@ -215,18 +254,18 @@ export function normalizeCapture(capture) {
     for (const field of ['sourceId', 'scope'])
       origins.set(`${issuePath}/${field}`, `${path}/${field}`);
     origins.set(issuePath + '/title', path + '/data/title');
-    const issue = {
+    const issue: Raw = {
       id,
       sourceId: source.id,
       nativeId: native,
       identifier: displayOf(source, raw),
-      title: raw.title,
+      title: raw['title'],
       scope: entry.scope,
       detail: 'full',
       status: normalizeStatus(source, raw),
       targets: [],
     };
-    const copy = (target, value, field = target) => {
+    const copy = (target: string, value: unknown, field = target) => {
       if (value !== undefined) {
         issue[target] = structuredClone(value);
         origins.set(`${issuePath}/${target}`, `${path}/data/${field}`);
@@ -234,17 +273,17 @@ export function normalizeCapture(capture) {
     };
     copy(
       'url',
-      source.provider === 'linear' ? raw.url : raw.html_url,
+      source.provider === 'linear' ? raw['url'] : raw['html_url'],
       source.provider === 'linear' ? 'url' : 'html_url',
     );
     copy(
       'description',
-      source.provider === 'linear' ? raw.description : raw.body,
+      source.provider === 'linear' ? raw['description'] : raw['body'],
       source.provider === 'linear' ? 'description' : 'body',
     );
     copy(
       'updatedAt',
-      source.provider === 'linear' ? raw.updatedAt : raw.updated_at,
+      source.provider === 'linear' ? raw['updatedAt'] : raw['updated_at'],
       source.provider === 'linear' ? 'updatedAt' : 'updated_at',
     );
     if (source.provider === 'linear') {
@@ -262,9 +301,9 @@ export function normalizeCapture(capture) {
         copy(field, raw[field]);
       copy(
         'priority',
-        typeof raw.priority === 'object' && raw.priority !== null
-          ? raw.priority.name
-          : raw.priority,
+        typeof raw['priority'] === 'object' && raw['priority'] !== null
+          ? property(raw['priority'], 'name')
+          : raw['priority'],
       );
     } else {
       for (const field of ['assignees', 'labels'])
@@ -276,45 +315,49 @@ export function normalizeCapture(capture) {
           );
       copy(
         'assignee',
-        raw.assignees
-          ?.map((assignee, index) => {
-            if (
-              !assignee ||
-              typeof assignee !== 'object' ||
-              Array.isArray(assignee) ||
-              !nonblank(assignee.login)
-            )
-              fail(
-                `${path}/data/assignees/${index}`,
-                'GitHub assignee must be a user object with a nonblank login.',
-                'Preserve each native REST user object and its login field.',
-              );
-            return assignee.login;
-          })
-          .join(', ') || null,
+        (isArray(raw['assignees'])
+          ? raw['assignees']
+              .map((assignee, index) => {
+                if (
+                  !assignee ||
+                  !isObject(assignee) ||
+                  Array.isArray(assignee) ||
+                  !nonblank(assignee['login'])
+                )
+                  fail(
+                    `${path}/data/assignees/${index}`,
+                    'GitHub assignee must be a user object with a nonblank login.',
+                    'Preserve each native REST user object and its login field.',
+                  );
+                return assignee['login'];
+              })
+              .join(', ')
+          : undefined) || null,
         'assignees',
       );
       copy(
         'labels',
-        raw.labels?.map((label, index) => {
-          const name =
-            typeof label === 'string'
-              ? label
-              : label && typeof label === 'object' && !Array.isArray(label)
-                ? label.name
-                : undefined;
-          if (!nonblank(name))
-            fail(
-              `${path}/data/labels/${index}`,
-              'GitHub label must be a nonblank string or an object with a nonblank name.',
-              'Preserve each native REST label string or label object and its name field.',
-            );
-          return name;
-        }),
+        isArray(raw['labels'])
+          ? raw['labels'].map((label, index) => {
+              const name =
+                typeof label === 'string'
+                  ? label
+                  : label && isObject(label) && !Array.isArray(label)
+                    ? label['name']
+                    : undefined;
+              if (!nonblank(name))
+                fail(
+                  `${path}/data/labels/${index}`,
+                  'GitHub label must be a nonblank string or an object with a nonblank name.',
+                  'Preserve each native REST label string or label object and its name field.',
+                );
+              return name;
+            })
+          : undefined,
       );
       copy(
         'completedAt',
-        raw.state_reason === 'completed' ? raw.closed_at : undefined,
+        raw['state_reason'] === 'completed' ? raw['closed_at'] : undefined,
         'closed_at',
       );
     }
@@ -324,30 +367,32 @@ export function normalizeCapture(capture) {
     if (fullIds.has(id)) continue;
     // Prefer observed display identifiers to bare native IDs. Choose metadata
     // deterministically when several endpoint observations describe one issue.
-    const firstText = (values) => values.filter(nonblank).sort()[0];
+    const firstText = (values: unknown[]) => values.filter(nonblank).sort()[0];
     const displays = refs.map(({ ref }) => displayOf(source, ref));
     const identifier =
       firstText(displays.filter((value) => value !== native)) || native;
-    const firstRef = (field) =>
+    const firstRef = (field: string) =>
       refs
-        .filter(({ ref }) => nonblank(ref[field]))
+        .flatMap((entry) => {
+          const text = entry.ref[field];
+          return nonblank(text) ? [{ ...entry, text }] : [];
+        })
         .toSorted((a, b) =>
-          a.ref[field] < b.ref[field]
-            ? -1
-            : a.ref[field] > b.ref[field]
-              ? 1
-              : 0,
+          a.text < b.text ? -1 : a.text > b.text ? 1 : 0,
         )[0];
     const title = firstRef('title');
     const issuePath = `/issues/${map.issues.length}`;
-    origins.set(issuePath, refs[0].path);
+    origins.set(
+      issuePath,
+      required(refs[0], 'Every identity has an observation.').path,
+    );
     if (title) origins.set(issuePath + '/title', title.path + '/title');
-    const context = {
+    const context: Raw = {
       id,
       sourceId: source.id,
       nativeId: native,
       identifier,
-      title: title?.ref.title || identifier,
+      title: title?.text || identifier,
       scope: 'context',
       detail: 'unqueried',
       status: {
@@ -359,15 +404,20 @@ export function normalizeCapture(capture) {
     const urlField = source.provider === 'linear' ? 'url' : 'html_url';
     const url = firstRef(urlField);
     if (url) {
-      context.url = url.ref[urlField];
+      context['url'] = url.text;
       origins.set(issuePath + '/url', `${url.path}/${urlField}`);
     }
     map.issues.push(context);
   }
   const edges = new Set();
-  const addEdge = (kind, source, target, path) => {
-    const ends =
-      kind === 'related' ? [source, target].sort() : [source, target];
+  const addEdge = (
+    kind: Relation['kind'],
+    source: string,
+    target: string,
+    path: string,
+  ) => {
+    const ends: [string, string] = [source, target];
+    if (kind === 'related') ends.sort();
     const key = JSON.stringify([kind, ...ends]);
     if (!edges.has(key)) {
       origins.set(`/relations/${map.relations.length}`, path);
@@ -379,28 +429,45 @@ export function normalizeCapture(capture) {
     for (const { kind, reverse, identity: other, path } of relations)
       addEdge(
         kind,
-        reverse ? other.id : identity.id,
-        reverse ? identity.id : other.id,
+        reverse
+          ? required(other, 'Endpoint identity resolved.').id
+          : required(identity, 'Record identity resolved.').id,
+        reverse
+          ? required(identity, 'Record identity resolved.').id
+          : required(other, 'Endpoint identity resolved.').id,
         path,
       );
   // Drafts intentionally lack interpretation, but every source-fact invariant
   // must pass before writing. Rendering still requires all classifications.
-  const diagnostics = validateWorkMap(map)
-    .diagnostics.filter((d) => d.code !== 'missing-classification')
-    .map((d) => ({ ...d, path: capturePath(d.path) }));
-  if (diagnostics.length) throw new WorkMapError(diagnostics);
-  return map;
+  try {
+    return assertWorkMap(map, true);
+  } catch (error) {
+    if (error instanceof WorkMapError)
+      throw new WorkMapError(
+        error.diagnostics.map((d) => ({ ...d, path: capturePath(d.path) })),
+      );
+    throw error;
+  }
 }
 
-function collectRelations(source, entry, path) {
+function collectRelations(
+  source: Source,
+  entry: Entry,
+  path: string,
+): Observation[] {
   const raw = entry.data,
-    observations = [];
+    observations: Observation[] = [];
   const complete =
     source.coverage.relations === 'complete' && entry.scope === 'assigned';
   const links = entry.links || {};
-  const list = (value, name, kind, reverse = false) => {
+  const list = (
+    value: unknown,
+    name: string,
+    kind: Relation['kind'],
+    reverse = false,
+  ) => {
     if (value === undefined && !complete) return;
-    if (!Array.isArray(value))
+    if (!isArray(value))
       fail(
         path + '/' + name,
         'Relation collection is missing or malformed.',
@@ -415,25 +482,30 @@ function collectRelations(source, entry, path) {
       });
   };
   if (source.provider === 'linear') {
-    const rel = raw.relations || {};
-    list(rel.blocks, 'data/relations/blocks', 'blocks');
-    list(rel.blockedBy, 'data/relations/blockedBy', 'blocks', true);
-    list(rel.relatedTo, 'data/relations/relatedTo', 'related');
-    if (complete && !Object.hasOwn(rel, 'duplicateOf'))
+    const rel = raw['relations'] || {};
+    list(property(rel, 'blocks'), 'data/relations/blocks', 'blocks');
+    list(
+      property(rel, 'blockedBy'),
+      'data/relations/blockedBy',
+      'blocks',
+      true,
+    );
+    list(property(rel, 'relatedTo'), 'data/relations/relatedTo', 'related');
+    if (complete && !(isObject(rel) && Object.hasOwn(rel, 'duplicateOf')))
       fail(
         path,
         'Duplicate relation lookup is missing.',
         'Capture get_issue with includeRelations or declare partial coverage.',
       );
-    if (rel.duplicateOf)
+    if (property(rel, 'duplicateOf'))
       observations.push({
-        ref: rel.duplicateOf,
+        ref: property(rel, 'duplicateOf'),
         path: path + '/data/relations/duplicateOf',
         kind: 'duplicate',
       });
-    if (raw.parentId)
+    if (raw['parentId'])
       observations.push({
-        ref: { id: raw.parentId },
+        ref: { id: raw['parentId'] },
         path: path + '/data/parentId',
         kind: 'parent',
         reverse: true,
@@ -460,16 +532,29 @@ function collectRelations(source, entry, path) {
   return observations;
 }
 
-function endpointSource(sources, source, ref, path) {
-  if (!ref || typeof ref !== 'object')
+function endpointReference(ref: unknown, path: string): Raw {
+  if (!isObject(ref))
     fail(
       path,
       'Relation endpoint is not an issue reference.',
       'Keep the endpoint object returned by the source.',
     );
-  let targetSource = source;
+  return ref;
+}
+function endpointSource(
+  sources: Source[],
+  source: Source,
+  ref: Raw,
+  path: string,
+): Source {
+  let targetSource: Source | undefined = source;
   if (source.provider === 'github') {
-    if (!Number.isSafeInteger(ref.number) || ref.number < 1 || ref.pull_request)
+    if (
+      typeof ref['number'] !== 'number' ||
+      !Number.isSafeInteger(ref['number']) ||
+      ref['number'] < 1 ||
+      ref['pull_request']
+    )
       fail(
         path,
         'GitHub relation reference is not an issue.',
@@ -496,11 +581,11 @@ function endpointSource(sources, source, ref, path) {
   return targetSource;
 }
 
-function assertGithubUrl(raw, path) {
+function assertGithubUrl(raw: Raw, path: string) {
   if (
-    !nonblank(raw.html_url) ||
-    !/^https?:\/\//.test(raw.html_url) ||
-    !URL.canParse(raw.html_url)
+    !nonblank(raw['html_url']) ||
+    !/^https?:\/\//.test(raw['html_url']) ||
+    !URL.canParse(raw['html_url'])
   )
     fail(
       path + '/html_url',
@@ -509,9 +594,9 @@ function assertGithubUrl(raw, path) {
     );
 }
 
-function githubBelongsTo(source, raw) {
+function githubBelongsTo(source: Source, raw: Raw) {
   try {
-    const url = new URL(raw.html_url);
+    const url = new URL(String(raw['html_url']));
     return (
       `${url.host}/${url.pathname.split('/').slice(1, 3).join('/')}`.toLowerCase() ===
       source.namespace.toLowerCase()
@@ -520,33 +605,43 @@ function githubBelongsTo(source, raw) {
     return false;
   }
 }
-function normalizeStatus(source, raw) {
+function normalizeStatus(
+  source: Source,
+  raw: Raw,
+): { label: unknown; type: Issue['status']['type'] } {
   if (source.provider === 'linear')
     return {
-      label: nonblank(raw.status) ? raw.status : 'Unknown',
-      type: [
-        'started',
-        'unstarted',
-        'backlog',
-        'completed',
-        'canceled',
-        'duplicate',
-      ].includes(raw.statusType)
-        ? raw.statusType
-        : 'unknown',
+      label: nonblank(raw['status']) ? raw['status'] : 'Unknown',
+      type: statusType(raw['statusType']),
     };
   const type =
-    raw.state === 'open'
+    raw['state'] === 'open'
       ? 'unstarted'
-      : raw.state_reason === 'completed'
+      : raw['state_reason'] === 'completed'
         ? 'completed'
-        : raw.state_reason === 'not_planned'
+        : raw['state_reason'] === 'not_planned'
           ? 'canceled'
-          : raw.state_reason === 'duplicate'
+          : raw['state_reason'] === 'duplicate'
             ? 'duplicate'
             : 'unknown';
   return {
-    label: raw.state_reason ? `${raw.state} · ${raw.state_reason}` : raw.state,
+    label: raw['state_reason']
+      ? `${sourceText(raw['state'])} · ${sourceText(raw['state_reason'])}`
+      : raw['state'],
     type,
   };
+}
+
+function statusType(value: unknown): Issue['status']['type'] {
+  switch (value) {
+    case 'started':
+    case 'unstarted':
+    case 'backlog':
+    case 'completed':
+    case 'canceled':
+    case 'duplicate':
+      return value;
+    default:
+      return 'unknown';
+  }
 }

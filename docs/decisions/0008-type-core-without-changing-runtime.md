@@ -1,18 +1,21 @@
 # ADR-0008: Type the core without changing the runtime
 
-Status: **Proposed**
+Status: **Accepted**
 
 Date: 2026-09-21
+
+Accepted and implemented for the core/CLI: 2026-09-23.
 
 ## Context
 
 The accepted language direction after the
 [native experiments](../validation/2026-09-21-standalone-normalize-comparison.md)
 retains Node, excludes Go from current candidates and defers Rust migration.
-Static safety remains a separate need: the core and CLI currently use unchecked
-JavaScript, while JSON Schema and semantic validators guard runtime inputs.
-[Issue #33](https://github.com/weirdry/stellar/issues/33) requests a plan, not the
-conversion itself. This proposed decision records the design for that review.
+Static safety was a separate need: the pre-conversion core and CLI used unchecked
+JavaScript while JSON Schema and semantic validators guarded runtime inputs.
+[Issue #33](https://github.com/weirdry/stellar/issues/33) completed planning and
+[issue #36](https://github.com/weirdry/stellar/issues/36) tracks the implementation.
+The Node/runtime choice remains unchanged.
 
 ## Decision
 
@@ -21,7 +24,7 @@ JSON schemas as contract owners and derive static declarations from them;
 runtime validation remains mandatory. Execute erasable source through contributor
 Node 24 tooling, run a separate no-emit compiler check, and use esbuild to produce
 the same installed JavaScript entry point. The
-[adoption plan](../development/typescript-adoption.md) owns exact scope, proposed
+[implementation guide](../development/typescript-adoption.md) owns exact scope, pinned
 toolchain, narrowing rules, source consumers and implementation acceptance.
 
 Defer viewer and existing tooling/test source conversion while updating callers
@@ -50,5 +53,7 @@ remain an approximation of runtime rules, with deterministic drift checks.
 Runtime speed, release and installation acceptance do not follow from type
 checking. Published version-1 contracts and saved files remain unchanged.
 
-This ADR stays Proposed during plan review. Approval may accept the design while
-implementation remains Target; neither state claims a converted source tree.
+The core/CLI conversion, derived contracts and active checks are implemented.
+The [validation record](../validation/2026-09-23-typescript-core.md) identifies
+behavioral evidence and its limits. Viewer and ordinary test/tooling typing are
+deferred; dev integration, release and installation remain separate outcomes.

@@ -12,15 +12,15 @@ does not record a commit, hosted CI run, promotion or release of these changes.
 Reviewed implementation owners:
 
 - [Skill workflow](../../SKILL.md), [capture](../../references/capture.md) and
-  [normalization](../../lib/normalize.js): host-owned authenticated collection,
+  [normalization](https://github.com/weirdry/stellar/blob/7da8d3aca87820a65cab8c107a43205eaf8ad1dc/lib/normalize.js): host-owned authenticated collection,
   native identity and current facts, separate from agent purpose judgment.
-- [Continuity](../../lib/continuity.js) and [contract](../../references/continuity.md):
+- [Continuity](https://github.com/weirdry/stellar/blob/7da8d3aca87820a65cab8c107a43205eaf8ad1dc/lib/continuity.js) and [contract](../../references/continuity.md):
   user authority, retained absent interpretation, pending review and fresh output;
   best-effort cleanup is not a crash-safe multi-file transaction.
-- [Verification](../../lib/verify.js) and [run guide](../../references/runs.md):
+- [Verification](https://github.com/weirdry/stellar/blob/7da8d3aca87820a65cab8c107a43205eaf8ad1dc/lib/verify.js) and [run guide](../../references/runs.md):
   four map-based comparisons, with original HTML read without execution and no
   claim of collection completeness or semantic correctness.
-- [Rendering](../../lib/render.js), [viewer assets](../../assets/viewer/README.md)
+- [Rendering](https://github.com/weirdry/stellar/blob/7da8d3aca87820a65cab8c107a43205eaf8ad1dc/lib/render.js), [viewer assets](../../assets/viewer/README.md)
   and [brand guide](../brand.md): one vector source for header and favicon,
   separate promotional banner, escaped embedding and deterministic bytes.
 - [Bundle build](../../scripts/build-runner.js),

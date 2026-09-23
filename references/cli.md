@@ -41,7 +41,7 @@ Doctor checks the running Node major version and compares the bundled runner,
 four input schemas, and required viewer resources with the generated
 [`bin/stellar.manifest.json`](../bin/stellar.manifest.json). The
 [build script](../scripts/build-runner.js) generates this manifest from the same
-bundle and resource bytes; [installation.js](../lib/installation.js) owns the
+bundle and resource bytes; [installation.ts](../lib/installation.ts) owns the
 fixed checked-file inventory. Missing files, unreadable/non-file paths, and byte
 mismatches fail. An absent, malformed, or version-mismatched manifest fails;
 readable files whose hashes cannot be checked are marked `skip`, never passed.
@@ -79,7 +79,7 @@ files and do not execute the requested workflow. Help and error pointers print
 the running Node executable and entry-file paths, quoted for a POSIX shell;
 they work without a `stellar` PATH launcher, including paths with spaces or
 single quotes. The
-[command catalog](../lib/cli-help.js) owns help text and argument counts.
+[command catalog](../lib/cli-help.ts) owns help text and argument counts.
 Use exact help forms without additional positional arguments. A bare `--help` or `-h`
 mixed with other arguments is rejected before loading the workflow or writing
 files (exit `2`). The exception is `search-issue`'s `TEXT` argument: it remains
@@ -100,7 +100,7 @@ Runtime import failures report an error category, selected filesystem/module
 error codes, and a repository-relative code location when available. Original
 exception messages and resource excerpts are omitted because schema parsing or
 compilation errors can contain file contents. The
-[diagnostic helper](../lib/cli-diagnostics.js) owns this formatting.
+[diagnostic helper](../lib/cli-diagnostics.ts) owns this formatting.
 Follow the executable doctor pointer to check installed files. If doctor passes,
 investigate the reported runtime code/dependency failure; a healthy manifest
 does not establish executable correctness or validate current checkout source.

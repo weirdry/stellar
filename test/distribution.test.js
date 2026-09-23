@@ -14,7 +14,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
-import { renderWorkMap } from '../lib/render.js';
+import { renderWorkMap } from '../lib/render.ts';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const json = async (path) => JSON.parse(await readFile(path, 'utf8'));
@@ -204,7 +204,7 @@ test('bundle gate detects drift and never rewrites the generated artifact', asyn
   const before = await artifacts();
   for (const [name, change, stale] of [
     [
-      'lib/cli-help.js',
+      'lib/cli-help.ts',
       (text) => text.replace('Stellar — inspect', 'Stellar — review'),
       'bin/stellar.mjs',
     ],
@@ -266,7 +266,7 @@ test('only the product version enters the bundle from the root package manifest'
   assert.equal(check().status, 1);
   const generated = build();
   assert.equal(generated.status, 0, generated.stderr);
-  for (const runner of ['bin/stellar.js', 'bin/stellar.mjs']) {
+  for (const runner of ['bin/stellar.ts', 'bin/stellar.mjs']) {
     const result = spawnSync(
       process.execPath,
       [join(dir, runner), '--version'],
@@ -302,7 +302,7 @@ test('resource coverage rejects unlisted runtime files before checking or genera
       const result = run();
       assert.equal(result.status, 1, result.stderr);
       assert.ok(result.stderr.includes(`Missing from runtimeFiles: ${name}`));
-      assert.match(result.stderr, /lib\/installation.js/);
+      assert.match(result.stderr, /lib\/installation.ts/);
       assert.equal(await readFile(path, 'utf8'), 'SYNTHETIC_RESOURCE');
       assert.deepEqual(await artifacts(), before);
     }
@@ -333,7 +333,7 @@ test('resource coverage rejects unlisted runtime files before checking or genera
   await rm(missing, { recursive: true });
   await writeFile(missing, original);
 
-  const inventoryPath = join(dir, 'lib/installation.js');
+  const inventoryPath = join(dir, 'lib/installation.ts');
   const inventory = await readFile(inventoryPath, 'utf8');
   const duplicated = inventory.replace(
     "  'schemas/state.schema.json',",

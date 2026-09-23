@@ -2,16 +2,23 @@
 
 State: **As-built**
 
-## Planned static checking
+## Static checking
 
-State: **Target**
+State: **As-built**
 
-The [TypeScript plan](../development/typescript-adoption.md#implementation-acceptance)
-defines strict core/CLI coverage, declaration-drift detection, negative type
-fixtures and behavioral comparison requirements. These checks are not part of
-the current gate. Implementation must retain runtime validation, file safety,
-user-choice continuity and the minimal installed-layout/browser suites; a passing
-compiler would not prove input validity, performance or release acceptance.
+The [TypeScript gate](../../scripts/types/check.ts) checks the complete core/CLI,
+contract declarations and type tooling. [Declaration checks](../../scripts/types/declarations.ts)
+fail on schema inventory or generated-byte drift without repair. Strict compiler
+options and type-aware lint prohibit unsafe escapes; generator formatting is
+separate from handwritten formatting. [Regression tests](../../test/types-tooling.test.js)
+exercise missing coverage, invalid declarations, unused negative directives,
+leftover JS, unsafe code and no-write failures.
+
+[Acceptance evidence](../validation/2026-09-23-typescript-core.md) also compares
+runtime behavior with the pre-conversion baseline, including ordered JSON/state,
+HTML, user-choice continuity, file safety and minimal installed layout. Compiler
+success does not establish input validity, runtime equivalence, performance,
+release acceptance or type coverage for the JS viewer and existing tests/tools.
 
 ## Product quality scenarios
 

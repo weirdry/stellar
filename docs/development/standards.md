@@ -15,10 +15,11 @@ recorded in [ADR-0007](../decisions/0007-own-canonical-documentation-policy.md).
 | Hosted checks                                            | [CI workflow](../../.github/workflows/ci.yml) and its actual run results                        |
 | Skill installation and publication                       | [Distribution guide](distribution.md)                                                           |
 
-The single native root uses Node ESM JavaScript, exact runtime and dependency
-selectors, frozen installation, Prettier, flat ESLint, the Node test runner and
-separate Playwright browser checks. There is no TypeScript artifact requiring a
-typecheck or published Stellar npm package. The installed runner is a reproducible
+The single native root uses erasable TypeScript for the Node ESM core/CLI and
+JavaScript for the viewer and existing behavior tests/tools. Exact selectors,
+frozen installation, Prettier, type-aware flat ESLint, strict no-emit checking,
+schema declaration checks, Node tests and separate Playwright checks share the
+root workflow. There is no published Stellar npm package. The installed runner is a reproducible
 bundle generated explicitly and checked for currency; schemas and viewer assets
 remain colocated authoritative inputs.
 

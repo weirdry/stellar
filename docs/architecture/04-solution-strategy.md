@@ -4,11 +4,11 @@ State: **As-built**
 
 The working vertical path is work-map JSON → input validation → standalone HTML
 → browser exploration. The [schema](../../schemas/work-map.schema.json) defines
-the shape, [validator](../../lib/validate.js) checks semantic references, and
-[renderer](../../lib/render.js) embeds the bundled viewer and input. The viewer
+the shape, [validator](../../lib/validate.ts) checks semantic references, and
+[renderer](../../lib/render.ts) embeds the bundled viewer and input. The viewer
 consumes no source credentials or query mechanism.
 
-Node-native ESM JavaScript retains the prototype's HTML/CSS/SVG implementation.
+The Node ESM core/CLI uses TypeScript; the viewer retains its HTML/CSS/JavaScript/SVG implementation.
 The agent supplies classifications and evidence; it does not regenerate CSS or
 layout code. Owner, locale, timestamps, taxonomy, source facts, and optional
 references are data. The renderer derives the Stellar title from the owner and
@@ -32,7 +32,7 @@ Provider namespaces and source-native identities separate repeated issue numbers
 The agent reviews group membership against actual outputs and exclusions before
 delivery. [Run guidance](../../references/runs.md) keeps collection evidence and
 selected inputs locally inspectable across hosts. The read-only
-[verifier](../../lib/verify.js) compares supplied artifacts, keeping structural
+[verifier](../../lib/verify.ts) compares supplied artifacts, keeping structural
 consistency separate from the agent's semantic judgment and source access.
 The viewer derives source labels and coverage from input. See
 [ADR-0004](../decisions/0004-bundle-a-source-aware-agent-skill.md).
@@ -51,22 +51,20 @@ and the installable Node runner are implemented; see
 [skill distribution](07-deployment-view.md#skill-distribution) for the current
 installation and release boundary.
 
-## Source-language planning
+## Source language and runtime
 
-State: **Target**
+State: **As-built**
 
-Retain the Node runtime and current distribution while planning TypeScript adoption
-for static type safety. [Issue #33](https://github.com/weirdry/stellar/issues/33)
-owns the plan; the As-built source remains JavaScript with runtime schema and
-semantic validation. Type checking complements those input checks and does not
-itself promise better runtime performance.
+The complete core/CLI uses strict TypeScript with schema-derived declarations,
+unknown-input narrowing and a read-only no-emit compiler gate. The
+[implementation guide](../development/typescript-adoption.md) and
+[ADR-0008](../decisions/0008-type-core-without-changing-runtime.md) define this
+boundary. Runtime schema and semantic checks remain mandatory; static types do
+not promise better runtime performance or certify untrusted JSON.
 
-The [adoption plan](../development/typescript-adoption.md) proposes converting
-the full core/CLI path first, deriving declarations from the canonical schemas,
-and adding strict no-emit checking to the existing Just/CI gate. Viewer and
-existing tooling/test source typing are deferred with their required caller
-updates identified. [ADR-0008](../decisions/0008-type-core-without-changing-runtime.md)
-records this proposed design; neither the configuration nor the checks exist yet.
+Node and the installed JavaScript bundle remain the delivery model. Viewer,
+existing behavior tests and unrelated tools remain outside static TS coverage;
+required imports and source-path consumers follow the converted core.
 
 The [standalone experiment](../validation/2026-09-21-standalone-normalize-comparison.md)
 does not justify native executable distribution for the current workload. Go is

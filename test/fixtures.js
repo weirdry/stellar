@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import { normalizeCapture } from '../lib/normalize.js';
+import { normalizeCapture } from '../lib/normalize.ts';
 export const mixedCapture = () =>
   JSON.parse(
     readFileSync(

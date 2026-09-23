@@ -5,8 +5,8 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { validateWorkMap, safeAttachmentURL } from '../lib/validate.js';
-import { renderWorkMap, renderFile } from '../lib/render.js';
+import { validateWorkMap, safeAttachmentURL } from '../lib/validate.ts';
+import { renderWorkMap, renderFile } from '../lib/render.ts';
 
 const fixture = JSON.parse(
   await readFile(new URL('../examples/museum.json', import.meta.url), 'utf8'),
@@ -241,7 +241,7 @@ test('CLI works outside the checkout, reports JSON diagnostics and preserves pre
   const input = join(dir, 'input.json'),
     output = join(dir, 'report.html');
   await writeFile(input, JSON.stringify(fixture));
-  const cli = fileURLToPath(new URL('../bin/stellar.js', import.meta.url));
+  const cli = fileURLToPath(new URL('../bin/stellar.ts', import.meta.url));
   const run = (...args) =>
     spawnSync(process.execPath, [cli, ...args], { cwd: dir, encoding: 'utf8' });
   assert.equal(run('validate', input).status, 0);

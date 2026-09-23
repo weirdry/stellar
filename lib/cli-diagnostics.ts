@@ -1,21 +1,23 @@
+import { property, required } from './contracts.ts';
 // Printed commands must work without a separately installed PATH launcher.
 export function cliInvocation() {
-  const quote = (value) => `'${value.replaceAll("'", "'\\''")}'`;
-  return `${quote(process.execPath)} ${quote(process.argv[1])}`;
+  const quote = (value: string) => `'${value.replaceAll("'", "'\\''")}'`;
+  return `${quote(process.execPath)} ${quote(required(process.argv[1], 'CLI entry path is required.'))}`;
 }
 
 // Schema parser/compiler messages can contain resource contents. Report the
 // error category and an owning code location without printing those messages.
-export function errorSummary(error) {
+export function errorSummary(error: unknown) {
   const kind =
     [SyntaxError, ReferenceError, TypeError, RangeError].find(
       (type) => error instanceof type,
     )?.name ?? 'Error';
-  const code = ['ENOENT', 'EACCES', 'EPERM', 'ERR_MODULE_NOT_FOUND'].includes(
-    error?.code,
-  )
-    ? ` (${error.code})`
-    : '';
+  const errorCode = property(error, 'code');
+  const code =
+    typeof errorCode === 'string' &&
+    ['ENOENT', 'EACCES', 'EPERM', 'ERR_MODULE_NOT_FOUND'].includes(errorCode)
+      ? ` (${errorCode})`
+      : '';
   if (!(error instanceof Error)) return kind;
   const header = `${error.name}: ${error.message}`;
   // Remove the entire message first, including any embedded newline/frame text.

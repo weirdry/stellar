@@ -1,0 +1,41 @@
+{
+  "baselineCommit": "bb206d77a133498ca8308362b4e7acc40159c75d",
+  "baselineRunnerSha256": "4e00e7644a60f4a67e7aeac38bdf10374e260a6f91f04fc6d778223c6e245718",
+  "normalizationCases": 238,
+  "parityLayouts": [
+    "baseline-source",
+    "baseline-bundle",
+    "typed-source",
+    "typed-bundle"
+  ],
+  "filesPerLayout": 19,
+  "artifacts": {
+    "01-first/changes.json": "74f9566a91b81f10441f576389851104a57d8893f0272de70f5574bc0769ba86",
+    "01-first/state.json": "3c76522aa24c17050f1b462602fa13953fd3073044e858c11790e53b044950b0",
+    "01-first/stellar.html": "cfda77916ec68819374a53e9d799040346dadd44c70b8427cef56db27cb79b68",
+    "01-first/work-map.json": "ab6d5d121de4a03a32293432b1346228860528114471c4fb44ca658504af5785",
+    "02-user/changes.json": "74f9566a91b81f10441f576389851104a57d8893f0272de70f5574bc0769ba86",
+    "02-user/state.json": "d078ea0d6f0bd4047e302c078af8b94c0055f85bf41f2a1d66aa7381ee98f5b2",
+    "02-user/work-map.json": "6cacae9f0d4cf94a06fcd405136939af931e5bc78dab59665665876112ad8aff",
+    "03-refreshed/changes.json": "accc877f4aa4d5f516633a6a8b1f2b504c1df6678b52742e027426db585c25fe",
+    "03-refreshed/state.json": "34a5c98d69db60bde492ad77545404e5918a160c8f608d6923905a6e40d440d2",
+    "03-refreshed/work-map.json": "c8639831a75fb2725b556b0ead60cc0e6afc6b151593635bf1ddaf304919b5ce",
+    "04-reviewed/changes.json": "e6806e4a0b310cf9602f5241cffac8f0fde958f32a99a5f1c2b845a688ddfc73",
+    "04-reviewed/state.json": "049e3a455e0092cab72280fc7ae0474a070ac6e9d1dd29095fef7ce7edad71ad",
+    "04-reviewed/stellar.html": "8a4e2bb976ec4c41fc604695c24b2b4f1f20d5ccc50980a0d3171d6057832fa0",
+    "04-reviewed/work-map.json": "53bed6caa3c15118fc1787d8a9c78f73f707d1e0192987fb7719257211f3fe38",
+    "draft.json": "84997c391b4b0ef93e2f7fca48075a5a10ec8fb6eeac5b542ee3dafb5f651322",
+    "next-capture.json": "843256cffbcd4b0da0581f058616d329d292b6a044c37fd04c992a840a51a7fa",
+    "overwrite.json": "23b2a383f9902269adc7e7088669adba76a98191f6f8f5d77588bd8fe78c2617",
+    "review-choices.json": "d143018c704da9e435defff17b4e9174831389892d59fe15f2efff93657e5a17",
+    "user-choices.json": "bdd6774f947d3f3a6ac5c58c0a2f968f28ab4fcf04123310fcd8902afebe8f36"
+  },
+  "cliComparison": {
+    "cases": 98,
+    "layouts": ["baseline-bundle", "typed-bundle"],
+    "equivalent": ["status", "stdout", "stderr"],
+    "normalization": "Installation root paths only",
+    "outputFiles": 0
+  },
+  "typedRunnerSha256": "9ceec297b2140ca1ba6f3d2e29cfb3bdf0ac9cd0a014ad0c62845a698d608b56"
+}

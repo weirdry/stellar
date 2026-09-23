@@ -106,21 +106,21 @@ These percentages are not independent wall-clock timers or POSIX CPU shares.
 
 Source inspection explains these sampled owners:
 
-- [Normalization](../../lib/normalize.js) still does provider conversion,
+- [Normalization](https://github.com/weirdry/stellar/blob/0b557c352c34e8b9594d70f607d67f8bd9b28bad/lib/normalize.js) still does provider conversion,
   identity/alias construction, relation handling, capture/schema checks and draft
   validation. Its share grows substantially between the small control and the
   50,000-issue input. This is the clearest bounded computation candidate.
-- [Continuity](../../lib/continuity.js) validates saved state before and after
+- [Continuity](https://github.com/weirdry/stellar/blob/0b557c352c34e8b9594d70f607d67f8bd9b28bad/lib/continuity.js) validates saved state before and after
   transformation; `writeRun` validates again before publishing files. Those
   assertions include map validation and saved/current consistency checks.
   The measured validation cost is not permission to omit any final invariant.
 - The relation callback at bundled line 7487 belongs to
-  [map validation](../../lib/validate.js): endpoint checks, relation identity
+  [map validation](https://github.com/weirdry/stellar/blob/0b557c352c34e8b9594d70f607d67f8bd9b28bad/lib/validate.js): endpoint checks, relation identity
   construction, duplicate detection and parent-map construction. Samples on
   that callback do not isolate the old parent-diagnostic scan, which is already
   removed, or prove a new single-expression bottleneck.
-- [Reading/rendering](../../lib/render.js),
-  [CLI dispatch](../../lib/cli-commands.js) and `writeRun` account for parsing,
+- [Reading/rendering](https://github.com/weirdry/stellar/blob/0b557c352c34e8b9594d70f607d67f8bd9b28bad/lib/render.js),
+  [CLI dispatch](https://github.com/weirdry/stellar/blob/0b557c352c34e8b9594d70f607d67f8bd9b28bad/lib/cli-commands.js) and `writeRun` account for parsing,
   stringification and writing. Native JSON/encoding work can appear as self
   time in its JavaScript caller. This study does not claim an exact independent
   percentage for each JSON operation, disk wait or individual schema compile.

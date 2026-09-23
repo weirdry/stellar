@@ -219,7 +219,10 @@ just browser-install
 just browser-check
 ```
 
-`ci` checks documentation, formatting, lint, bundle currency, and Node tests.
+`ci` checks documentation, formatting, schema-derived declarations, strict
+core/CLI TypeScript coverage, lint, bundle currency, and Node tests. See the
+[typed-source guide](docs/development/typescript-adoption.md) for scope and the
+explicit `just types-build`, `just types-check`, and `just typecheck` commands.
 Browser installation is an explicit network operation. `browser-check` runs a
 separate Chromium suite; GitHub CI runs both gates. Screenshots are optional local
 evidence; neither a passing test nor a screenshot alone establishes visual acceptance.
@@ -257,6 +260,7 @@ work-map generation and refresh.
 | -------------------------------------- | ------------------------------------------------------------------------------------------------------ |
 | `bin/`, `lib/`                         | Response retention, progressive reading, normalization, validation, rendering and artifact consistency |
 | `schemas/`                             | Authoritative input contract and semantic rules                                                        |
+| `types/generated/`                     | Derived TypeScript declarations; schemas remain authoritative                                          |
 | `assets/viewer/`                       | Fixed HTML/CSS/JavaScript/SVG viewer                                                                   |
 | `examples/`, `test/`                   | Entirely synthetic inputs and tests                                                                    |
 | `SKILL.md`, `references/`              | Host collection, classification and repair workflow                                                    |

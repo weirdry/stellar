@@ -1,20 +1,18 @@
-import { readFileSync } from 'node:fs';
-import Ajv from 'ajv';
+import { Ajv } from 'ajv';
+import { loadSchema, schemaProperty, required } from './contracts.ts';
+import type { WorkMap, Diagnostic } from './contracts.ts';
 import addFormats from 'ajv-formats';
 
-const schema = JSON.parse(
-  readFileSync(
-    new URL('../schemas/work-map.schema.json', import.meta.url),
-    'utf8',
-  ),
+const schema = loadSchema(
+  new URL('../schemas/work-map.schema.json', import.meta.url),
 );
 const ajv = new Ajv({ allErrors: true, strict: true });
-addFormats(ajv);
-const checkShape = ajv.compile(schema);
+addFormats.default(ajv);
+const checkShape = ajv.compile<WorkMap>(schema);
 
 // A reference can navigate to a web page or a colocated document. It cannot
 // execute a URL scheme, escape the report directory, or fetch an image on open.
-export function safeAttachmentURL(value) {
+export function safeAttachmentURL(value: string) {
   if (/^https?:\/\//.test(value)) {
     try {
       const url = new URL(value);
@@ -27,7 +25,7 @@ export function safeAttachmentURL(value) {
     const path = decodeURIComponent(value);
     return (
       !/[:\\?#\s]/.test(path) &&
-      ![...path].some((char) => char.codePointAt(0) < 32) &&
+      ![...path].some((char) => char.charCodeAt(0) < 32) &&
       !path.startsWith('/') &&
       path.split('/').every((part) => part && part !== '.' && part !== '..')
     );
@@ -36,25 +34,24 @@ export function safeAttachmentURL(value) {
   }
 }
 
-export function validateWorkMap(data) {
-  const diagnostics = [];
-  const add = (code, path, message, fix) =>
+function evaluateWorkMap(data: unknown) {
+  const diagnostics: Diagnostic[] = [];
+  const add = (code: string, path: string, message: string, fix: string) =>
     diagnostics.push({ code, path, message, fix });
   if (!checkShape(data)) {
-    for (const error of checkShape.errors) {
-      const property =
-        error.params.missingProperty || error.params.additionalProperty;
+    for (const error of checkShape.errors ?? []) {
+      const property = schemaProperty(error);
       add(
         'schema',
         (error.instancePath || '') + (property ? '/' + property : '') || '/',
-        error.message,
+        error.message ?? '',
         'Match the field to schemas/work-map.schema.json; do not fabricate missing source facts.',
       );
     }
-    return { valid: false, diagnostics };
+    return { valid: false, diagnostics, map: undefined };
   }
-  const index = (items, path) => {
-    const map = new Map();
+  const index = <T extends { id: string }>(items: T[], path: string) => {
+    const map = new Map<string, T>();
     items.forEach((item, n) => {
       if (map.has(item.id))
         add(
@@ -162,11 +159,11 @@ export function validateWorkMap(data) {
       );
   });
   const seen = new Set(),
-    parents = new Map(),
-    parentPaths = new Map();
+    parents = new Map<string, string>(),
+    parentPaths = new Map<string, string>();
   data.relations.forEach((edge, n) => {
     const path = `/relations/${n}`;
-    for (const key of ['source', 'target'])
+    for (const key of ['source', 'target'] as const)
       if (!issues.has(edge[key]))
         add(
           'unknown-endpoint',
@@ -215,7 +212,10 @@ export function validateWorkMap(data) {
       if (path.has(at)) {
         add(
           'parent-cycle',
-          parentPaths.get(at),
+          required(
+            parentPaths.get(at),
+            'Parent path is recorded with its edge.',
+          ),
           'Source parent hierarchy contains a cycle.',
           'Correct parent direction or endpoints against the source.',
         );
@@ -223,7 +223,7 @@ export function validateWorkMap(data) {
         break;
       }
       path.add(at);
-      at = parents.get(at);
+      at = required(parents.get(at), 'Parent edge exists in this traversal.');
     }
     if (parentCycle) break;
   }
@@ -236,19 +236,30 @@ export function validateWorkMap(data) {
         'Use HTTP(S) without credentials or a relative file below the report directory.',
       );
   });
-  return { valid: diagnostics.length === 0, diagnostics };
+  return { valid: diagnostics.length === 0, diagnostics, map: data };
 }
 
 export class WorkMapError extends Error {
-  constructor(diagnostics) {
+  diagnostics: Diagnostic[];
+  constructor(diagnostics: Diagnostic[]) {
     super('Invalid work map');
     this.name = 'WorkMapError';
     this.diagnostics = diagnostics;
   }
 }
 
-export function assertWorkMap(data) {
-  const result = validateWorkMap(data);
-  if (!result.valid) throw new WorkMapError(result.diagnostics);
-  return data;
+export function validateWorkMap(data: unknown) {
+  const { valid, diagnostics } = evaluateWorkMap(data);
+  return { valid, diagnostics };
+}
+
+export function assertWorkMap(data: unknown, allowPending = false): WorkMap {
+  const result = evaluateWorkMap(data);
+  const diagnostics = allowPending
+    ? result.diagnostics.filter(
+        (item) => item.code !== 'missing-classification',
+      )
+    : result.diagnostics;
+  if (diagnostics.length || !result.map) throw new WorkMapError(diagnostics);
+  return result.map;
 }

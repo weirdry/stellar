@@ -19,11 +19,11 @@ import {
   refreshState,
   applyChoices,
   assertState,
-} from '../lib/continuity.js';
-import { validateWorkMap } from '../lib/validate.js';
+} from '../lib/continuity.ts';
+import { validateWorkMap } from '../lib/validate.ts';
 import { mixedCapture, mixedMap } from './fixtures.js';
 
-const cli = fileURLToPath(new URL('../bin/stellar.js', import.meta.url));
+const cli = fileURLToPath(new URL('../bin/stellar.ts', import.meta.url));
 const run = (...args) =>
   spawnSync(process.execPath, [cli, ...args], { encoding: 'utf8' });
 const diagnostics = (result) => {
@@ -349,7 +349,7 @@ test('failed output cleanup preserves the original write error and discloses onl
     };
     fs.unlink = async () => { throw Object.assign(new Error('private-probe-text cleanup'), { code: 'EACCES' }); };
     syncBuiltinESMExports();
-    const { rememberMap, writeRun } = await import(${JSON.stringify(new URL('../lib/continuity.js', import.meta.url).href)});
+    const { rememberMap, writeRun } = await import(${JSON.stringify(new URL('../lib/continuity.ts', import.meta.url).href)});
     const { mixedMap } = await import(${JSON.stringify(new URL('./fixtures.js', import.meta.url).href)});
     try { await writeRun(rememberMap(mixedMap()), ${JSON.stringify(output)}); process.exitCode = 2; }
     catch (error) { console.log(JSON.stringify({ diagnostics: error.diagnostics, cause: error.cause?.code })); }

@@ -1,12 +1,14 @@
+import { required } from './contracts.ts';
+import type { WorkMap, Issue } from './contracts.ts';
 import { createHash } from 'node:crypto';
-import { validateWorkMap, WorkMapError } from './validate.js';
-import { readWorkMap } from './render.js';
+import { assertWorkMap, WorkMapError } from './validate.ts';
+import { readWorkMap } from './render.ts';
 
 const PAGE = 20;
 const PREVIEW = 80;
 const CHUNK = 4000;
-const characters = (text) => Array.from(text);
-const preview = (text) => {
+const characters = (text: string) => Array.from(text);
+const preview = (text: string) => {
   const points = characters(text);
   return {
     preview: points.slice(0, PREVIEW).join(''),
@@ -14,11 +16,11 @@ const preview = (text) => {
   };
 };
 
-function fail(path, message, fix) {
+function fail(path: string, message: string, fix: string): never {
   throw new WorkMapError([{ path, code: 'reading', message, fix }]);
 }
 
-function number(value, path) {
+function number(value: unknown, path: string) {
   if (
     !/^(0|[1-9]\d*)$/.test(String(value)) ||
     !Number.isSafeInteger(Number(value))
@@ -31,14 +33,7 @@ function number(value, path) {
   return Number(value);
 }
 
-function check(map) {
-  const errors = validateWorkMap(map).diagnostics.filter(
-    (error) => error.code !== 'missing-classification',
-  );
-  if (errors.length) throw new WorkMapError(errors);
-}
-
-export async function readReadingMap(path) {
+export async function readReadingMap(path: string) {
   try {
     return await readWorkMap(path);
   } catch (error) {
@@ -51,7 +46,7 @@ export async function readReadingMap(path) {
   }
 }
 
-function select(map, selector) {
+function select(map: WorkMap, selector: unknown) {
   const exact = map.issues.find((issue) => issue.id === selector);
   if (exact) return exact;
   const matches = map.issues.filter((issue) => issue.identifier === selector);
@@ -61,10 +56,10 @@ function select(map, selector) {
       'Issue selection is missing or ambiguous.',
       'Inspect the map and use its canonical issue id.',
     );
-  return matches[0];
+  return required(matches[0], 'A unique issue selection exists.');
 }
 
-function metadata(issue) {
+function metadata(issue: Issue) {
   const body = issue.description ?? '';
   return {
     id: issue.id,
@@ -84,19 +79,19 @@ function metadata(issue) {
 
 // Structural navigation only: every character is retained, with no ranking by
 // heading name, language, provider, or presumed purpose. This is not a Markdown renderer.
-export function bodyBlocks(text) {
-  const lines = text.match(/[^\r\n]*(?:\r\n|\n|\r|$)/g).filter(Boolean);
-  const blocks = [];
-  let current;
-  let fence;
+export function bodyBlocks(text: string) {
+  const lines = (text.match(/[^\r\n]*(?:\r\n|\n|\r|$)/g) ?? []).filter(Boolean);
+  const blocks: { kind: string; text: string }[] = [];
+  let current: { kind: string; text: string } | undefined;
+  let fence: string | undefined;
   let blank = false;
   for (const line of lines) {
-    if (fence) {
+    if (fence && current) {
       current.text += line;
       const close = line.trim();
       if (
         close.length >= fence.length &&
-        [...close].every((c) => c === fence[0])
+        [...close].every((c) => c === fence?.[0])
       ) {
         fence = undefined;
         current = undefined;
@@ -113,7 +108,7 @@ export function bodyBlocks(text) {
       /^ {0,3}(?:=+|-+)\s*$/.test(line) &&
       current?.kind === 'paragraph' &&
       !blank;
-    if (setext) {
+    if (setext && current) {
       current.kind = 'heading';
       current.text += line;
       current = undefined;
@@ -158,7 +153,7 @@ export function bodyBlocks(text) {
   });
 }
 
-function page(items, offset) {
+function page<T>(items: T[], offset: number) {
   if (offset > items.length)
     fail(
       '/offset',
@@ -174,8 +169,12 @@ function page(items, offset) {
   };
 }
 
-export function inspectMap(map, selector, offset = 0) {
-  check(map);
+export function inspectMap(
+  input: unknown,
+  selector?: unknown,
+  offset: string | number = 0,
+) {
+  const map = assertWorkMap(input, true);
   offset = number(offset, '/offset');
   if (!selector)
     return { kind: 'issues', ...page(map.issues.map(metadata), offset) };
@@ -193,9 +192,14 @@ export function inspectMap(map, selector, offset = 0) {
   };
 }
 
-export function readIssue(map, selector, block, offset = 0) {
-  check(map);
-  block = number(block, '/block');
+export function readIssue(
+  input: unknown,
+  selector: unknown,
+  blockInput: unknown,
+  offset: string | number = 0,
+) {
+  const map = assertWorkMap(input, true);
+  const block = number(blockInput, '/block');
   offset = number(offset, '/offset');
   const issue = select(map, selector);
   const selected = bodyBlocks(issue.description ?? '')[block];
@@ -225,8 +229,13 @@ export function readIssue(map, selector, block, offset = 0) {
   };
 }
 
-export function searchIssue(map, selector, query, offset = 0) {
-  check(map);
+export function searchIssue(
+  input: unknown,
+  selector: unknown,
+  query: unknown,
+  offset: string | number = 0,
+) {
+  const map = assertWorkMap(input, true);
   offset = number(offset, '/offset');
   if (typeof query !== 'string' || !query.length)
     fail(
@@ -248,11 +257,18 @@ export function searchIssue(map, selector, query, offset = 0) {
   for (const match of body.matchAll(new RegExp(RegExp.escape(query), 'gu'))) {
     const at = match.index;
     position += characters(body.slice(from, at)).length;
-    while (blocks[block].end <= position) block++;
+    while (
+      required(blocks[block], 'Search match belongs to a body block.').end <=
+      position
+    )
+      block++;
     if (total >= offset && matches.length < PAGE)
       matches.push({
         block,
-        offset: position - blocks[block].start,
+        offset:
+          position -
+          required(blocks[block], 'Search match belongs to a body block.')
+            .start,
         ...preview(body.slice(at)),
       });
     total++;

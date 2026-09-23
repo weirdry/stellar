@@ -1,17 +1,15 @@
 # Development
 
-The product is a Node-native JavaScript CLI with an HTML/CSS/JavaScript/SVG
-viewer. `package.json` and `pnpm-lock.yaml` own one dependency graph.
-Contributor product commands execute JavaScript source; `just build-runner`
-uses esbuild to generate the installed runner. No TypeScript compilation step,
-published library, or backend exists.
-Node's built-in test runner covers the small native CLI; Playwright drives
-separately named browser verification.
+The product has a strict TypeScript core/CLI running on Node and an
+HTML/CSS/JavaScript/SVG viewer. `package.json` and `pnpm-lock.yaml` own one
+dependency graph. Contributor commands execute erasable TS directly; the separate
+no-emit compiler checks it. `just build-runner` generates the installed JavaScript
+runner with esbuild. There is no published library or backend.
 
-The [TypeScript adoption plan](typescript-adoption.md) is **Target**. It proposes
-strict typing for the core/CLI with schema-derived declarations while retaining
-Node and the installed JavaScript runner. Its proposed type commands are not
-available yet; the command inventory below describes the current implementation.
+The [TypeScript guide](typescript-adoption.md) defines the implemented core/CLI
+and type-tooling boundary, schema-derived declarations and runtime narrowing.
+The viewer, existing behavior tests and unrelated tools retain their current
+languages. Node's test runner and separate Playwright checks cover behavior.
 
 ## Initialization
 
@@ -25,7 +23,10 @@ Project commands exclude global mise tool configuration and user npm config.
 These public dependencies require no credentials or sibling checkout. Tool
 locks cover macOS arm64 and Linux x64. Bash, Git, and Perl are prerequisites.
 The pnpm configuration applies a one-day minimum release age and allows no
-dependency build scripts.
+dependency build scripts. It sets `verifyDepsBeforeRun: error`, so checks report
+stale dependencies instead of installing them. Run `just init` explicitly after
+dependency changes. A [locked declaration patch](../../patches/README.md) fixes a
+generator dependency's type constraint while keeping strict library checking.
 
 ## Commands
 
@@ -43,14 +44,17 @@ SVG export, browser review and evidence retention.
 | `just docs-check`                           | Canonical structure, indexes, local links, whitespace                                                                        |
 | `just diagrams-build`                       | Explicit Archify generation and SVG export using the reviewed generator                                                      |
 | `just diagrams-check`                       | Read-only source/HTML/SVG inventory, generator identity, hash and export comparison                                          |
-| `just lint`                                 | ESLint, Just format, Bash syntax, ShellCheck, actionlint, Git whitespace                                                     |
+| `just lint`                                 | Type-aware TS/JS ESLint, Just format, Bash syntax, ShellCheck, actionlint, Git whitespace                                    |
+| `just types-build`                          | Explicitly generate schema declarations with pinned tools                                                                    |
+| `just types-check`                          | Read-only schema/declaration inventory and byte comparison                                                                   |
+| `just typecheck`                            | Strict no-emit checking, type fixtures and complete owned-file inventory                                                     |
 | `just test`                                 | Deterministic Node unit and CLI integration tests                                                                            |
 | `just build-runner`                         | Explicitly regenerate the installed runner, integrity manifest and dependency notices                                        |
 | `just bundle-check`                         | Read-only runtime resource inventory and byte comparison of the generated runner, integrity manifest and notices             |
 | `just version`                              | Print the product version from its authoritative source                                                                      |
 | `just doctor [--json]`                      | Read-only runtime and installed-build consistency diagnostics                                                                |
 | `just help [COMMAND]`                       | Global or command-specific CLI usage                                                                                         |
-| `just check` / `just ci`                    | Documentation structure, diagram consistency, format, lint, bundle currency and Node tests; no installation or repair writes |
+| `just check` / `just ci`                    | Documentation, diagrams, format, declarations, types, lint, bundle currency and Node tests; no installation or repair writes |
 | `just browser-install`                      | Explicit Chromium download using pinned Playwright                                                                           |
 | `just browser-check`                        | Chromium interaction, reuse, safety, viewport and export tests with synthetic inputs                                         |
 | `just normalize INPUT OUTPUT`               | Convert native capture to an unclassified work-map draft                                                                     |
@@ -69,9 +73,9 @@ SVG export, browser review and evidence retention.
 | `just verify-run CAPTURE MAP HTML [STATE]`  | Read-only source-fact, HTML, bundle and optional state-map comparison                                                        |
 
 Tests create temporary artifacts and remove them. Gates do not rewrite source,
-format files, collect data, commit, or publish. No empty build or typecheck
-recipe is provided for plain JavaScript. Report generation is an explicit product
-operation. `just build-runner` separately regenerates the committed installed
+format files, collect data, commit, or publish. Generated declarations are excluded
+from Prettier because their generator owns those bytes; currency and compiler
+checks still cover them. Report generation is an explicit product operation. `just build-runner` separately regenerates the committed installed
 runner, integrity manifest and dependency notices; `just bundle-check` compares them without writing
 and is included in `check` and `ci`. See [distribution](distribution.md).
 
@@ -110,13 +114,14 @@ overhead; the performance guide owns interpretation and output-retention limits.
 
 The optional [native-worker experiment](../../scripts/bench/native/README.md) adds
 `just native-build` and `just native-compare` for a synthetic Node/Go/Rust
-comparison. It requires explicit native compilers and includes the cost of
+comparison from its documented pre-conversion archival checkout. It requires explicit native compilers and includes the cost of
 retained Node validation and JSON transfer; it does not change the skill runtime.
 
 The separate [standalone archive](../../scripts/bench/standalone/README.md) retains
 the full-command prototypes and evidence. `just standalone-check` checks the
 historical data without executing native code; `just standalone-replay` rebuilds
-and checks it in a fresh directory on macOS. These optional commands do not add
+and checks it in a fresh directory on macOS from the documented archive checkout
+with its own frozen dependencies, not the current TS dependency graph. These optional commands do not add
 Go/Rust to the product or default CI, and do not approve a native migration.
 
 ## Work tracking and agent instructions
