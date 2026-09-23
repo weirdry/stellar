@@ -11,8 +11,12 @@ contract declarations and type tooling. [Declaration checks](../../scripts/types
 fail on schema inventory or generated-byte drift without repair. Strict compiler
 options and type-aware lint prohibit unsafe escapes; generator formatting is
 separate from handwritten formatting. [Regression tests](../../test/types-tooling.test.js)
-exercise missing coverage, invalid declarations, unused negative directives,
-leftover JS, unsafe code and no-write failures.
+exercise malformed compiler configuration, missing coverage, invalid
+declarations, unused negative directives, leftover JS, unsafe code and no-write
+failures. Source and declaration inventories ignore hidden OS/editor metadata while
+retaining visible inventory checks before writes in generation and check modes.
+The [gate correction record](../validation/2026-09-23-typescript-gate-review.md)
+records the focused regressions and their limits.
 
 [Acceptance evidence](../validation/2026-09-23-typescript-core.md) also compares
 runtime behavior with the pre-conversion baseline, including ordered JSON/state,

@@ -21,6 +21,7 @@ function visit(directory: string) {
   for (const entry of readdirSync(join(root, directory), {
     withFileTypes: true,
   })) {
+    if (entry.name.startsWith('.')) continue;
     const path = join(directory, entry.name);
     if (entry.isDirectory()) visit(path);
     else if (path.endsWith('.ts') && !included.has(resolve(root, path)))
@@ -47,7 +48,10 @@ if (missing.length || legacy.length) {
   );
   process.exitCode = 1;
 }
-const diagnostics = [...parsed.errors, ...ts.getPreEmitDiagnostics(program)];
+const diagnostics = [
+  ...ts.getConfigFileParsingDiagnostics(parsed),
+  ...ts.getPreEmitDiagnostics(program),
+];
 if (diagnostics.length) {
   console.error(
     ts.formatDiagnosticsWithColorAndContext(diagnostics, {

@@ -34,8 +34,10 @@ These are the original twelve library modules and CLI, plus the contract helper
 and type tooling. [tsconfig.json](../../tsconfig.json) includes every
 `bin/**/*.ts`, `lib/**/*.ts`, `types/generated/**/*.d.ts`, `scripts/types/**/*.ts`
 and `test/types/**/*.ts` file. The [type gate](../../scripts/types/check.ts)
-compares the compiler program with the on-disk inventory, including unimported
-CLI siblings, and rejects leftover handwritten core/CLI JavaScript. The generated
+compares the compiler program with the non-hidden on-disk inventory, including
+unimported CLI siblings, and rejects leftover handwritten core/CLI JavaScript.
+Discovery ignores hidden editor/OS entries, matching TypeScript's wildcard
+discovery; explicitly imported files still undergo compilation. The generated
 `bin/stellar.mjs` is the sole exception to that JS rejection.
 
 The viewer, existing JS behavior/browser tests, builder and unrelated tools keep
@@ -48,7 +50,10 @@ unchanged. This is not whole-repository type coverage.
 The four JSON schemas remain authoritative. The
 [declaration generator](../../scripts/types/declarations.ts) derives one committed
 module per schema, resolves local references with HTTP resolution disabled and
-checks the exact schema and declaration inventories. It generates all candidate
+checks the exact non-hidden schema and declaration inventories. Names starting
+with `.` are ignored in both directories, including OS metadata and dangling
+editor locks; visible unexpected files and missing required schemas still fail
+before writes in both build and check modes. It generates all candidate
 bytes in memory before writing; check mode compares without repair. Generator
 options retain unknown native fields, avoid runtime enums and leave array length
 constraints to runtime validation. The pinned generator owns declaration
@@ -103,6 +108,9 @@ the existing Node 24 `RegExp.escape` usage; this does not add a runtime API.
 Erasable-only syntax, explicit TS imports and type-only imports keep source
 execution compatible with Node's built-in type stripping. No incremental cache,
 browser globals, runtime TS loader, enums or emitted intermediate tree is added.
+The type gate includes configuration syntax diagnostics as well as option and
+program errors. Valid JSONC comments and trailing commas remain supported;
+malformed configuration fails without emitting or repairing files.
 
 The actual generator program exposed a transitive declaration error under exact
 optional properties. A [locked declaration-only patch](../../patches/README.md)
