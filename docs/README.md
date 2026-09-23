@@ -9,10 +9,10 @@ This is the repository-local entry point for Stellar's engineering knowledge.
 | Architecture current view and accepted Target    | [Architecture](architecture/README.md)                                                                                             |
 | Implemented behavior and exact tool versions     | Repository scripts, configuration, and locks                                                                                       |
 | Skill authoring and capture workflow             | [Skill entry](../SKILL.md), [capture guide](../references/capture.md)                                                              |
-| Installed CLI identity, diagnostics and help     | [CLI guide](../references/cli.md), [command catalog](../lib/cli-help.js)                                                           |
+| Installed CLI identity, diagnostics and help     | [CLI guide](../references/cli.md), [command catalog](../lib/cli-help.ts)                                                           |
 | Work-map input shape                             | [Work-map schema and semantic contract](../schemas/README.md)                                                                      |
 | Saved choices and requested refresh              | [Continuity workflow](../references/continuity.md), [state contract](../schemas/state.schema.json)                                 |
-| Local run evidence and artifact consistency      | [Run guide](../references/runs.md), [verifier](../lib/verify.js)                                                                   |
+| Local run evidence and artifact consistency      | [Run guide](../references/runs.md), [verifier](../lib/verify.ts)                                                                   |
 | Fixed UI language and owner-derived naming       | [Bundled viewer and locale catalogs](../assets/viewer/README.md)                                                                   |
 | Visual identity and brand assets                 | [Brand guide](brand.md), [Open Star SVG](../assets/viewer/stellar.svg), [README banner](../assets/brand/stellar-readme-banner.png) |
 | Original issue facts                             | Source snapshot and source system; neither classification nor prose rewrites them                                                  |

@@ -5,7 +5,7 @@ import { mkdtemp, readFile, writeFile, rm, mkdir } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { renderWorkMap } from '../../lib/render.js';
+import { renderWorkMap } from '../../lib/render.ts';
 
 for (const locale of ['ko', 'en'])
   test(

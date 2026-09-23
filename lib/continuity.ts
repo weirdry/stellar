@@ -1,43 +1,51 @@
-import { readFileSync } from 'node:fs';
 import { mkdir, open, unlink, rmdir } from 'node:fs/promises';
 import { resolve, dirname, join } from 'node:path';
 import { isDeepStrictEqual as equal } from 'node:util';
-import Ajv from 'ajv';
+import { Ajv } from 'ajv';
+import type { ValidateFunction } from 'ajv';
+import { loadSchema, schemaProperty, required, property } from './contracts.ts';
+import type {
+  WorkMap,
+  Issue,
+  Memory,
+  State,
+  Choices,
+  Identity,
+  Diagnostic,
+} from './contracts.ts';
 import addFormats from 'ajv-formats';
-import { assertWorkMap, validateWorkMap, WorkMapError } from './validate.js';
-import { normalizeCapture } from './normalize.js';
+import { assertWorkMap, validateWorkMap, WorkMapError } from './validate.ts';
+import { normalizeCapture } from './normalize.ts';
 
-const schema = (name) =>
-  JSON.parse(
-    readFileSync(
-      new URL(`../schemas/${name}.schema.json`, import.meta.url),
-      'utf8',
-    ),
-  );
+const schema = (name: string) =>
+  loadSchema(new URL(`../schemas/${name}.schema.json`, import.meta.url));
 const ajv = new Ajv({ strict: true, allErrors: true });
-addFormats(ajv);
+addFormats.default(ajv);
 ajv.addSchema(schema('work-map'), 'work-map.schema.json');
-const checkState = ajv.compile(schema('state'));
-const checkChoices = ajv.compile(schema('choices'));
-const fail = (path, message, fix) => {
+const checkState = ajv.compile<State>(schema('state'));
+const checkChoices = ajv.compile<Choices>(schema('choices'));
+function fail(path: string, message: string, fix: string): never {
   throw new WorkMapError([{ code: 'continuity', path, message, fix }]);
-};
-const clone = (value) => structuredClone(value);
-const key = ({ provider, namespace, nativeId }) =>
+}
+const clone = <T>(value: T): T => structuredClone(value);
+const key = ({ provider, namespace, nativeId }: Identity) =>
   JSON.stringify([provider, namespace, nativeId]);
-const identity = (map, issue) => {
-  const source = map.sources.find((s) => s.id === issue.sourceId);
+const identity = (map: WorkMap, issue: Issue): Identity => {
+  const source = required(
+    map.sources.find((s) => s.id === issue.sourceId),
+    'Validated issue source exists.',
+  );
   return {
     provider: source.provider,
     namespace: source.namespace,
     nativeId: issue.nativeId,
   };
 };
-const evidence = (issue) => ({
+const evidence = (issue: Pick<Issue, 'title' | 'description'>) => ({
   title: issue.title,
   ...(issue.description != null ? { description: issue.description } : {}),
 });
-const blankChanges = () => ({
+const blankChanges = (): State['changes'] => ({
   added: [],
   returned: [],
   updated: [],
@@ -45,14 +53,14 @@ const blankChanges = () => ({
   review: [],
   preservedUser: [],
 });
-const currentReviews = (map, memory) => {
+const currentReviews = (map: WorkMap, memory: Memory[]) => {
   const saved = new Map(memory.map((entry) => [key(entry), entry]));
   return map.issues.flatMap((issue) => {
     const reason = saved.get(key(identity(map, issue)))?.reviewReason;
     return reason ? [{ issueId: issue.id, reason }] : [];
   });
 };
-function assertRunReferences(map, prefix = '') {
+function assertRunReferences(map: WorkMap, prefix = '') {
   for (const [n, attachment] of (map.attachments || []).entries())
     if (!/^https?:\/\//.test(attachment.href))
       fail(
@@ -61,14 +69,17 @@ function assertRunReferences(map, prefix = '') {
         'Continuity requires verified HTTP(S) reference links. Keep the original map/state and its files; use the standalone renderer beside those files when a local reference is required. Do not remove references or upload files just to pass validation.',
       );
 }
-function shape(check, value) {
+function shape<T>(
+  check: ValidateFunction<T>,
+  value: unknown,
+  input: 'state' | 'choices',
+): asserts value is T {
   if (!check(value)) {
-    const input = check === checkState ? 'state' : 'choices';
     // Only collapse the two choices alternatives whose branches describe
     // presence, not separate field requirements. Other schema errors survive.
     const alternatives =
       input === 'choices'
-        ? check.errors.filter(
+        ? (check.errors ?? []).filter(
             (error) =>
               error.keyword === 'anyOf' &&
               ['#/anyOf', '#/properties/issues/items/anyOf'].includes(
@@ -76,7 +87,7 @@ function shape(check, value) {
               ),
           )
         : [];
-    const errors = check.errors.filter(
+    const errors = (check.errors ?? []).filter(
       (error) =>
         !alternatives.some(
           (alternative) =>
@@ -87,8 +98,7 @@ function shape(check, value) {
     );
     throw new WorkMapError(
       errors.map((error) => {
-        const property =
-          error.params.missingProperty ?? error.params.additionalProperty;
+        const property = schemaProperty(error);
         return {
           code: 'continuity-schema',
           input,
@@ -101,7 +111,7 @@ function shape(check, value) {
             ? error.instancePath === ''
               ? 'Provide at least one nonempty domains, categories or issues array.'
               : 'Provide classification or targets (or both) for this issue choice.'
-            : error.message,
+            : (error.message ?? ''),
           fix:
             input === 'state'
               ? 'Use a valid state produced by a continuity command; retain the original state and saved user choices.'
@@ -111,14 +121,14 @@ function shape(check, value) {
     );
   }
 }
-export function assertState(state) {
-  shape(checkState, state);
+export function assertState(state: unknown): State {
+  shape(checkState, state, 'state');
   const diagnostics = validateWorkMap(state.map)
     .diagnostics.filter((d) => d.code !== 'missing-classification')
     .map((d) => ({ ...d, path: '/map' + d.path }));
   if (diagnostics.length) throw new WorkMapError(diagnostics);
   assertRunReferences(state.map, '/map');
-  const seen = new Map();
+  const seen = new Map<string, Memory>();
   const categories = new Set(state.map.categories.map((c) => c.id));
   for (const [n, entry] of state.memory.entries()) {
     const at = `/memory/${n}`;
@@ -199,7 +209,7 @@ export function assertState(state) {
     );
   return state;
 }
-function rememberIssue(map, issue) {
+function rememberIssue(map: WorkMap, issue: Issue): Memory {
   return {
     ...identity(map, issue),
     identifier: issue.identifier,
@@ -212,8 +222,8 @@ function rememberIssue(map, issue) {
     ...(issue.detail === 'full' ? { evidence: evidence(issue) } : {}),
   };
 }
-export function rememberMap(map) {
-  assertWorkMap(map);
+export function rememberMap(input: unknown) {
+  const map = assertWorkMap(input);
   assertRunReferences(map);
   return assertState({
     schemaVersion: 1,
@@ -222,13 +232,10 @@ export function rememberMap(map) {
     changes: blankChanges(),
   });
 }
-export function classifyDraft(map, choices) {
-  const diagnostics = validateWorkMap(map).diagnostics.filter(
-    (diagnostic) => diagnostic.code !== 'missing-classification',
-  );
-  if (diagnostics.length) throw new WorkMapError(diagnostics);
+export function classifyDraft(input: unknown, choices: unknown) {
+  const map = assertWorkMap(input, true);
   assertRunReferences(map);
-  const memory = map.issues.map((issue) => ({
+  const memory: Memory[] = map.issues.map((issue) => ({
     ...rememberIssue(map, issue),
     ...(issue.scope === 'assigned' && !issue.classification
       ? { reviewReason: 'new-issue' }
@@ -245,22 +252,23 @@ export function classifyDraft(map, choices) {
     'agent',
   );
   // First-run application must be complete before any run directory is written.
-  const completionDiagnostics = validateWorkMap(state.map).diagnostics.map(
-    (diagnostic) =>
-      diagnostic.code === 'missing-classification'
-        ? {
-            ...diagnostic,
-            input: 'work-map',
-            fix: 'Add a choices.issues entry using the draft issue at this path: copy its canonical id to issueId and supply classification with category and rationale. Omit origin; classify-draft assigns agent origin.',
-          }
-        : diagnostic,
+  const completionDiagnostics = validateWorkMap(
+    state.map,
+  ).diagnostics.map<Diagnostic>((diagnostic) =>
+    diagnostic.code === 'missing-classification'
+      ? {
+          ...diagnostic,
+          input: 'work-map',
+          fix: 'Add a choices.issues entry using the draft issue at this path: copy its canonical id to issueId and supply classification with category and rationale. Omit origin; classify-draft assigns agent origin.',
+        }
+      : diagnostic,
   );
   if (completionDiagnostics.length)
     throw new WorkMapError(completionDiagnostics);
   return state;
 }
-export function refreshState(previous, capture) {
-  assertState(previous);
+export function refreshState(input: unknown, capture: unknown) {
+  const previous = assertState(input);
   const map = normalizeCapture(capture);
   if (map.owner !== previous.map.owner)
     fail(
@@ -316,7 +324,8 @@ export function refreshState(previous, capture) {
               'classification',
               'classificationEvidence',
               'targets',
-            ].includes(field) && !equal(prior[field], issue[field]),
+            ].includes(field) &&
+            !equal(property(prior, field), property(issue, field)),
         )
         .sort();
       if (fields.length) changes.updated.push({ issueId: issue.id, fields });
@@ -360,16 +369,20 @@ export function refreshState(previous, capture) {
     changes,
   });
 }
-export function applyChoices(previous, choices, actor) {
-  assertState(previous);
-  shape(checkChoices, choices);
-  if (!['agent', 'user'].includes(actor))
+export function applyChoices(input: unknown, choices: unknown, actor: unknown) {
+  const previous = assertState(input);
+  shape(checkChoices, choices, 'choices');
+  if (actor !== 'agent' && actor !== 'user')
     throw new Error('Choice actor must be agent or user.');
   const state = clone(previous),
     map = state.map;
-  for (const field of ['domains', 'categories']) {
+  function updateGroups<T extends { id: string }>(
+    field: 'domains' | 'categories',
+    additions: T[],
+    current: T[],
+  ) {
     const seen = new Set();
-    for (const [n, item] of (choices[field] || []).entries()) {
+    for (const [n, item] of additions.entries()) {
       if (seen.has(item.id))
         fail(
           `/${field}/${n}/id`,
@@ -379,26 +392,28 @@ export function applyChoices(previous, choices, actor) {
       seen.add(item.id);
       if (
         field === 'categories' &&
-        !map.domains.some((domain) => domain.id === item.domain)
+        !map.domains.some((domain) => domain.id === property(item, 'domain'))
       )
         fail(
           `/categories/${n}/domain`,
           'Category domain is undeclared.',
           'Choose an existing domain or supply it with this change.',
         );
-      const at = map[field].findIndex((old) => old.id === item.id);
-      if (at < 0) map[field].push(clone(item));
+      const at = current.findIndex((old) => old.id === item.id);
+      if (at < 0) current.push(clone(item));
       else {
-        if (actor === 'agent' && !equal(map[field][at], item))
+        if (actor === 'agent' && !equal(current[at], item))
           fail(
             `/${field}/${n}`,
             'Automatic classification cannot redefine an existing group.',
             'Reuse the group or add a distinct group. Use revise for a user-requested taxonomy change.',
           );
-        map[field][at] = clone(item);
+        current[at] = clone(item);
       }
     }
   }
+  updateGroups('domains', choices.domains || [], map.domains);
+  updateGroups('categories', choices.categories || [], map.categories);
   // assertState has already rejected duplicate IDs and saved identities. These
   // indexes retain references into the clone, so updates preserve array order.
   const issues = new Map(map.issues.map((issue) => [issue.id, issue]));
@@ -419,11 +434,15 @@ export function applyChoices(previous, choices, actor) {
         'Choice does not identify a current issue.',
         'Use the issueId from this state work-map; do not match a title or issue number.',
       );
-    const saved = memory.get(key(identity(map, issue)));
-    if (choice.classification) {
+    const saved = required(
+      memory.get(key(identity(map, issue))),
+      'Validated issue has saved memory.',
+    );
+    const classification = choice.classification;
+    if (classification) {
       if (
         !map.categories.some(
-          (category) => category.id === choice.classification.category,
+          (category) => category.id === classification.category,
         )
       )
         fail(
@@ -433,7 +452,7 @@ export function applyChoices(previous, choices, actor) {
         );
       if (actor === 'agent' && saved.classification?.origin === 'user') {
         if (
-          !equal(choice.classification, {
+          !equal(classification, {
             category: saved.classification.category,
             rationale: saved.classification.rationale,
           })
@@ -445,12 +464,17 @@ export function applyChoices(previous, choices, actor) {
           );
       } else {
         saved.classification = {
-          ...clone(choice.classification),
+          ...clone(classification),
           origin: actor,
         };
         delete issue.classificationEvidence;
       }
-      issue.classification = clone(saved.classification);
+      issue.classification = clone(
+        required(
+          saved.classification,
+          'Choice classification is preserved or assigned.',
+        ),
+      );
       delete saved.reviewReason;
       if (issue.detail === 'full') saved.evidence = evidence(issue);
     }
@@ -472,15 +496,15 @@ export function applyChoices(previous, choices, actor) {
   state.changes.review = currentReviews(map, state.memory);
   return assertState(state);
 }
-export async function writeRun(state, directory) {
-  assertState(state);
+export async function writeRun(input: unknown, directory: string) {
+  const state = assertState(input);
   const files = {
     'state.json': JSON.stringify(state, null, 2) + '\n',
     'work-map.json': JSON.stringify(state.map, null, 2) + '\n',
     'changes.json': JSON.stringify(state.changes, null, 2) + '\n',
   };
   const output = resolve(directory);
-  const created = [];
+  const created: string[] = [];
   let parentReady = false;
   let ownsDirectory = false;
   try {
@@ -512,17 +536,20 @@ export async function writeRun(state, directory) {
         cleanupFailed = true;
       });
     }
-    const exists = error.code === 'EEXIST' && parentReady && !ownsDirectory;
+    const exists =
+      property(error, 'code') === 'EEXIST' && parentReady && !ownsDirectory;
     const failure = new WorkMapError([
       {
         code: 'run-output',
         path: '/run',
         message: exists
           ? 'The output run path already exists.'
-          : ['EACCES', 'EPERM', 'EROFS'].includes(error.code)
+          : ['EACCES', 'EPERM', 'EROFS'].some(
+                (code) => code === property(error, 'code'),
+              )
             ? 'The output run location is not writable.'
-            : error.code === 'ENOTDIR' ||
-                (error.code === 'EEXIST' && !parentReady)
+            : property(error, 'code') === 'ENOTDIR' ||
+                (property(error, 'code') === 'EEXIST' && !parentReady)
               ? 'An output parent path is not a directory.'
               : 'The output run could not be written.',
         fix: exists

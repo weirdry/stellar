@@ -1,8 +1,10 @@
+import { isObject, property } from './contracts.ts';
+import type { BinaryLike } from 'node:crypto';
 import { createHash } from 'node:crypto';
 import { readFile, realpath, stat } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
-import { version } from './version.js';
+import { version } from './version.ts';
 
 // Only these product files are read. A manifest cannot select arbitrary paths.
 export const runtimeFiles = [
@@ -19,7 +21,7 @@ export const runtimeFiles = [
   'assets/viewer/locales/ko.json',
 ];
 export const manifestPath = 'bin/stellar.manifest.json';
-export const sha256 = (bytes) =>
+export const sha256 = (bytes: BinaryLike) =>
   createHash('sha256').update(bytes).digest('hex');
 
 const remedy =
@@ -27,11 +29,42 @@ const remedy =
 const scope =
   'Local Node and build-manifest consistency only. This does not verify release authenticity, host skill discovery, source authentication, live collection, or browser behavior.';
 
+interface DoctorCheck {
+  id: string;
+  status: 'pass' | 'fail' | 'skip';
+  message: string;
+  fix?: string;
+}
+interface BuildManifest {
+  version: string;
+  files: Record<string, string>;
+}
+function validManifest(parsed: unknown): parsed is BuildManifest {
+  if (!isObject(parsed) || parsed['version'] !== version) return false;
+  const files = parsed['files'];
+  return (
+    isObject(files) &&
+    !Array.isArray(files) &&
+    Object.keys(files).length === runtimeFiles.length &&
+    runtimeFiles.every((path) => {
+      const hash = files[path];
+      return (
+        Object.hasOwn(files, path) &&
+        typeof hash === 'string' &&
+        /^[a-f0-9]{64}$/.test(hash)
+      );
+    })
+  );
+}
 export async function doctor() {
   const root = await realpath(fileURLToPath(new URL('../', import.meta.url)));
-  const checks = [];
-  const add = (id, status, message, fix) =>
-    checks.push({ id, status, message, ...(fix ? { fix } : {}) });
+  const checks: DoctorCheck[] = [];
+  const add = (
+    id: string,
+    status: DoctorCheck['status'],
+    message: string,
+    fix?: string,
+  ) => checks.push({ id, status, message, ...(fix ? { fix } : {}) });
   const supported = process.versions.node.split('.')[0] === '24';
   add(
     'node',
@@ -40,7 +73,7 @@ export async function doctor() {
     supported ? undefined : 'Run Stellar with Node.js 24.x.',
   );
 
-  const read = async (path) => {
+  const read = async (path: string) => {
     try {
       if (!(await stat(join(root, path))).isFile()) {
         add(path, 'fail', 'Required path is not a regular file.', remedy);
@@ -51,7 +84,7 @@ export async function doctor() {
       add(
         path,
         'fail',
-        error.code === 'ENOENT'
+        property(error, 'code') === 'ENOENT'
           ? 'Required file is missing.'
           : 'Required file cannot be read.',
         remedy,
@@ -59,25 +92,12 @@ export async function doctor() {
       return null;
     }
   };
-  let manifest;
+  let manifest: BuildManifest | undefined;
   const bytes = await read(manifestPath);
   if (bytes !== null) {
     try {
-      const parsed = JSON.parse(bytes);
-      if (
-        parsed?.version !== version ||
-        !parsed.files ||
-        typeof parsed.files !== 'object' ||
-        Array.isArray(parsed.files) ||
-        Object.keys(parsed.files).length !== runtimeFiles.length ||
-        !runtimeFiles.every(
-          (path) =>
-            Object.hasOwn(parsed.files, path) &&
-            typeof parsed.files[path] === 'string' &&
-            /^[a-f0-9]{64}$/.test(parsed.files[path]),
-        )
-      )
-        throw new Error('Invalid manifest');
+      const parsed: unknown = JSON.parse(bytes.toString('utf8'));
+      if (!validManifest(parsed)) throw new Error('Invalid manifest');
       manifest = parsed;
       add(manifestPath, 'pass', 'Build manifest matches the running version.');
     } catch {
@@ -119,7 +139,7 @@ export async function doctor() {
   };
 }
 
-export function formatDoctor(result) {
+export function formatDoctor(result: Awaited<ReturnType<typeof doctor>>) {
   return [
     `Stellar ${result.version}`,
     `Installation: ${result.root}`,

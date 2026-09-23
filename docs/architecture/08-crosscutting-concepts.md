@@ -164,12 +164,17 @@ there is no migration for an unconsumed development intermediate.
 
 ## Static contract views
 
-State: **Target**
+State: **As-built**
 
-The [TypeScript plan](../development/typescript-adoption.md#contract-authority-and-narrowing)
-derives static declarations from all four canonical schemas. Parsed input stays
-unknown until validated; capture-native fields require further narrowing, and
-shape-valid drafts still require semantic validation before rendering. Static
-types do not enforce every JSON Schema or graph invariant. The proposal preserves
-published JSON/state contracts and user files, with no schema version change or
-state migration. No generated declarations or type-checking gate exist yet.
+The [typed core](../development/typescript-adoption.md#contract-authority-and-narrowing)
+uses generated declarations from all four canonical schemas. Parsed input stays
+unknown until runtime validation narrows it; native fields need further checks
+at consumption. Shape-valid drafts still need semantic readiness before rendering.
+Static types do not enforce every format, array or graph invariant. Published
+JSON/state contracts and user files are unchanged.
+
+[Contract fixtures](../../test/types/contracts.ts) check shared references,
+required fields, unions, choices and optional/null distinctions. The
+[tooling regressions](../../test/types-tooling.test.js) protect declaration drift,
+compiler coverage, read-only failures and unsafe-code rejection. Generator-owned
+declarations are excluded from style formatting but included in strict compilation.

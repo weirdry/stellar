@@ -38,7 +38,7 @@ to choose which file continues each step.
 6. A local browser opens the artifact. All ordinary exploration is offline.
    Links navigate when selected; SVG export downloads the current visible canvas.
 
-[render.js](../../lib/render.js), [CLI integration tests](../../test/core.test.js)
+[render.ts](../../lib/render.ts), [CLI integration tests](../../test/core.test.js)
 and [browser tests](../../test/browser/viewer.test.js) own this behavior.
 The renderer does not modify input files or copy referenced attachments.
 
@@ -84,7 +84,7 @@ array without echoing those keys; input-read failures omit raw filesystem paths.
 It performs no source calls, browser actions or artifact writes. Source collection,
 semantic classification, visual interaction and preservation relative to an
 earlier state remain explicitly unverified by this command. See
-[verify.js](../../lib/verify.js), [tests](../../test/verify.test.js), and
+[verify.ts](../../lib/verify.ts), [tests](../../test/verify.test.js), and
 [run evidence](../../references/runs.md).
 
 ## Browser exploration
@@ -161,7 +161,7 @@ when only excerpts are model-visible. Description hashes identify changed readab
 text, treating missing/null descriptions as empty text for that digest only.
 `descriptionPresent` distinguishes an omitted field from an observed string or
 null. Block/character offsets belong to the text and must be refreshed after changes.
-See [reading.js](../../lib/reading.js) and [the reader guide](../../references/reading.md).
+See [reading.ts](../../lib/reading.ts) and [the reader guide](../../references/reading.md).
 This local reader does not intercept host tool responses: input already delivered
 in full to a model is not retroactively reduced. Host capabilities determine the
 initial data-transfer path; no measured latency or token reduction is asserted.
@@ -172,7 +172,7 @@ initial data-transfer path; no measured latency or token reduction is asserted.
 
 [Explore HTML](diagrams/refresh-continuity.html) · [JSON source](diagrams/refresh-continuity.json)
 
-[refreshState](../../lib/continuity.js) first normalizes current facts, checks the
+[refreshState](../../lib/continuity.ts) first normalizes current facts, checks the
 owner and matches provider, namespace and native identity. Explicit user
 classifications survive text changes. Eligible agent classifications can carry
 forward; new assigned issues, changed full text for an agent classification and
@@ -245,7 +245,7 @@ replace the original failure, and possible leftovers are disclosed. Continuity
 run-output diagnostics omit raw filesystem error paths; JSON syntax diagnostics
 omit source excerpts. Input read failures still use system error messages and
 may include the supplied path, for example when an input file does not exist.
-[continuity.js](../../lib/continuity.js), [first-run tests](../../test/classify-draft.test.js),
+[continuity.ts](../../lib/continuity.ts), [first-run tests](../../test/classify-draft.test.js),
 [continuity tests](../../test/continuity.test.js)
 and [the skill workflow](../../references/continuity.md) own this behavior. No
 background worker, continuous sync, or persistent service exists.
@@ -256,14 +256,14 @@ background worker, continuous sync, or persistent service exists.
 
 [Explore HTML](diagrams/run-output.html) · [JSON source](diagrams/run-output.json)
 
-[writeRun](../../lib/continuity.js) validates state before reserving a fresh
+[writeRun](../../lib/continuity.ts) validates state before reserving a fresh
 private directory. It creates `state.json`, `work-map.json` and `changes.json`
 exclusively and closes each file before continuing. An existing path is refused.
 A write or close failure triggers best-effort removal of only files and the
 directory created by that invocation; cleanup failures disclose possible partial
 output. Earlier runs remain untouched. The caller chooses a fresh path for any
 retry. This is not a crash-safe multi-file transaction or automatic recovery
-protocol. The separate [renderer](../../lib/render.js) writes HTML through a
+protocol. The separate [renderer](../../lib/render.ts) writes HTML through a
 private temporary file and rename, preserving an existing report on failure.
 
 ## Failure response

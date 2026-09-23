@@ -36,9 +36,9 @@ part of the pending working tree.
   evidence for actual risk surfaces. Known limits are As-built; possible new
   languages, synchronization and identity/graph extensions remain Open.
 
-Reviewed owners: [normalizer](../../lib/normalize.js),
-[continuity](../../lib/continuity.js), [renderer](../../lib/render.js),
-[verifier](../../lib/verify.js), [schemas](../../schemas/README.md),
+Reviewed owners: [normalizer](https://github.com/weirdry/stellar/blob/7da8d3aca87820a65cab8c107a43205eaf8ad1dc/lib/normalize.js),
+[continuity](https://github.com/weirdry/stellar/blob/7da8d3aca87820a65cab8c107a43205eaf8ad1dc/lib/continuity.js), [renderer](https://github.com/weirdry/stellar/blob/7da8d3aca87820a65cab8c107a43205eaf8ad1dc/lib/render.js),
+[verifier](https://github.com/weirdry/stellar/blob/7da8d3aca87820a65cab8c107a43205eaf8ad1dc/lib/verify.js), [schemas](../../schemas/README.md),
 [classification guidance](../../references/classification.md),
 [run evidence](../../references/runs.md) and
 [continuity guidance](../../references/continuity.md).

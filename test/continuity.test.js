@@ -18,10 +18,10 @@ import {
   refreshState,
   applyChoices,
   assertState,
-} from '../lib/continuity.js';
-import { normalizeCapture } from '../lib/normalize.js';
-import { validateWorkMap } from '../lib/validate.js';
-import { renderWorkMap } from '../lib/render.js';
+} from '../lib/continuity.ts';
+import { normalizeCapture } from '../lib/normalize.ts';
+import { validateWorkMap } from '../lib/validate.ts';
+import { renderWorkMap } from '../lib/render.ts';
 import { mixedCapture, mixedMap } from './fixtures.js';
 
 const initial = () => rememberMap(mixedMap());
@@ -467,7 +467,7 @@ test('identity uncertainty keeps its reason through refresh and absence until a 
 test('continuity refuses relative references before writing and carries web references through every command', async (t) => {
   const dir = await mkdtemp(join(tmpdir(), 'stellar-reference-review-'));
   t.after(() => rm(dir, { recursive: true, force: true }));
-  const cli = fileURLToPath(new URL('../bin/stellar.js', import.meta.url));
+  const cli = fileURLToPath(new URL('../bin/stellar.ts', import.meta.url));
   const run = (...args) =>
     spawnSync(process.execPath, [cli, ...args], { cwd: dir, encoding: 'utf8' });
   const map = mixedMap();
@@ -626,7 +626,7 @@ test('state and choice validation reject contradictions with repair paths before
 test('CLI remembers, revises, refreshes and classifies a new run while preserving all earlier artifacts', async (t) => {
   const dir = await mkdtemp(join(tmpdir(), 'stellar-continuity-'));
   t.after(() => rm(dir, { recursive: true, force: true }));
-  const cli = fileURLToPath(new URL('../bin/stellar.js', import.meta.url));
+  const cli = fileURLToPath(new URL('../bin/stellar.ts', import.meta.url));
   const run = (...args) =>
     spawnSync(process.execPath, [cli, ...args], { cwd: dir, encoding: 'utf8' });
   const write = async (name, data) => {

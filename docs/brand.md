@@ -20,7 +20,7 @@ is the approved concept A. The other exploratory concepts are not brand assets.
 source. Its `100 × 100` viewBox preserves the approved proportions and diagonal
 gap. It contains no font, raster image, external dependency, or background.
 
-The [renderer](../lib/render.js) embeds this SVG into the
+The [renderer](../lib/render.ts) embeds this SVG into the
 [viewer shell](../assets/viewer/shell.html), replacing the temporary command-key
 symbol. It also embeds the same SVG as an `image/svg+xml` data-URL favicon in
 the document head. The favicon uses the SVG's default lavender and scales to

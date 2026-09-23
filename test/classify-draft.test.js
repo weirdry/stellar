@@ -17,9 +17,9 @@ import {
   applyChoices,
   refreshState,
   assertState,
-} from '../lib/continuity.js';
-import { normalizeCapture } from '../lib/normalize.js';
-import { validateWorkMap } from '../lib/validate.js';
+} from '../lib/continuity.ts';
+import { normalizeCapture } from '../lib/normalize.ts';
+import { validateWorkMap } from '../lib/validate.ts';
 import { mixedCapture } from './fixtures.js';
 
 const example = JSON.parse(
@@ -152,7 +152,7 @@ test('incomplete first-run choices can be repaired through the draft-relative di
   const input = join(dir, 'draft.json'),
     decisionPath = join(dir, 'choices.json'),
     output = join(dir, 'run'),
-    cli = fileURLToPath(new URL('../bin/stellar.js', import.meta.url));
+    cli = fileURLToPath(new URL('../bin/stellar.ts', import.meta.url));
   const run = () =>
     spawnSync(
       process.execPath,
@@ -268,7 +268,7 @@ test('partially interpreted drafts retain user authority and reject conflicting 
 test('initial CLI run renders and verifies, while errors preserve inputs and earlier output', async (t) => {
   const dir = await mkdtemp(join(tmpdir(), 'stellar-first-run-'));
   t.after(() => rm(dir, { recursive: true, force: true }));
-  const cli = fileURLToPath(new URL('../bin/stellar.js', import.meta.url));
+  const cli = fileURLToPath(new URL('../bin/stellar.ts', import.meta.url));
   const run = (...args) =>
     spawnSync(process.execPath, [cli, ...args], { cwd: dir, encoding: 'utf8' });
   const capture = join(dir, 'capture.json'),

@@ -15,10 +15,10 @@ import {
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { commands } from '../lib/cli-help.js';
-import { manifestPath, runtimeFiles, sha256 } from '../lib/installation.js';
-import { version } from '../lib/version.js';
-import { errorSummary } from '../lib/cli-diagnostics.js';
+import { commands } from '../lib/cli-help.ts';
+import { manifestPath, runtimeFiles, sha256 } from '../lib/installation.ts';
+import { version } from '../lib/version.ts';
+import { errorSummary } from '../lib/cli-diagnostics.ts';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 async function setup(t, complete = true) {
@@ -58,7 +58,7 @@ async function snapshot(directory) {
 test('version and every help topic work without schemas, resources, installer metadata, or input files', async (t) => {
   const { installed, work, run } = await setup(t, false);
   for (const cli of [
-    join(root, 'bin/stellar.js'),
+    join(root, 'bin/stellar.ts'),
     join(installed, 'bin/stellar.mjs'),
   ]) {
     for (const flag of ['--version', '-V']) {
@@ -308,7 +308,7 @@ test('mixed help requests cannot create or overwrite outputs with valid workflow
         await writeFile(join(work, flag), 'KEEP EXISTING OUTPUT');
     const before = await snapshot(dir);
     for (const cli of [
-      join(root, 'bin/stellar.js'),
+      join(root, 'bin/stellar.ts'),
       join(installed, 'bin/stellar.mjs'),
     ]) {
       for (const args of [
@@ -348,7 +348,7 @@ test('search-issue preserves help flags as literal text and explicit relative pa
   await writeFile(join(work, 'map.json'), JSON.stringify(map));
   const before = await snapshot(dir);
   for (const cli of [
-    join(root, 'bin/stellar.js'),
+    join(root, 'bin/stellar.ts'),
     join(installed, 'bin/stellar.mjs'),
   ]) {
     for (const offset of [[], ['0']]) {
@@ -377,7 +377,7 @@ test(
   async (t) => {
     const { installed, work, run } = await setup(t, false);
     for (const cli of [
-      join(root, 'bin/stellar.js'),
+      join(root, 'bin/stellar.ts'),
       join(installed, 'bin/stellar.mjs'),
     ]) {
       const bad = run(['render'], cli);
@@ -400,20 +400,20 @@ test(
 
 test('runtime load diagnostics retain a safe cause and location when doctor passes', async (t) => {
   const { installed, run } = await setup(t);
-  for (const path of ['lib', 'bin/stellar.js', 'package.json'])
+  for (const path of ['lib', 'bin/stellar.ts', 'package.json'])
     await cp(join(root, path), join(installed, path), { recursive: true });
   await symlink(join(root, 'node_modules'), join(installed, 'node_modules'));
-  const reader = join(installed, 'lib/reading.js');
+  const reader = join(installed, 'lib/reading.ts');
   const original = await readFile(reader, 'utf8');
   await writeFile(
     reader,
     'const broken = undefinedValue.property;\n' + original,
   );
-  const cli = join(installed, 'bin/stellar.js');
+  const cli = join(installed, 'bin/stellar.ts');
   const result = run(['inspect', 'not-read.json'], cli);
   assert.equal(result.status, 1);
   assert.equal(result.stdout, '');
-  assert.match(result.stderr, /ReferenceError at lib\/reading.js:1:\d+/);
+  assert.match(result.stderr, /ReferenceError at lib\/reading.ts:1:\d+/);
   assert.match(result.stderr, /If doctor passes, investigate/);
   assert.match(
     result.stderr,
@@ -424,9 +424,9 @@ test('runtime load diagnostics retain a safe cause and location when doctor pass
   assert.equal(JSON.parse(doctor.stdout).ok, true);
   await writeFile(reader, original);
   const schemaPath = join(installed, 'schemas/work-map.schema.json');
-  for (const content of [
-    '{ "PRIVATE_SCHEMA_SENTINEL":',
-    JSON.stringify({ type: 'PRIVATE_SCHEMA_SENTINEL' }),
+  for (const [content, sourceOwner] of [
+    ['{ "PRIVATE_SCHEMA_SENTINEL":', 'lib/contracts.ts'],
+    [JSON.stringify({ type: 'PRIVATE_SCHEMA_SENTINEL' }), 'lib/validate.ts'],
   ]) {
     await writeFile(schemaPath, content);
     for (const entry of [cli, join(installed, 'bin/stellar.mjs')]) {
@@ -435,7 +435,9 @@ test('runtime load diagnostics retain a safe cause and location when doctor pass
       assert.match(broken.stderr, /could not load its runtime/);
       assert.match(
         broken.stderr,
-        /(?:bin\/stellar.mjs|lib\/validate.js):\d+:\d+/,
+        new RegExp(
+          `${RegExp.escape(entry === cli ? sourceOwner : 'bin/stellar.mjs')}:\\d+:\\d+`,
+        ),
       );
       assert.ok(!broken.stderr.includes('PRIVATE_SCHEMA_SENTINEL'));
     }

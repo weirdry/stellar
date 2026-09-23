@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-import { version } from '../lib/version.js';
-import { commandInfo, helpText, isHelpFlag } from '../lib/cli-help.js';
-import { cliInvocation, errorSummary } from '../lib/cli-diagnostics.js';
+import { version } from '../lib/version.ts';
+import { commandInfo, helpText, isHelpFlag } from '../lib/cli-help.ts';
+import { cliInvocation, errorSummary } from '../lib/cli-diagnostics.ts';
 
 const [command, ...args] = process.argv.slice(2);
-function usageError(message, name) {
+function usageError(message: string, name?: string) {
   console.error(
     `${message} Run ${cliInvocation()} ${commandInfo(name) ? `help ${name}` : '--help'} for usage.`,
   );
@@ -56,7 +56,7 @@ async function main() {
   if (command === 'doctor') {
     if (args.length && args[0] !== '--json')
       return usageError('Unknown doctor option.', command);
-    const { doctor, formatDoctor } = await import('../lib/installation.js');
+    const { doctor, formatDoctor } = await import('../lib/installation.ts');
     const result = await doctor();
     console.log(
       args[0] === '--json'
@@ -70,7 +70,7 @@ async function main() {
   // so a damaged installation still exposes version, help, and doctor.
   let runCommand;
   try {
-    ({ runCommand } = await import('../lib/cli-commands.js'));
+    ({ runCommand } = await import('../lib/cli-commands.ts'));
   } catch (error) {
     console.error(
       `Stellar could not load its runtime (${errorSummary(error)}).`,
@@ -81,7 +81,7 @@ async function main() {
     process.exitCode = 1;
     return;
   }
-  await runCommand(command, args);
+  await runCommand(command ?? '', args);
 }
 
 try {

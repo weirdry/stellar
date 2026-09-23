@@ -145,7 +145,7 @@ its directory name or claim that the current upstream head was installed.
 If the source ref is unknown, say so. `--version` reports the product version,
 including any development suffix; it does not prove a source commit or release.
 See [CLI diagnostics](cli.md) for version and installation checks.
-For development runs through `bin/stellar.js` or Just, record the checkout
+For development runs through `bin/stellar.ts` or Just, record the checkout
 commit and any local source/resource changes instead; a bundle hash does not
 identify a source runner that was used without rebuilding that bundle.
 

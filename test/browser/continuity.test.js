@@ -5,12 +5,12 @@ import { mkdtemp, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { renderWorkMap } from '../../lib/render.js';
+import { renderWorkMap } from '../../lib/render.ts';
 import {
   rememberMap,
   applyChoices,
   refreshState,
-} from '../../lib/continuity.js';
+} from '../../lib/continuity.ts';
 import { mixedCapture, mixedMap } from '../fixtures.js';
 
 test(

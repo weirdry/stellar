@@ -1,9 +1,19 @@
-import { cliInvocation } from './cli-diagnostics.js';
+import { cliInvocation } from './cli-diagnostics.ts';
 
-export const isHelpFlag = (value) => value === '--help' || value === '-h';
+export const isHelpFlag = (value: unknown) =>
+  value === '--help' || value === '-h';
 
 // This catalog owns argument counts and help for the public runner commands.
-export const commands = {
+interface CommandInfo {
+  usage: string;
+  summary: string;
+  min: number;
+  max: number;
+  arguments: string[];
+  output: string;
+  example: string;
+}
+export const commands: Record<string, CommandInfo> = {
   doctor: {
     usage: 'doctor [--json]',
     summary:
@@ -217,11 +227,13 @@ export const commands = {
   },
 };
 
-export function commandInfo(name) {
-  return Object.hasOwn(commands, name) ? commands[name] : undefined;
+export function commandInfo(name?: string) {
+  return name !== undefined && Object.hasOwn(commands, name)
+    ? commands[name]
+    : undefined;
 }
 
-export function helpText(name) {
+export function helpText(name?: string) {
   const info = commandInfo(name);
   const exitCodes =
     'Exit codes: 0 success; 1 failed check or execution error; 2 invalid command usage.';

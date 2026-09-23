@@ -5,8 +5,8 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { normalizeCapture } from '../lib/normalize.js';
-import { validateWorkMap } from '../lib/validate.js';
+import { normalizeCapture } from '../lib/normalize.ts';
+import { validateWorkMap } from '../lib/validate.ts';
 import { mixedCapture, mixedMap } from './fixtures.js';
 
 const rejected = (mutate, pattern) => {
@@ -556,7 +556,7 @@ test('normalize CLI writes a private draft, protects captures and preserves earl
   t.after(() => rm(dir, { recursive: true, force: true }));
   const input = join(dir, 'capture.json'),
     output = join(dir, 'draft.json');
-  const cli = fileURLToPath(new URL('../bin/stellar.js', import.meta.url));
+  const cli = fileURLToPath(new URL('../bin/stellar.ts', import.meta.url));
   const run = (out = output) =>
     spawnSync(process.execPath, [cli, 'normalize', input, out], {
       cwd: dir,
@@ -664,4 +664,26 @@ test('normalize CLI writes a private draft, protects captures and preserves earl
   assert.equal(run().status, 1);
   assert.ok(!run().stderr.includes('private-sensitive-title'));
   assert.equal(await readFile(output, 'utf8'), before);
+});
+
+test('open native metadata preserves existing status coercion and nullable optional values', () => {
+  for (const [reason, label] of [
+    [{}, 'closed · [object Object]'],
+    [['one', 'two'], 'closed · one,two'],
+    [true, 'closed · true'],
+    [4, 'closed · 4'],
+    [null, 'closed'],
+    ['', 'closed'],
+  ]) {
+    const capture = mixedCapture();
+    const raw = capture.records[2].data;
+    raw.state = 'closed';
+    raw.state_reason = reason;
+    raw.body = null;
+    const map = normalizeCapture(capture);
+    const issue = map.issues.find((item) => item.nativeId === raw.node_id);
+    assert.deepEqual(issue.status, { label, type: 'unknown' });
+    assert.equal(issue.description, null);
+    assert.equal(Object.hasOwn(issue, 'completedAt'), false);
+  }
 });

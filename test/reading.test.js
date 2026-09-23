@@ -20,12 +20,12 @@ import {
   readIssue,
   searchIssue,
   bodyBlocks,
-} from '../lib/reading.js';
-import { retainResponse } from '../lib/evidence.js';
+} from '../lib/reading.ts';
+import { retainResponse } from '../lib/evidence.ts';
 import { mixedCapture, mixedMap } from './fixtures.js';
-import { normalizeCapture } from '../lib/normalize.js';
+import { normalizeCapture } from '../lib/normalize.ts';
 
-const cli = fileURLToPath(new URL('../bin/stellar.js', import.meta.url));
+const cli = fileURLToPath(new URL('../bin/stellar.ts', import.meta.url));
 const run = (...args) =>
   spawnSync(process.execPath, [cli, ...args], { encoding: 'utf8' });
 async function directory(t) {

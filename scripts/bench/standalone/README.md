@@ -54,12 +54,21 @@ prefix-independent detection of leftover files on successful and failed writes.
 
 ## Reproduce in a fresh directory
 
-Use the archival PR checkout, with full Git history containing baseline
+Use a separate archival checkout at `0fe3abb5bf044812bc63a6519fe188e7c5fefbee`,
+with full Git history containing product baseline
 `77ee2b9ba2d62f6523f0f0272ca714b1b920fa3b`. That merged revision has the same
 product source, bundle and schemas as the measured `ad8ef529` baseline. The
 runner checks recorded baseline hashes and refuses changed dependency manifests.
 `just init` provides the repository-pinned Node and JavaScript dependencies;
 the disposable baseline reads that dependency installation through a symlink.
+The current TypeScript package/lock intentionally differs from that experiment;
+replay from this checkout will refuse it. Retained-data checks above still work.
+Choose a fresh worktree path before the replay commands:
+
+```sh
+git worktree add --detach /tmp/stellar-standalone-archive 0fe3abb5bf044812bc63a6519fe188e7c5fefbee
+cd /tmp/stellar-standalone-archive
+```
 
 Requires macOS, Python 3.11+, Node 24.x, Go and Rust/Cargo on PATH. The measured
 versions were Python 3.14.7, Node 24.19.0, Go 1.26.8 and Rust/Cargo 1.96.0.
