@@ -9,7 +9,7 @@ const check = process.argv[2] === '--check';
 if (process.argv.length > 3 || (process.argv[2] && !check))
   throw new Error('Usage: node scripts/types/declarations.ts [--check]');
 const schemas = (await readdir(join(root, 'schemas')))
-  .filter((name) => name.endsWith('.schema.json'))
+  .filter((name) => !name.startsWith('.') && name.endsWith('.schema.json'))
   .sort();
 if (
   JSON.stringify(schemas) !==
@@ -41,7 +41,9 @@ const existing = await readdir(generated).catch((error: unknown) => {
     return [];
   throw error;
 });
-const unexpected = existing.filter((name) => !expected.includes(name));
+const unexpected = existing.filter(
+  (name) => !name.startsWith('.') && !expected.includes(name),
+);
 if (unexpected.length)
   throw new Error(
     `Unexpected generated files: ${unexpected.join(', ')}. No files were written.`,

@@ -6,6 +6,7 @@ import {
   mkdtemp,
   readFile,
   readdir,
+  readlink,
   rm,
   symlink,
   writeFile,
@@ -48,7 +49,9 @@ async function snapshot(dir) {
     })) {
       if (entry.name === 'node_modules') continue;
       const relative = join(path, entry.name);
-      if (entry.isDirectory()) await visit(relative);
+      if (entry.isSymbolicLink())
+        result[relative] = { symlink: await readlink(join(dir, relative)) };
+      else if (entry.isDirectory()) await visit(relative);
       else result[relative] = sha256(await readFile(join(dir, relative)));
     }
   }
@@ -65,6 +68,29 @@ async function readOnlyFailure(dir, run, args, message) {
   assert.match(result.stderr + result.stdout, message);
   assert.deepEqual(await snapshot(dir), before);
 }
+
+test('type checking reports config syntax and option errors without writing and accepts JSONC', async (t) => {
+  const { dir, run, write, read } = await fixture(t);
+  const check = ['scripts/types/check.ts'];
+  const config = await read('tsconfig.json');
+  for (const malformed of [
+    config.trimEnd().slice(0, -1),
+    config.replace('"target": "ES2024",', '"target": "ES2024"'),
+  ]) {
+    await write('tsconfig.json', malformed);
+    await readOnlyFailure(dir, run, check, /tsconfig\.json[\s\S]*TS1005/);
+  }
+  await write('tsconfig.json', config.replace('"ES2024"', '"unknown-target"'));
+  await readOnlyFailure(dir, run, check, /Argument for '--target' option/);
+  await write(
+    'tsconfig.json',
+    '// JSONC comments and trailing commas\n' +
+      config.replace(/}\s*$/, ',\n}\n'),
+  );
+  const before = await snapshot(dir);
+  success(run(...check));
+  assert.deepEqual(await snapshot(dir), before);
+});
 
 test('strict program checks unimported files, declaration bodies and the complete owned inventory without writing', async (t) => {
   const { dir, run, write, read } = await fixture(t);
@@ -142,6 +168,55 @@ test('declaration currency and inventory drift fail without repair; explicit gen
   await rm(join(dir, 'schemas/extra.schema.json'));
   await rm(join(dir, 'schemas/choices.schema.json'));
   await readOnlyFailure(dir, run, check, /Schema inventory changed/);
+});
+
+test('declaration inventories ignore hidden metadata but still reject real drift before writing', async (t) => {
+  const { dir, run, write } = await fixture(t);
+  for (const directory of ['schemas', 'types/generated']) {
+    await write(`${directory}/.DS_Store`, 'synthetic OS metadata');
+    await mkdir(join(dir, directory, '.cache'));
+    await write(`${directory}/.cache/extra.schema.json`, '{}');
+    await write(`${directory}/.cache/extra.d.ts`, 'synthetic cache');
+  }
+  await write('schemas/._work-map.schema.json', 'synthetic OS metadata');
+  await write('types/generated/._work-map.d.ts', 'synthetic OS metadata');
+  await symlink(
+    'missing-editor-lock',
+    join(dir, 'schemas/.#work-map.schema.json'),
+  );
+  await symlink(
+    'missing-editor-lock',
+    join(dir, 'types/generated/.#work-map.d.ts'),
+  );
+  const beforeTypecheck = await snapshot(dir);
+  success(run('scripts/types/check.ts'));
+  assert.deepEqual(await snapshot(dir), beforeTypecheck);
+  for (const args of [
+    ['scripts/types/declarations.ts', '--check'],
+    ['scripts/types/declarations.ts'],
+  ]) {
+    const before = await snapshot(dir);
+    success(run(...args));
+    assert.deepEqual(await snapshot(dir), before);
+    for (const [path, contents, message] of [
+      ['schemas/extra.schema.json', '{}', /Schema inventory changed/],
+      [
+        'types/generated/extra.d.ts',
+        'export type Extra = string;',
+        /Unexpected generated files/,
+      ],
+    ]) {
+      await write(path, contents);
+      await readOnlyFailure(dir, run, args, message);
+      await rm(join(dir, path));
+    }
+    await rm(join(dir, 'schemas/choices.schema.json'));
+    await readOnlyFailure(dir, run, args, /Schema inventory changed/);
+    await cp(
+      join(root, 'schemas/choices.schema.json'),
+      join(dir, 'schemas/choices.schema.json'),
+    );
+  }
 });
 
 test('type-aware lint rejects unsafe escapes; repository formatting preserves generated declarations', async (t) => {
