@@ -82,11 +82,10 @@ function invoke(command: string[], tag: string): [Measurement, unknown] {
     stderr: join(root, 'runs', `${tag}.stderr`),
     resources: join(root, 'runs', `${tag}.resources`),
   };
-  const measured = measure(
-    node,
-    [join(stage, 'bin/stellar.mjs'), ...command],
-    paths,
-  );
+  const measured = measure(node, [join(stage, 'bin/stellar.mjs'), ...command], {
+    ...paths,
+    tag,
+  });
   const result = json(paths.stdout);
   for (const file of Object.values(paths)) rmSync(file);
   return [measured, result];

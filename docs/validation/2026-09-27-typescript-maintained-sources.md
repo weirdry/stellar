@@ -46,6 +46,9 @@ Generated artifact identity (development version `0.1.3-dev.0`):
 ## Local checks
 
 Environment: macOS arm64, repository Node 24.19.0 and frozen development tools.
+These results, including the 98-test counts, describe implementation commit
+`1242a92289db5e3246e6752c77d7f6c4c80a51de`. Later source-check and tooling
+corrections have their own [validation records](README.md).
 
 - `just init`: frozen setup and hooks enabled; no new dependency or lock change.
 - `just ci`: documentation, eight diagram sets, formatting, declaration currency,

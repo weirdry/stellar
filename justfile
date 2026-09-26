@@ -149,10 +149,11 @@ ci: check
 skill-link:
     mise exec --locked -- node scripts/link-skill.ts
 
-# Optional local Go/Rust experiment; compilers are explicit prerequisites.
+# Frozen Go/Rust experiment: build and baseline must use the native README's historical checkout.
 native-build output: bundle-check
     bash scripts/bench/native/build.sh {{ quote(output) }}
 
+# Run in that historical checkout with its own baseline, not current TS results.
 native-compare build benchmark output trials="5":
     python3 scripts/bench/native/compare.py --node "$(mise exec --locked -- node -p process.execPath)" --build {{ quote(build) }} --benchmark {{ quote(benchmark) }} --output {{ quote(output) }} --trials {{ quote(trials) }}
 

@@ -53,7 +53,9 @@ the mismatch.
 Run `just benchmark-test` after editing this optional tooling. It checks malformed
 size lists, preservation of existing output paths, invalid references before
 output creation, baseline and reference-mode execution on 100
-synthetic issues, and hash/inventory mismatch detection. This Node suite has no
+synthetic issues, hash/inventory mismatch detection, measured-failure diagnostics,
+and profile output/frame attribution through a symlinked benchmark path.
+This Node suite has no
 timing thresholds and remains separate from `just ci`. `just profile-test` covers
 attribution arithmetic, preserved shuffle ordering, contained artifact paths and
 macOS/Linux resource parsing without real workloads. Hosted CI runs both converted
@@ -92,6 +94,9 @@ RSS. CPU is printed to hundredths of a second (10 ms resolution), coarser than
 the earlier Python `wait4` accounting. macOS RSS is bytes and Linux RSS is KiB;
 results normalize both to MiB. This is full-process peak RSS, not retained heap.
 The `measurement` metadata records these semantics.
+If a measured command fails, its diagnostic names the operation, the observed
+exit status or signal, and the retained stderr file. Failed-run logs remain in
+the fresh output directory for inspection.
 
 Operation order retains Python's integer-seeded MT19937/Fisher-Yates behavior,
 recorded under `ordering` (and the profiler protocol). Contributor-only
@@ -130,6 +135,9 @@ just profile-test
 `just profile BENCHMARK_DIRECTORY OUTPUT [TRIALS]` defaults to three trials per
 case and profiling mode. It verifies the benchmark fixture identity, recorded
 input/setup hashes and staged runtime against the checkout's integrity manifest.
+The benchmark directory is resolved to its real path before staged frame URLs
+are classified, so symlinked paths (including macOS `/tmp`) retain product labels
+such as `bin/stellar.mjs`; unrelated file URLs remain redacted.
 It profiles normalization and refresh at the smallest and largest available
 sizes, rendering at the largest size, and classification at the largest size
 up to 10,000. Equal cases are deduplicated. A size-100 benchmark with one profile
@@ -163,7 +171,8 @@ file URLs are normalized in summaries; raw profiles are local artifacts.
   product paths, and all unlisted self weight. Raw-profile hashes identify the
   complete local profiles. `just profile-test` checks weighted attribution,
   recursion handling and conservation of self weight with invented profiles;
-  actual staged execution/output parity is a separate smoke check.
+  actual staged execution/output parity and symlinked product-frame labels are
+  covered by the separate `just benchmark-test` workload.
 
 The [post-optimization study](../validation/2026-09-20-post-optimization-profile.md)
 records measured costs and the original proposal for a native comparison boundary.
@@ -183,7 +192,9 @@ Use the hybrid guide's separate checkout at
 The stager expects the archived JavaScript core, not the current TypeScript source.
 Run `just native-build FRESH_OUTPUT` and
 `just native-compare BUILD BENCHMARK FRESH_OUTPUT [TRIALS]` after generating the
-synthetic baseline above. Native compilers are explicit optional prerequisites,
+synthetic baseline with that historical checkout's own benchmark harness and
+runtime. Do not use results from the current TypeScript harness as the native
+experiment's baseline. Native compilers are explicit optional prerequisites,
 not requirements for the product or default CI. The harness requires output and
 diagnostic parity before timing, rejects timed native fallbacks, and records
 sampled process-tree RSS separately from uninstrumented wall/CPU measurements.

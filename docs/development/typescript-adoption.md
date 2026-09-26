@@ -49,7 +49,10 @@ All extend the same strict options. Browser callbacks cannot close over Node
 helpers: assertions used inside them are defined inside the serialized callback.
 
 The [type gate](../../scripts/types/check.ts) compares all compiler programs with
-the non-hidden inventory, including unimported sources and root configuration.
+the non-hidden source inventory under `bin/`, `lib/`, `viewer/`,
+`types/generated/`, `scripts/`, `test/` and `assets/viewer/`, plus root files.
+This includes unimported sources and root configuration within those scopes;
+it does not discover arbitrary source files under `docs/` or `examples/`.
 It rejects maintained JS/Python and declaration shims in implementation folders.
 Hidden OS/editor entries, including root configuration sidecars, are ignored
 during discovery; imported hidden code and its declarations remain checked.

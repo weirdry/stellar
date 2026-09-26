@@ -82,6 +82,16 @@ void test('documentation checker enforces canonical structure, state, indexing a
       '[missing](absent.md#heading)\n',
       /broken local Markdown link/,
     ],
+    [
+      'probe.md',
+      '[unclosed](https://example.invalid\n[missing](absent.md)\n',
+      /broken local Markdown link.*absent\.md/,
+    ],
+    [
+      'probe.md',
+      '[file as directory](docs/README.md/)\n',
+      /broken local Markdown link.*README\.md\//,
+    ],
   ] as const) {
     await put(path, text);
     const result = run();

@@ -1,5 +1,5 @@
 // Attribution runs separately from uninstrumented benchmark timings.
-import { mkdirSync } from 'node:fs';
+import { mkdirSync, realpathSync } from 'node:fs';
 import { array, record, required, errorMessage } from '../support/values.ts';
 import {
   child,
@@ -20,7 +20,6 @@ import {
   random,
   relative,
   repo,
-  resolve,
   shuffle,
   usageError,
   verifyFiles,
@@ -32,13 +31,14 @@ const args = options(['node', 'benchmark', 'output', 'trials'], {
   trials: '3',
 });
 const node = option(args, 'node'),
-  benchmark = resolve(option(args, 'benchmark')),
+  benchmarkPath = option(args, 'benchmark'),
   outputPath = option(args, 'output'),
   trials = positive(option(args, 'trials'));
-const stage = join(benchmark, 'staged-skill'),
-  script = join(directory, 'heap-sample.ts'),
-  resultPath = join(benchmark, 'results.json');
 try {
+  const benchmark = realpathSync(benchmarkPath),
+    stage = join(benchmark, 'staged-skill'),
+    script = join(directory, 'heap-sample.ts'),
+    resultPath = join(benchmark, 'results.json');
   const baseline = record(json(resultPath)),
     manifest = record(json(join(repo, 'bin/stellar.manifest.json'))),
     runtime = hashes(manifest['files']),
@@ -117,6 +117,7 @@ try {
       node,
       [...flags, join(stage, 'bin/stellar.mjs'), ...command],
       {
+        tag,
         stdout: join(run, 'stdout'),
         stderr: join(run, 'stderr'),
         resources: join(run, 'resources'),

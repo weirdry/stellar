@@ -4,6 +4,7 @@ Dated records identify the source or artifact, commands, observed result, and
 untested scope. They support the architecture without silently changing its
 meaning.
 
+- [2026-09-27 maintained TypeScript tooling review corrections](2026-09-27-typescript-tooling-review-corrections.md)
 - [2026-09-27 maintained TypeScript source review corrections](2026-09-27-typescript-source-review-corrections.md)
 - [2026-09-27 maintained TypeScript source completion](2026-09-27-typescript-maintained-sources.md)
 - [2026-09-26 v0.1.2 publication and installation acceptance](2026-09-26-v0.1.2-release.md)

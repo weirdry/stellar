@@ -195,7 +195,7 @@ export function parseTime(
 export function measure(
   node: string,
   args: string[],
-  files: { stdout: string; stderr: string; resources: string },
+  files: { tag: string; stdout: string; stderr: string; resources: string },
   env: NodeJS.ProcessEnv = process.env,
 ): Measurement {
   const platform = process.platform;
@@ -218,11 +218,14 @@ export function measure(
       { stdio: ['ignore', out, err], env: { ...env, LC_ALL: 'C' } },
     );
     const wall_ms = Number(process.hrtime.bigint() - start) / 1e6;
-    if (result.error) throw result.error;
-    if (result.status !== 0)
-      throw new Error(
-        `Measured command exited ${result.status}; inspect its local stderr.`,
-      );
+    if (result.error || result.status !== 0) {
+      const reason = result.error
+        ? `could not run: ${errorMessage(result.error)}`
+        : result.signal
+          ? `terminated by signal ${result.signal}`
+          : `exited ${result.status}`;
+      throw new Error(`${files.tag} ${reason}; stderr: ${files.stderr}`);
+    }
     return {
       wall_ms,
       ...parseTime(readFileSync(files.resources, 'utf8'), platform),
