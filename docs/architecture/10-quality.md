@@ -14,8 +14,9 @@ options and type-aware lint prohibit unsafe escapes; generator formatting is
 separate from handwritten formatting. [Regression tests](../../test/types-tooling.test.ts)
 exercise malformed compiler configuration, missing coverage, invalid
 declarations, unused negative directives, leftover JS, unsafe code and no-write
-failures. Source and declaration inventories ignore hidden OS/editor metadata while
-retaining visible inventory checks before writes in generation and check modes.
+failures. Source and declaration inventories ignore hidden OS/editor metadata,
+including root configuration sidecars, while retaining visible inventory checks
+before writes in generation and check modes.
 The compiler program rejects declaration shims under `bin/`, `lib/`, `viewer/`, `scripts/` and `test/`, including
 hidden imports, so a declared type cannot replace checking a core implementation.
 Type-aware lint ignores inline rule overrides and requires `as` assertion syntax
@@ -28,7 +29,15 @@ record the focused regressions and their limits.
 runtime behavior with the pre-conversion baseline, including ordered JSON/state,
 HTML, user-choice continuity, file safety and minimal installed layout. Compiler
 success does not establish input validity, runtime equivalence, performance,
-release acceptance or type coverage for the JS viewer and existing tests/tools.
+release acceptance or browser behavior. The
+[maintained-source record](../validation/2026-09-27-typescript-maintained-sources.md)
+covers the subsequent viewer/test/tool conversion.
+
+The [catalog tests](../../test/core.test.ts) compare locale keys and parameters,
+and scan authored viewer TypeScript (including nested helpers), HTML and CSS for
+fixed Korean copy outside catalogs. They inspect source because the generated
+browser script escapes non-ASCII text. A synthetic hardcoding regression checks
+that escaped output cannot hide a source violation.
 
 ## Product quality scenarios
 

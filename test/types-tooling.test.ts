@@ -401,6 +401,16 @@ void test('inline lint directives and alternate assertion syntax cannot bypass t
 void test('maintained viewer, tooling and test scopes reject unchecked sources and environment leaks', async (t) => {
   const { dir, run, write } = await fixture(t);
   const check = ['scripts/types/check.ts'];
+  for (const path of [
+    '._eslint.config.ts',
+    '._extra.config.js',
+    '._benchmark.py',
+    'viewer/._app.ts',
+  ])
+    await write(path, 'Synthetic OS metadata, not source.');
+  const before = await snapshot(dir);
+  success(run(...check));
+  assert.deepEqual(await snapshot(dir), before);
   for (const [path, source, message] of [
     ['viewer/probe.ts', 'export const leak = process.pid;', 'Cannot find name'],
     [

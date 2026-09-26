@@ -81,7 +81,7 @@ for (const directory of [
 ])
   visit(directory);
 for (const entry of readdirSync(root, { withFileTypes: true }))
-  if (entry.isFile()) check(entry.name);
+  if (!entry.name.startsWith('.') && entry.isFile()) check(entry.name);
 if (missing.length || legacy.length || shims.size) {
   console.error(
     `Type coverage incomplete. Missing from compiler: ${missing.join(', ') || 'none'}. Handwritten maintained JS/Python: ${legacy.join(', ') || 'none'}. Implementation declaration shims: ${[...shims].join(', ') || 'none'}.`,

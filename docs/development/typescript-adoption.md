@@ -51,8 +51,9 @@ helpers: assertions used inside them are defined inside the serialized callback.
 The [type gate](../../scripts/types/check.ts) compares all compiler programs with
 the non-hidden inventory, including unimported sources and root configuration.
 It rejects maintained JS/Python and declaration shims in implementation folders.
-Hidden OS/editor entries are ignored during discovery; imported hidden code and
-its declarations remain checked. The only generated JS exceptions are
+Hidden OS/editor entries, including root configuration sidecars, are ignored
+during discovery; imported hidden code and its declarations remain checked.
+The only generated JS exceptions are
 `bin/stellar.mjs` and `assets/viewer/app.js`. Exact historical JS/Python paths
 under `scripts/bench/native/` and `scripts/bench/standalone/` are allowlisted,
 not entire directories. Their Go/Rust sources, receipts and datasets remain frozen.
