@@ -15,8 +15,13 @@ exercise malformed compiler configuration, missing coverage, invalid
 declarations, unused negative directives, leftover JS, unsafe code and no-write
 failures. Source and declaration inventories ignore hidden OS/editor metadata while
 retaining visible inventory checks before writes in generation and check modes.
+The compiler program rejects declaration shims under `bin/` and `lib/`, including
+hidden imports, so a declared type cannot replace checking a core implementation.
+Type-aware lint ignores inline rule overrides and requires `as` assertion syntax
+to keep alternate forms within the documented assertion policy.
 The [gate correction record](../validation/2026-09-23-typescript-gate-review.md)
-records the focused regressions and their limits.
+and [independent-review corrections](../validation/2026-09-26-typescript-review-corrections.md)
+record the focused regressions and their limits.
 
 [Acceptance evidence](../validation/2026-09-23-typescript-core.md) also compares
 runtime behavior with the pre-conversion baseline, including ordered JSON/state,

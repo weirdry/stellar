@@ -37,8 +37,12 @@ and `test/types/**/*.ts` file. The [type gate](../../scripts/types/check.ts)
 compares the compiler program with the non-hidden on-disk inventory, including
 unimported CLI siblings, and rejects leftover handwritten core/CLI JavaScript.
 Discovery ignores hidden editor/OS entries, matching TypeScript's wildcard
-discovery; explicitly imported files still undergo compilation. The generated
-`bin/stellar.mjs` is the sole exception to that JS rejection.
+discovery; explicitly imported TypeScript files still undergo compilation.
+The compiler program must not contain declaration files under `bin/` or `lib/`:
+a local declaration cannot substitute for a core implementation, including a
+hidden JavaScript module. Schema-derived declarations stay in `types/generated/`;
+dependency declarations remain compiler-checked. The generated `bin/stellar.mjs`
+is the sole exception to leftover-JS rejection.
 
 The viewer, existing JS behavior/browser tests, builder and unrelated tools keep
 their current languages. Their source imports and damage-test paths follow the
@@ -121,6 +125,10 @@ version that passes the strict program unaided.
 [ESLint](../../eslint.config.js) enables type-aware rules only for handwritten
 owned TS files. It rejects explicit `any`, unsafe use of implicit `any`, non-null
 assertions, unchecked double assertions and implementation suppression comments.
+Inline ESLint configuration is ignored in this TS scope, so source comments
+cannot disable these rules. Type assertions use `as` syntax; angle-bracket and
+mixed assertion syntax cannot bypass the double-assertion rule. `as const`
+remains allowed.
 Documented `@ts-expect-error` is allowed only in compile-only negative fixtures;
 an unused directive fails compilation. A narrow assertion needs its invariant,
 reason and behavior evidence; an assertion never substitutes for validation.

@@ -67,6 +67,7 @@ async function readOnlyFailure(dir, run, args, message) {
   assert.equal(result.status, 1, result.stderr + result.stdout);
   assert.match(result.stderr + result.stdout, message);
   assert.deepEqual(await snapshot(dir), before);
+  return result;
 }
 
 test('type checking reports config syntax and option errors without writing and accepts JSONC', async (t) => {
@@ -138,6 +139,65 @@ test('strict program checks unimported files, declaration bodies and the complet
     ),
   );
   await readOnlyFailure(dir, run, check, /Unused '@ts-expect-error'/);
+});
+
+test('core declaration shims cannot hide imported JavaScript from coverage', async (t) => {
+  const { dir, run, write, read } = await fixture(t);
+  const check = ['scripts/types/check.ts'];
+  const version = await read('lib/version.ts');
+  for (const directory of ['bin', 'lib']) {
+    for (const [extension, declaration] of [
+      ['js', 'd.ts'],
+      ['mjs', 'd.mts'],
+      ['cjs', 'd.cts'],
+    ]) {
+      const module = `${directory}/.shim.${extension}`;
+      const shim = `${directory}/.shim.${declaration}`;
+      await write(
+        module,
+        extension === 'cjs' ? 'exports.h = 1;\n' : 'export const h = 1;\n',
+      );
+      await write(shim, 'export declare const h: number;\n');
+      await write(
+        'lib/version.ts',
+        version + `\nexport { h } from '../${module}';\n`,
+      );
+      const result = await readOnlyFailure(
+        dir,
+        run,
+        check,
+        /Core\/CLI declaration shims:/,
+      );
+      assert.ok(result.stderr.includes(shim), result.stderr);
+      await rm(join(dir, module));
+      await rm(join(dir, shim));
+    }
+  }
+  await mkdir(join(dir, 'lib/.hidden'));
+  await write('lib/.hidden/helper.js', 'export const h = 1;\n');
+  await write('lib/.hidden/helper.d.ts', 'export declare const h: number;\n');
+  await write(
+    'lib/version.ts',
+    version + "\nexport { h } from './.hidden/helper.js';\n",
+  );
+  await readOnlyFailure(
+    dir,
+    run,
+    check,
+    /Core\/CLI declaration shims: lib\/\.hidden\/helper\.d\.ts/,
+  );
+  await rm(join(dir, 'lib/.hidden'), { recursive: true });
+
+  await write('lib/.checked.ts', 'export const h: string = 1;\n');
+  await write(
+    'lib/version.ts',
+    version + "\nexport { h } from './.checked.ts';\n",
+  );
+  await readOnlyFailure(dir, run, check, /not assignable to type 'string'/);
+  await write('lib/.checked.ts', "export const h: string = 'checked';\n");
+  const before = await snapshot(dir);
+  success(run(...check));
+  assert.deepEqual(await snapshot(dir), before);
 });
 
 test('declaration currency and inventory drift fail without repair; explicit generation is deterministic', async (t) => {
@@ -257,4 +317,47 @@ test('type-aware lint rejects unsafe escapes; repository formatting preserves ge
     /value = \{/,
   );
   success(run('scripts/types/declarations.ts', '--check'));
+});
+
+test('inline lint directives and alternate assertion syntax cannot bypass type safety', async (t) => {
+  const { dir, run, write } = await fixture(t);
+  const lint = ['node_modules/eslint/bin/eslint.js', 'lib/unsafe.ts'];
+  for (const [source, message] of [
+    [
+      '/* eslint-disable @typescript-eslint/ban-ts-comment */\n// @ts-nocheck\nexport const f = (v: number): string => v;\n',
+      /ban-ts-comment/,
+    ],
+    [
+      '/* eslint-disable */\nexport const f = (v: any) => v.x.y;\n',
+      /no-explicit-any/,
+    ],
+    [
+      '// eslint-disable-next-line @typescript-eslint/no-explicit-any\nexport const f = (v: any) => v;\n',
+      /no-explicit-any/,
+    ],
+    [
+      '/* eslint @typescript-eslint/no-explicit-any: off */\nexport const f = (v: any) => v;\n',
+      /no-explicit-any/,
+    ],
+    [
+      'export const f = (v: number) => <string>(<unknown>v);\n',
+      /consistent-type-assertions/,
+    ],
+    [
+      'export const f = (v: number) => (<unknown>v) as string;\n',
+      /consistent-type-assertions/,
+    ],
+  ]) {
+    await write('lib/unsafe.ts', source);
+    await readOnlyFailure(dir, run, lint, message);
+  }
+  await write(
+    'lib/unsafe.ts',
+    "export const value = { kind: 'literal' } as const;\n",
+  );
+  const before = await snapshot(dir);
+  success(run(...lint));
+  success(run('node_modules/eslint/bin/eslint.js', 'test/types/contracts.ts'));
+  success(run('scripts/types/check.ts'));
+  assert.deepEqual(await snapshot(dir), before);
 });
