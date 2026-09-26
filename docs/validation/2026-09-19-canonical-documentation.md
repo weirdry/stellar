@@ -23,7 +23,7 @@ Reviewed implementation owners:
 - [Rendering](https://github.com/weirdry/stellar/blob/7da8d3aca87820a65cab8c107a43205eaf8ad1dc/lib/render.js), [viewer assets](../../assets/viewer/README.md)
   and [brand guide](../brand.md): one vector source for header and favicon,
   separate promotional banner, escaped embedding and deterministic bytes.
-- [Bundle build](../../scripts/build-runner.js),
+- [Bundle build](https://github.com/weirdry/stellar/blob/7da8d3aca87820a65cab8c107a43205eaf8ad1dc/scripts/build-runner.js),
   [distribution](../development/distribution.md) and
   [published v0.1.0 evidence](2026-09-19-v0.1.0-release.md): source, integration,
   promotion, publication, installation and invocation are separate boundaries.
@@ -57,7 +57,7 @@ generator HTML hash. SVG export uses the final checked artifact.
 
 The [manifest](../architecture/diagrams/manifest.json) also records each source
 and SVG hash. The [guide](../architecture/diagrams/README.md) and
-[script](../../scripts/docs/diagrams.mjs) own the regeneration procedure. SVGs
+[script](https://github.com/weirdry/stellar/blob/7da8d3aca87820a65cab8c107a43205eaf8ad1dc/scripts/docs/diagrams.mjs) own the regeneration procedure. SVGs
 come from these exact HTML files with delivered dark colors resolved, a
 background and system font stack added; the topology and authored text are
 unchanged. This avoids black shapes in SVG rasterizers lacking CSS variables.
@@ -149,7 +149,7 @@ diagram sources and supersede their earlier artifact identities.
 The inventory gate now discovers every JSON source, accepts digits and underscores
 in supported names, and rejects unsupported names explicitly. It excludes only
 the manifest and documented Archify browser receipts. The new
-[inventory regression](../../test/diagrams.test.js) uses an isolated copy to prove
+[inventory regression](https://github.com/weirdry/stellar/blob/7da8d3aca87820a65cab8c107a43205eaf8ad1dc/test/diagrams.test.js) uses an isolated copy to prove
 that unbuilt `report-2.json` and `report_detail.json`, plus unsupported `Report.json`,
 fail without changing their inputs or the manifest; a clean/restored copy passes.
 

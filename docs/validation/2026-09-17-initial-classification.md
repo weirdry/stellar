@@ -24,7 +24,7 @@ These results apply to [cf675f3](https://github.com/weirdry/stellar/commit/cf675
   installed in an isolated temporary environment because the available Python
   environments did not provide it; repository dependencies were unchanged.
 
-[First-run tests](../../test/classify-draft.test.js) exercise the tracked
+[First-run tests](https://github.com/weirdry/stellar/blob/4cbb34d50c57079f51c92c8b35e7d36936b5da42/test/classify-draft.test.js) exercise the tracked
 [capture](../../examples/mixed-capture.json) and
 [choices](../../examples/mixed-choices.json) together. They verify source-fact
 preservation, repository-local identifier collisions, target application,

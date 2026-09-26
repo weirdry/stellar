@@ -40,7 +40,7 @@ readable summary. JSON contains `version`, the resolved installation `root`,
 Doctor checks the running Node major version and compares the bundled runner,
 four input schemas, and required viewer resources with the generated
 [`bin/stellar.manifest.json`](../bin/stellar.manifest.json). The
-[build script](../scripts/build-runner.js) generates this manifest from the same
+[build script](../scripts/build-runner.ts) generates this manifest from the same
 bundle and resource bytes; [installation.ts](../lib/installation.ts) owns the
 fixed checked-file inventory. Missing files, unreadable/non-file paths, and byte
 mismatches fail. An absent, malformed, or version-mismatched manifest fails;

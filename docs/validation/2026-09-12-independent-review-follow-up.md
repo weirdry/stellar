@@ -29,7 +29,7 @@ The input schema and source relationship meanings are unchanged.
 
 ## Local verification
 
-The six additional [browser regressions](../../test/browser/regressions.test.js)
+The six additional [browser regressions](https://github.com/weirdry/stellar/blob/98b93060f7ba59dfd9970c7eb376dd5f38d36c06/test/browser/regressions.test.js)
 each failed against the prior viewer for the reproduced defects. After correction:
 
 - `just ci`: documentation, formatting, JavaScript/repository checks, and all

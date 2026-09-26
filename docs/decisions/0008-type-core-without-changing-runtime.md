@@ -57,3 +57,8 @@ The core/CLI conversion, derived contracts and active checks are implemented.
 The [validation record](../validation/2026-09-23-typescript-core.md) identifies
 behavioral evidence and its limits. Viewer and ordinary test/tooling typing are
 deferred; dev integration, release and installation remain separate outcomes.
+
+## Subsequent scope completion
+
+[ADR-0009](0009-type-maintained-sources.md) completes the originally deferred
+viewer/test/tooling scope. The core/runtime decision above remains in force.

@@ -13,15 +13,15 @@ init:
 
 # Validate the canonical documentation structure, states, indexes, and links.
 docs-check:
-    bash scripts/docs/check-contract.sh --target .
+    mise exec --locked -- node scripts/docs/check-contract.ts --target .
 
 # Regeneration is explicit and requires a reviewed local Archify installation.
 diagrams-build:
-    mise exec --locked -- node scripts/docs/diagrams.mjs build
+    mise exec --locked -- node scripts/docs/diagrams.ts build
 
 # Read-only hashes and exact HTML-to-SVG export comparison; no Archify required.
 diagrams-check:
-    mise exec --locked -- node scripts/docs/diagrams.mjs check
+    mise exec --locked -- node scripts/docs/diagrams.ts check
 
 # Read-only source and repository checks.
 lint:
@@ -109,29 +109,36 @@ revise state choices run:
 render input output:
     mise exec --locked -- node bin/stellar.ts render {{ quote(input) }} {{ quote(output) }}
 
+# Generate browser assets explicitly; drift checks never write.
+build-viewer:
+    mise exec --locked -- node scripts/build-viewer.ts
+
+viewer-check:
+    mise exec --locked -- node scripts/build-viewer.ts --check
+
 # Regenerate the committed installed runner and dependency notices explicitly.
-build-runner:
-    mise exec --locked -- node scripts/build-runner.js
+build-runner: build-viewer
+    mise exec --locked -- node scripts/build-runner.ts
 
 # Compare in memory; never rewrite the installed artifact from a quality gate.
-bundle-check:
-    mise exec --locked -- node scripts/build-runner.js --check
+bundle-check: viewer-check
+    mise exec --locked -- node scripts/build-runner.ts --check
 
-# Optional synthetic CLI measurements (macOS/Linux, Python 3.11+); fresh output.
+# Optional synthetic CLI measurements (macOS/Linux, system time); fresh output.
 benchmark output reference="" sizes="1000,10000,50000" trials="3": bundle-check
-    python3 scripts/bench/benchmark.py --node "$(mise exec --locked -- node -p process.execPath)" --output {{ quote(output) }} {{ if reference == "" { "" } else { "--reference " + quote(reference) } }} --sizes {{ quote(sizes) }} --trials {{ quote(trials) }}
+    mise exec --locked -- node scripts/bench/benchmark.ts --node "$(mise exec --locked -- node -p process.execPath)" --output {{ quote(output) }} {{ if reference == "" { "" } else { "--reference " + quote(reference) } }} --sizes {{ quote(sizes) }} --trials {{ quote(trials) }}
 
-# Exercise optional benchmark tooling without imposing timing limits on CI.
+# Exercise benchmark tooling without imposing timing limits.
 benchmark-test: bundle-check
-    python3 scripts/bench/test_reference.py --node "$(mise exec --locked -- node -p process.execPath)"
+    mise exec --locked -- node --test scripts/bench/test_reference.ts
 
 # CPU/allocation attribution on retained synthetic benchmark artifacts; not timings.
 profile benchmark output trials="3": bundle-check
-    python3 scripts/bench/profile.py --node "$(mise exec --locked -- node -p process.execPath)" --benchmark {{ quote(benchmark) }} --output {{ quote(output) }} --trials {{ quote(trials) }}
+    mise exec --locked -- node scripts/bench/profile.ts --node "$(mise exec --locked -- node -p process.execPath)" --benchmark {{ quote(benchmark) }} --output {{ quote(output) }} --trials {{ quote(trials) }}
 
-# Deterministic attribution arithmetic; optional Python, outside default CI.
+# Deterministic attribution arithmetic; also run separately in hosted CI.
 profile-test:
-    python3 scripts/bench/test_profile.py
+    mise exec --locked -- node --test scripts/bench/test_profile.ts
 
 # Browser QA is a separate gate.
 check: docs-check diagrams-check format-check types-check typecheck lint bundle-check test
@@ -140,7 +147,7 @@ ci: check
 
 # Link this checkout for user-level Codex discovery; never replace another skill.
 skill-link:
-    mise exec --locked -- node scripts/link-skill.js
+    mise exec --locked -- node scripts/link-skill.ts
 
 # Optional local Go/Rust experiment; compilers are explicit prerequisites.
 native-build output: bundle-check

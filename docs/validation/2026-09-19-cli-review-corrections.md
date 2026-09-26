@@ -29,7 +29,7 @@ unreleased `0.1.2-dev.0` candidate; no report/state schema or release changed.
   private in source and installed diagnostics. Multiline messages cannot inject
   a forged code location into the summary.
 
-The [CLI tests](../../test/cli-diagnostics.test.js) own the regression cases.
+The [CLI tests](https://github.com/weirdry/stellar/blob/db82ba087d91eedfc39dc731ddc8ca724b2fcc4c/test/cli-diagnostics.test.js) own the regression cases.
 [CLI guidance](../../references/cli.md) and the affected architecture chapters
 describe the implemented behavior. The CLI guide also names the JSON `message`
 and `fix` fields explicitly.

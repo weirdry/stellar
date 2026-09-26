@@ -17,6 +17,10 @@ Accepted decisions are indexed in [the ADR history](../decisions/README.md).
 
 This chapter is the current-view index. Accepted ADRs preserve rationale;
 future consequential changes add a new decision and update the current view.
+[ADR-0009: Type all maintained sources](../decisions/0009-type-maintained-sources.md)
+extends static coverage to viewer, tests and tools while preserving generated
+JavaScript delivery and frozen experiments.
+
 An Accepted ADR can describe a Target that is not implemented yet.
 
 ## Source-language decision
@@ -27,6 +31,7 @@ State: **As-built**
 The complete core/CLI and type tooling use strict TypeScript with schema-derived
 contracts; Node-ready distribution and runtime validation remain intact.
 The [implementation guide](../development/typescript-adoption.md) identifies
-actual owners, active checks and deferred viewer/test/tooling typing. The
+actual owners and active checks, including the viewer/test/tooling coverage
+completed under ADR-0009. The
 [dated record](../validation/2026-09-23-typescript-core.md) owns execution evidence;
 source conversion does not establish release or installation acceptance.

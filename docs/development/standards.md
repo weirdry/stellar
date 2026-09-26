@@ -15,8 +15,9 @@ recorded in [ADR-0007](../decisions/0007-own-canonical-documentation-policy.md).
 | Hosted checks                                            | [CI workflow](../../.github/workflows/ci.yml) and its actual run results                        |
 | Skill installation and publication                       | [Distribution guide](distribution.md)                                                           |
 
-The single native root uses erasable TypeScript for the Node ESM core/CLI and
-JavaScript for the viewer and existing behavior tests/tools. Exact selectors,
+The single native root uses erasable TypeScript for maintained core, CLI, viewer,
+tests and development tools. Generated browser/Node JavaScript and frozen native
+experiment sources remain explicit exceptions. Exact selectors,
 frozen installation, Prettier, type-aware flat ESLint, strict no-emit checking,
 schema declaration checks, Node tests and separate Playwright checks share the
 root workflow. There is no published Stellar npm package. The installed runner is a reproducible

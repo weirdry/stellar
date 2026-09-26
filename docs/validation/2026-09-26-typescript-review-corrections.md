@@ -14,7 +14,7 @@ unchanged.
 - **P2, inline directives and alternate assertions:** the previous ESLint
   configuration allowed `eslint-disable` to suppress the ban on `@ts-nocheck`
   and unsafe `any`. Angle-bracket and mixed double assertions also escaped the
-  selector for nested `as` expressions. The [TS lint scope](../../eslint.config.js)
+  selector for nested `as` expressions. The [TS lint scope](https://github.com/weirdry/stellar/blob/fe10bd4caa55bb4e9869ac014e7b87051791cbb7/eslint.config.js)
   now ignores inline ESLint configuration and requires `as` assertion syntax.
   The existing double-assertion rule remains active. JavaScript lint policy is
   unchanged; `as const` and documented negative type fixtures remain supported.
@@ -29,7 +29,7 @@ unchanged.
 
 ## Regression evidence
 
-The [tooling tests](../../test/types-tooling.test.js) run in disposable synthetic
+The [tooling tests](https://github.com/weirdry/stellar/blob/fe10bd4caa55bb4e9869ac014e7b87051791cbb7/test/types-tooling.test.js) run in disposable synthetic
 copies. File hashes and symlink targets are compared around each failing gate.
 
 - Both new regression tests failed before the correction: the suppression

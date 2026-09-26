@@ -10,6 +10,7 @@
 | [0006: Distribute a Node-ready skill from GitHub](0006-distribute-a-node-ready-skill.md)                 | Accepted | 2026-09-18 |
 | [0007: Own the canonical documentation policy](0007-own-canonical-documentation-policy.md)               | Accepted | 2026-09-19 |
 | [0008: Type the core without changing the runtime](0008-type-core-without-changing-runtime.md)           | Accepted | 2026-09-21 |
+| [0009: Type all maintained sources](0009-type-maintained-sources.md)                                     | Accepted | 2026-09-27 |
 
 ADR-0001 remains Accepted for the foundation. Its external documentation profile
 and upstream policy authority are superseded by ADR-0007; the original text is

@@ -57,8 +57,8 @@ just profile-test
 
 The [performance procedure](../development/performance.md#attribute-remaining-costs)
 owns sampling semantics and prerequisites. The current profilers are
-[profile.py](../../scripts/bench/profile.py) and
-[heap-sample.mjs](../../scripts/bench/heap-sample.mjs). Allocation sampling includes
+[profile.py](https://github.com/weirdry/stellar/blob/0fe3abb5bf044812bc63a6519fe188e7c5fefbee/scripts/bench/profile.py) and
+[heap-sample.mjs](https://github.com/weirdry/stellar/blob/0fe3abb5bf044812bc63a6519fe188e7c5fefbee/scripts/bench/heap-sample.mjs). Allocation sampling includes
 objects collected by minor and major GC; its estimates describe allocation
 volume during the sampled interval, not retained objects or all native memory.
 
@@ -167,8 +167,8 @@ The comparison must retain:
    provider/namespace identity rules, source facts/raw data, context coverage,
    relation direction/deduplication, ordering and error behavior. Use the same
    algorithm where possible; distinguish algorithm changes from language gains.
-   [Normalizer tests](../../test/normalize.test.js),
-   [CLI tests](../../test/core.test.js), schemas and implementation own that
+   [Normalizer tests](https://github.com/weirdry/stellar/blob/0fe3abb5bf044812bc63a6519fe188e7c5fefbee/test/normalize.test.js),
+   [CLI tests](https://github.com/weirdry/stellar/blob/0fe3abb5bf044812bc63a6519fe188e7c5fefbee/test/core.test.js), schemas and implementation own that
    behavior, including failure/no-output and safe output replacement semantics.
 2. Complete output equivalence and deliberate invalid/collision cases before
    timing. The large fixture does not cover every identity/error case. A faster

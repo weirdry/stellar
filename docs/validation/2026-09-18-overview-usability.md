@@ -28,7 +28,7 @@ expansion. Neighborhood geometry is unchanged.
   checks passed.
 - `STELLAR_QA_DIR=<synthetic-directory> just browser-check`: 40/40 Chromium tests
   passed with the repository-pinned browser.
-- The seven finding-specific [layout tests](../../test/browser/layout.test.js) all fail
+- The seven finding-specific [layout tests](https://github.com/weirdry/stellar/blob/76f38622e5dd3edda4c115188a9406fec73e5828/test/browser/layout.test.js) all fail
   against `e66e922` in an isolated synthetic copy; the previous 32 pass there.
   An additional pan regression checks that a cropped area regains its retained label without relative movement.
 - The existing label-retention, target-focus, source-curve, neighboring

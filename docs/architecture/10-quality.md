@@ -6,16 +6,17 @@ State: **As-built**
 
 State: **As-built**
 
-The [TypeScript gate](../../scripts/types/check.ts) checks the complete core/CLI,
-contract declarations and type tooling. [Declaration checks](../../scripts/types/declarations.ts)
+The [TypeScript gate](../../scripts/types/check.ts) checks maintained core/CLI, viewer, tests,
+configuration, development tools and generated contract declarations across
+separate Node, browser and Playwright compiler environments. [Declaration checks](../../scripts/types/declarations.ts)
 fail on schema inventory or generated-byte drift without repair. Strict compiler
 options and type-aware lint prohibit unsafe escapes; generator formatting is
-separate from handwritten formatting. [Regression tests](../../test/types-tooling.test.js)
+separate from handwritten formatting. [Regression tests](../../test/types-tooling.test.ts)
 exercise malformed compiler configuration, missing coverage, invalid
 declarations, unused negative directives, leftover JS, unsafe code and no-write
 failures. Source and declaration inventories ignore hidden OS/editor metadata while
 retaining visible inventory checks before writes in generation and check modes.
-The compiler program rejects declaration shims under `bin/` and `lib/`, including
+The compiler program rejects declaration shims under `bin/`, `lib/`, `viewer/`, `scripts/` and `test/`, including
 hidden imports, so a declared type cannot replace checking a core implementation.
 Type-aware lint ignores inline rule overrides and requires `as` assertion syntax
 to keep alternate forms within the documented assertion policy.
@@ -40,15 +41,15 @@ actual revision, commands, results and remaining scope.
 
 | Quality outcome and trigger                                                                               | Observable success                                                                                                                                                                                                                                                                   | Evidence owner and limit                                                                                                                                                                                                                                                                                                                            |
 | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Traceable facts:** combine sources with repeated identifiers, incomplete lookups or unknown context.    | Identities remain source-qualified, registered edges keep their meaning/direction, unknown facts stay unknown, and each source's scope/freshness/coverage remains inspectable. Context never enters assigned totals.                                                                 | [Normalizer tests](../../test/normalize.test.js), [source browser tests](../../test/browser/sources.test.js), [capture guide](../../references/capture.md). Local validation cannot prove host pagination, permissions or complete collection.                                                                                                      |
-| **Useful purpose classification:** assigned work spans inconsistent projects and labels.                  | Every assigned issue has one primary category and an evidence-based rationale. Membership expresses a shared outcome; target overlap does not create a dependency. Context needs no invented classification.                                                                         | The [classification guide](../../references/classification.md) owns semantic membership review; [validator tests](../../test/core.test.js) check completeness and references. A valid schema cannot judge meaning. The [purpose exercise](../../examples/README.md#purpose-classification-exercise) supports review without prescribing a taxonomy. |
-| **Continuity of user intent:** refresh after status/text changes, temporary absence or user corrections.  | Current facts come from the new capture. User-owned classification and targets survive independently; absent decisions stay outside the map. Changed agent evidence requires explicit review, and pending assigned classification blocks rendering.                                  | [Continuity](../../references/continuity.md), [continuity tests](../../test/continuity.test.js), [diagnostic tests](../../test/continuity-diagnostics.test.js), and the [worked example](../../examples/continuity-walkthrough.md). No automatic identity rebinding or branch reconciliation is implied.                                            |
-| **Inspectable artifact consistency:** generate or verify a report from selected inputs.                   | The same ordered map and renderer produce identical HTML bytes. Verification compares current capture facts, embedded map, exact viewer bytes and optional state/map consistency without modifying inputs.                                                                           | [Core tests](../../test/core.test.js), [verification tests](../../test/verify.test.js), [run guide](../../references/runs.md). These comparisons do not establish source authenticity, semantic correctness, historical continuity or pixel identity across browsers.                                                                               |
-| **Safe local output:** input contains markup-like text, unsafe URLs or a failing output destination.      | Text stays literal; unsafe links and invalid input fail. Failed HTML generation preserves the previous report; continuity refuses existing run paths and limits cleanup to its own new output. Private state is not automatically embedded in HTML.                                  | [Renderer tests](../../test/core.test.js), [first-run tests](../../test/classify-draft.test.js), [continuity diagnostics](../../test/continuity-diagnostics.test.js), [local-data rules](08-crosscutting-concepts.md#local-data-and-security). Cleanup is best effort, not a crash-safe transaction; sharing remains a caller responsibility.       |
+| **Traceable facts:** combine sources with repeated identifiers, incomplete lookups or unknown context.    | Identities remain source-qualified, registered edges keep their meaning/direction, unknown facts stay unknown, and each source's scope/freshness/coverage remains inspectable. Context never enters assigned totals.                                                                 | [Normalizer tests](../../test/normalize.test.ts), [source browser tests](../../test/browser/sources.test.ts), [capture guide](../../references/capture.md). Local validation cannot prove host pagination, permissions or complete collection.                                                                                                      |
+| **Useful purpose classification:** assigned work spans inconsistent projects and labels.                  | Every assigned issue has one primary category and an evidence-based rationale. Membership expresses a shared outcome; target overlap does not create a dependency. Context needs no invented classification.                                                                         | The [classification guide](../../references/classification.md) owns semantic membership review; [validator tests](../../test/core.test.ts) check completeness and references. A valid schema cannot judge meaning. The [purpose exercise](../../examples/README.md#purpose-classification-exercise) supports review without prescribing a taxonomy. |
+| **Continuity of user intent:** refresh after status/text changes, temporary absence or user corrections.  | Current facts come from the new capture. User-owned classification and targets survive independently; absent decisions stay outside the map. Changed agent evidence requires explicit review, and pending assigned classification blocks rendering.                                  | [Continuity](../../references/continuity.md), [continuity tests](../../test/continuity.test.ts), [diagnostic tests](../../test/continuity-diagnostics.test.ts), and the [worked example](../../examples/continuity-walkthrough.md). No automatic identity rebinding or branch reconciliation is implied.                                            |
+| **Inspectable artifact consistency:** generate or verify a report from selected inputs.                   | The same ordered map and renderer produce identical HTML bytes. Verification compares current capture facts, embedded map, exact viewer bytes and optional state/map consistency without modifying inputs.                                                                           | [Core tests](../../test/core.test.ts), [verification tests](../../test/verify.test.ts), [run guide](../../references/runs.md). These comparisons do not establish source authenticity, semantic correctness, historical continuity or pixel identity across browsers.                                                                               |
+| **Safe local output:** input contains markup-like text, unsafe URLs or a failing output destination.      | Text stays literal; unsafe links and invalid input fail. Failed HTML generation preserves the previous report; continuity refuses existing run paths and limits cleanup to its own new output. Private state is not automatically embedded in HTML.                                  | [Renderer tests](../../test/core.test.ts), [first-run tests](../../test/classify-draft.test.ts), [continuity diagnostics](../../test/continuity-diagnostics.test.ts), [local-data rules](08-crosscutting-concepts.md#local-data-and-security). Cleanup is best effort, not a crash-safe transaction; sharing remains a caller responsibility.       |
 | **Readable exploration:** navigate, resize, filter or select overlapping work in either supported locale. | Selection stays synchronized across tree/graph/inspector; counts and source directions remain correct. Visible labels identify their nodes, full names remain accessible, and framing preserves usable separation. Input locale controls fixed UI while source text remains literal. | The [viewer regression map](../../assets/viewer/README.md#verification-ownership) owns exact layouts, fonts, viewport fixtures and interactions. Browser and image review cover named scenarios, not every graph; dense views can require pan/zoom.                                                                                                 |
-| **Portable execution:** install the skill outside a development checkout.                                 | The bundled Node runner operates without contributor dependencies and reproduces the source renderer; generated-file drift is detected without mutation.                                                                                                                             | [Distribution tests](../../test/distribution.test.js), [installation evidence](../validation/2026-09-18-skill-installation.md) and [published-tag evidence](../validation/2026-09-19-v0.1.0-release.md). Installation, host discovery, invocation and live source access are distinct observations.                                                 |
+| **Portable execution:** install the skill outside a development checkout.                                 | The bundled Node runner operates without contributor dependencies and reproduces the source renderer; generated-file drift is detected without mutation.                                                                                                                             | [Distribution tests](../../test/distribution.test.ts), [installation evidence](../validation/2026-09-18-skill-installation.md) and [published-tag evidence](../validation/2026-09-19-v0.1.0-release.md). Installation, host discovery, invocation and live source access are distinct observations.                                                 |
 
-Installed diagnostics have separate [CLI tests](../../test/cli-diagnostics.test.js):
+Installed diagnostics have separate [CLI tests](../../test/cli-diagnostics.test.ts):
 version/help remain available with missing schemas, doctor reports missing,
 unreadable or changed files without executing them, and invalid usage does not
 start a workflow. Mixed `--help` or `-h` requests cannot create or overwrite outputs;
@@ -59,7 +60,7 @@ share the help catalog.
 The build gate also checks the generated integrity manifest against current
 source/resource bytes and compares the fixed inventory with the current schema,
 viewer, and locale directory conventions before any artifact write.
-[Distribution tests](../../test/distribution.test.js) inject unlisted resources
+[Distribution tests](../../test/distribution.test.ts) inject unlisted resources
 and remove required files in disposable copies, reject named duplicates and
 non-file resource paths before artifact writes, exclude hidden editor/OS files
 and optional assets, and verify that metadata-only package edits preserve
@@ -69,7 +70,7 @@ for discovery patterns and their limits. These observations concern local consis
 authenticity, automatic repair or host authentication.
 
 Retention and progressive reading support traceability: the
-[reader tests](../../test/reading.test.js) check bounded structural indexes, exact
+[reader tests](../../test/reading.test.ts) check bounded structural indexes, exact
 substrings, literal search and complete reconstruction. The
 [reading guide](../../references/reading.md) requires expanding beyond previews
 when needed. These checks establish neither semantic sufficiency nor token or
@@ -77,7 +78,7 @@ latency savings for a host.
 
 ## Verification responsibilities
 
-`just ci` runs documentation structure and diagram consistency, formatting, JavaScript/shell lint, workflow syntax,
+`just ci` runs documentation structure and diagram consistency, formatting, typed TypeScript/shell lint, workflow syntax,
 Git whitespace, bundle currency and Node unit/CLI tests. `just browser-check`
 separately exercises the product and canonical diagram themes in Chromium. The hosted workflow invokes both
 with synthetic data; a local pass is not a hosted-CI result. Detailed visual
@@ -96,7 +97,7 @@ The optional [performance procedure](../development/performance.md) compares the
 actual bundled CLI on generated synthetic inputs. It records raw timing and
 peak-RSS samples independently from correctness gates. Before/after artifact
 hashes and `verify-run` receipts protect full output equivalence; focused
-[processing regressions](../../test/processing.test.js) protect identity matching,
+[processing regressions](../../test/processing.test.ts) protect identity matching,
 ordering, input preservation and diagnostic behavior. Workstation timings do not
 set CI thresholds or imply browser performance, production capacity or native
 language migration gains.

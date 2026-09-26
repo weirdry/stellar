@@ -38,8 +38,8 @@ to choose which file continues each step.
 6. A local browser opens the artifact. All ordinary exploration is offline.
    Links navigate when selected; SVG export downloads the current visible canvas.
 
-[render.ts](../../lib/render.ts), [CLI integration tests](../../test/core.test.js)
-and [browser tests](../../test/browser/viewer.test.js) own this behavior.
+[render.ts](../../lib/render.ts), [CLI integration tests](../../test/core.test.ts)
+and [browser tests](../../test/browser/viewer.test.ts) own this behavior.
 The renderer does not modify input files or copy referenced attachments.
 
 ## Verify supplied artifacts
@@ -84,7 +84,7 @@ array without echoing those keys; input-read failures omit raw filesystem paths.
 It performs no source calls, browser actions or artifact writes. Source collection,
 semantic classification, visual interaction and preservation relative to an
 earlier state remain explicitly unverified by this command. See
-[verify.ts](../../lib/verify.ts), [tests](../../test/verify.test.js), and
+[verify.ts](../../lib/verify.ts), [tests](../../test/verify.test.ts), and
 [run evidence](../../references/runs.md).
 
 ## Browser exploration
@@ -245,8 +245,8 @@ replace the original failure, and possible leftovers are disclosed. Continuity
 run-output diagnostics omit raw filesystem error paths; JSON syntax diagnostics
 omit source excerpts. Input read failures still use system error messages and
 may include the supplied path, for example when an input file does not exist.
-[continuity.ts](../../lib/continuity.ts), [first-run tests](../../test/classify-draft.test.js),
-[continuity tests](../../test/continuity.test.js)
+[continuity.ts](../../lib/continuity.ts), [first-run tests](../../test/classify-draft.test.ts),
+[continuity tests](../../test/continuity.test.ts)
 and [the skill workflow](../../references/continuity.md) own this behavior. No
 background worker, continuous sync, or persistent service exists.
 

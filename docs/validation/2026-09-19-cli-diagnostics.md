@@ -35,7 +35,7 @@ The first test pass found an accidental change to the empty-search error's exit
 code. Argument handling was corrected to preserve the existing structured data
 diagnostic; the existing reading regression and all other tests then passed.
 
-The [CLI tests](../../test/cli-diagnostics.test.js) exercised:
+The [CLI tests](https://github.com/weirdry/stellar/blob/b5c9346d0b65653f8f2706357c55e06fae63bb40/test/cli-diagnostics.test.js) exercised:
 
 - Version aliases and both help forms for every command, including an isolated
   bundle without schemas, viewer resources, package.json, or installer metadata.
@@ -52,7 +52,7 @@ The [CLI tests](../../test/cli-diagnostics.test.js) exercised:
 - Invalid arity/options and unknown help topics failing before runtime loading
   or file mutation. Synthetic private markers did not enter diagnostics.
 
-The [distribution tests](../../test/distribution.test.js) replayed generation,
+The [distribution tests](https://github.com/weirdry/stellar/blob/b5c9346d0b65653f8f2706357c55e06fae63bb40/test/distribution.test.js) replayed generation,
 user revisions, refresh, protected user choices, rendering, and verification
 through a copied installed bundle with an empty lookup environment. The build
 gate rejected bundle, manifest, and product-version drift without repairing it.
