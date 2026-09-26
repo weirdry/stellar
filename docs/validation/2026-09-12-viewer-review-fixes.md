@@ -8,7 +8,7 @@ target dropdowns collapsed whitespace in implicit option values and lost matches
 
 ## Regression evidence
 
-The new [browser regressions](../../test/browser/regressions.test.js) initially
+The new [browser regressions](https://github.com/weirdry/stellar/blob/dae96032a2684336cf40411455fde9faba513bec/test/browser/regressions.test.js) initially
 failed against the prior implementation for both defects. After correction:
 
 - Actual pointer clicks select each directed relation independently in the

@@ -30,7 +30,7 @@ strategies are outside this change.
 - The skill-creator quick validator accepted the skill. Its PyYAML dependency
   was installed only in a temporary validation environment, not the project.
 
-[Verification tests](../../test/verify.test.js) cover valid-but-altered source
+[Verification tests](https://github.com/weirdry/stellar/blob/822419d9861df90b485ec8a4f6148944e7bbc01a/test/verify.test.js) cover valid-but-altered source
 facts, source metadata, missing/extra issues and relations, directed reversal,
 HTML data/bundle mismatch, invalid or mismatched state, input roles and read-only
 CLI success/failure with spaces and symlinks. Interpretation, locale/view,

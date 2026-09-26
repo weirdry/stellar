@@ -1,15 +1,14 @@
 # Development
 
-The product has a strict TypeScript core/CLI running on Node and an
-HTML/CSS/JavaScript/SVG viewer. `package.json` and `pnpm-lock.yaml` own one
+The product has strict TypeScript core/CLI and viewer sources, with HTML/CSS/SVG
+assets and generated Node/browser JavaScript. Tests and maintained tools also use TS. `package.json` and `pnpm-lock.yaml` own one
 dependency graph. Contributor commands execute erasable TS directly; the separate
 no-emit compiler checks it. `just build-runner` generates the installed JavaScript
 runner with esbuild. There is no published library or backend.
 
-The [TypeScript guide](typescript-adoption.md) defines the implemented core/CLI
+The [TypeScript guide](typescript-adoption.md) defines the implemented maintained-source
 and type-tooling boundary, schema-derived declarations and runtime narrowing.
-The viewer, existing behavior tests and unrelated tools retain their current
-languages. Node's test runner and separate Playwright checks cover behavior.
+Separate Node and browser configurations check these environments. Node's test runner and separate Playwright checks cover behavior.
 
 ## Initialization
 
@@ -102,7 +101,7 @@ Private regression inputs and scripts must remain in ignored local locations.
 `just benchmark OUTPUT [REFERENCE_RESULTS [SIZES [TRIALS]]]` measures the real
 bundled CLI on generated synthetic data and compares complete output hashes.
 The [performance guide](performance.md) owns prerequisites, workload, reproduction
-and interpretation. Python 3.11+ is optional contributor tooling for this command
+and interpretation. System `/usr/bin/time` is optional contributor tooling for this command
 only; it is not installed by `just init` or required by the product or CI.
 Timing samples and peak RSS are dated observations, not pass/fail timing gates.
 Use `just benchmark-test` for the optional harness's reference-validation and

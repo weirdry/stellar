@@ -50,7 +50,7 @@ just diagrams-check
 just docs-check
 ```
 
-The [repository script](../../../scripts/docs/diagrams.mjs) calls the generator
+The [repository script](../../../scripts/docs/diagrams.ts) calls the generator
 for each source using this command shape:
 
 ```sh
@@ -96,7 +96,7 @@ digits, underscores or hyphens. Every `.json` file is checked or rejected by nam
 except `manifest.json` and Archify's `*.visual-check.json` browser receipts.
 An added source without matching HTML and SVG fails the gate. Regression coverage
 for source/HTML/SVG/manifest drift, missing and orphan artifacts, generator identity,
-and non-mutation lives in [diagrams.test.js](../../../test/diagrams.test.js).
+and non-mutation lives in [diagrams.test.ts](../../../test/diagrams.test.ts).
 
 ## Browser and perceptual review
 
@@ -112,7 +112,7 @@ light theme, plus light/dark endpoint screenshots. Require no viewport overflow,
 readable labels and unobstructed viewer controls. Inspect the actual screenshots
 for composition and semantics; the automated receipt keeps `visualReview` pending.
 Also inspect exported SVGs as images for Markdown use.
-The [browser regression](../../../test/browser/diagrams.test.js) waits for actual
+The [browser regression](../../../test/browser/diagrams.test.ts) waits for actual
 OS theme-change events before asserting the persistent dark default and explicit
 reader overrides across all maintained HTML artifacts. It runs in
 `just browser-check`, separately from structural consistency.

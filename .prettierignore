@@ -8,6 +8,7 @@ node_modules/
 mise.lock
 pnpm-lock.yaml
 bin/stellar.mjs
+assets/viewer/app.js
 THIRD_PARTY_NOTICES.txt
 
 # The pinned schema generator owns these bytes; types-check verifies currency.

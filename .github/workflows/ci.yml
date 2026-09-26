@@ -34,6 +34,11 @@ jobs:
       - name: Run canonical CI
         run: just ci
 
+      - name: Check measurement tooling on synthetic inputs
+        run: |
+          just benchmark-test
+          just profile-test
+
       - name: Install Chromium and system libraries
         run: mise exec --locked -- corepack pnpm exec playwright install --with-deps chromium
 

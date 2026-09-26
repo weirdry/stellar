@@ -2,16 +2,15 @@
 
 The optional `just benchmark` command measures the actual installed bundle on
 invented inputs. It is a contributor experiment, separate from `just ci` and
-browser responsiveness checks. Requires macOS or Linux, Python 3.11+ from the
-contributor's environment (standard library only), and the repository-pinned
-Node installed by `just init`. Python is not a product/install dependency or a
-tool installed by `just init`.
+browser responsiveness checks. Requires macOS or Linux, `/usr/bin/time`, and the
+repository-pinned Node installed by `just init`. Active benchmark/profile tools
+and their tests use TypeScript; Python is retained only for archived native experiments.
 
 ## Run and compare
 
 Choose fresh directories under a disposable parent. An existing output file or
 directory is preserved and rejected with a usage diagnostic and exit 2, without
-a Python traceback. The benchmark never accepts real captures or saved user state.
+a stack trace. The benchmark never accepts real captures or saved user state.
 The default run generates 1,000, 10,000 and 50,000 assigned issues and takes
 several minutes and a few GiB of disk/RAM. Keep other CPU-intensive work idle.
 
@@ -54,13 +53,15 @@ the mismatch.
 Run `just benchmark-test` after editing this optional tooling. It checks malformed
 size lists, preservation of existing output paths, invalid references before
 output creation, baseline and reference-mode execution on 100
-synthetic issues, and hash/inventory mismatch detection. This standard-library
-Python suite has no timing thresholds and is separate from `just ci`; the
-default product/contributor gates do not acquire a Python requirement.
+synthetic issues, and hash/inventory mismatch detection. This Node suite has no
+timing thresholds and remains separate from `just ci`. `just profile-test` covers
+attribution arithmetic, preserved shuffle ordering, contained artifact paths and
+macOS/Linux resource parsing without real workloads. Hosted CI runs both converted
+suites on Linux in a separate step, with no performance threshold.
 
 ## Work and evidence
 
-[fixtures.mjs](../../scripts/bench/fixtures.mjs) owns the generator and explicit
+[fixtures.ts](../../scripts/bench/fixtures.ts) owns the generator and explicit
 synthetic classifications. Half the issues come from each of two invented
 Linear/GitHub sources. Each source has a balanced parent hierarchy; the graph
 has 2N blocks edges and N−2 parent edges. Initial classifications are user-owned
@@ -75,18 +76,31 @@ pass capture facts, embedded map, exact bundled viewer and state/map consistency
 Every timed output must match its corresponding setup artifact byte for byte;
 reference mode additionally compares those artifacts across implementations.
 Generated native IDs never collide across providers or namespaces. The focused
-[processing tests](../../test/processing.test.js) cover identity-qualification
+[processing tests](../../test/processing.test.ts) cover identity-qualification
 regressions that this benchmark comparison cannot detect.
 
-[benchmark.py](../../scripts/bench/benchmark.py) launches fresh processes serially,
+[benchmark.ts](../../scripts/bench/benchmark.ts) launches fresh processes serially,
 with deterministically shuffled operation order and warm OS file caches. It
 reports all raw wall/CPU/peak-RSS samples, medians and min/max wall times, protocol,
 environment, revision, harness hashes, runtime hashes, artifact hashes and
 verification receipts in `results.json`. An uncommitted implementation can share
 its parent's Git revision; the runner/resource hashes identify the actual timed
 bytes. Wall time includes startup, reading, validation/computation, serialization,
-writing and exit. macOS `wait4` peak RSS is bytes; Linux reports KiB. Results
-normalize both to MiB. This is full-process peak RSS, not retained heap size.
+writing and exit, plus the system-time wrapper launch. `/usr/bin/time -l` on
+macOS and GNU time on Linux report direct-child user + system CPU and maximum
+RSS. CPU is printed to hundredths of a second (10 ms resolution), coarser than
+the earlier Python `wait4` accounting. macOS RSS is bytes and Linux RSS is KiB;
+results normalize both to MiB. This is full-process peak RSS, not retained heap.
+The `measurement` metadata records these semantics.
+
+Operation order retains Python's integer-seeded MT19937/Fisher-Yates behavior,
+recorded under `ordering` (and the profiler protocol). Contributor-only
+[random.ts](../../scripts/bench/random.ts) preserves the original serial trial
+order; fixed Python-generated vectors test multiple trials and generator-block
+boundaries. Fixture-source hashes change with conversion: collect fresh
+matching baseline/candidate results and do not combine old/new samples into one
+measurement series. Old receipts remain
+unchanged historical evidence.
 
 `refresh` includes normalization: do not add its time to `normalize` to describe
 a saved-state workflow. `render` measures HTML generation, not browser layout or

@@ -21,7 +21,7 @@ source integration.
   reference/help dialogs, six viewport sizes, mobile drawers, input reuse,
   markup-like text, empty input, and absence of network requests on opening.
 
-The [Node tests](../../test/core.test.js) cover deterministic rendering,
+The [Node tests](https://github.com/weirdry/stellar/blob/f20a04ec8a2e4e10f44e0a7d8f5ecd0e23ca1e9c/test/core.test.js) cover deterministic rendering,
 non-mutation of input, schema/reference/parent invariants, URL safety including
 Unicode paths, literal embedding, CLI invocation from another directory,
 malformed input, previous-output preservation, and input/symlink protection.

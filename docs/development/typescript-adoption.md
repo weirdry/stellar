@@ -1,10 +1,11 @@
-# TypeScript core and CLI
+# TypeScript source ownership
 
-State: **As-built** for the core, CLI and type tooling described below. Viewer,
-existing behavior tests and ordinary contributor tooling remain JavaScript.
+State: **As-built** for maintained core, CLI, viewer, tests and development tools.
+Generated JavaScript and frozen native experiment sources remain explicit exceptions.
 [ADR-0008](../decisions/0008-type-core-without-changing-runtime.md) records the
 accepted decision. The [implementation record](../validation/2026-09-23-typescript-core.md)
-separates local evidence, hosted checks and release acceptance.
+records the first conversion. The [completion record](../validation/2026-09-27-typescript-maintained-sources.md)
+records the remaining-source conversion and its validation boundaries.
 
 ## Baseline and first scope
 
@@ -30,24 +31,33 @@ source tree or emitted `dist/` tree. Resource URLs retain their directory meanin
 | [types/generated](../../types/generated/work-map.d.ts), [lib/contracts.ts](../../lib/contracts.ts) | Schema-derived declarations and internal aliases/helpers; no independent wire definitions |
 | [scripts/types](../../scripts/types/check.ts), [test/types](../../test/types/contracts.ts)         | Declaration generation, coverage and positive/negative type fixtures                      |
 
-These are the original twelve library modules and CLI, plus the contract helper
-and type tooling. [tsconfig.json](../../tsconfig.json) includes every
-`bin/**/*.ts`, `lib/**/*.ts`, `types/generated/**/*.d.ts`, `scripts/types/**/*.ts`
-and `test/types/**/*.ts` file. The [type gate](../../scripts/types/check.ts)
-compares the compiler program with the non-hidden on-disk inventory, including
-unimported CLI siblings, and rejects leftover handwritten core/CLI JavaScript.
-Discovery ignores hidden editor/OS entries, matching TypeScript's wildcard
-discovery; explicitly imported TypeScript files still undergo compilation.
-The compiler program must not contain declaration files under `bin/` or `lib/`:
-a local declaration cannot substitute for a core implementation, including a
-hidden JavaScript module. Schema-derived declarations stay in `types/generated/`;
-dependency declarations remain compiler-checked. The generated `bin/stellar.mjs`
-is the sole exception to leftover-JS rejection.
+The remaining-source conversion starts at `7ad6343b9cab73af183dd202ed2723cc78ae793e`.
+All maintained behavior code now uses TypeScript:
 
-The viewer, existing JS behavior/browser tests, builder and unrelated tools keep
-their current languages. Their source imports and damage-test paths follow the
-actual TS owners. Historical native prototypes and measurement receipts remain
-unchanged. This is not whole-repository type coverage.
+| Source                                                                               | Ownership and execution                                                                            |
+| ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
+| [viewer/](../../viewer/app.ts)                                                       | Schema-derived input, separate display models, typed state/scene and DOM/SVG; bundled for browsers |
+| [test/](../../test/core.test.ts), [test/browser/](../../test/browser/viewer.test.ts) | Node and Playwright behavior tests; checked JSON/fixture and DOM boundaries                        |
+| [scripts/](../../scripts/build-runner.ts)                                            | Build, linking, docs/diagrams, benchmark/profile and type tooling; direct Node TS                  |
+| [ESLint configuration](../../eslint.config.ts)                                       | Typed configuration loaded through Node's native TS support                                        |
+
+[tsconfig.json](../../tsconfig.json) checks Node sources and generated contracts;
+[tsconfig.viewer.json](../../tsconfig.viewer.json) gives the viewer DOM globals
+without Node globals; [tsconfig.browser-tests.json](../../tsconfig.browser-tests.json)
+checks Playwright's Node runner and serialized page callbacks with both libraries.
+All extend the same strict options. Browser callbacks cannot close over Node
+helpers: assertions used inside them are defined inside the serialized callback.
+
+The [type gate](../../scripts/types/check.ts) compares all compiler programs with
+the non-hidden inventory, including unimported sources and root configuration.
+It rejects maintained JS/Python and declaration shims in implementation folders.
+Hidden OS/editor entries are ignored during discovery; imported hidden code and
+its declarations remain checked. The only generated JS exceptions are
+`bin/stellar.mjs` and `assets/viewer/app.js`. Exact historical JS/Python paths
+under `scripts/bench/native/` and `scripts/bench/standalone/` are allowlisted,
+not entire directories. Their Go/Rust sources, receipts and datasets remain frozen.
+Shell entry points for setup, hooks and repository orchestration remain shell;
+canonical documentation validation now runs in TypeScript.
 
 ## Contract authority and narrowing
 
@@ -111,7 +121,7 @@ access, case consistency and no emit. `ES2025.RegExp` supplies declarations for
 the existing Node 24 `RegExp.escape` usage; this does not add a runtime API.
 Erasable-only syntax, explicit TS imports and type-only imports keep source
 execution compatible with Node's built-in type stripping. No incremental cache,
-browser globals, runtime TS loader, enums or emitted intermediate tree is added.
+browser globals in the Node program, runtime TS loader, enums or emitted intermediate tree is added.
 The type gate includes configuration syntax diagnostics as well as option and
 program errors. Valid JSONC comments and trailing commas remain supported;
 malformed configuration fails without emitting or repairing files.
@@ -122,7 +132,7 @@ corrects the parser's generic default without weakening compiler options or
 changing dependency runtime code. Review and remove it when upgrading to a
 version that passes the strict program unaided.
 
-[ESLint](../../eslint.config.js) enables type-aware rules only for handwritten
+[ESLint](../../eslint.config.ts) enables type-aware rules only for handwritten
 owned TS files. It rejects explicit `any`, unsafe use of implicit `any`, non-null
 assertions, unchecked double assertions and implementation suppression comments.
 Inline ESLint configuration is ignored in this TS scope, so source comments
@@ -135,11 +145,10 @@ reason and behavior evidence; an assertion never substitutes for validation.
 
 ## Execution, build and distribution
 
-Contributors use pinned Node 24.19.0 directly for erasable TS, including imports
-from existing JavaScript tests and tools. Execution strips types and does not
+Contributors use pinned Node 24.19.0 directly for erasable TS, including tests and ordinary tools. Execution strips types and does not
 check them. Installed users continue running `bin/stellar.mjs` with Node 24.x.
 
-[build-runner.js](../../scripts/build-runner.js) uses `bin/stellar.ts`, Node ESM,
+[build-runner.ts](../../scripts/build-runner.ts) uses `bin/stellar.ts`, Node ESM,
 target Node 24 and in-memory esbuild generation. It embeds only the product
 version from package metadata and includes runtime dependency licenses. Compiler,
 linter, generator and generated declarations do not enter the runtime bundle,
@@ -154,13 +163,27 @@ installed-layout test runs without source, types or `node_modules` from an
 unrelated working directory. This proves runtime independence, not actual
 installer filtering, host discovery or installation acceptance.
 
+The [viewer builder](../../scripts/build-viewer.ts) bundles `viewer/app.ts` into
+the committed `assets/viewer/app.js` as an ES2022 browser IIFE with no external
+imports. The renderer still embeds that file, CSS, SVG and catalogs into standalone
+HTML. `just build-runner` builds the viewer before recording resource hashes;
+`just bundle-check` checks viewer currency before runner/manifest currency.
+Both check modes compare in memory and never repair artifacts. Generated JS is
+excluded from handwritten lint/formatting. HTML bytes change with the generated
+script, so old reports retain their original renderer identity; schemas and saved
+state formats do not change. Input map bytes, locale catalogs and visual algorithms
+remain owned by their existing contracts.
+
+ESLint's TS configuration uses `--flag unstable_native_nodejs_ts_config` with
+the pinned Node version; no runtime loader or new installed dependency is needed.
+
 ## Just, CI and source-path consumers
 
 | Command                  | Behavior                                                                                                |
 | ------------------------ | ------------------------------------------------------------------------------------------------------- |
 | `just types-build`       | Explicit schema declaration generation                                                                  |
 | `just types-check`       | Read-only schema/declaration inventory and byte comparison                                              |
-| `just typecheck`         | Strict no-emit compiler plus complete owned-file coverage and leftover-JS detection                     |
+| `just typecheck`         | Strict no-emit compiler plus complete owned-file coverage and maintained JS/Python detection            |
 | `just lint`              | Existing repository checks plus type-aware TS rules                                                     |
 | `just check` / `just ci` | Documentation, diagrams, formatting, declarations, types, lint, bundle currency and Node behavior tests |
 
@@ -177,8 +200,9 @@ source use the revision that retained their reviewed implementation. Diagrams
 contain no renamed source filenames; their topology and delivered bytes are
 unchanged by the language conversion.
 
-Ordinary benchmark/profile commands still use the current bundle, with no timing
-gate. Historical native reproduction requires archived checkouts:
+Ordinary benchmark/profile commands now use direct Node TS with the current
+bundle and system time accounting, with no timing gate. The [performance guide](performance.md)
+records CPU precision, RSS units, wrapper overhead and preserved Python shuffle ordering. Historical native reproduction requires archived checkouts:
 
 - Hybrid staging reads and patches JavaScript source. Use
   `0fe3abb5bf044812bc63a6519fe188e7c5fefbee` with its own frozen setup, as the
@@ -197,14 +221,15 @@ or measured implementation sources are rewritten to look like the TS core.
 
 The [dated conversion record](../validation/2026-09-23-typescript-core.md) identifies
 the baseline, toolchain and executed comparisons. The
-[type-tooling regression suite](../../test/types-tooling.test.js) verifies
+[type-tooling regression suite](../../test/types-tooling.test.ts) verifies
 unimported/excluded source coverage, leftover JS rejection, declaration checking,
 negative fixtures, deterministic generation, drift failures without repair,
 unsafe-code lint rejection and generator-owned formatting.
 
 Behavior acceptance also requires existing runtime/CLI/file-safety suites, the
 synthetic continuity walkthrough, all four artifact verification comparisons,
-byte-identical ordered JSON/state and HTML against the conversion baseline,
+byte-identical ordered JSON/state against the conversion baseline, current
+source/bundle HTML equality and browser behavior parity,
 user-choice survival, no-write refusal, minimal installed layout and browser
 checks. If a rebase changes product code, refresh the immediate baseline and
 repeat those comparisons. A compiler pass is not behavioral equivalence.

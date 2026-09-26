@@ -19,7 +19,7 @@ whole capture before emitting graph identities. This includes unfetched context
 and prevents input order from splitting one issue into separate nodes. Different
 explicit native IDs sharing one display identifier within a source are rejected;
 a matching display label alone cannot override a contradictory native identity.
-The [normalizer tests](../../test/normalize.test.js) own these invariants.
+The [normalizer tests](../../test/normalize.test.ts) own these invariants.
 
 The sole registered relation list uses stable issue identities. Parent, blocker,
 related and duplicate meanings retain their documented directions. Parent copies
@@ -175,6 +175,6 @@ JSON/state contracts and user files are unchanged.
 
 [Contract fixtures](../../test/types/contracts.ts) check shared references,
 required fields, unions, choices and optional/null distinctions. The
-[tooling regressions](../../test/types-tooling.test.js) protect declaration drift,
+[tooling regressions](../../test/types-tooling.test.ts) protect declaration drift,
 compiler coverage, read-only failures and unsafe-code rejection. Generator-owned
 declarations are excluded from style formatting but included in strict compilation.
