@@ -26,7 +26,7 @@ currency before entering the harness.
 ## Regression coverage
 
 `just benchmark-test` runs the optional Python standard-library suite in
-[test_reference.py](../../scripts/bench/test_reference.py), separately from the
+[test_reference.py](https://github.com/weirdry/stellar/blob/21d57ade55c80d90b508fe884bb6c057a2ae2de9/scripts/bench/test_reference.py), separately from the
 normal Node/CI gate. There are no performance thresholds or Python additions to
 product requirements.
 

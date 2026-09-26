@@ -25,7 +25,7 @@ parity and browser observations.
 ## Regression evidence
 
 All fixtures are disposable synthetic copies. The
-[tooling tests](../../test/types-tooling.test.js) snapshot file hashes and
+[tooling tests](https://github.com/weirdry/stellar/blob/a7ffe2e6fd64d537c09fc0d50c044d1df062d1d3/test/types-tooling.test.js) snapshot file hashes and
 symlink targets before and after checks; they do not follow dangling editor
 locks while taking that snapshot.
 

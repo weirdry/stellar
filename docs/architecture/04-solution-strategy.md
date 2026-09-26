@@ -8,7 +8,8 @@ the shape, [validator](../../lib/validate.ts) checks semantic references, and
 [renderer](../../lib/render.ts) embeds the bundled viewer and input. The viewer
 consumes no source credentials or query mechanism.
 
-The Node ESM core/CLI uses TypeScript; the viewer retains its HTML/CSS/JavaScript/SVG implementation.
+The Node ESM core/CLI and SVG viewer use TypeScript sources. Browser JavaScript
+is generated and embedded with the existing HTML/CSS/SVG assets.
 The agent supplies classifications and evidence; it does not regenerate CSS or
 layout code. Owner, locale, timestamps, taxonomy, source facts, and optional
 references are data. The renderer derives the Stellar title from the owner and
@@ -55,16 +56,17 @@ installation and release boundary.
 
 State: **As-built**
 
-The complete core/CLI uses strict TypeScript with schema-derived declarations,
+All maintained core/CLI, viewer, test and development-tool sources use strict TypeScript with schema-derived declarations,
 unknown-input narrowing and a read-only no-emit compiler gate. The
 [implementation guide](../development/typescript-adoption.md) and
 [ADR-0008](../decisions/0008-type-core-without-changing-runtime.md) define this
 boundary. Runtime schema and semantic checks remain mandatory; static types do
 not promise better runtime performance or certify untrusted JSON.
 
-Node and the installed JavaScript bundle remain the delivery model. Viewer,
-existing behavior tests and unrelated tools remain outside static TS coverage;
-required imports and source-path consumers follow the converted core.
+Node and generated JavaScript remain the delivery model. The viewer has a
+separate DOM-only compiler configuration and generated-asset drift check.
+[ADR-0009](../decisions/0009-type-maintained-sources.md) extends source coverage
+while preserving the frozen native experiment sources and receipts.
 
 The [standalone experiment](../validation/2026-09-21-standalone-normalize-comparison.md)
 does not justify native executable distribution for the current workload. Go is

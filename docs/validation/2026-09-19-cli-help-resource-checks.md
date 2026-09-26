@@ -40,8 +40,8 @@ are unchanged.
   refresh, agent overwrite refusal, rendering, and run verification. Its HTML
   matches the source renderer byte-for-byte. The replay now also checks `-h`.
 
-[CLI tests](../../test/cli-diagnostics.test.js) and
-[distribution tests](../../test/distribution.test.js) own these regressions.
+[CLI tests](https://github.com/weirdry/stellar/blob/22c2dcbeef3612a82b39a6609b53c85bf63f03ce/test/cli-diagnostics.test.js) and
+[distribution tests](https://github.com/weirdry/stellar/blob/22c2dcbeef3612a82b39a6609b53c85bf63f03ce/test/distribution.test.js) own these regressions.
 [Distribution guidance](../development/distribution.md#runtime-files) defines
 the current directory/extension patterns and the obligation to extend coverage
 when runtime code begins reading a new resource type or directory.

@@ -12,5 +12,5 @@ constraint, function arguments and return type. It changes only a declaration,
 not executable dependency code. Remove the patch when an intentionally upgraded
 generator/parser dependency passes the complete strict program without it.
 `just init` applies the locked patch; `just typecheck` checks it, and
-`test/types-tooling.test.js` verifies deterministic declaration output and drift
+`test/types-tooling.test.ts` verifies deterministic declaration output and drift
 detection. Compiler strictness stays enabled for all dependency declarations.

@@ -164,7 +164,8 @@ directory. Installed users do not run contributor setup. All output arguments
 remain explicit, and continuity still refuses occupied run paths.
 
 `just bundle-check`, included in `just ci`, builds in memory and compares all three
-generated files byte-for-byte. It fails on missing/stale files without repairing
+runner-generated files byte-for-byte, after `just viewer-check` compares the
+generated browser asset. `just build-runner` builds that asset first. It fails on missing/stale files without repairing
 them. Regenerate deliberately after changing runner source or dependencies, then
 commit the generated files with their owners. Schema and viewer files remain
 runtime inputs and require their normal tests; the bundle check alone does not
@@ -173,7 +174,7 @@ validate their behavior. Re-run `just build-runner` after formatting source.
 ## Verification
 
 The [typed source/build path](typescript-adoption.md#execution-build-and-distribution)
-is implemented for the core/CLI. It preserves the installed `.mjs` runner, Node
+covers all maintained sources, including the generated browser asset. It preserves the installed `.mjs` runner, Node
 prerequisite and runtime resources above. Type declarations, compiler, generator
 and linter are contributor-only; source execution does not replace `just typecheck`.
 No platform-specific Stellar executable is distributed.

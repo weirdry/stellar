@@ -26,7 +26,9 @@
     "bin/**/*.ts",
     "lib/**/*.ts",
     "types/generated/**/*.d.ts",
-    "scripts/types/**/*.ts",
-    "test/types/**/*.ts"
-  ]
+    "scripts/**/*.ts",
+    "test/**/*.ts",
+    "eslint.config.ts"
+  ],
+  "exclude": ["test/browser"]
 }

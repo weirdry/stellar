@@ -31,7 +31,7 @@ at `55c3ff6e8d9abb70cbc0a300b0a6441129efaaad`, tracked by
   changes do not affect artifacts.
 
 The existing resource-coverage test in
-[distribution.test.js](../../test/distribution.test.js) owns these cases.
+[distribution.test.js](https://github.com/weirdry/stellar/blob/c81e96edffd783d1f4e000203422581123b66244/test/distribution.test.js) owns these cases.
 [Build guidance](../development/distribution.md#runtime-files) now specifies the
 non-hidden runtime naming rule and the diagnostic behavior; the quality current
 view links the coverage. Doctor still uses the unchanged fixed allowlist.

@@ -1,14 +1,14 @@
 {
-  "version": "0.1.2",
+  "version": "0.1.3-dev.0",
   "files": {
-    "bin/stellar.mjs": "15b4e3881fd33059bede0f495dc856323a928664e5820578c9a74aa2472b07b3",
+    "bin/stellar.mjs": "8680eae516ba831c917c7e3e963ac58e17d4382fde1445a55143172d1c3d4e41",
     "schemas/work-map.schema.json": "c78a5500f4428e90ee42da3972c7aaf08ea19cf3e47cbb69d6b4ab7661a0d3fa",
     "schemas/capture.schema.json": "c94b3333b16220ea3322d8563858ba17ebab0afadfcbdadad0d34e5ad67ee068",
     "schemas/choices.schema.json": "16ae73eda989bc277767c972d06254471a248d6c02a4defc1ee066e4c8672ea4",
     "schemas/state.schema.json": "1b764b6300aca76701ed8a242faa436db9ab7d6f79cd25438fc691e58c6febfe",
     "assets/viewer/shell.html": "7e33c6af20807904600cbe890330feadcb84b7bb835bd6fd09b498ad5378a3ce",
     "assets/viewer/style.css": "59825e41cab1b245c09ca2ce922720c5ba2b1c8e9435de4d23c9bfa76d520b0d",
-    "assets/viewer/app.js": "e6f69a6fa102ac1c0d986725cbb7037bacc775eacc2fb6831a143a57c7b047c4",
+    "assets/viewer/app.js": "c058412fe8cd465bc9643c9a6078a5a2b856e7488fb21942a84d568b862af0a0",
     "assets/viewer/stellar.svg": "980020be30a9c16b306f1f91cd883de60fafd5532b8c3eb5d661dcd19494f1c7",
     "assets/viewer/locales/en.json": "7cfdec279ebdf8ec313fc84359db6620f3b740654661a59c8e12d91f5a5385be",
     "assets/viewer/locales/ko.json": "125e22f035e8c1a17aed9e82427223ae7f714333ce0253fcad086cda11c52a1d"

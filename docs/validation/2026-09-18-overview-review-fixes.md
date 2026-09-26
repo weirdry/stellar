@@ -39,8 +39,8 @@ larger expansion, text obstruction, reversed arrows and a short four-group map.
 
 - `just ci`: **67/67 Node**, documentation, formatting, lint and repository checks.
 - `STELLAR_QA_DIR=<synthetic-output> just browser-check`: **32/32 Chromium**.
-- [Layout regressions](../../test/browser/layout.test.js): ten new cases.
-- [Overview regressions](../../test/browser/overview.test.js): existing four
+- [Layout regressions](https://github.com/weirdry/stellar/blob/b73e29e1121172e57880ffd71722e8f8ac9c3095/test/browser/layout.test.js): ten new cases.
+- [Overview regressions](https://github.com/weirdry/stellar/blob/b73e29e1121172e57880ffd71722e8f8ac9c3095/test/browser/overview.test.js): existing four
   cases retain their six-label fit, accessible identities, click navigation,
   themes, camera and data assertions. Collision checks now inspect actual text
   lines. Manual zoom may preserve more names with the added candidates, so the

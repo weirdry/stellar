@@ -5,20 +5,20 @@ State: **As-built**
 | Building block      | Owns                                                                                                         | Evidence                                                                                                                        |
 | ------------------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
 | CLI                 | Version/help dispatch, argument handling and deferred workflow execution                                     | [bin/stellar.ts](../../bin/stellar.ts), [command catalog](../../lib/cli-help.ts), [runtime dispatch](../../lib/cli-commands.ts) |
-| Installation doctor | Read-only Node and installed-build consistency diagnostics                                                   | [installation.ts](../../lib/installation.ts), [CLI checks](../../test/cli-diagnostics.test.js)                                  |
+| Installation doctor | Read-only Node and installed-build consistency diagnostics                                                   | [installation.ts](../../lib/installation.ts), [CLI checks](../../test/cli-diagnostics.test.ts)                                  |
 | Work-map schema     | Report, issue, classification, relation and reference shape                                                  | [schemas](../../schemas/README.md)                                                                                              |
 | Validator           | Unique identities, references, primary classification, source-parent and URL invariants                      | [validate.ts](../../lib/validate.ts)                                                                                            |
 | Renderer            | Locale selection, owner-derived branding, safe HTML embedding and preservation of previous output on failure | [render.ts](../../lib/render.ts)                                                                                                |
-| Run verifier        | Native-capture facts, embedded data, exact bundled output and optional state-map consistency                 | [verify.ts](../../lib/verify.ts), [tests](../../test/verify.test.js)                                                            |
+| Run verifier        | Native-capture facts, embedded data, exact bundled output and optional state-map consistency                 | [verify.ts](../../lib/verify.ts), [tests](../../test/verify.test.ts)                                                            |
 | Evidence transfer   | Fresh private file copy and digest without payload re-emission; not source authentication                    | [evidence.ts](../../lib/evidence.ts)                                                                                            |
-| Evidence reader     | Structural indexes, literal search and exact source excerpts; no semantic ranking                            | [reading.ts](../../lib/reading.ts), [tests](../../test/reading.test.js)                                                         |
+| Evidence reader     | Structural indexes, literal search and exact source excerpts; no semantic ranking                            | [reading.ts](../../lib/reading.ts), [tests](../../test/reading.test.ts)                                                         |
 | Viewer              | Styling, SVG components, layout, navigation, inspector and export                                            | [assets/viewer](../../assets/viewer/README.md)                                                                                  |
 | Locale catalogs     | Bundled Korean and English fixed UI text and naming patterns                                                 | [Korean](../../assets/viewer/locales/ko.json), [English](../../assets/viewer/locales/en.json)                                   |
-| Examples and tests  | Public reuse and behavior evidence using invented data                                                       | [examples](../../examples/README.md), [core tests](../../test/core.test.js), [browser tests](../../test/browser/viewer.test.js) |
+| Examples and tests  | Public reuse and behavior evidence using invented data                                                       | [examples](../../examples/README.md), [core tests](../../test/core.test.ts), [browser tests](../../test/browser/viewer.test.ts) |
 | Development tooling | Locked native dependencies, Just gates, hooks and CI caller                                                  | [development](../development/README.md)                                                                                         |
 
 The installed runner is generated from the same CLI and library source by
-[build-runner.js](../../scripts/build-runner.js), with dependencies included in
+[build-runner.ts](../../scripts/build-runner.ts), with dependencies included in
 [stellar.mjs](../../bin/stellar.mjs) and full third-party notices retained.
 The build embeds only the product version from the root [package.json](../../package.json) and
 generates [stellar.manifest.json](../../bin/stellar.manifest.json) from the runner
@@ -52,10 +52,11 @@ covers the CLI, all twelve original library modules and the new
 [contract helpers](../../lib/contracts.ts). The
 [declaration generator](../../scripts/types/declarations.ts) derives static views
 from canonical schemas, and the [compiler gate](../../scripts/types/check.ts)
-checks every owned TS/declaration file plus leftover core/CLI JS. No second source
-tree is maintained. These responsibilities still build the same installed
-JavaScript entry. Viewer and existing behavior tests/ordinary tools stay in their
-current languages, with updated source imports and damage-test paths.
+checks every maintained TS/declaration file, root configuration and unexpected
+JS/Python. [Viewer sources](../../viewer/app.ts) own display-state and DOM/SVG
+types; [build-viewer.ts](../../scripts/build-viewer.ts) generates the committed
+browser asset. Tests and active tools also use TS. Frozen experiment code remains
+an exact-path exception. Node runner and browser assets have read-only drift checks.
 
 ## Agent workflow
 
@@ -67,7 +68,7 @@ boundaries. [normalize.ts](../../lib/normalize.ts) translates native facts into
 one canonical work-map draft; [classification guidance](../../references/classification.md)
 keeps judgment with the agent. [continuity.ts](../../lib/continuity.ts) owns
 first-draft choice application, saved choices, refresh matching and actor-specific updates; its state contains
-a current work map plus private remembered interpretation. [link-skill.js](../../scripts/link-skill.js) safely
+a current work map plus private remembered interpretation. [link-skill.ts](../../scripts/link-skill.ts) safely
 registers this checkout in the user's local discovery directory. It does not
 publish a package or replace another installation.
 

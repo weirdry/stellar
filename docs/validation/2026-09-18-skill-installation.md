@@ -47,7 +47,7 @@ of a live source query. No source credentials or private data were used.
 
 ## Executable regression coverage
 
-[distribution.test.js](../../test/distribution.test.js) copies only the generated
+[distribution.test.js](https://github.com/weirdry/stellar/blob/adc4a0d29690e32f216386a223ff71601f2caa87/test/distribution.test.js) copies only the generated
 runner, schemas, viewer and license files into a temporary directory with spaces
 in its path. It runs every product command from another directory with an empty
 environment, compares installed HTML to the source renderer, checks saved user

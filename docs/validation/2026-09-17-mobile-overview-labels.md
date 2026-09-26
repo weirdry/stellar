@@ -24,7 +24,7 @@ relation directions are unchanged.
 
 ## Verification
 
-The [overview regressions](../../test/browser/overview.test.js) cover both locales:
+The [overview regressions](https://github.com/weirdry/stellar/blob/211123b15ff5f7b4b6b39520b947da9114e3343b/test/browser/overview.test.js) cover both locales:
 
 - All six names remain visible in the fitted synthetic phone overview. Label
   rectangles clear other labels and dots; individual text lines stay inside the
