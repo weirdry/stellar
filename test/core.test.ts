@@ -5,11 +5,20 @@ import type { WorkMap } from '../lib/contracts.ts';
 import { must } from './support.ts';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, readFile, writeFile, rm, symlink } from 'node:fs/promises';
+import {
+  mkdtemp,
+  mkdir,
+  readdir,
+  readFile,
+  writeFile,
+  rm,
+  symlink,
+} from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import { transform } from 'esbuild';
 import { validateWorkMap, safeAttachmentURL } from '../lib/validate.ts';
 import { renderWorkMap, renderFile } from '../lib/render.ts';
 
@@ -363,14 +372,64 @@ void test('bundled locale catalogs have the same keys and interpolation paramete
       key,
     );
   }
-  for (const path of ['app.js', 'shell.html', 'style.css']) {
-    const source = await readFile(
-      new URL(`../assets/viewer/${path}`, import.meta.url),
-      'utf8',
-    );
+  await assertCatalogCopy(new URL('../', import.meta.url));
+});
+
+async function assertCatalogCopy(root: URL) {
+  async function inspect(path: string) {
+    const source = await readFile(new URL(path, root), 'utf8');
     assert.ok(
       !/[가-힣]/u.test(source),
       `Fixed Korean UI copy belongs in the catalog, not ${path}`,
     );
+  }
+  async function visit(directory: string) {
+    for (const entry of await readdir(new URL(directory, root), {
+      withFileTypes: true,
+    })) {
+      if (entry.name.startsWith('.')) continue;
+      const path = directory + entry.name;
+      if (entry.isDirectory()) await visit(path + '/');
+      else if (/\.[cm]?ts$/.test(entry.name)) await inspect(path);
+    }
+  }
+  // The browser builder escapes non-ASCII text; inspect its authored inputs.
+  await visit('viewer/');
+  for (const path of ['assets/viewer/shell.html', 'assets/viewer/style.css'])
+    await inspect(path);
+}
+
+void test('fixed Korean UI copy checks authored TypeScript before browser escaping, including nested helpers', async (t) => {
+  const dir = await mkdtemp(join(tmpdir(), 'stellar-viewer-copy-'));
+  t.after(() => rm(dir, { recursive: true, force: true }));
+  const root = pathToFileURL(dir + '/');
+  await mkdir(new URL('viewer/nested/', root), { recursive: true });
+  await mkdir(new URL('assets/viewer/', root), { recursive: true });
+  const paths = [
+    'viewer/app.ts',
+    'viewer/nested/label.ts',
+    'assets/viewer/shell.html',
+    'assets/viewer/style.css',
+  ];
+  for (const path of paths) await writeFile(new URL(path, root), '');
+  const hardcoded = 'document.title = "하드코딩";\n';
+  const generated = await transform(hardcoded, {
+    loader: 'ts',
+    charset: 'ascii',
+  });
+  assert.ok(!/[가-힣]/u.test(generated.code));
+  await writeFile(new URL('assets/viewer/app.js', root), generated.code);
+  await assertCatalogCopy(root);
+  for (const path of paths) {
+    await writeFile(new URL(path, root), hardcoded);
+    await assert.rejects(assertCatalogCopy(root), {
+      message: `Fixed Korean UI copy belongs in the catalog, not ${path}`,
+    });
+    assert.equal(await readFile(new URL(path, root), 'utf8'), hardcoded);
+    assert.equal(
+      await readFile(new URL('assets/viewer/app.js', root), 'utf8'),
+      generated.code,
+    );
+    await writeFile(new URL(path, root), '');
   }
 });
