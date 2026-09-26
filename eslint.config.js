@@ -33,6 +33,7 @@ export default [
       'scripts/types/**/*.ts',
       'test/types/**/*.ts',
     ],
+    linterOptions: { noInlineConfig: true },
     languageOptions: {
       parserOptions: {
         project: './tsconfig.json',
@@ -41,6 +42,10 @@ export default [
     },
     rules: {
       '@typescript-eslint/no-non-null-assertion': 'error',
+      '@typescript-eslint/consistent-type-assertions': [
+        'error',
+        { assertionStyle: 'as' },
+      ],
       '@typescript-eslint/consistent-type-imports': 'error',
       '@typescript-eslint/ban-ts-comment': [
         'error',

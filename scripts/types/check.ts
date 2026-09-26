@@ -15,6 +15,12 @@ const program = ts.createProgram(parsed.fileNames, {
 const included = new Set(
   program.getSourceFiles().map((file) => resolve(file.fileName)),
 );
+// Core implementations must remain TS; declarations cannot stand in for JS.
+const shims = program
+  .getSourceFiles()
+  .filter((file) => file.isDeclarationFile)
+  .map((file) => relative(root, file.fileName))
+  .filter((path) => /^(bin|lib)[/\\]/.test(path));
 const missing: string[] = [],
   legacy: string[] = [];
 function visit(directory: string) {
@@ -42,9 +48,9 @@ for (const directory of [
   'test/types',
 ])
   visit(directory);
-if (missing.length || legacy.length) {
+if (missing.length || legacy.length || shims.length) {
   console.error(
-    `Type coverage incomplete. Missing from compiler: ${missing.join(', ') || 'none'}. Handwritten core/CLI JS: ${legacy.join(', ') || 'none'}.`,
+    `Type coverage incomplete. Missing from compiler: ${missing.join(', ') || 'none'}. Handwritten core/CLI JS: ${legacy.join(', ') || 'none'}. Core/CLI declaration shims: ${shims.join(', ') || 'none'}.`,
   );
   process.exitCode = 1;
 }
