@@ -47,7 +47,7 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 var package_default;
 var init_package = __esm({
   "package.json"() {
-    package_default = { version: "0.1.2-dev.0" };
+    package_default = { version: "0.1.2" };
   }
 });
 
