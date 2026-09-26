@@ -103,32 +103,38 @@ function exportSvg(html: string) {
 }
 
 function inspect(name: string) {
-  const source = read(`${name}.json`);
-  const html = read(`${name}.html`);
-  const specification = record(JSON.parse(source));
-  const generator = html.match(/<meta name="generator" content="([^"]+)"/)?.[1];
-  if (
-    record(specification['meta'])['quality_profile'] !== 'showcase' ||
-    generator !== expectedGenerator
-  ) {
-    throw new Error(
-      `${name}: expected showcase source and ${expectedGenerator} delivery.`,
-    );
+  try {
+    const source = read(`${name}.json`);
+    const html = read(`${name}.html`);
+    const specification = record(JSON.parse(source));
+    const generator = html.match(
+      /<meta name="generator" content="([^"]+)"/,
+    )?.[1];
+    if (
+      record(specification['meta'])['quality_profile'] !== 'showcase' ||
+      generator !== expectedGenerator
+    ) {
+      throw new Error(
+        `expected showcase source and ${expectedGenerator} delivery.`,
+      );
+    }
+    const svg = exportSvg(html);
+    return {
+      svg,
+      record: {
+        name,
+        type: string(specification['diagram_type']),
+        generator,
+        sourceSha256: digest(source),
+        generatedHtmlSha256: digest(generatorHtml(html)),
+        htmlSha256: digest(html),
+        htmlBytes: Buffer.byteLength(html),
+        svgSha256: digest(svg),
+      },
+    };
+  } catch (error) {
+    throw new Error(`${name}: ${errorMessage(error)}`, { cause: error });
   }
-  const svg = exportSvg(html);
-  return {
-    svg,
-    record: {
-      name,
-      type: string(specification['diagram_type']),
-      generator,
-      sourceSha256: digest(source),
-      generatedHtmlSha256: digest(generatorHtml(html)),
-      htmlSha256: digest(html),
-      htmlBytes: Buffer.byteLength(html),
-      svgSha256: digest(svg),
-    },
-  };
 }
 
 try {

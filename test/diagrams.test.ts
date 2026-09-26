@@ -14,6 +14,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
+import { record } from '../scripts/support/values.ts';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 
@@ -58,6 +59,16 @@ void test('diagram gate rejects inventory, artifact and generator drift without 
     };
 
     assert.equal(check().status, 0);
+    for (const field of ['meta', 'diagram_type']) {
+      const damaged = record(JSON.parse(source.toString()));
+      delete damaged[field];
+      await writeFile(
+        join(diagrams, 'first-report.json'),
+        JSON.stringify(damaged),
+      );
+      await reject(/first-report: Expected (a JSON object|a string)\./);
+      await writeFile(join(diagrams, 'first-report.json'), source);
+    }
     for (const name of ['report-2.json', 'report_detail.json', 'Report.json']) {
       const path = join(diagrams, name);
       await writeFile(path, source);

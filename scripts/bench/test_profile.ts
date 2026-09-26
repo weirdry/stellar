@@ -69,6 +69,8 @@ void test('CPU attribution counts recursion once per sample and validates aligne
   assert.equal(summary.sample_count, 2);
   assert.equal(summary.sampled_us, 400);
   assert.equal(summary.profile_duration_us, 500);
+  for (const row of [...summary.self, ...summary.inclusive])
+    assert.equal(row.url, 'bin/stellar.mjs');
   assert.deepEqual(
     Object.fromEntries(summary.self.map((f) => [f.function, f.us])),
     { parse: 300, validate: 100 },

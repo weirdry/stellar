@@ -7,7 +7,7 @@ import {
   realpathSync,
   statSync,
 } from 'node:fs';
-import { dirname, join, relative, resolve } from 'node:path';
+import { dirname, join, relative } from 'node:path';
 
 const profileId = 'stellar-arc42-v1';
 const usage = `Usage:
@@ -143,7 +143,7 @@ function visit(directory: string) {
     if (/[\t ]+$/m.test(text)) report(`trailing whitespace: ${display}`);
     if (/\{\{[A-Z_][A-Z_]*\}\}/.test(text))
       report(`unresolved scaffold token: ${display}`);
-    for (const match of text.matchAll(/\]\(([^)]+)\)/g)) {
+    for (const match of text.matchAll(/\]\(([^)\r\n]+)\)/g)) {
       const destination = match[1];
       if (!destination || /^(https?:\/\/|mailto:|#)/.test(destination))
         continue;
@@ -155,7 +155,7 @@ function visit(directory: string) {
       if (!path) continue;
       const resolved = path.startsWith('/')
         ? root + path
-        : resolve(dirname(file), path);
+        : join(dirname(file), path);
       if (!existsSync(resolved))
         report(`broken local Markdown link in ${display}: ${destination}`);
     }

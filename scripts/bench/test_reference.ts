@@ -8,13 +8,22 @@ import {
   readFileSync,
   readdirSync,
   rmSync,
+  symlinkSync,
   writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { spawnSync } from 'node:child_process';
 import type { SpawnSyncReturns } from 'node:child_process';
 import { record, array } from '../support/values.ts';
-import { digest, directory, hashes, join, json, writeJSON } from './common.ts';
+import {
+  digest,
+  directory,
+  hashes,
+  join,
+  json,
+  measure,
+  writeJSON,
+} from './common.ts';
 
 const script = join(directory, 'benchmark.ts');
 const protocol = {
@@ -171,6 +180,43 @@ void test(
       assert.equal(existsSync(join(output, 'results.json')), false);
     }
     assert.deepEqual(readFileSync(baselinePath), original);
+    const alias = join(root, 'benchmark-alias');
+    symlinkSync(baseline, alias, 'dir');
+    const profile = join(root, 'profile');
+    result = spawnSync(
+      process.execPath,
+      [
+        join(directory, 'profile.ts'),
+        '--node',
+        process.execPath,
+        '--benchmark',
+        alias,
+        '--output',
+        profile,
+        '--trials',
+        '1',
+      ],
+      { encoding: 'utf8', timeout: 60000 },
+    );
+    assert.equal(result.status, 0, result.stderr);
+    const rows = array(record(json(join(profile, 'results.json')))['rows']);
+    assert.equal(rows.length, 8);
+    for (const mode of ['cpu', 'heap']) {
+      const frames = rows
+        .map(record)
+        .filter((row) => row['mode'] === mode)
+        .flatMap((row) => [...array(row['self']), ...array(row['inclusive'])])
+        .map(record);
+      assert.ok(
+        frames.some((frame) => frame['url'] === 'bin/stellar.mjs'),
+        mode,
+      );
+      assert.ok(
+        frames.every((frame) => frame['url'] !== 'external-file/stellar.mjs'),
+        mode,
+      );
+    }
+    assert.deepEqual(readFileSync(baselinePath), original);
   },
 );
 
@@ -186,4 +232,39 @@ void test('benchmark and profiler help do not need inputs or create output', () 
       assert.match(result.stdout, /Usage:/);
       assert.equal(result.stderr, '');
     }
+});
+
+void test('measured failures identify the operation, exit or signal, and retained stderr', (t) => {
+  const root = fixture(t);
+  // The measured child terminates only its test-owned system-time parent.
+  for (const [tag, source, termination] of [
+    [
+      'exit-probe',
+      'process.stderr.write("synthetic failure"); process.exit(7)',
+      /exited 7/,
+    ],
+    ['signal-probe', 'process.kill(process.ppid, "SIGTERM")', /signal SIGTERM/],
+  ] as const) {
+    const files = {
+      tag,
+      stdout: join(root, `${tag}.stdout`),
+      stderr: join(root, `${tag}.stderr`),
+      resources: join(root, `${tag}.resources`),
+    };
+    assert.throws(
+      () => measure(process.execPath, ['-e', source], files),
+      (error: unknown) => {
+        assert.ok(error instanceof Error);
+        assert.ok(error.message.includes(tag), error.message);
+        assert.match(error.message, termination);
+        assert.ok(error.message.includes(files.stderr), error.message);
+        assert.doesNotMatch(error.message, /exited null/);
+        return true;
+      },
+    );
+    assert.ok(existsSync(files.stdout));
+    assert.ok(existsSync(files.stderr));
+    if (tag === 'exit-probe')
+      assert.equal(readFileSync(files.stderr, 'utf8'), 'synthetic failure');
+  }
 });

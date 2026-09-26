@@ -17,6 +17,8 @@ declarations, unused negative directives, leftover JS, unsafe code and no-write
 failures. Source and declaration inventories ignore hidden OS/editor metadata,
 including root configuration sidecars, while retaining visible inventory checks
 before writes in generation and check modes.
+The [source guide](../development/typescript-adoption.md) identifies the source
+inventory's fixed discovery scopes; it is not a repository-wide file scanner.
 The compiler program rejects declaration shims under `bin/`, `lib/`, `viewer/`, `scripts/` and `test/`, including
 hidden imports, so a declared type cannot replace checking a core implementation.
 Type-aware lint ignores inline rule overrides and requires `as` assertion syntax
@@ -116,7 +118,11 @@ limits and the decision to retain eager schema preparation.
 Explicit benchmark references must pass structural/protocol validation before
 the harness creates output or starts a child process. The optional
 `just benchmark-test` suite protects rejection of invalid references and malformed
-size lists, preservation of existing output paths, and actual artifact comparison.
+size lists, preservation of existing output paths, actual artifact comparison,
+and staged profile attribution through symlinked benchmark paths. Measured
+failures identify their operation, exit status or signal, and retained stderr
+path. This suite and `just profile` require system time; the separate hosted
+measurement step runs it on Linux, independently of `just ci`.
 [Reference correction evidence](../validation/2026-09-20-benchmark-reference-review.md)
 and [independent-review corrections](../validation/2026-09-20-benchmark-review-corrections.md)
 record these checks separately from the product CI gate. The generated workload
@@ -162,6 +168,11 @@ same-change updates and source-grounded states. `just docs-check` checks the L0
 corpus, indexes and local links. `just diagrams-check` checks committed JSON,
 HTML and exact SVG exports against their manifest without requiring Archify in
 CI. Neither checks the meaning of an arrow or the legibility of a screenshot.
+Link checks keep destinations on one line and preserve trailing slashes, so an
+unclosed web link cannot hide the next local link and a file cannot satisfy a
+directory target. Diagram inspection failures identify the affected diagram.
+The [tooling correction record](../validation/2026-09-27-typescript-tooling-review-corrections.md)
+records these probes and the measurement-tooling regressions separately.
 
 Diagram generation, semantic review, browser measurements and perceptual review
 are recorded separately in the [initial documentation review](../validation/2026-09-19-canonical-documentation.md)

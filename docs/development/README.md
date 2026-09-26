@@ -101,8 +101,10 @@ Private regression inputs and scripts must remain in ignored local locations.
 `just benchmark OUTPUT [REFERENCE_RESULTS [SIZES [TRIALS]]]` measures the real
 bundled CLI on generated synthetic data and compares complete output hashes.
 The [performance guide](performance.md) owns prerequisites, workload, reproduction
-and interpretation. System `/usr/bin/time` is optional contributor tooling for this command
-only; it is not installed by `just init` or required by the product or CI.
+and interpretation. System `/usr/bin/time` is contributor tooling required by
+`just benchmark`, `just profile` and `just benchmark-test`. It is not installed
+by `just init` or required by the product or `just ci`. The separate hosted
+measurement-tooling step runs `just benchmark-test` with GNU time on Linux.
 Timing samples and peak RSS are dated observations, not pass/fail timing gates.
 Use `just benchmark-test` for the optional harness's reference-validation and
 small synthetic comparison regressions, separately from `just ci`.
