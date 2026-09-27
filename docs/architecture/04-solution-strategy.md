@@ -66,7 +66,9 @@ not promise better runtime performance or certify untrusted JSON.
 Node and generated JavaScript remain the delivery model. The viewer has a
 separate DOM-only compiler configuration and generated-asset drift check.
 [ADR-0009](../decisions/0009-type-maintained-sources.md) extends source coverage
-while preserving the frozen native experiment sources and receipts.
+while preserving historical experiment evidence. Completed native sources now
+live in [Git history](../development/historical-native-experiments.md), with
+measurements and receipts retained in the current tree.
 
 The [standalone experiment](../validation/2026-09-21-standalone-normalize-comparison.md)
 does not justify native executable distribution for the current workload. Go is

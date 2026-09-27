@@ -1,5 +1,9 @@
 # Standalone normalization and core-language direction
 
+Historical tooling is now retained in Git history. Use the
+[historical reproduction guide](../development/historical-native-experiments.md)
+for the separate checkout required by the commands below.
+
 Date: 2026-09-21
 
 Scope: archive the synthetic standalone experiment discussed in
@@ -113,8 +117,8 @@ four engines together against that expected result.
 Go uses its general JSON object representation, URL parser and
 `santhosh-tekuri/jsonschema/v6`; Rust uses `serde_json` with insertion-order
 preservation, `jsonschema`, `url` and `tempfile`. Exact versions and transitive
-resolution belong to the retained [Go](../../scripts/bench/standalone/go/go.mod)
-and [Rust](../../scripts/bench/standalone/rust/Cargo.toml) manifests and locks.
+resolution belong to the retained [Go](https://github.com/weirdry/stellar/blob/0fe3abb5bf044812bc63a6519fe188e7c5fefbee/scripts/bench/standalone/go/go.mod)
+and [Rust](https://github.com/weirdry/stellar/blob/0fe3abb5bf044812bc63a6519fe188e7c5fefbee/scripts/bench/standalone/rust/Cargo.toml) manifests and locks.
 The native nonblank schema regex uses the ECMAScript whitespace set. Rust's final
 implementation moves intermediate JSON trees; the superseded copying variant
 and its measurements are outside this archive's final result.
@@ -164,7 +168,7 @@ It does not overwrite historical results or claim reproducible binary hashes.
 The later [review corrections](2026-09-21-standalone-review-corrections.md) strengthen
 the archive/replay checks without changing those measured inputs or implementations.
 
-See the [reproduction procedure](../../scripts/bench/standalone/README.md) and
+See the [reproduction procedure](https://github.com/weirdry/stellar/blob/0fe3abb5bf044812bc63a6519fe188e7c5fefbee/scripts/bench/standalone/README.md) and
 [data inventory](data/2026-09-21-standalone-normalize/README.md).
 
 ## Executed archival verification

@@ -148,21 +148,3 @@ ci: check
 # Link this checkout for user-level Codex discovery; never replace another skill.
 skill-link:
     mise exec --locked -- node scripts/link-skill.ts
-
-# Frozen Go/Rust experiment: build and baseline must use the native README's historical checkout.
-native-build output: bundle-check
-    bash scripts/bench/native/build.sh {{ quote(output) }}
-
-# Run in that historical checkout with its own baseline, not current TS results.
-native-compare build benchmark output trials="5":
-    python3 scripts/bench/native/compare.py --node "$(mise exec --locked -- node -p process.execPath)" --build {{ quote(build) }} --benchmark {{ quote(benchmark) }} --output {{ quote(output) }} --trials {{ quote(trials) }}
-
-# Optional frozen standalone experiment; no native dependency in product CI.
-standalone-check:
-    python3 -B scripts/bench/standalone/check_archive.py
-
-standalone-test:
-    python3 -B scripts/bench/standalone/test_checks.py
-
-standalone-replay output sizes="1000,10000,50000" trials="5": bundle-check
-    python3 -B scripts/bench/standalone/replay.py --node "$(mise exec --locked -- node -p process.execPath)" --output {{ quote(output) }} --sizes {{ quote(sizes) }} --trials {{ quote(trials) }}

@@ -1,7 +1,7 @@
 # TypeScript source ownership
 
 State: **As-built** for maintained core, CLI, viewer, tests and development tools.
-Generated JavaScript and frozen native experiment sources remain explicit exceptions.
+Only generated JavaScript delivery artifacts remain source-inventory exceptions.
 [ADR-0008](../decisions/0008-type-core-without-changing-runtime.md) records the
 accepted decision. The [implementation record](../validation/2026-09-23-typescript-core.md)
 records the first conversion. The [completion record](../validation/2026-09-27-typescript-maintained-sources.md)
@@ -57,9 +57,10 @@ It rejects maintained JS/Python and declaration shims in implementation folders.
 Hidden OS/editor entries, including root configuration sidecars, are ignored
 during discovery; imported hidden code and its declarations remain checked.
 The only generated JS exceptions are
-`bin/stellar.mjs` and `assets/viewer/app.js`. Exact historical JS/Python paths
-under `scripts/bench/native/` and `scripts/bench/standalone/` are allowlisted,
-not entire directories. Their Go/Rust sources, receipts and datasets remain frozen.
+`bin/stellar.mjs` and `assets/viewer/app.js`. Completed native experiment code
+and its exact-path exceptions have been removed; sources remain accessible
+through the [historical reproduction guide](historical-native-experiments.md).
+Retained measurements and receipts are unchanged.
 Shell entry points for setup, hooks and repository orchestration remain shell;
 canonical documentation validation now runs in TypeScript.
 
@@ -206,19 +207,10 @@ unchanged by the language conversion.
 
 Ordinary benchmark/profile commands now use direct Node TS with the current
 bundle and system time accounting, with no timing gate. The [performance guide](performance.md)
-records CPU precision, RSS units, wrapper overhead and preserved Python shuffle ordering. Historical native reproduction requires archived checkouts:
-
-- Hybrid staging reads and patches JavaScript source. Use
-  `0fe3abb5bf044812bc63a6519fe188e7c5fefbee` with its own frozen setup, as the
-  [hybrid guide](../../scripts/bench/native/README.md) specifies. Original measured
-  source identities and correction receipts remain separate.
-- Standalone replay extracts product baseline
-  `77ee2b9ba2d62f6523f0f0272ca714b1b920fa3b` and rejects changed dependency
-  manifests. Use the pre-conversion archive checkout specified in its
-  [guide](../../scripts/bench/standalone/README.md); current TS dependencies are
-  intentionally not a historical replay environment.
-
-Read-only retained-data checks remain usable separately. No native measurements
+records CPU precision, RSS units, wrapper overhead and preserved Python shuffle ordering.
+Native source, retained-data checks and replay commands now require the separate
+checkout pinned in the [historical reproduction guide](historical-native-experiments.md).
+They are absent from the current source tree and Justfile. No native measurements
 or measured implementation sources are rewritten to look like the TS core.
 
 ## Implementation acceptance

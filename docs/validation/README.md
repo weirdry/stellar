@@ -4,6 +4,7 @@ Dated records identify the source or artifact, commands, observed result, and
 untested scope. They support the architecture without silently changing its
 meaning.
 
+- [2026-09-27 completed native experiment source retirement](2026-09-27-native-experiment-retirement.md)
 - [2026-09-27 maintained TypeScript tooling review corrections](2026-09-27-typescript-tooling-review-corrections.md)
 - [2026-09-27 maintained TypeScript source review corrections](2026-09-27-typescript-source-review-corrections.md)
 - [2026-09-27 maintained TypeScript source completion](2026-09-27-typescript-maintained-sources.md)

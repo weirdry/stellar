@@ -43,3 +43,13 @@ checks and data-safety tests remain necessary; types alone do not prove behavior
 The [source guide](../development/typescript-adoption.md) owns current coverage.
 The [validation record](../validation/2026-09-27-typescript-maintained-sources.md)
 separates local/hosted checks from integration, publication and installation.
+
+## Subsequent maintenance
+
+The [experiment cleanup](../validation/2026-09-27-native-experiment-retirement.md)
+removes completed prototypes and their inventory exceptions from the current
+tree. Their original source bytes remain in Git history, and measurements stay
+unchanged in the repository. This retires the temporary source exceptions above
+without changing the TypeScript or Node delivery decision; the
+[historical reproduction guide](../development/historical-native-experiments.md)
+locates the original tools.

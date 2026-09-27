@@ -16,8 +16,9 @@ recorded in [ADR-0007](../decisions/0007-own-canonical-documentation-policy.md).
 | Skill installation and publication                       | [Distribution guide](distribution.md)                                                           |
 
 The single native root uses erasable TypeScript for maintained core, CLI, viewer,
-tests and development tools. Generated browser/Node JavaScript and frozen native
-experiment sources remain explicit exceptions. Exact selectors,
+tests and development tools. Only the generated browser/Node JavaScript delivery
+artifacts are source-inventory exceptions. Completed native experiments are
+[retained in Git history](historical-native-experiments.md). Exact selectors,
 frozen installation, Prettier, type-aware flat ESLint, strict no-emit checking,
 schema declaration checks, Node tests and separate Playwright checks share the
 root workflow. There is no published Stellar npm package. The installed runner is a reproducible
