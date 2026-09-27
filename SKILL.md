@@ -118,7 +118,9 @@ Never merge two issues just because they have the same visible identifier.
 
 Use [progressive reading](references/reading.md) to inspect metadata, read short
 bodies directly with `read-body`, and use body indexes for longer text when
-navigation helps. Read the evidence needed for purpose, deliverables and exclusions.
+navigation helps. When several excerpts are needed, `read-batch` shares metadata;
+follow its separate request-page and text-continuation offsets in the reading guide.
+Read the evidence needed for purpose, deliverables and exclusions.
 Expand to full text when needed; no issue template or heading vocabulary is assumed.
 Keep explicit relationships and original evidence intact.
 Follow [classification guidance](references/classification.md); existing projects,

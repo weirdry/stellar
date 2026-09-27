@@ -60,6 +60,7 @@ SVG export, browser review and evidence retention.
 | `just classify-draft DRAFT CHOICES RUN`     | Apply initial agent decisions and save a complete map/state in a fresh directory                                             |
 | `just retain-response INPUT NEW_FILE`       | Preserve a host response file without echoing its contents or replacing another file                                         |
 | `just inspect MAP [ISSUE [OFFSET]]`         | Page through issue metadata or a template-independent body index                                                             |
+| `just read-batch MAP REQUESTS [OFFSET]`     | Read paged body/block selections with shared issue metadata                                                                  |
 | `just read-body MAP ISSUE [OFFSET]`         | Read exact body text directly, with bounded whole-body continuation                                                          |
 | `just read-issue MAP ISSUE BLOCK [OFFSET]`  | Read exact bounded source excerpts                                                                                           |
 | `just search-issue MAP ISSUE TEXT [OFFSET]` | Locate literal source text, returning bounded match pages                                                                    |
@@ -150,3 +151,8 @@ Commits. The hosted workflow invokes the same gate, explicitly installs browser
 system dependencies, and runs `just browser-check`. It never loads `local/`.
 Local success, hosted results, visual review, review/merge, and publication are
 separate evidence. Workflow configuration alone does not prove a successful run.
+
+The optional `just batch-reading-benchmark NEW_DIRECTORY [TRIALS]` compares
+individual and batch reads of identical invented evidence. It records payload
+bytes, CLI invocation counts and fresh-process wall/CPU/peak-RSS observations;
+it does not measure model tokens or impose a timing gate.

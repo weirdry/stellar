@@ -8912,6 +8912,7 @@ var init_verify = __esm({
 });
 
 // lib/reading.ts
+import { readFile as readFile4 } from "node:fs/promises";
 import { createHash as createHash2 } from "node:crypto";
 function fail3(path, message, fix) {
   throw new WorkMapError([{ path, code: "reading", message, fix }]);
@@ -8949,7 +8950,7 @@ function select(map, selector) {
     );
   return required(matches[0], "A unique issue selection exists.");
 }
-function metadata(issue) {
+function metadata(issue, length) {
   const body = issue.description ?? "";
   return {
     id: issue.id,
@@ -8960,7 +8961,7 @@ function metadata(issue) {
     detail: issue.detail,
     status: issue.status,
     descriptionPresent: issue.description !== void 0,
-    descriptionCharacters: characters(body).length,
+    descriptionCharacters: length ?? characters(body).length,
     descriptionHash: createHash2("sha256").update(JSON.stringify(body)).digest("hex")
   };
 }
@@ -9036,7 +9037,13 @@ function inspectMap(input, selector, offset = 0) {
   const map = assertWorkMap(input, true);
   offset = number(offset, "/offset");
   if (!selector)
-    return { kind: "issues", ...page(map.issues.map(metadata), offset) };
+    return {
+      kind: "issues",
+      ...page(
+        map.issues.map((issue2) => metadata(issue2)),
+        offset
+      )
+    };
   const issue = select(map, selector);
   const blocks = bodyBlocks(issue.description ?? "").map(
     ({ text, ...block }) => ({
@@ -9101,6 +9108,147 @@ function readIssue(input, selector, blockInput, offset = 0) {
     offset,
     nextOffset: end < text.length ? end : null,
     text: text.slice(offset, end).join("")
+  };
+}
+async function readBatchRequests(path) {
+  let text;
+  try {
+    text = await readFile4(path, "utf8");
+  } catch {
+    fail3(
+      "/requests",
+      "Batch request file could not be read.",
+      "Use an accessible JSON request file."
+    );
+  }
+  try {
+    const value = JSON.parse(text);
+    return value;
+  } catch {
+    fail3(
+      "/requests",
+      "Batch request file is not valid JSON.",
+      "Supply an array of issue selections with optional block and offset numbers."
+    );
+  }
+}
+function readBatch(input, requests, offset = 0) {
+  const map = assertWorkMap(input, true);
+  offset = number(offset, "/offset");
+  if (!isArray(requests))
+    fail3(
+      "/requests",
+      "Expected a batch request array.",
+      "Supply an array of objects containing issue, optional block, and optional offset."
+    );
+  if (offset > requests.length)
+    fail3(
+      "/offset",
+      "Offset is beyond the available requests.",
+      "Restart the request page at offset 0."
+    );
+  const byId = new Map(map.issues.map((issue) => [issue.id, issue]));
+  const byIdentifier = /* @__PURE__ */ new Map();
+  for (const issue of map.issues)
+    byIdentifier.set(
+      issue.identifier,
+      byIdentifier.has(issue.identifier) ? null : issue
+    );
+  const cache = /* @__PURE__ */ new Map();
+  const plan = requests.map((request, index) => {
+    const path = `/requests/${index}`;
+    if (!isObject(request) || isArray(request) || Object.keys(request).some(
+      (key2) => !["issue", "block", "offset"].includes(key2)
+    ))
+      fail3(
+        path,
+        "Expected an issue selection with no unknown fields.",
+        "Use only issue, optional block, and optional offset."
+      );
+    const selector = request["issue"];
+    if (typeof selector !== "string" || !selector.length)
+      fail3(
+        `${path}/issue`,
+        "Expected an issue selector.",
+        "Use a canonical issue id or an unambiguous display identifier."
+      );
+    const issue = byId.get(selector) ?? byIdentifier.get(selector);
+    if (!issue)
+      fail3(
+        `${path}/issue`,
+        "Issue selection is missing or ambiguous.",
+        "Inspect the map and use its canonical issue id."
+      );
+    const integer = (key2) => {
+      const value = request[key2];
+      if (typeof value !== "number" || !Number.isSafeInteger(value) || value < 0)
+        fail3(
+          `${path}/${key2}`,
+          "Expected a non-negative integer number.",
+          "Use a numeric block from inspect or an offset returned by the reader."
+        );
+      return value;
+    };
+    const block = request["block"] === void 0 ? void 0 : integer("block");
+    const at = request["offset"] === void 0 ? 0 : integer("offset");
+    let prepared = cache.get(issue.id);
+    if (!prepared) {
+      prepared = { issue, points: characters(issue.description ?? "") };
+      cache.set(issue.id, prepared);
+    }
+    let start = 0, length = prepared.points.length;
+    if (block !== void 0) {
+      prepared.blocks ??= bodyBlocks(issue.description ?? "");
+      const selected2 = prepared.blocks[block];
+      if (!selected2)
+        fail3(
+          `${path}/block`,
+          "Body block does not exist.",
+          "Inspect this issue and choose an available block."
+        );
+      start = selected2.start;
+      length = selected2.end - selected2.start;
+    }
+    if (at > length)
+      fail3(
+        `${path}/offset`,
+        "Offset is beyond the selected text.",
+        "Use this selection\u2019s nextOffset or restart after the source text changes."
+      );
+    return { request: index, prepared, block, at, start, length };
+  });
+  const selected = page(plan, offset);
+  const issues = [];
+  const indices = /* @__PURE__ */ new Map();
+  const items = selected.items.map(
+    ({ request, prepared, block, at, start, length }) => {
+      let issueIndex = indices.get(prepared.issue.id);
+      if (issueIndex === void 0) {
+        issueIndex = issues.length;
+        indices.set(prepared.issue.id, issueIndex);
+        issues.push(metadata(prepared.issue, prepared.points.length));
+      }
+      const end = Math.min(at + CHUNK, length);
+      return {
+        request,
+        issueIndex,
+        kind: block === void 0 ? "body-text" : "body-excerpt",
+        ...block === void 0 ? {} : { block },
+        start: start + at,
+        end: start + end,
+        offset: at,
+        nextOffset: end < length ? end : null,
+        text: prepared.points.slice(start + at, start + end).join("")
+      };
+    }
+  );
+  return {
+    kind: "batch-excerpts",
+    total: selected.total,
+    offset,
+    nextOffset: selected.nextOffset,
+    issues,
+    items
   };
 }
 function searchIssue(input, selector, query, offset = 0) {
@@ -9173,13 +9321,13 @@ var init_reading = __esm({
 });
 
 // lib/evidence.ts
-import { readFile as readFile4, open as open2, mkdir as mkdir3, rm as rm2 } from "node:fs/promises";
+import { readFile as readFile5, open as open2, mkdir as mkdir3, rm as rm2 } from "node:fs/promises";
 import { dirname as dirname3 } from "node:path";
 import { createHash as createHash3 } from "node:crypto";
 async function retainResponse(input, output) {
   let bytes;
   try {
-    bytes = await readFile4(input);
+    bytes = await readFile5(input);
   } catch {
     throw new WorkMapError([
       {
@@ -9255,6 +9403,18 @@ async function runCommand(command2, args2) {
       console.log(
         JSON.stringify(
           inspectMap(await readReadingMap(input), output, extra[0]),
+          null,
+          2
+        )
+      );
+    } else if (command2 === "read-batch") {
+      console.log(
+        JSON.stringify(
+          readBatch(
+            await readReadingMap(input),
+            await readBatchRequests(second()),
+            extra[0]
+          ),
           null,
           2
         )
@@ -9410,6 +9570,19 @@ var commands = {
     ],
     output: "JSON index with bounded previews and pagination. Does not modify the map.",
     example: "inspect draft.json"
+  },
+  "read-batch": {
+    usage: "read-batch MAP.json REQUESTS.json [OFFSET]",
+    summary: "Read up to 20 exact body/block chunks with shared issue metadata.",
+    min: 2,
+    max: 3,
+    arguments: [
+      "MAP.json  Normalized draft or work map.",
+      "REQUESTS.json  Array of {issue, block?, offset?}; omit block for whole-body reading. Block and offset are non-negative JSON integers.",
+      "OFFSET  Request-list page offset; default 0. Each request offset is instead relative to its body or block."
+    ],
+    output: "JSON issues metadata and items (up to 4,000 code points each). item.issueIndex references issues; item.request identifies the input array index. Top-level nextOffset pages requests; item.nextOffset continues that selection. Any invalid request fails the whole invocation without partial stdout.",
+    example: "read-batch draft.json requests.json"
   },
   "read-body": {
     usage: "read-body MAP.json ISSUE [OFFSET]",

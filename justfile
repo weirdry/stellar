@@ -82,6 +82,10 @@ retain-response input output:
 inspect input issue="" offset="0":
     mise exec --locked -- node bin/stellar.ts inspect {{ quote(input) }} {{ quote(issue) }} {{ quote(offset) }}
 
+# Read explicit body/block requests with shared issue metadata.
+read-batch input requests offset="0":
+    mise exec --locked -- node bin/stellar.ts read-batch {{ quote(input) }} {{ quote(requests) }} {{ quote(offset) }}
+
 # Read body text directly without a structural index, with bounded continuation.
 read-body input issue offset="0":
     mise exec --locked -- node bin/stellar.ts read-body {{ quote(input) }} {{ quote(issue) }} {{ quote(offset) }}
@@ -127,6 +131,10 @@ build-runner: build-viewer
 # Compare in memory; never rewrite the installed artifact from a quality gate.
 bundle-check: viewer-check
     mise exec --locked -- node scripts/build-runner.ts --check
+
+# Compare batch/individual reader payloads and fresh-process costs on invented inputs.
+batch-reading-benchmark output trials="5": bundle-check
+    mise exec --locked -- node scripts/bench/batch-reading.ts --output {{ quote(output) }} --trials {{ quote(trials) }}
 
 # Optional synthetic CLI measurements (macOS/Linux, system time); fresh output.
 benchmark output reference="" sizes="1000,10000,50000" trials="3": bundle-check
