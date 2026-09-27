@@ -60,6 +60,7 @@ SVG export, browser review and evidence retention.
 | `just classify-draft DRAFT CHOICES RUN`     | Apply initial agent decisions and save a complete map/state in a fresh directory                                             |
 | `just retain-response INPUT NEW_FILE`       | Preserve a host response file without echoing its contents or replacing another file                                         |
 | `just inspect MAP [ISSUE [OFFSET]]`         | Page through issue metadata or a template-independent body index                                                             |
+| `just read-body MAP ISSUE [OFFSET]`         | Read exact body text directly, with bounded whole-body continuation                                                          |
 | `just read-issue MAP ISSUE BLOCK [OFFSET]`  | Read exact bounded source excerpts                                                                                           |
 | `just search-issue MAP ISSUE TEXT [OFFSET]` | Locate literal source text, returning bounded match pages                                                                    |
 | `just remember MAP RUN`                     | Initialize private state from a complete map in a new directory                                                              |

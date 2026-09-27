@@ -37,12 +37,17 @@ still required for the requested coverage.
   : "${ASSIGNEE:?Set the selected login}"
   : "${STAGING:?Set the absolute private staging directory}"
   mkdir -p "$STAGING/evidence/raw"
-  set -C
+  completed_response="$STAGING/evidence/raw/assigned-pages.json"
+  if [ -e "$completed_response" ] || [ -L "$completed_response" ]; then
+    printf '%s\n' 'Completed response path is occupied; choose a fresh collection destination.' >&2
+    exit 1
+  fi
+  partial_response=$(mktemp "$STAGING/evidence/raw/assigned-pages.partial.XXXXXX")
   gh api --method GET --paginate --slurp \
     "/repos/$REPOSITORY/issues" -f assignee="$ASSIGNEE" -f state=all \
-    > "$STAGING/evidence/raw/assigned-pages.json"
-  node --input-type=module - "$STAGING/evidence/raw/assigned-pages.json" <<'NODE'
-import { readFile } from 'node:fs/promises';
+    > "$partial_response"
+  node --input-type=module - "$partial_response" "$completed_response" <<'NODE'
+import { readFile, link, unlink } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 const bytes = await readFile(process.argv[2]);
 let pages;
@@ -53,8 +58,11 @@ if (!Array.isArray(pages) || !pages.every(Array.isArray))
 const records = pages.flat();
 if (!records.every(record => record && typeof record === 'object' && !Array.isArray(record)))
   throw new Error('Expected native REST issue objects.');
+// Exclusive creation also refuses a destination occupied during collection.
+await link(process.argv[2], process.argv[3]);
+await unlink(process.argv[2]);
 console.log(JSON.stringify({
-  responseFile: process.argv[2],
+  responseFile: process.argv[3],
   bytes: bytes.length,
   sha256: createHash('sha256').update(bytes).digest('hex'),
   pages: pages.length,
@@ -64,12 +72,19 @@ NODE
 )
 ```
 
-The response goes straight to a fresh private file; only metadata reaches shell
-stdout. An occupied response path is refused before `gh` runs. A failed request
-or malformed JSON/page shape exits without a success summary. Keep any partial response
-as failed evidence and use a fresh path for a deliberate retry; do not normalize
-it as a completed query. Record query arguments, observation times, exit status,
-pagination and lookup outcomes in the collection account.
+The response goes straight to a fresh private `assigned-pages.partial.*` file;
+only metadata reaches shell stdout. Only after retrieval and page validation
+succeed is it linked to `assigned-pages.json`, without replacing any destination,
+and the temporary name removed. The final name identifies a completed local
+collection attempt, not proof of provider completeness or relationship coverage.
+An occupied final path is refused before `gh` runs and checked again when linking.
+A failed request or malformed JSON/page shape leaves its partial file and exits
+without a success summary or final file. Even valid JSON in a partial file is not
+completed evidence. Preserve it; rerun the recipe with the same `STAGING` for a
+deliberate retry, which allocates a fresh partial filename. After success, choose
+a new collection destination for another query. Record query arguments,
+observation times, exit status, pagination and lookup outcomes in the collection
+account. Build captures only from completed responses.
 
 Build the capture mechanically from the retained pages: flatten arrays, exclude
 `pull_request` entries from issue records, and keep each selected native issue

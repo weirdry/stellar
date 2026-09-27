@@ -19,8 +19,11 @@ preserves those interfaces; it introduces no migration or saved-state rewrite.
 
 The [GitHub recipe](../../references/github.md#retain-list-responses-before-model-delivery)
 uses an already authenticated host CLI to save native REST pages before returning
-only file metadata. It refuses an occupied response path, stops on retrieval or
-page-parsing failure, and retains partial responses as failed evidence. It is
+only file metadata. It refuses an occupied completed-response path, stops on
+retrieval or page-parsing failure, and retains each failed attempt under a
+distinct partial filename. Only successful retrieval and validation creates the
+completed response path, without replacement. A retry in the same staging
+directory preserves earlier failed attempts. It is
 not a Stellar network client and does not establish host parity or token savings.
 Normalized connector output must not be mistaken for native REST identity fields.
 
@@ -40,11 +43,20 @@ Normalized connector output must not be mistaken for native REST identity fields
   documented shell example against an invented paginated `gh` response. It checks
   exact retained bytes, owner-only file permissions, metadata-only stdout, request
   arguments, no second request for an occupied output, and non-success for failed
-  retrieval, malformed JSON and wrong page shapes. This local fixture does not
+  retrieval, malformed JSON and wrong page shapes. Valid-looking partial JSON
+  never occupies the completed path. Same-directory retry preserves failed
+  evidence; a destination created during collection is not replaced and produces
+  no success summary. This local fixture does not
   authenticate to GitHub or test provider pagination behavior.
 
 The required complete local gate is `just ci`; exact final-head local and hosted
 results belong to the associated PR and issue. No timing threshold is imposed.
+
+Independent review identified the need to distinguish failed attempts from
+completed collection files, use a development version, and list the new command
+in the canonical development guide. The follow-up corrects those boundaries:
+the regenerated runner/manifest uses `0.1.4-dev.0`, and the command table and
+runtime summary include `read-body`. Published `v0.1.3` remains unchanged.
 
 ## Explicit synthetic workflow
 

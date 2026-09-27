@@ -4,6 +4,7 @@ import {
   mkdtemp,
   mkdir,
   readFile,
+  readdir,
   writeFile,
   chmod,
   symlink,
@@ -25,7 +26,7 @@ void test('documented file-first recipe retains paginated native bytes without e
   const gh = join(bin, 'gh');
   await writeFile(
     gh,
-    '#!/bin/bash\nset -eu\nprintf "%s\\n" "$@" >> "$STELLAR_TEST_CALLS"\ncat "$STELLAR_TEST_RESPONSE"\nexit "${STELLAR_TEST_EXIT:-0}"\n',
+    '#!/bin/bash\nset -eu\nprintf "%s\\n" "$@" >> "$STELLAR_TEST_CALLS"\ncat "$STELLAR_TEST_RESPONSE"\nif [ "${STELLAR_TEST_COMPETE:-}" = "yes" ]; then\n  printf "existing evidence" > "$STAGING/evidence/raw/assigned-pages.json"\nfi\nexit "${STELLAR_TEST_EXIT:-0}"\n',
   );
   await chmod(gh, 0o700);
   const guide = await readFile(
@@ -50,7 +51,7 @@ void test('documented file-first recipe retains paginated native bytes without e
       2,
     ) + '\n';
   await writeFile(response, bytes);
-  const run = (stage: string, exit = '0') =>
+  const run = (stage: string, exit = '0', compete = '') =>
     spawnSync('bash', ['-c', recipe], {
       encoding: 'utf8',
       env: {
@@ -62,12 +63,17 @@ void test('documented file-first recipe retains paginated native bytes without e
         STELLAR_TEST_RESPONSE: response,
         STELLAR_TEST_CALLS: calls,
         STELLAR_TEST_EXIT: exit,
+        STELLAR_TEST_COMPETE: compete,
       },
     });
   const result = run('success');
   assert.equal(result.status, 0, result.stderr);
   const summary = objectJSON(result.stdout);
   const retained = join(dir, 'success/evidence/raw/assigned-pages.json');
+  assert.equal(summary['responseFile'], retained);
+  assert.deepEqual(await readdir(join(dir, 'success/evidence/raw')), [
+    'assigned-pages.json',
+  ]);
   assert.equal(await readFile(retained, 'utf8'), bytes);
   assert.equal((await stat(retained)).mode & 0o777, 0o600);
   assert.equal(summary['pages'], 2);
@@ -97,16 +103,56 @@ void test('documented file-first recipe retains paginated native bytes without e
   assert.equal(await readFile(calls, 'utf8'), args);
   assert.equal(await readFile(retained, 'utf8'), bytes);
 
+  const partialBytes = JSON.stringify([[issue(1)]]);
+  await writeFile(response, partialBytes);
   const failed = run('failed', '7');
   assert.equal(failed.status, 7);
   assert.equal(failed.stdout, '');
+  const failedDir = join(dir, 'failed/evidence/raw');
+  const partials = await readdir(failedDir);
+  assert.equal(partials.length, 1);
+  assert.match(must(partials[0]), /^assigned-pages\.partial\./);
+  const partial = join(failedDir, must(partials[0]));
+  assert.equal(await readFile(partial, 'utf8'), partialBytes);
+  assert.equal((await stat(partial)).mode & 0o777, 0o600);
+  await assert.rejects(stat(join(failedDir, 'assigned-pages.json')), {
+    code: 'ENOENT',
+  });
+
+  // Retry in the same staging directory without consuming or replacing partial evidence.
+  await writeFile(response, bytes);
+  const retry = run('failed');
+  assert.equal(retry.status, 0, retry.stderr);
+  assert.equal(objectJSON(retry.stdout)['issues'], 2);
+  assert.equal(await readFile(partial, 'utf8'), partialBytes);
+  assert.deepEqual(
+    (await readdir(failedDir)).sort(),
+    ['assigned-pages.json', ...partials].sort(),
+  );
   assert.equal(
-    await readFile(
-      join(dir, 'failed/evidence/raw/assigned-pages.json'),
-      'utf8',
-    ),
+    await readFile(join(failedDir, 'assigned-pages.json'), 'utf8'),
     bytes,
   );
+
+  // A competing completion after the initial check must still be preserved.
+  const competing = run('competing', '0', 'yes');
+  assert.notEqual(competing.status, 0);
+  assert.equal(competing.stdout, '');
+  const competingDir = join(dir, 'competing/evidence/raw');
+  assert.equal(
+    await readFile(join(competingDir, 'assigned-pages.json'), 'utf8'),
+    'existing evidence',
+  );
+  const competingPartial = must(
+    (await readdir(competingDir)).find((name) =>
+      name.startsWith('assigned-pages.partial.'),
+    ),
+  );
+  assert.equal(
+    await readFile(join(competingDir, competingPartial), 'utf8'),
+    bytes,
+  );
+
   for (const [name, raw] of [
     ['malformed', `{${marker}`],
     ['wrong-shape', JSON.stringify({ body: marker })],
@@ -117,5 +163,13 @@ void test('documented file-first recipe retains paginated native bytes without e
     assert.notEqual(invalid.status, 0);
     assert.equal(invalid.stdout, '');
     assert.ok(!invalid.stderr.includes(marker));
+    const rawDir = join(dir, must(name), 'evidence/raw');
+    await assert.rejects(stat(join(rawDir, 'assigned-pages.json')), {
+      code: 'ENOENT',
+    });
+    const names = await readdir(rawDir);
+    assert.equal(names.length, 1);
+    assert.match(must(names[0]), /^assigned-pages\.partial\./);
+    assert.equal(await readFile(join(rawDir, must(names[0])), 'utf8'), raw);
   }
 });
