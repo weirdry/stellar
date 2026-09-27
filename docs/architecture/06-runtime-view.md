@@ -160,6 +160,14 @@ and explicit continuation. Short bodies need no intermediate body-index call;
 empty observations retain the same presence semantics. `read-issue` returns exact
 source substrings; `search-issue` locates case-sensitive literal text across the
 whole body, including block boundaries, and maps match starts to block offsets.
+`read-batch` reads explicit body/block requests with one map validation and
+shared per-issue preparation. Each page contains up to 20 chunks and emits each
+issue's metadata once, referenced by page-local indices. Items retain request
+indices, exact offsets and text continuation; top-level continuation instead pages
+the request list. The entire plan is checked before any result is returned, so
+invalid requests on later pages also fail without partial stdout. The inputs stay
+unchanged and no cache survives the invocation. See the [batch contract](../../references/reading.md#batch-selected-evidence)
+and [regression tests](../../test/reading-batch.test.ts).
 Reader and response-retention errors use the canonical diagnostic `fix` field.
 Both body-index and search previews explicitly report truncation.
 All blocks remain accessible in source order, including unheaded prose, lists and code.

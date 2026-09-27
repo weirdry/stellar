@@ -46,6 +46,7 @@ with colliding identifiers.
 node "$STELLAR_ROOT/bin/stellar.mjs" inspect MAP.json
 node "$STELLAR_ROOT/bin/stellar.mjs" inspect MAP.json "" 20
 node "$STELLAR_ROOT/bin/stellar.mjs" read-body MAP.json ISSUE
+node "$STELLAR_ROOT/bin/stellar.mjs" read-batch MAP.json REQUESTS.json
 node "$STELLAR_ROOT/bin/stellar.mjs" read-body MAP.json ISSUE OFFSET
 node "$STELLAR_ROOT/bin/stellar.mjs" inspect MAP.json ISSUE
 node "$STELLAR_ROOT/bin/stellar.mjs" inspect MAP.json ISSUE 20
@@ -125,3 +126,63 @@ therefore share the empty-text hash; compare presence separately to distinguish
 an observation from an omitted field. The hash is not an observation fingerprint.
 If text changes, rebuild the index before reusing block numbers/offsets. Source
 detail/coverage does not change as a result of choosing an excerpt.
+
+## Batch selected evidence
+
+When several body or block chunks are needed, `read-batch` shares issue metadata
+and local preparation within one invocation. Keep `read-body` for a single short
+body; batching does not guarantee a smaller response when every issue occurs only
+once. Choose evidence for the same purpose/exclusion questions as individual reads.
+
+Create a JSON request array, using canonical IDs from `inspect` where identifiers
+collide. Omit `block` for whole-body reading; include it for structural block reading:
+
+```json
+[
+  { "issue": "ISSUE_ID" },
+  { "issue": "ISSUE_ID", "block": 2 },
+  { "issue": "ISSUE_ID", "block": 2, "offset": 4000 }
+]
+```
+
+Only `issue`, `block` and `offset` are accepted. `issue` is a canonical ID or
+unambiguous display identifier. Optional `block` and `offset` must be non-negative
+JSON integer numbers, not strings; the text offset defaults to 0. These are
+explicit selections, not instructions to fetch every remaining chunk automatically.
+
+```sh
+node "$STELLAR_ROOT/bin/stellar.mjs" read-batch MAP.json REQUESTS.json
+node "$STELLAR_ROOT/bin/stellar.mjs" read-batch MAP.json REQUESTS.json 20
+```
+
+The response has `kind: "batch-excerpts"`, `total`, `offset`, `nextOffset`,
+`issues` and `items`. Up to 20 requests are returned per page, each with at most
+4,000 Unicode code points, reusing existing reader bounds. Empty plans and an
+end-of-list offset return empty arrays with null continuation.
+
+- `items[].request` is the zero-based index in the original request array. Order
+  and duplicate requests are preserved.
+- `items[].issueIndex` indexes this response's `issues` array. Each selected issue
+  appears there once, with its canonical identity, status, presence, body length
+  and description hash. This index is local to the page, not a persistent ID.
+- Other item fields match the individual reader: `kind`, optional `block`, exact
+  `text`, body-relative `start`/`end`, selection-relative `offset` and `nextOffset`.
+  Joining the referenced metadata back as `issue` reproduces the individual result.
+- Top-level `nextOffset` pages the **request list**. An item's `nextOffset` continues
+  its **body or block**. Null at the top level does not mean all bodies were read.
+  To expand, create the next request with that item's text offset or use the
+  existing individual reader, retaining its issue and optional block.
+
+The map is read, parsed and validated once per invocation. Selection lookup and
+code-point/block preparation are shared by canonical issue ID; returned metadata
+and its hash are computed once per issue on that page. The complete request plan
+is validated before output, including selections on later pages. Any invalid
+request fails the invocation without partial stdout, with indexed `/requests/N`
+diagnostics; unreadable or malformed request files use `/requests`. Fix the plan
+before retrying. Neither input file is modified. This is not partial-success processing.
+
+Keep the map and request file unchanged while paging. Metadata is self-contained
+on each page; compare description hashes/presence across reads and restart after
+source changes before reusing blocks/offsets. There is no persistent reader cache
+or snapshot lock. Missing/null/empty text retains the individual reader semantics.
+Output bounds are not token guarantees; all retained evidence remains available.

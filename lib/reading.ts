@@ -1,4 +1,5 @@
-import { required } from './contracts.ts';
+import { required, isArray, isObject } from './contracts.ts';
+import { readFile } from 'node:fs/promises';
 import type { WorkMap, Issue } from './contracts.ts';
 import { createHash } from 'node:crypto';
 import { assertWorkMap, WorkMapError } from './validate.ts';
@@ -59,7 +60,7 @@ function select(map: WorkMap, selector: unknown) {
   return required(matches[0], 'A unique issue selection exists.');
 }
 
-function metadata(issue: Issue) {
+function metadata(issue: Issue, length?: number) {
   const body = issue.description ?? '';
   return {
     id: issue.id,
@@ -70,7 +71,7 @@ function metadata(issue: Issue) {
     detail: issue.detail,
     status: issue.status,
     descriptionPresent: issue.description !== undefined,
-    descriptionCharacters: characters(body).length,
+    descriptionCharacters: length ?? characters(body).length,
     descriptionHash: createHash('sha256')
       .update(JSON.stringify(body))
       .digest('hex'),
@@ -177,7 +178,13 @@ export function inspectMap(
   const map = assertWorkMap(input, true);
   offset = number(offset, '/offset');
   if (!selector)
-    return { kind: 'issues', ...page(map.issues.map(metadata), offset) };
+    return {
+      kind: 'issues',
+      ...page(
+        map.issues.map((issue) => metadata(issue)),
+        offset,
+      ),
+    };
   const issue = select(map, selector);
   const blocks = bodyBlocks(issue.description ?? '').map(
     ({ text, ...block }) => ({
@@ -253,6 +260,175 @@ export function readIssue(
     offset,
     nextOffset: end < text.length ? end : null,
     text: text.slice(offset, end).join(''),
+  };
+}
+
+// Request files are transient read plans, not saved work-map/state contracts.
+export async function readBatchRequests(path: string): Promise<unknown> {
+  let text: string;
+  try {
+    text = await readFile(path, 'utf8');
+  } catch {
+    fail(
+      '/requests',
+      'Batch request file could not be read.',
+      'Use an accessible JSON request file.',
+    );
+  }
+  try {
+    const value: unknown = JSON.parse(text);
+    return value;
+  } catch {
+    fail(
+      '/requests',
+      'Batch request file is not valid JSON.',
+      'Supply an array of issue selections with optional block and offset numbers.',
+    );
+  }
+}
+
+export function readBatch(
+  input: unknown,
+  requests: unknown,
+  offset: string | number = 0,
+) {
+  const map = assertWorkMap(input, true);
+  offset = number(offset, '/offset');
+  if (!isArray(requests))
+    fail(
+      '/requests',
+      'Expected a batch request array.',
+      'Supply an array of objects containing issue, optional block, and optional offset.',
+    );
+  if (offset > requests.length)
+    fail(
+      '/offset',
+      'Offset is beyond the available requests.',
+      'Restart the request page at offset 0.',
+    );
+
+  const byId = new Map(map.issues.map((issue) => [issue.id, issue]));
+  const byIdentifier = new Map<string, Issue | null>();
+  for (const issue of map.issues)
+    byIdentifier.set(
+      issue.identifier,
+      byIdentifier.has(issue.identifier) ? null : issue,
+    );
+  const cache = new Map<
+    string,
+    {
+      issue: Issue;
+      points: string[];
+      blocks?: ReturnType<typeof bodyBlocks>;
+    }
+  >();
+
+  // Validate the entire plan before returning any evidence, including later pages.
+  // Only returned chunks are materialized; preparation is shared by canonical ID.
+  const plan = requests.map((request, index) => {
+    const path = `/requests/${index}`;
+    if (
+      !isObject(request) ||
+      isArray(request) ||
+      Object.keys(request).some(
+        (key) => !['issue', 'block', 'offset'].includes(key),
+      )
+    )
+      fail(
+        path,
+        'Expected an issue selection with no unknown fields.',
+        'Use only issue, optional block, and optional offset.',
+      );
+    const selector = request['issue'];
+    if (typeof selector !== 'string' || !selector.length)
+      fail(
+        `${path}/issue`,
+        'Expected an issue selector.',
+        'Use a canonical issue id or an unambiguous display identifier.',
+      );
+    const issue = byId.get(selector) ?? byIdentifier.get(selector);
+    if (!issue)
+      fail(
+        `${path}/issue`,
+        'Issue selection is missing or ambiguous.',
+        'Inspect the map and use its canonical issue id.',
+      );
+    const integer = (key: 'block' | 'offset') => {
+      const value = request[key];
+      if (
+        typeof value !== 'number' ||
+        !Number.isSafeInteger(value) ||
+        value < 0
+      )
+        fail(
+          `${path}/${key}`,
+          'Expected a non-negative integer number.',
+          'Use a numeric block from inspect or an offset returned by the reader.',
+        );
+      return value;
+    };
+    const block = request['block'] === undefined ? undefined : integer('block');
+    const at = request['offset'] === undefined ? 0 : integer('offset');
+    let prepared = cache.get(issue.id);
+    if (!prepared) {
+      prepared = { issue, points: characters(issue.description ?? '') };
+      cache.set(issue.id, prepared);
+    }
+    let start = 0,
+      length = prepared.points.length;
+    if (block !== undefined) {
+      prepared.blocks ??= bodyBlocks(issue.description ?? '');
+      const selected = prepared.blocks[block];
+      if (!selected)
+        fail(
+          `${path}/block`,
+          'Body block does not exist.',
+          'Inspect this issue and choose an available block.',
+        );
+      start = selected.start;
+      length = selected.end - selected.start;
+    }
+    if (at > length)
+      fail(
+        `${path}/offset`,
+        'Offset is beyond the selected text.',
+        'Use this selection’s nextOffset or restart after the source text changes.',
+      );
+    return { request: index, prepared, block, at, start, length };
+  });
+
+  const selected = page(plan, offset);
+  const issues: ReturnType<typeof metadata>[] = [];
+  const indices = new Map<string, number>();
+  const items = selected.items.map(
+    ({ request, prepared, block, at, start, length }) => {
+      let issueIndex = indices.get(prepared.issue.id);
+      if (issueIndex === undefined) {
+        issueIndex = issues.length;
+        indices.set(prepared.issue.id, issueIndex);
+        issues.push(metadata(prepared.issue, prepared.points.length));
+      }
+      const end = Math.min(at + CHUNK, length);
+      return {
+        request,
+        issueIndex,
+        kind: block === undefined ? 'body-text' : 'body-excerpt',
+        ...(block === undefined ? {} : { block }),
+        start: start + at,
+        end: start + end,
+        offset: at,
+        nextOffset: end < length ? end : null,
+        text: prepared.points.slice(start + at, start + end).join(''),
+      };
+    },
+  );
+  return {
+    kind: 'batch-excerpts',
+    total: selected.total,
+    offset,
+    nextOffset: selected.nextOffset,
+    issues,
+    items,
   };
 }
 

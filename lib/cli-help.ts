@@ -42,6 +42,21 @@ export const commands: Record<string, CommandInfo> = {
       'JSON index with bounded previews and pagination. Does not modify the map.',
     example: 'inspect draft.json',
   },
+  'read-batch': {
+    usage: 'read-batch MAP.json REQUESTS.json [OFFSET]',
+    summary:
+      'Read up to 20 exact body/block chunks with shared issue metadata.',
+    min: 2,
+    max: 3,
+    arguments: [
+      'MAP.json  Normalized draft or work map.',
+      'REQUESTS.json  Array of {issue, block?, offset?}; omit block for whole-body reading. Block and offset are non-negative JSON integers.',
+      'OFFSET  Request-list page offset; default 0. Each request offset is instead relative to its body or block.',
+    ],
+    output:
+      'JSON issues metadata and items (up to 4,000 code points each). item.issueIndex references issues; item.request identifies the input array index. Top-level nextOffset pages requests; item.nextOffset continues that selection. Any invalid request fails the whole invocation without partial stdout.',
+    example: 'read-batch draft.json requests.json',
+  },
   'read-body': {
     usage: 'read-body MAP.json ISSUE [OFFSET]',
     summary: 'Read exact body text directly, up to 4,000 Unicode code points.',

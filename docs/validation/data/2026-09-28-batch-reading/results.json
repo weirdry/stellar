@@ -1,0 +1,252 @@
+{
+  "environment": {
+    "platform": "darwin 25.5.0",
+    "machine": "arm64",
+    "logical_cpus": 16,
+    "node": "v24.19.0",
+    "harness_node": "v24.19.0"
+  },
+  "protocol": {
+    "backend": "system-time",
+    "child": "direct Node process",
+    "cpu": "user + system; seconds printed by system time, converted to milliseconds",
+    "cpu_resolution_ms": 10,
+    "rss": "maximum resident set size; bytes on macOS, KiB on Linux, normalized to MiB",
+    "wall": "monotonic elapsed milliseconds around synchronous system-time launch; includes wrapper overhead"
+  },
+  "scope": "Same synthetic evidence; fresh Node subprocesses, warm caches, one warmup and alternating trial order. Sequential individual wall/CPU sums; peak RSS is their maximum, not a sum. No model/host tool calls, token telemetry, latency guarantee, or threshold.",
+  "trials": 5,
+  "mapHash": "7b5942975ceac8568f320dfd83cb0f20577ecab59c8f494e4c91de7f411d227b",
+  "runnerHash": "f806f9275ca3e372e9b343b77831d3f352972017e7017a0adf3c57fab6611adb",
+  "readerHash": "7636c5f72d7da8d1454835246269635dc4d60ebbbbebe59ce2c19a0527458471",
+  "results": [
+    {
+      "name": "selective-blocks",
+      "requestHash": "1029bfce06a133383bffaa2a5ec056afcd89b8c7e66a8151d9113336574be1fa",
+      "rows": [
+        {
+          "mode": "batch",
+          "trial": 1,
+          "calls": 1,
+          "bytes": 3636,
+          "wall_ms": 97.686209,
+          "cpu_ms": 120,
+          "peak_rss_mib": 78.6875
+        },
+        {
+          "mode": "individual",
+          "trial": 1,
+          "calls": 9,
+          "bytes": 5592,
+          "wall_ms": 891.0627920000001,
+          "cpu_ms": 1080,
+          "peak_rss_mib": 78.84375
+        },
+        {
+          "mode": "individual",
+          "trial": 2,
+          "calls": 9,
+          "bytes": 5592,
+          "wall_ms": 890.734375,
+          "cpu_ms": 1090,
+          "peak_rss_mib": 78.890625
+        },
+        {
+          "mode": "batch",
+          "trial": 2,
+          "calls": 1,
+          "bytes": 3636,
+          "wall_ms": 96.295167,
+          "cpu_ms": 120,
+          "peak_rss_mib": 78.75
+        },
+        {
+          "mode": "batch",
+          "trial": 3,
+          "calls": 1,
+          "bytes": 3636,
+          "wall_ms": 98.083417,
+          "cpu_ms": 120,
+          "peak_rss_mib": 78.6875
+        },
+        {
+          "mode": "individual",
+          "trial": 3,
+          "calls": 9,
+          "bytes": 5592,
+          "wall_ms": 897.0837509999999,
+          "cpu_ms": 1090,
+          "peak_rss_mib": 78.921875
+        },
+        {
+          "mode": "individual",
+          "trial": 4,
+          "calls": 9,
+          "bytes": 5592,
+          "wall_ms": 825.010209,
+          "cpu_ms": 1020,
+          "peak_rss_mib": 78.609375
+        },
+        {
+          "mode": "batch",
+          "trial": 4,
+          "calls": 1,
+          "bytes": 3636,
+          "wall_ms": 96.10425,
+          "cpu_ms": 120,
+          "peak_rss_mib": 78.34375
+        },
+        {
+          "mode": "batch",
+          "trial": 5,
+          "calls": 1,
+          "bytes": 3636,
+          "wall_ms": 92.076959,
+          "cpu_ms": 110,
+          "peak_rss_mib": 78.671875
+        },
+        {
+          "mode": "individual",
+          "trial": 5,
+          "calls": 9,
+          "bytes": 5592,
+          "wall_ms": 831.509124,
+          "cpu_ms": 1020,
+          "peak_rss_mib": 78.671875
+        }
+      ],
+      "summary": [
+        {
+          "mode": "individual",
+          "calls": 9,
+          "bytes": 5592,
+          "wall_ms": 890.734375,
+          "cpu_ms": 1080,
+          "peak_rss_mib": 78.84375
+        },
+        {
+          "mode": "batch",
+          "calls": 1,
+          "bytes": 3636,
+          "wall_ms": 96.295167,
+          "cpu_ms": 120,
+          "peak_rss_mib": 78.6875
+        }
+      ]
+    },
+    {
+      "name": "distinct-short-bodies",
+      "requestHash": "33e8cc08cfb3d2e4cd90a012fd1dfcf972f83a730e639cc6392a07d63196dee7",
+      "rows": [
+        {
+          "mode": "batch",
+          "trial": 1,
+          "calls": 1,
+          "bytes": 3942,
+          "wall_ms": 90.832042,
+          "cpu_ms": 110,
+          "peak_rss_mib": 78.15625
+        },
+        {
+          "mode": "individual",
+          "trial": 1,
+          "calls": 5,
+          "bytes": 3340,
+          "wall_ms": 461.07699900000006,
+          "cpu_ms": 570,
+          "peak_rss_mib": 78.421875
+        },
+        {
+          "mode": "individual",
+          "trial": 2,
+          "calls": 5,
+          "bytes": 3340,
+          "wall_ms": 454.57675,
+          "cpu_ms": 570,
+          "peak_rss_mib": 78.5
+        },
+        {
+          "mode": "batch",
+          "trial": 2,
+          "calls": 1,
+          "bytes": 3942,
+          "wall_ms": 91.71475,
+          "cpu_ms": 110,
+          "peak_rss_mib": 78
+        },
+        {
+          "mode": "batch",
+          "trial": 3,
+          "calls": 1,
+          "bytes": 3942,
+          "wall_ms": 95.452833,
+          "cpu_ms": 120,
+          "peak_rss_mib": 78.875
+        },
+        {
+          "mode": "individual",
+          "trial": 3,
+          "calls": 5,
+          "bytes": 3340,
+          "wall_ms": 475.733166,
+          "cpu_ms": 580,
+          "peak_rss_mib": 78.703125
+        },
+        {
+          "mode": "individual",
+          "trial": 4,
+          "calls": 5,
+          "bytes": 3340,
+          "wall_ms": 466.07750000000004,
+          "cpu_ms": 590,
+          "peak_rss_mib": 78.375
+        },
+        {
+          "mode": "batch",
+          "trial": 4,
+          "calls": 1,
+          "bytes": 3942,
+          "wall_ms": 88.739292,
+          "cpu_ms": 110,
+          "peak_rss_mib": 78.203125
+        },
+        {
+          "mode": "batch",
+          "trial": 5,
+          "calls": 1,
+          "bytes": 3942,
+          "wall_ms": 88.7065,
+          "cpu_ms": 110,
+          "peak_rss_mib": 78.390625
+        },
+        {
+          "mode": "individual",
+          "trial": 5,
+          "calls": 5,
+          "bytes": 3340,
+          "wall_ms": 468.83991699999996,
+          "cpu_ms": 570,
+          "peak_rss_mib": 78.5
+        }
+      ],
+      "summary": [
+        {
+          "mode": "individual",
+          "calls": 5,
+          "bytes": 3340,
+          "wall_ms": 466.07750000000004,
+          "cpu_ms": 570,
+          "peak_rss_mib": 78.5
+        },
+        {
+          "mode": "batch",
+          "calls": 1,
+          "bytes": 3942,
+          "wall_ms": 90.832042,
+          "cpu_ms": 110,
+          "peak_rss_mib": 78.203125
+        }
+      ]
+    }
+  ]
+}

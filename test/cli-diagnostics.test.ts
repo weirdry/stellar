@@ -345,6 +345,7 @@ void test('mixed help requests cannot create or overwrite outputs with valid wor
         ['inspect', 'map.json', '--help'],
         ['read-issue', 'map.json', 'MUS-1', '--help'],
         ['read-body', 'map.json', 'MUS-1', '--help'],
+        ['read-batch', 'map.json', '--help'],
         ['verify-run', 'capture.json', 'map.json', '--help'],
         ['doctor', '--json', '--help'],
       ]) {
