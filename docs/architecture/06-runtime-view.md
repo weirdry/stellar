@@ -9,8 +9,8 @@ State: **As-built**
 [Explore HTML](diagrams/first-report.html) · [JSON source](diagrams/first-report.json)
 
 The [skill](../../SKILL.md) orchestrates host reads and local commands. Retain
-native records and collection limits before interpretation. `inspect` and
-`read-issue` expose evidence; the agent authors purpose-based choices and rationale.
+native records and collection limits before interpretation. `inspect`, `read-body`
+and `read-issue` expose evidence; the agent authors purpose-based choices and rationale.
 `classify-draft` applies those choices and requires every assigned issue to have
 a primary classification before writing the first run. It never invents a
 taxonomy. Rendering, artifact verification and browser review are separate steps;
@@ -114,9 +114,11 @@ and denied permissions, without exposing raw filesystem paths.
 A host that only exposes model-visible text must disclose that limitation
 instead of retyping long responses or repeatedly recollecting them.
 The [GitHub collection recipe](../../references/github.md#retain-list-responses-before-model-delivery)
-redirects native REST pages to a fresh private file and returns only metadata.
-Its executable synthetic check covers unchanged response bytes, refusal to
-overwrite and retrieval failure. Actual authentication, pagination behavior and
+redirects native REST pages to a fresh private partial file, creates the completed
+response path exclusively after retrieval and validation succeed, and returns
+only metadata. Failed attempts remain separate from completed responses and a
+retry preserves them. Its executable synthetic check covers unchanged response
+bytes, refusal to overwrite, retrieval failure and retry. Actual authentication, pagination behavior and
 host/model token usage remain separate from this local recipe check. Normalized
 connector objects are not assumed to have the native REST capture shape.
 
