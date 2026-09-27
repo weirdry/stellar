@@ -1,7 +1,7 @@
 {
   "version": "0.1.3",
   "files": {
-    "bin/stellar.mjs": "d26d3d0572d915dfbf4a8c1cce548d2cfaf95f92616017886eab4c089be1116b",
+    "bin/stellar.mjs": "83e89895c1b499dd44811fcb87ca71005b2c2db5623749166de0bd550917eff1",
     "schemas/work-map.schema.json": "c78a5500f4428e90ee42da3972c7aaf08ea19cf3e47cbb69d6b4ab7661a0d3fa",
     "schemas/capture.schema.json": "c94b3333b16220ea3322d8563858ba17ebab0afadfcbdadad0d34e5ad67ee068",
     "schemas/choices.schema.json": "16ae73eda989bc277767c972d06254471a248d6c02a4defc1ee066e4c8672ea4",

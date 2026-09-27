@@ -42,6 +42,20 @@ export const commands: Record<string, CommandInfo> = {
       'JSON index with bounded previews and pagination. Does not modify the map.',
     example: 'inspect draft.json',
   },
+  'read-body': {
+    usage: 'read-body MAP.json ISSUE [OFFSET]',
+    summary: 'Read exact body text directly, up to 4,000 Unicode code points.',
+    min: 2,
+    max: 3,
+    arguments: [
+      'MAP.json  Normalized draft or work map.',
+      'ISSUE  Canonical issue ID or unambiguous display identifier.',
+      'OFFSET  Unicode code-point offset in the complete body; default 0.',
+    ],
+    output:
+      'JSON metadata, exact text, start/end offsets and nextOffset. A null nextOffset means the body is exhausted; no body index is required.',
+    example: 'read-body draft.json ISSUE_ID',
+  },
   'read-issue': {
     usage: 'read-issue MAP.json ISSUE BLOCK [OFFSET]',
     summary: 'Read an exact, bounded chunk of a source block.',

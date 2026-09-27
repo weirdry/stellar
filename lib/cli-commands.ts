@@ -5,6 +5,7 @@ import { normalizeCapture } from './normalize.ts';
 import { verifyRunFiles } from './verify.ts';
 import {
   inspectMap,
+  readBody,
   readIssue,
   searchIssue,
   readReadingMap,
@@ -31,6 +32,14 @@ export async function runCommand(command: string, args: string[]) {
       console.log(
         JSON.stringify(
           inspectMap(await readReadingMap(input), output, extra[0]),
+          null,
+          2,
+        ),
+      );
+    } else if (command === 'read-body') {
+      console.log(
+        JSON.stringify(
+          readBody(await readReadingMap(input), output, extra[0]),
           null,
           2,
         ),
