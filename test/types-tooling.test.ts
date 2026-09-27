@@ -142,6 +142,24 @@ void test('strict program checks unimported files, declaration bodies and the co
     /Handwritten maintained JS\/Python: lib\/unchecked.js/,
   );
   await rm(join(dir, 'lib/unchecked.js'));
+  // Retired experiments must not leave exemptions for handwritten sources.
+  const retiredPaths = [
+    'scripts/bench/native/bridge.mjs',
+    'scripts/bench/standalone/check_archive.py',
+  ];
+  await mkdir(join(dir, 'scripts/bench/native'), { recursive: true });
+  await mkdir(join(dir, 'scripts/bench/standalone'), { recursive: true });
+  for (const path of retiredPaths) await write(path, '\n');
+  const retired = await readOnlyFailure(
+    dir,
+    run,
+    check,
+    /Handwritten maintained JS\/Python:/,
+  );
+  for (const path of retiredPaths) {
+    assert.ok(retired.stderr.includes(path), retired.stderr);
+    await rm(join(dir, path));
+  }
   const declaration = await read('types/generated/work-map.d.ts');
   await write(
     'types/generated/work-map.d.ts',

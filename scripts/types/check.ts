@@ -34,24 +34,8 @@ for (const name of [
       shims.add(path);
   }
 }
-// These JS sources belong to archived experiments, not the maintained runtime.
-const exceptions = new Set([
-  'bin/stellar.mjs',
-  'assets/viewer/app.js',
-  'scripts/bench/native/bridge.mjs',
-  'scripts/bench/native/cases.mjs',
-  'scripts/bench/native/stage.mjs',
-  'scripts/bench/standalone/build-focused.mjs',
-  'scripts/bench/standalone/cases.mjs',
-  'scripts/bench/standalone/focused-entry.mjs',
-  'scripts/bench/native/compare.py',
-  'scripts/bench/standalone/check_archive.py',
-  'scripts/bench/standalone/benchmark.py',
-  'scripts/bench/standalone/differential.py',
-  'scripts/bench/standalone/safety.py',
-  'scripts/bench/standalone/replay.py',
-  'scripts/bench/standalone/test_checks.py',
-]);
+// Only generated delivery artifacts may remain JavaScript.
+const exceptions = new Set(['bin/stellar.mjs', 'assets/viewer/app.js']);
 const missing: string[] = [],
   legacy: string[] = [];
 function check(path: string) {

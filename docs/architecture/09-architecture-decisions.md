@@ -19,7 +19,9 @@ This chapter is the current-view index. Accepted ADRs preserve rationale;
 future consequential changes add a new decision and update the current view.
 [ADR-0009: Type all maintained sources](../decisions/0009-type-maintained-sources.md)
 extends static coverage to viewer, tests and tools while preserving generated
-JavaScript delivery and frozen experiments.
+JavaScript delivery. Completed experiment source is retained in
+[Git history](../development/historical-native-experiments.md); measurements
+and interpretation remain in the current tree.
 
 An Accepted ADR can describe a Target that is not implemented yet.
 

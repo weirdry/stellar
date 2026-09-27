@@ -136,7 +136,7 @@ records the original candidate boundary, separately from the later experiments
 and language direction below.
 
 The separate [native-worker study](../validation/2026-09-20-native-normalize-comparison.md)
-compares the current Node CLI with experimental Go/Rust workers at a specific
+compares its pinned Node CLI with experimental Go/Rust workers at a specific
 hybrid boundary. Its optional harness checks exact draft bytes and diagnostics,
 records native fallbacks, and includes process/JSON transfer in whole-command
 timings. Separate process-tree RSS sampling is an approximate observation,
@@ -150,16 +150,18 @@ also verify insertion-anchor rejection before the stager creates its output.
 
 The later [standalone normalization archive](../validation/2026-09-21-standalone-normalize-comparison.md)
 measures Go/Rust owning input, validation, normalization and output without Node.
-It preserves the measured source/locks, raw samples and public correctness receipts.
+Its measured source/locks remain in Git history; raw samples and public
+correctness receipts remain in the current tree.
 Its 169-case comparison has one known native acceptance difference; additional
 probes expose Rust numeric-to-text differences outside that corpus. Native
-diagnostics/draft validation do not provide full CLI equivalence. The optional
-`just standalone-check` validates archive consistency; `just standalone-replay`
-checks regenerated input hashes and expected outcomes before separate measurements.
-Both refuse optimized Python, and storage replay checks complete directory
-inventories. `just standalone-test` fault-injects these guards without compiling
-natives; see the [review corrections](../validation/2026-09-21-standalone-review-corrections.md).
-These commands are not default CI dependencies or evidence of product/native installation.
+diagnostics/draft validation do not provide full CLI equivalence. The
+[historical reproduction guide](../development/historical-native-experiments.md)
+locates the frozen source, archive consistency checks and replay commands; those
+tools and their source-inventory exceptions have been removed from this checkout.
+The [review corrections](../validation/2026-09-21-standalone-review-corrections.md)
+retain dated evidence of their guard tests. Current product CI does not rebuild
+or replay native experiments. Historical results are not evidence of current
+product/native installation.
 
 ## Documentation quality
 

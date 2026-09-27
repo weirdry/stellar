@@ -113,17 +113,11 @@ allocation sampling of its retained synthetic artifacts, and `just profile-test`
 for deterministic attribution checks. Profiled timings include instrumentation
 overhead; the performance guide owns interpretation and output-retention limits.
 
-The optional [native-worker experiment](../../scripts/bench/native/README.md) adds
-`just native-build` and `just native-compare` for a synthetic Node/Go/Rust
-comparison from its documented pre-conversion archival checkout. It requires explicit native compilers and includes the cost of
-retained Node validation and JSON transfer; it does not change the skill runtime.
-
-The separate [standalone archive](../../scripts/bench/standalone/README.md) retains
-the full-command prototypes and evidence. `just standalone-check` checks the
-historical data without executing native code; `just standalone-replay` rebuilds
-and checks it in a fresh directory on macOS from the documented archive checkout
-with its own frozen dependencies, not the current TS dependency graph. These optional commands do not add
-Go/Rust to the product or default CI, and do not approve a native migration.
+The completed native-worker and standalone experiments retain their measurements
+and interpretation in this repository; source and replay commands live in Git
+history. The [historical reproduction guide](historical-native-experiments.md)
+pins the separate checkout and its procedures. The current Justfile has no
+native build, archive check or standalone replay recipes.
 
 ## Work tracking and agent instructions
 

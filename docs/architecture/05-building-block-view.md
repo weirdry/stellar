@@ -55,8 +55,10 @@ from canonical schemas, and the [compiler gate](../../scripts/types/check.ts)
 checks every maintained TS/declaration file, root configuration and unexpected
 JS/Python. [Viewer sources](../../viewer/app.ts) own display-state and DOM/SVG
 types; [build-viewer.ts](../../scripts/build-viewer.ts) generates the committed
-browser asset. Tests and active tools also use TS. Frozen experiment code remains
-an exact-path exception. Node runner and browser assets have read-only drift checks.
+browser asset. Tests and active tools also use TS. Only generated delivery
+JavaScript remains excepted; completed experiments live in
+[Git history](../development/historical-native-experiments.md).
+Node runner and browser assets have read-only drift checks.
 
 ## Agent workflow
 

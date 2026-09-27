@@ -1,5 +1,9 @@
 # Node, Go and Rust normalization comparison — 2026-09-20
 
+Historical tooling is now retained in Git history. Use the
+[historical reproduction guide](../development/historical-native-experiments.md)
+for the separate checkout required by the commands below.
+
 State: **As-built** local synthetic experiment. Product language and contracts are unchanged.
 
 ## Result and decision
@@ -145,7 +149,7 @@ just native-compare /tmp/stellar-native-build /tmp/stellar-baseline /tmp/stellar
 ```
 
 Generate `/tmp/stellar-baseline` with `just benchmark` first. See the
-[experiment procedure](../../scripts/bench/native/README.md) and
+[experiment procedure](https://github.com/weirdry/stellar/blob/0fe3abb5bf044812bc63a6519fe188e7c5fefbee/scripts/bench/native/README.md) and
 [performance guide](../development/performance.md) for prerequisites, precise
 responsibilities, fresh-directory rules and sampling limitations.
 

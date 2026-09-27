@@ -22,17 +22,19 @@ exact diagnostic equivalence or provide the raw console transcript.
 
 `artifacts.json` describes the measured temporary layout. Paths beginning with
 `baseline/` refer to the pinned product copy; `bin/` binaries are not committed.
-Native sources and locks are retained exactly under
-[the prototype directory](../../../../scripts/bench/standalone/README.md).
+Native sources and locks are retained exactly in the
+[historical prototype directory](https://github.com/weirdry/stellar/blob/0fe3abb5bf044812bc63a6519fe188e7c5fefbee/scripts/bench/standalone/README.md).
 The original report generator and host-specific setup script are not included;
 the portable replay adapter and this documentation replace their invocation role.
 An original hash is historical evidence, not a promise that every named file
 exists in the current repository or that new binaries have identical hashes.
 
-Run `just standalone-check` to check source/lock and retained raw-data identity,
+In the [pinned historical checkout](../../../development/historical-native-experiments.md),
+run `just standalone-check` to check source/lock and retained raw-data identity,
 sample order, calculated summaries and receipt consistency. It requires exactly
 ten measured-source entries (eight Go/Rust source/lock paths plus `cases.mjs`
 and `focused-entry.mjs`) before checking their fingerprints; a replacement
 manifest cannot silently omit these entries. Re-execution uses
 `just standalone-replay` and writes separate results. Neither command modifies
-this historical dataset.
+this historical dataset. The current source tree retains the dataset but no
+longer includes these commands or the prototype code.
