@@ -113,6 +113,12 @@ from. Output diagnostics distinguish occupied destinations, invalid parent paths
 and denied permissions, without exposing raw filesystem paths.
 A host that only exposes model-visible text must disclose that limitation
 instead of retyping long responses or repeatedly recollecting them.
+The [GitHub collection recipe](../../references/github.md#retain-list-responses-before-model-delivery)
+redirects native REST pages to a fresh private file and returns only metadata.
+Its executable synthetic check covers unchanged response bytes, refusal to
+overwrite and retrieval failure. Actual authentication, pagination behavior and
+host/model token usage remain separate from this local recipe check. Normalized
+connector objects are not assumed to have the native REST capture shape.
 
 The host follows [the skill](../../SKILL.md), exhausts the requested source query
 or records partial coverage, retrieves descriptions and supported relations, and
@@ -146,7 +152,10 @@ visible in the header/help; no source access occurs when opening the artifact.
 State: **As-built**
 
 After normalization, `inspect` pages through issue metadata or structural body
-blocks without requiring completed classifications. `read-issue` returns exact
+blocks without requiring completed classifications. `read-body` reads complete
+body text directly in bounded 4,000-code-point chunks, with body-relative offsets
+and explicit continuation. Short bodies need no intermediate body-index call;
+empty observations retain the same presence semantics. `read-issue` returns exact
 source substrings; `search-issue` locates case-sensitive literal text across the
 whole body, including block boundaries, and maps match starts to block offsets.
 Reader and response-retention errors use the canonical diagnostic `fix` field.

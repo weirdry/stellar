@@ -39,7 +39,13 @@ This copies bytes to a fresh owner-only file and returns a byte count/hash, not
 the payload. It cannot establish how its input was obtained. With an accessible
 return value, host-side code can serialize it directly to a file instead. Parse
 MCP wrappers mechanically, retaining the original response alongside extracted
-issue data. Network-layer byte capture is not required. Do not put credentials
+issue data. Prefer a supported route that saves the response before returning
+only metadata to the model; see the executable [GitHub CLI recipe](github.md#retain-list-responses-before-model-delivery).
+If full results have already entered model context, retention still preserves
+evidence but cannot reduce that earlier input. Inspect the actual wrapper rather
+than assuming JSON text: some hosts return `structuredContent`, and normalized
+connector objects may differ from the native capture contract.
+Network-layer byte capture is not required. Do not put credentials
 or unrelated transcript material in evidence.
 
 Output failures distinguish an occupied destination (`response-exists`), a

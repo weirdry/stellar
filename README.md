@@ -113,8 +113,10 @@ invocation from discovery.
 ## Generate a map from a development checkout
 
 The host can retain response files with `just retain-response INPUT NEW_FILE`
-without printing their contents. After normalization, `just inspect MAP`,
-`just inspect MAP ISSUE`, `just read-issue MAP ISSUE BLOCK` and
+without printing their contents. The [GitHub collection recipe](references/github.md#retain-list-responses-before-model-delivery)
+saves native responses before returning metadata to the model. After normalization,
+`just read-body MAP ISSUE` reads short bodies directly, with bounded continuation
+for longer text. `just inspect MAP`, `just inspect MAP ISSUE`, `just read-issue MAP ISSUE BLOCK` and
 `just search-issue MAP ISSUE TEXT` provide bounded, template-independent views
 over original descriptions. See [progressive reading](references/reading.md).
 These helpers do not fetch data or turn a model-authored copy into source proof.

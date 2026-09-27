@@ -19,6 +19,76 @@ CLI can redirect response output directly to a fresh private file without model
 transcription. Preserve obtained bodies; [progressive reading](reading.md)
 controls model input, not the retained evidence.
 
+## Retain list responses before model delivery
+
+For a full repository/assignee query, set `REPOSITORY` to the confirmed
+`owner/repo`, `ASSIGNEE` to the selected login, and `STAGING` to an absolute private
+staging directory selected under the run location policy. Run the following in
+the host shell; adapt the filters to the requested scope before collection.
+This example exhausts the list and is not a recent-N sampling recipe. It requires
+an already authenticated `gh` and Node 24. Source relation collection below is
+still required for the requested coverage.
+
+```bash
+(
+  set -euo pipefail
+  umask 077
+  : "${REPOSITORY:?Set the selected owner/repo}"
+  : "${ASSIGNEE:?Set the selected login}"
+  : "${STAGING:?Set the absolute private staging directory}"
+  mkdir -p "$STAGING/evidence/raw"
+  set -C
+  gh api --method GET --paginate --slurp \
+    "/repos/$REPOSITORY/issues" -f assignee="$ASSIGNEE" -f state=all \
+    > "$STAGING/evidence/raw/assigned-pages.json"
+  node --input-type=module - "$STAGING/evidence/raw/assigned-pages.json" <<'NODE'
+import { readFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
+const bytes = await readFile(process.argv[2]);
+let pages;
+try { pages = JSON.parse(bytes.toString('utf8')); }
+catch { throw new Error('The retained response is not valid JSON; keep it as failed evidence.'); }
+if (!Array.isArray(pages) || !pages.every(Array.isArray))
+  throw new Error('Expected retained REST page arrays.');
+const records = pages.flat();
+if (!records.every(record => record && typeof record === 'object' && !Array.isArray(record)))
+  throw new Error('Expected native REST issue objects.');
+console.log(JSON.stringify({
+  responseFile: process.argv[2],
+  bytes: bytes.length,
+  sha256: createHash('sha256').update(bytes).digest('hex'),
+  pages: pages.length,
+  issues: records.filter(record => !record.pull_request).length,
+}));
+NODE
+)
+```
+
+The response goes straight to a fresh private file; only metadata reaches shell
+stdout. An occupied response path is refused before `gh` runs. A failed request
+or malformed JSON/page shape exits without a success summary. Keep any partial response
+as failed evidence and use a fresh path for a deliberate retry; do not normalize
+it as a completed query. Record query arguments, observation times, exit status,
+pagination and lookup outcomes in the collection account.
+
+Build the capture mechanically from the retained pages: flatten arrays, exclude
+`pull_request` entries from issue records, and keep each selected native issue
+object unchanged, including its body. Retain the original pages even when they
+include pull requests. Use the same direct-to-file approach for the required
+detail and relationship requests; filenames must be fresh for every response.
+Do not print the raw file or ask the model to transcribe it into another JSON file.
+
+A host orchestration facility may instead retain a tool's actual return value
+before returning a summary to the model. Inspect its real wrapper: data may be
+in `structuredContent` or JSON text under `content`. A normalized connector
+issue is not necessarily native REST JSON; do not invent missing `node_id`,
+`number`, or `html_url` fields. Use the supported native route or disclose the
+capture limitation. Hosts that already deliver full responses to the model can
+still retain evidence, but this cannot retroactively reduce that input. The
+recipe establishes a transfer route, not measured token savings or host parity.
+
+## Collect registered relations
+
 For each in-scope issue, collect supported registered relations:
 
 - `GET /repos/{owner}/{repo}/issues/{number}/parent`: save the returned issue in

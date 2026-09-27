@@ -13,13 +13,15 @@ before collection. If a host already delivers full responses into model context,
 asking the model to ignore most of them does not reduce that input. Stellar does
 not intercept host tools or guarantee token/latency savings on every host.
 
-Start from issue metadata and a structural body index. Read enough source text
-to establish the outcome, deliverable and explicit exclusions for an assignment.
+Start from issue metadata. Use `read-body` to read short text directly without
+an intermediate body index; use structural indexes when navigation helps with
+longer text. Read enough source text to establish the outcome, deliverable and
+explicit exclusions for an assignment.
 These are questions, not required heading names. No organization, language,
-provider or issue template supplies mandatory sections. Short text may be read
-in full. For longer text, inspect headings and previews, then request relevant
-blocks. All index pages remain accessible; a preview or search miss is not proof
-that exclusions or contradictory evidence are absent elsewhere.
+provider or issue template supplies mandatory sections. For longer text, inspect
+headings and previews, then request relevant blocks. All index pages remain
+accessible; a preview or search miss is not proof that exclusions or
+contradictory evidence are absent elsewhere.
 
 Read more when the outcome is unclear, membership contradicts the group basis,
 or a proposed claim needs another part of the text. A deployment/acceptance
@@ -43,12 +45,25 @@ with colliding identifiers.
 ```sh
 node "$STELLAR_ROOT/bin/stellar.mjs" inspect MAP.json
 node "$STELLAR_ROOT/bin/stellar.mjs" inspect MAP.json "" 20
+node "$STELLAR_ROOT/bin/stellar.mjs" read-body MAP.json ISSUE
+node "$STELLAR_ROOT/bin/stellar.mjs" read-body MAP.json ISSUE OFFSET
 node "$STELLAR_ROOT/bin/stellar.mjs" inspect MAP.json ISSUE
 node "$STELLAR_ROOT/bin/stellar.mjs" inspect MAP.json ISSUE 20
 node "$STELLAR_ROOT/bin/stellar.mjs" read-issue MAP.json ISSUE BLOCK
 node "$STELLAR_ROOT/bin/stellar.mjs" read-issue MAP.json ISSUE BLOCK OFFSET
 node "$STELLAR_ROOT/bin/stellar.mjs" search-issue MAP.json ISSUE 'literal source text'
 ```
+
+`read-body` returns up to 4,000 Unicode code points of the complete description,
+with issue metadata and exact `text`, `start`, `end`, `offset`, and `nextOffset`.
+Its `kind` is `body-text`. A short body fits in one call without a body index.
+For longer bodies, follow `nextOffset` until null for a complete reading, or
+switch to structural navigation when that better answers the current question.
+Offsets are relative to the whole body, not a block. Empty, null and omitted
+descriptions return empty text with null continuation; `descriptionPresent`
+preserves the distinction described below. No text is summarized or rewritten.
+The output bound reuses the block reader's chunk size; it is not a definition
+of semantic relevance or a token budget.
 
 `inspect` returns 20 entries per page, with `total` and `nextOffset`. Without an
 issue it lists metadata with literal titles/statuses and without descriptions.

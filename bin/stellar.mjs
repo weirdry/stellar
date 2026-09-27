@@ -9050,6 +9050,28 @@ function inspectMap(input, selector, offset = 0) {
     ...page(blocks, offset)
   };
 }
+function readBody(input, selector, offset = 0) {
+  const map = assertWorkMap(input, true);
+  offset = number(offset, "/offset");
+  const issue = select(map, selector);
+  const text = characters(issue.description ?? "");
+  if (offset > text.length)
+    fail3(
+      "/offset",
+      "Offset is beyond this body.",
+      "Use the returned nextOffset or restart at 0 after the body changes."
+    );
+  const end = Math.min(offset + CHUNK, text.length);
+  return {
+    kind: "body-text",
+    issue: metadata(issue),
+    start: offset,
+    end,
+    offset,
+    nextOffset: end < text.length ? end : null,
+    text: text.slice(offset, end).join("")
+  };
+}
 function readIssue(input, selector, blockInput, offset = 0) {
   const map = assertWorkMap(input, true);
   const block = number(blockInput, "/block");
@@ -9237,6 +9259,14 @@ async function runCommand(command2, args2) {
           2
         )
       );
+    } else if (command2 === "read-body") {
+      console.log(
+        JSON.stringify(
+          readBody(await readReadingMap(input), output, extra[0]),
+          null,
+          2
+        )
+      );
     } else if (["read-issue", "search-issue"].includes(command2)) {
       const operation = command2 === "read-issue" ? readIssue : searchIssue;
       console.log(
@@ -9380,6 +9410,19 @@ var commands = {
     ],
     output: "JSON index with bounded previews and pagination. Does not modify the map.",
     example: "inspect draft.json"
+  },
+  "read-body": {
+    usage: "read-body MAP.json ISSUE [OFFSET]",
+    summary: "Read exact body text directly, up to 4,000 Unicode code points.",
+    min: 2,
+    max: 3,
+    arguments: [
+      "MAP.json  Normalized draft or work map.",
+      "ISSUE  Canonical issue ID or unambiguous display identifier.",
+      "OFFSET  Unicode code-point offset in the complete body; default 0."
+    ],
+    output: "JSON metadata, exact text, start/end offsets and nextOffset. A null nextOffset means the body is exhausted; no body index is required.",
+    example: "read-body draft.json ISSUE_ID"
   },
   "read-issue": {
     usage: "read-issue MAP.json ISSUE BLOCK [OFFSET]",

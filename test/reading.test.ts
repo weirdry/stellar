@@ -21,6 +21,7 @@ import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import {
   inspectMap as inspect,
+  readBody,
   readIssue,
   searchIssue,
   bodyBlocks,
@@ -96,6 +97,97 @@ void test('structure-based reading reconstructs arbitrary text, CRLF, fences and
   }
   assert.equal(recovered, source);
   assert.deepEqual(map, before);
+});
+
+void test('direct body reading preserves complete Unicode text across chunk boundaries without a block index', () => {
+  const draft = normalizeCapture(mixedCapture());
+  const issue = must(draft.issues[0]);
+  for (const text of [
+    '# Scope\r\n\r\nExplain results. 🪐 Do not recompute them.\r\n',
+    'x'.repeat(3999) + '🪐' + '\r\n# Later decision\r\n' + '測定'.repeat(2200),
+    '🪐'.repeat(4000),
+    '🪐'.repeat(4001),
+  ]) {
+    issue.description = text;
+    const before = structuredClone(draft);
+    let offset: number | null = 0;
+    let recovered = '';
+    do {
+      const result = readBody(draft, issue.id, offset);
+      assert.equal(result.kind, 'body-text');
+      assert.equal(result.start, offset);
+      assert.equal(result.offset, offset);
+      assert.ok(Array.from(result.text).length <= 4000);
+      assert.equal(
+        result.text,
+        Array.from(text).slice(result.start, result.end).join(''),
+      );
+      assert.equal(result.issue.descriptionCharacters, Array.from(text).length);
+      recovered += result.text;
+      offset = result.nextOffset;
+    } while (offset !== null);
+    assert.equal(recovered, text);
+    assert.deepEqual(draft, before);
+  }
+});
+
+void test('direct body reading preserves empty observations and rejects ambiguous identity and invalid offsets', () => {
+  const map = mixedMap();
+  const issue = must(map.issues[0]);
+  for (const text of [undefined, null, '']) {
+    if (text === undefined) delete issue.description;
+    else issue.description = text;
+    const result = readBody(map, issue.identifier);
+    assert.equal(result.issue.descriptionPresent, text !== undefined);
+    assert.equal(result.text, '');
+    assert.equal(result.end, 0);
+    assert.equal(result.nextOffset, null);
+  }
+  issue.description = 'abc';
+  assert.equal(readBody(map, issue.id, 3).text, '');
+  for (const offset of [-1, '1.5', '', '9007199254740992', 4])
+    assert.throws(() => readBody(map, issue.id, offset));
+  must(map.issues.find((i) => i.sourceId !== issue.sourceId)).identifier =
+    issue.identifier;
+  assert.throws(() => readBody(map, issue.identifier));
+  assert.equal(readBody(map, issue.id).text, 'abc');
+});
+
+void test('source and bundled CLIs continue at whole-body Unicode offsets without rewriting the input', async (t) => {
+  const dir = await directory(t);
+  const path = join(dir, 'draft.json');
+  const map = normalizeCapture(mixedCapture());
+  const issue = must(map.issues[0]);
+  issue.description =
+    '🪐'.repeat(4000) + '\r\n# Later decision\r\nDo not recompute.';
+  const serialized = JSON.stringify(map);
+  await writeFile(path, serialized);
+  for (const entry of [
+    cli,
+    fileURLToPath(new URL('../bin/stellar.mjs', import.meta.url)),
+  ]) {
+    const invoke = (...args: string[]) =>
+      spawnSync(
+        process.execPath,
+        [entry, 'read-body', path, issue.id, ...args],
+        { encoding: 'utf8' },
+      );
+    const first = invoke();
+    assert.equal(first.status, 0, first.stderr);
+    const firstBody = objectJSON(first.stdout);
+    assert.equal(firstBody['text'], '🪐'.repeat(4000));
+    assert.equal(firstBody['nextOffset'], 4000);
+    const second = invoke('4000');
+    assert.equal(second.status, 0, second.stderr);
+    const secondBody = objectJSON(second.stdout);
+    assert.equal(secondBody['start'], 4000);
+    assert.equal(
+      secondBody['text'],
+      '\r\n# Later decision\r\nDo not recompute.',
+    );
+    assert.equal(secondBody['nextOffset'], null);
+  }
+  assert.equal(await readFile(path, 'utf8'), serialized);
 });
 
 void test('index and search disclose bounded pages; late exclusions remain reachable in unheaded prose', () => {
@@ -489,6 +581,8 @@ void test('CLI supports draft inspection and private diagnostics without modifyi
   for (const args of [
     ['inspect', path],
     ['inspect', path, id],
+    ['read-body', path, id],
+    ['read-body', path, id, '4'],
     ['read-issue', path, id, '0'],
     ['search-issue', path, id, 'explains'],
   ]) {
@@ -503,6 +597,10 @@ void test('CLI supports draft inspection and private diagnostics without modifyi
     ['inspect', path, marker],
     ['inspect', join(dir, marker)],
     ['inspect', malformed],
+    ['read-body', malformed, id],
+    ['read-body', path, marker],
+    ['read-body', path, id, '-1'],
+    ['read-body', path, id, '99999'],
     ['read-issue', path, id, '-1'],
     ['search-issue', path, id, ''],
     ['retain-response', join(dir, marker), join(dir, 'new.json')],
@@ -521,5 +619,10 @@ void test('CLI supports draft inspection and private diagnostics without modifyi
     }
   }
   assert.equal(run('read-issue', path, id).status, 2);
+  assert.equal(run('read-body', path).status, 2);
+  assert.equal(run('read-body', path, id, '0', 'extra').status, 2);
+  const direct = objectJSON(run('read-body', path, id).stdout);
+  assert.equal(direct['text'], must(draft.issues[0]).description);
+  assert.equal(direct['nextOffset'], null);
   assert.equal(await readFile(path, 'utf8'), serialized);
 });

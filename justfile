@@ -82,6 +82,10 @@ retain-response input output:
 inspect input issue="" offset="0":
     mise exec --locked -- node bin/stellar.ts inspect {{ quote(input) }} {{ quote(issue) }} {{ quote(offset) }}
 
+# Read body text directly without a structural index, with bounded continuation.
+read-body input issue offset="0":
+    mise exec --locked -- node bin/stellar.ts read-body {{ quote(input) }} {{ quote(issue) }} {{ quote(offset) }}
+
 # Read an exact source block in bounded chunks.
 read-issue input issue block offset="0":
     mise exec --locked -- node bin/stellar.ts read-issue {{ quote(input) }} {{ quote(issue) }} {{ quote(block) }} {{ quote(offset) }}

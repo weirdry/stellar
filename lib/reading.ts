@@ -192,6 +192,33 @@ export function inspectMap(
   };
 }
 
+export function readBody(
+  input: unknown,
+  selector: unknown,
+  offset: string | number = 0,
+) {
+  const map = assertWorkMap(input, true);
+  offset = number(offset, '/offset');
+  const issue = select(map, selector);
+  const text = characters(issue.description ?? '');
+  if (offset > text.length)
+    fail(
+      '/offset',
+      'Offset is beyond this body.',
+      'Use the returned nextOffset or restart at 0 after the body changes.',
+    );
+  const end = Math.min(offset + CHUNK, text.length);
+  return {
+    kind: 'body-text',
+    issue: metadata(issue),
+    start: offset,
+    end,
+    offset,
+    nextOffset: end < text.length ? end : null,
+    text: text.slice(offset, end).join(''),
+  };
+}
+
 export function readIssue(
   input: unknown,
   selector: unknown,
