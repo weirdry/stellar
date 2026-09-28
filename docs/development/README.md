@@ -35,43 +35,44 @@ Use `just diagrams-build` with a reviewed `ARCHIFY_ROOT` for explicit generation
 [diagram guide](../architecture/diagrams/README.md) describes source validation,
 SVG export, browser review and evidence retention.
 
-| Command                                     | Behavior                                                                                                                     |
-| ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `just init`                                 | Locked tools, frozen dependencies, local hooks                                                                               |
-| `just format`                               | Explicit Prettier write                                                                                                      |
-| `just format-check`                         | Read-only repository-local Prettier check                                                                                    |
-| `just docs-check`                           | Canonical structure, indexes, local links, whitespace                                                                        |
-| `just diagrams-build`                       | Explicit Archify generation and SVG export using the reviewed generator                                                      |
-| `just diagrams-check`                       | Read-only source/HTML/SVG inventory, generator identity, hash and export comparison                                          |
-| `just lint`                                 | Type-aware TS/JS ESLint, Just format, Bash syntax, ShellCheck, actionlint, Git whitespace                                    |
-| `just types-build`                          | Explicitly generate schema declarations with pinned tools                                                                    |
-| `just types-check`                          | Read-only schema/declaration inventory and byte comparison                                                                   |
-| `just typecheck`                            | Strict no-emit checking, type fixtures and complete owned-file inventory                                                     |
-| `just test`                                 | Deterministic Node unit and CLI integration tests                                                                            |
-| `just build-runner`                         | Explicitly regenerate the installed runner, integrity manifest and dependency notices                                        |
-| `just bundle-check`                         | Read-only runtime resource inventory and byte comparison of the generated runner, integrity manifest and notices             |
-| `just version`                              | Print the product version from its authoritative source                                                                      |
-| `just doctor [--json]`                      | Read-only runtime and installed-build consistency diagnostics                                                                |
-| `just help [COMMAND]`                       | Global or command-specific CLI usage                                                                                         |
-| `just check` / `just ci`                    | Documentation, diagrams, format, declarations, types, lint, bundle currency and Node tests; no installation or repair writes |
-| `just browser-install`                      | Explicit Chromium download using pinned Playwright                                                                           |
-| `just browser-check`                        | Chromium interaction, reuse, safety, viewport and export tests with synthetic inputs                                         |
-| `just normalize INPUT OUTPUT`               | Convert native capture to an unclassified work-map draft                                                                     |
-| `just classify-draft DRAFT CHOICES RUN`     | Apply initial agent decisions and save a complete map/state in a fresh directory                                             |
-| `just retain-response INPUT NEW_FILE`       | Preserve a host response file without echoing its contents or replacing another file                                         |
-| `just inspect MAP [ISSUE [OFFSET]]`         | Page through issue metadata or a template-independent body index                                                             |
-| `just read-batch MAP REQUESTS [OFFSET]`     | Read paged body/block selections with shared issue metadata                                                                  |
-| `just read-body MAP ISSUE [OFFSET]`         | Read exact body text directly, with bounded whole-body continuation                                                          |
-| `just read-issue MAP ISSUE BLOCK [OFFSET]`  | Read exact bounded source excerpts                                                                                           |
-| `just search-issue MAP ISSUE TEXT [OFFSET]` | Locate literal source text, returning bounded match pages                                                                    |
-| `just remember MAP RUN`                     | Initialize private state from a complete map in a new directory                                                              |
-| `just refresh STATE CAPTURE RUN`            | Normalize current facts and reapply saved choices                                                                            |
-| `just classify STATE CHOICES RUN`           | Apply agent choices while protecting user decisions                                                                          |
-| `just revise STATE CHOICES RUN`             | Record explicit user corrections                                                                                             |
-| `just skill-link`                           | Register this checkout as a local user skill; refuse conflicting installs                                                    |
-| `just validate INPUT`                       | Validate input without writing it                                                                                            |
-| `just render INPUT OUTPUT`                  | Validate and generate a standalone HTML artifact                                                                             |
-| `just verify-run CAPTURE MAP HTML [STATE]`  | Read-only source-fact, HTML, bundle and optional state-map comparison                                                        |
+| Command                                                   | Behavior                                                                                                                     |
+| --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `just init`                                               | Locked tools, frozen dependencies, local hooks                                                                               |
+| `just format`                                             | Explicit Prettier write                                                                                                      |
+| `just format-check`                                       | Read-only repository-local Prettier check                                                                                    |
+| `just docs-check`                                         | Canonical structure, indexes, local links, whitespace                                                                        |
+| `just diagrams-build`                                     | Explicit Archify generation and SVG export using the reviewed generator                                                      |
+| `just diagrams-check`                                     | Read-only source/HTML/SVG inventory, generator identity, hash and export comparison                                          |
+| `just lint`                                               | Type-aware TS/JS ESLint, Just format, Bash syntax, ShellCheck, actionlint, Git whitespace                                    |
+| `just types-build`                                        | Explicitly generate schema declarations with pinned tools                                                                    |
+| `just types-check`                                        | Read-only schema/declaration inventory and byte comparison                                                                   |
+| `just typecheck`                                          | Strict no-emit checking, type fixtures and complete owned-file inventory                                                     |
+| `just test`                                               | Deterministic Node unit and CLI integration tests                                                                            |
+| `just build-runner`                                       | Explicitly regenerate the installed runner, integrity manifest and dependency notices                                        |
+| `just bundle-check`                                       | Read-only runtime resource inventory and byte comparison of the generated runner, integrity manifest and notices             |
+| `just version`                                            | Print the product version from its authoritative source                                                                      |
+| `just doctor [--json]`                                    | Read-only runtime and installed-build consistency diagnostics                                                                |
+| `just help [COMMAND]`                                     | Global or command-specific CLI usage                                                                                         |
+| `just check` / `just ci`                                  | Documentation, diagrams, format, declarations, types, lint, bundle currency and Node tests; no installation or repair writes |
+| `just browser-install`                                    | Explicit Chromium download using pinned Playwright                                                                           |
+| `just browser-check`                                      | Chromium interaction, reuse, safety, viewport and export tests with synthetic inputs                                         |
+| `just normalize INPUT OUTPUT`                             | Convert native capture to an unclassified work-map draft                                                                     |
+| `just classify-draft DRAFT CHOICES RUN`                   | Apply initial agent decisions and save a complete map/state in a fresh directory                                             |
+| `just retain-response INPUT NEW_FILE`                     | Preserve a host response file without echoing its contents or replacing another file                                         |
+| `just inspect MAP [ISSUE [OFFSET]]`                       | Page through issue metadata or a template-independent body index                                                             |
+| `just read-batch MAP REQUESTS [OFFSET]`                   | Read paged body/block selections with shared issue metadata                                                                  |
+| `just read-body MAP ISSUE [OFFSET]`                       | Read exact body text directly, with bounded whole-body continuation                                                          |
+| `just read-issue MAP ISSUE BLOCK [OFFSET]`                | Read exact bounded source excerpts                                                                                           |
+| `just search-issue MAP ISSUE TEXT [OFFSET]`               | Locate literal source text, returning bounded match pages                                                                    |
+| `just remember MAP RUN`                                   | Initialize private state from a complete map in a new directory                                                              |
+| `just refresh STATE CAPTURE RUN`                          | Normalize current facts and reapply saved choices                                                                            |
+| `just read-refresh STATE CAPTURE [ISSUE [VIEW [OFFSET]]]` | Read refresh attention, focused/full evidence or taxonomy without writing a run                                              |
+| `just classify STATE CHOICES RUN`                         | Apply agent choices while protecting user decisions                                                                          |
+| `just revise STATE CHOICES RUN`                           | Record explicit user corrections                                                                                             |
+| `just skill-link`                                         | Register this checkout as a local user skill; refuse conflicting installs                                                    |
+| `just validate INPUT`                                     | Validate input without writing it                                                                                            |
+| `just render INPUT OUTPUT`                                | Validate and generate a standalone HTML artifact                                                                             |
+| `just verify-run CAPTURE MAP HTML [STATE]`                | Read-only source-fact, HTML, bundle and optional state-map comparison                                                        |
 
 Tests create temporary artifacts and remove them. Gates do not rewrite source,
 format files, collect data, commit, or publish. Generated declarations are excluded
@@ -156,3 +157,8 @@ The optional `just batch-reading-benchmark NEW_DIRECTORY [TRIALS]` compares
 individual and batch reads of identical invented evidence. It records payload
 bytes, CLI invocation counts and fresh-process wall/CPU/peak-RSS observations;
 it does not measure model tokens or impose a timing gate.
+
+`just refresh-reading-comparison NEW_DIRECTORY` retains an invented refresh
+workload and compares serialized focus/full evidence including the same
+user-owned observations, index and taxonomy. Its authored choices support an
+explicit synthetic workflow; they do not establish model classification quality.

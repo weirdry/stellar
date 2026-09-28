@@ -44,6 +44,9 @@ than restarting classification or manually editing a saved map. The collection
 and delivery boundaries below still apply. A first report can become the starting
 state through `remember` after validation; `classify-draft` already saves
 state for a newly classified draft.
+For refresh decisions, use its `read-refresh` view with the previous state and
+fresh capture; include changed user-owned evidence and expand omitted context
+before deciding when needed. Reading does not approve or replace a decision.
 Continuity refuses report-relative references before writing; follow its guide
 to retain the original artifact and disclose this limitation.
 

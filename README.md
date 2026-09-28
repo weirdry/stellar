@@ -122,6 +122,10 @@ with shared issue metadata. `just inspect MAP`, `just inspect MAP ISSUE`, `just 
 over original descriptions. See [progressive reading](references/reading.md).
 These helpers do not fetch data or turn a model-authored copy into source proof.
 
+For saved-state refresh, `just read-refresh STATE CAPTURE` lists pending decisions
+and changed user-owned observations. Select an issue for focused before/after
+evidence or full expansion; see [refresh reading](references/continuity.md#read-focused-refresh-evidence).
+
 For a native capture, write agent decisions in the
 [choices format](references/continuity.md#classify-a-first-draft), then use
 `just classify-draft DRAFT.json CHOICES.json NEW_RUN`. The runner applies the
