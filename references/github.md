@@ -14,7 +14,7 @@ Search results have their own completeness limits and are not proof that the
 repository query is exhausted.
 For a requested sample, establish its requested ordering and selection boundary
 and disclose the limited scope; do not call the whole repository exhausted.
-Follow [response retention](runs.md#prepare-and-retain-evidence): an authenticated
+Follow [response retention](collection.md): an authenticated
 CLI can redirect response output directly to a fresh private file without model
 transcription. Preserve obtained bodies; [progressive reading](reading.md)
 controls model input, not the retained evidence.

@@ -140,6 +140,10 @@ bundle-check: viewer-check
 refresh-reading-comparison output:
     mise exec --locked -- node scripts/bench/refresh-reading.ts --output {{ quote(output) }}
 
+# Compare explicit operation-specific instruction paths with their previous form.
+instruction-reading-comparison output:
+    mise exec --locked -- node scripts/bench/instruction-reading.ts --output {{ quote(output) }}
+
 # Compare batch/individual reader payloads and fresh-process costs on invented inputs.
 batch-reading-benchmark output trials="5": bundle-check
     mise exec --locked -- node scripts/bench/batch-reading.ts --output {{ quote(output) }} --trials {{ quote(trials) }}

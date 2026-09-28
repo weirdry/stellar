@@ -8,7 +8,7 @@ local files only and never edits source text, saved choices or the viewer.
 
 The code may read a complete file without sending that file to the model.
 Retain available descriptions intact; selective reading is a view over evidence,
-not a shorter replacement capture. Follow [response retention](runs.md#prepare-and-retain-evidence)
+not a shorter replacement capture. Follow [response retention](collection.md)
 before collection. If a host already delivers full responses into model context,
 asking the model to ignore most of them does not reduce that input. Stellar does
 not intercept host tools or guarantee token/latency savings on every host.

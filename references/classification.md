@@ -66,7 +66,7 @@ grouping and disclose a conflict instead of silently replacing it.
 Structural validation cannot establish semantic grouping quality.
 
 Apply first-run decisions through `classify-draft` using the
-[shared choices format](continuity.md#classify-a-first-draft). This keeps map
+[shared choices format](choices.md). This keeps map
 mutation and state creation in the runner; the agent still owns interpretation.
 For a saved state, continue through `classify` or an explicit user's `revise`.
 

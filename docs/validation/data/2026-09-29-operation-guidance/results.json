@@ -1,0 +1,335 @@
+{
+  "baseline": "e76de76589ba914cd265d7f13ff4f8a16f176cef",
+  "method": "Explicit selected reading paths, each unique document/section loaded once per independent scenario. Supplied captures; no recovery, live provider or direct-map authoring branch. Before follows mandatory read instructions, using only the anchored first-classification section for first generation. After follows operation routing; refresh conservatively includes the general reader. Choices fit the inline contract; data/examples and executable output are not instruction bytes. This is a controlled document-load comparison, not automatic host tracing, actual model input/token usage, or autonomous task-quality evidence.",
+  "rows": [
+    {
+      "name": "first-supplied-capture",
+      "modes": [
+        {
+          "mode": "before",
+          "entries": [
+            {
+              "path": "SKILL.md",
+              "bytes": 11795,
+              "sha256": "55fe4e4afda88ff89bb65d366458e60a1dedc180c50d9eae9af0b0654c33d92e"
+            },
+            {
+              "path": "schemas/README.md",
+              "bytes": 13957,
+              "sha256": "ed17196309f9d3b7df8fc3036d0cde2dcebd7d68d2dad3e13b28425ef645f547"
+            },
+            {
+              "path": "references/classification.md",
+              "bytes": 5368,
+              "sha256": "017d5d3288e3515c15262061ef4ebb87fa88278fe0783b9d75b2604ca912c478"
+            },
+            {
+              "path": "references/runs.md",
+              "bytes": 14873,
+              "sha256": "2d1c24bfb98f91b4b5a04cf29df559a6b8556a13b0d313813a1457f55e227d99"
+            },
+            {
+              "path": "references/capture.md",
+              "bytes": 7264,
+              "sha256": "d13279c7541413b04eefb371159c709520ed02dc19a23a92551a8ed29343b550"
+            },
+            {
+              "path": "references/reading.md",
+              "bytes": 11067,
+              "sha256": "584a18bd58b784433e7cda75cb501d428fb3098de2af63b0897adf596d0b5eaf"
+            },
+            {
+              "path": "references/continuity.md",
+              "section": "Classify a first draft",
+              "bytes": 2238,
+              "sha256": "66f9151267e66b8daf94a4db0e49d7d1d8be1f6b7f09deb8a6160f5fd8fac982"
+            }
+          ],
+          "bytes": 66562
+        },
+        {
+          "mode": "after",
+          "entries": [
+            {
+              "path": "SKILL.md",
+              "bytes": 5023,
+              "sha256": "81afebe81781bdad378f4ad149a334af2ca7c172a7ee90dd7ac529e610723911"
+            },
+            {
+              "path": "references/runs.md",
+              "bytes": 10768,
+              "sha256": "295652a8c0e767491c9a45d19d7d063e265073898202798db036817f1580bfb5"
+            },
+            {
+              "path": "references/continuity.md",
+              "bytes": 2214,
+              "sha256": "ff100264dd47ac9b1f3db2f2563be25234ec90955b402a2e452c2f3edd8d5b94"
+            },
+            {
+              "path": "references/first-report.md",
+              "bytes": 4003,
+              "sha256": "024e65a59e87c4e56d58d41cbe9ae3e92d5cbe81fbd4d58685783c685a64614e"
+            },
+            {
+              "path": "references/choices.md",
+              "bytes": 1604,
+              "sha256": "549cfa6f41c676fae4e57fbde0e9ab9b4ede7f562eaa73e7280307d0d33bcb94"
+            },
+            {
+              "path": "references/classification.md",
+              "bytes": 5342,
+              "sha256": "f50e809411b95ad6711fc36d8e63b4cf60bd156476240677e9cf40a1f4300550"
+            },
+            {
+              "path": "references/reading.md",
+              "bytes": 11045,
+              "sha256": "439391416233195299e12936e140e0f288d97d0870f87db2b40002d85058110b"
+            },
+            {
+              "path": "references/collection.md",
+              "bytes": 4431,
+              "sha256": "bf9fc3d51d328b5a6d765841e9ab2dce9b8fc0a96d76f3e100ab3e779b7b947c"
+            },
+            {
+              "path": "references/capture.md",
+              "bytes": 7264,
+              "sha256": "d13279c7541413b04eefb371159c709520ed02dc19a23a92551a8ed29343b550"
+            }
+          ],
+          "bytes": 51694
+        }
+      ]
+    },
+    {
+      "name": "remember-completed-map",
+      "modes": [
+        {
+          "mode": "before",
+          "entries": [
+            {
+              "path": "SKILL.md",
+              "bytes": 11795,
+              "sha256": "55fe4e4afda88ff89bb65d366458e60a1dedc180c50d9eae9af0b0654c33d92e"
+            },
+            {
+              "path": "schemas/README.md",
+              "bytes": 13957,
+              "sha256": "ed17196309f9d3b7df8fc3036d0cde2dcebd7d68d2dad3e13b28425ef645f547"
+            },
+            {
+              "path": "references/classification.md",
+              "bytes": 5368,
+              "sha256": "017d5d3288e3515c15262061ef4ebb87fa88278fe0783b9d75b2604ca912c478"
+            },
+            {
+              "path": "references/runs.md",
+              "bytes": 14873,
+              "sha256": "2d1c24bfb98f91b4b5a04cf29df559a6b8556a13b0d313813a1457f55e227d99"
+            },
+            {
+              "path": "references/continuity.md",
+              "bytes": 21638,
+              "sha256": "374bca0115e5f95089a4721408a5e5d9b44a933c8e82beeb7b323dd48ce93e3f"
+            }
+          ],
+          "bytes": 67631
+        },
+        {
+          "mode": "after",
+          "entries": [
+            {
+              "path": "SKILL.md",
+              "bytes": 5023,
+              "sha256": "81afebe81781bdad378f4ad149a334af2ca7c172a7ee90dd7ac529e610723911"
+            },
+            {
+              "path": "references/runs.md",
+              "bytes": 10768,
+              "sha256": "295652a8c0e767491c9a45d19d7d063e265073898202798db036817f1580bfb5"
+            },
+            {
+              "path": "references/continuity.md",
+              "bytes": 2214,
+              "sha256": "ff100264dd47ac9b1f3db2f2563be25234ec90955b402a2e452c2f3edd8d5b94"
+            },
+            {
+              "path": "references/remember.md",
+              "bytes": 1233,
+              "sha256": "8ab03cc42ff2f32527c2c04bf77c7af4cbd9173aec820bd3b49c2d36554eeafd"
+            }
+          ],
+          "bytes": 19238
+        }
+      ]
+    },
+    {
+      "name": "refresh-supplied-capture",
+      "modes": [
+        {
+          "mode": "before",
+          "entries": [
+            {
+              "path": "SKILL.md",
+              "bytes": 11795,
+              "sha256": "55fe4e4afda88ff89bb65d366458e60a1dedc180c50d9eae9af0b0654c33d92e"
+            },
+            {
+              "path": "schemas/README.md",
+              "bytes": 13957,
+              "sha256": "ed17196309f9d3b7df8fc3036d0cde2dcebd7d68d2dad3e13b28425ef645f547"
+            },
+            {
+              "path": "references/classification.md",
+              "bytes": 5368,
+              "sha256": "017d5d3288e3515c15262061ef4ebb87fa88278fe0783b9d75b2604ca912c478"
+            },
+            {
+              "path": "references/runs.md",
+              "bytes": 14873,
+              "sha256": "2d1c24bfb98f91b4b5a04cf29df559a6b8556a13b0d313813a1457f55e227d99"
+            },
+            {
+              "path": "references/continuity.md",
+              "bytes": 21638,
+              "sha256": "374bca0115e5f95089a4721408a5e5d9b44a933c8e82beeb7b323dd48ce93e3f"
+            },
+            {
+              "path": "references/capture.md",
+              "bytes": 7264,
+              "sha256": "d13279c7541413b04eefb371159c709520ed02dc19a23a92551a8ed29343b550"
+            },
+            {
+              "path": "references/reading.md",
+              "bytes": 11067,
+              "sha256": "584a18bd58b784433e7cda75cb501d428fb3098de2af63b0897adf596d0b5eaf"
+            }
+          ],
+          "bytes": 85962
+        },
+        {
+          "mode": "after",
+          "entries": [
+            {
+              "path": "SKILL.md",
+              "bytes": 5023,
+              "sha256": "81afebe81781bdad378f4ad149a334af2ca7c172a7ee90dd7ac529e610723911"
+            },
+            {
+              "path": "references/runs.md",
+              "bytes": 10768,
+              "sha256": "295652a8c0e767491c9a45d19d7d063e265073898202798db036817f1580bfb5"
+            },
+            {
+              "path": "references/continuity.md",
+              "bytes": 2214,
+              "sha256": "ff100264dd47ac9b1f3db2f2563be25234ec90955b402a2e452c2f3edd8d5b94"
+            },
+            {
+              "path": "references/refresh.md",
+              "bytes": 8402,
+              "sha256": "2a50976ec938c0729bb41b99f52bf34c253d73eba2c909a4c2a45d4475e53154"
+            },
+            {
+              "path": "references/choices.md",
+              "bytes": 1604,
+              "sha256": "549cfa6f41c676fae4e57fbde0e9ab9b4ede7f562eaa73e7280307d0d33bcb94"
+            },
+            {
+              "path": "references/refresh-reading.md",
+              "bytes": 7199,
+              "sha256": "b2693e14a12b5c1760bd4e54484bd04175bae7f581d0ee6a5ffe725a4c1af477"
+            },
+            {
+              "path": "references/classification.md",
+              "bytes": 5342,
+              "sha256": "f50e809411b95ad6711fc36d8e63b4cf60bd156476240677e9cf40a1f4300550"
+            },
+            {
+              "path": "references/reading.md",
+              "bytes": 11045,
+              "sha256": "439391416233195299e12936e140e0f288d97d0870f87db2b40002d85058110b"
+            },
+            {
+              "path": "references/collection.md",
+              "bytes": 4431,
+              "sha256": "bf9fc3d51d328b5a6d765841e9ab2dce9b8fc0a96d76f3e100ab3e779b7b947c"
+            },
+            {
+              "path": "references/capture.md",
+              "bytes": 7264,
+              "sha256": "d13279c7541413b04eefb371159c709520ed02dc19a23a92551a8ed29343b550"
+            }
+          ],
+          "bytes": 63292
+        }
+      ]
+    },
+    {
+      "name": "revise-existing-group",
+      "modes": [
+        {
+          "mode": "before",
+          "entries": [
+            {
+              "path": "SKILL.md",
+              "bytes": 11795,
+              "sha256": "55fe4e4afda88ff89bb65d366458e60a1dedc180c50d9eae9af0b0654c33d92e"
+            },
+            {
+              "path": "schemas/README.md",
+              "bytes": 13957,
+              "sha256": "ed17196309f9d3b7df8fc3036d0cde2dcebd7d68d2dad3e13b28425ef645f547"
+            },
+            {
+              "path": "references/classification.md",
+              "bytes": 5368,
+              "sha256": "017d5d3288e3515c15262061ef4ebb87fa88278fe0783b9d75b2604ca912c478"
+            },
+            {
+              "path": "references/runs.md",
+              "bytes": 14873,
+              "sha256": "2d1c24bfb98f91b4b5a04cf29df559a6b8556a13b0d313813a1457f55e227d99"
+            },
+            {
+              "path": "references/continuity.md",
+              "bytes": 21638,
+              "sha256": "374bca0115e5f95089a4721408a5e5d9b44a933c8e82beeb7b323dd48ce93e3f"
+            }
+          ],
+          "bytes": 67631
+        },
+        {
+          "mode": "after",
+          "entries": [
+            {
+              "path": "SKILL.md",
+              "bytes": 5023,
+              "sha256": "81afebe81781bdad378f4ad149a334af2ca7c172a7ee90dd7ac529e610723911"
+            },
+            {
+              "path": "references/runs.md",
+              "bytes": 10768,
+              "sha256": "295652a8c0e767491c9a45d19d7d063e265073898202798db036817f1580bfb5"
+            },
+            {
+              "path": "references/continuity.md",
+              "bytes": 2214,
+              "sha256": "ff100264dd47ac9b1f3db2f2563be25234ec90955b402a2e452c2f3edd8d5b94"
+            },
+            {
+              "path": "references/revise.md",
+              "bytes": 1512,
+              "sha256": "b31fdc8e53448dc52f10ac1fca0db95f7f1145f592e0a00f10d02505a758afab"
+            },
+            {
+              "path": "references/choices.md",
+              "bytes": 1604,
+              "sha256": "549cfa6f41c676fae4e57fbde0e9ab9b4ede7f562eaa73e7280307d0d33bcb94"
+            }
+          ],
+          "bytes": 21121
+        }
+      ]
+    }
+  ]
+}

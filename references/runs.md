@@ -27,68 +27,11 @@ them. Include the actual final path in the handoff.
 
 ## Prepare and retain evidence
 
-Before live collection, establish a mechanical route from the host's actual
-returned object/text or response file to private storage. A host-provided file
-can be retained without printing its content:
+For new collection or supplied native captures, read [collection retention](collection.md).
+Remember/revise reuse the selected run's existing matching evidence; do not
+load live-provider instructions or fabricate a new collection record.
 
-```sh
-node "$STELLAR_ROOT/bin/stellar.mjs" retain-response HOST_RESPONSE_FILE NEW_STAGING/evidence/raw/response.json
-```
-
-This copies bytes to a fresh owner-only file and returns a byte count/hash, not
-the payload. It cannot establish how its input was obtained. With an accessible
-return value, host-side code can serialize it directly to a file instead. Parse
-MCP wrappers mechanically, retaining the original response alongside extracted
-issue data. Prefer a supported route that saves the response before returning
-only metadata to the model; see the executable [GitHub CLI recipe](github.md#retain-list-responses-before-model-delivery).
-If full results have already entered model context, retention still preserves
-evidence but cannot reduce that earlier input. Inspect the actual wrapper rather
-than assuming JSON text: some hosts return `structuredContent`, and normalized
-connector objects may differ from the native capture contract.
-Network-layer byte capture is not required. Do not put credentials
-or unrelated transcript material in evidence.
-
-Output failures distinguish an occupied destination (`response-exists`), a
-non-directory parent (`response-parent`), and denied permissions
-(`response-permission`); other failures use `response-output`. Each includes
-repair guidance without echoing the raw filesystem path. Keep existing files
-when correcting the destination.
-
-Do not ask the model to re-emit full responses into shell heredocs or authored
-JSON as a substitute for this transfer. Comparison with a capture assembled
-from the same transcription only proves downstream consistency, not fidelity
-to the tool's original response. If the host exposes only model-visible text
-and no supported file/object export, disclose that boundary. Use another
-already-authorized export or supplied capture when available; otherwise report
-the missing capability. Do not repeatedly recollect or reconstruct historical
-responses from memory to satisfy an evidence claim. Already saved artifacts
-remain useful with their actual provenance stated.
-
-For live collection, retain the relevant native tool responses as they arrive,
-including exhausted pages, separately queried relationships and failed lookups.
-Keep authentication headers, tokens and unrelated session content out of this
-record. Parse wrappers mechanically; preserve descriptions and source fields.
-Record the actual query scope, observation start/end, pagination completion,
-lookup outcomes and relative response locations in `evidence/collection.json`.
-This is a local collection account, not a new capture schema or a source-access
-proof produced by the runner. Unknown coverage remains unknown or partial.
-Index failed attempts as well as successful retries when their responses are
-available; label a narrative failure account as such. Distinguish observed
-metadata, obtained descriptions, and never-queried detail. Selective model
-reading never authorizes discarding obtained context bodies from the capture.
-
-A requested sample bounds the assigned set, not the size of its context or
-descriptions. Keep direct context retrieval purposeful; do not recursively
-expand it by default. Record actual scope and retrieval limits. If reporting
-workload, separate assigned/context queries, response size, and retries when
-known. Observation windows are not provider latency measurements or proof of
-model/token efficiency; savings require an appropriately comparable measurement.
-
-For a supplied capture, retain an unchanged input copy and explain that no new
-collection occurred. Original raw responses may be unavailable; disclose that
-limit rather than fabricating a collection record. Translate author-owned locale
-or scope/notes only when requested, retaining the original input separately and
-recording those changes. Do not change observed facts or freshness.
+## Retain the final folder
 
 A useful final folder is:
 
@@ -178,36 +121,22 @@ for (const file of files) {
 NODE
 ```
 
-Hashes identify the files, not their Git provenance, and cannot restore a past
-installation. This record is not a new work-map/state field or a verifier input.
-For a known ref, an isolated installation of that ref can recover the original
-runner and resources; compare recorded hashes before using it for verification.
-Use a fresh temporary directory and a project-local install **without `-g`**;
-do not replace the current global skill to recover an older runner. Replace `REF`
-below with the recorded tag or full commit SHA. This keeps the task directory
-unchanged and selects the recovered runner only if installation succeeds:
-
-```sh
-STELLAR_RECOVERY="$(mktemp -d)" &&
-  (cd "$STELLAR_RECOVERY" &&
-    npx --yes skills@1.7.0 add \
-      https://github.com/weirdry/stellar/tree/REF \
-      --skill stellar --agent codex -y) &&
-  STELLAR_ROOT="$STELLAR_RECOVERY/.agents/skills/stellar" &&
-  printf '%s\n' "$STELLAR_ROOT"
-```
-
-After success, record the final printed absolute path and use it explicitly in
-later shell calls; do not assume these variables survive between tool calls.
-The recovered copy is under `$STELLAR_RECOVERY/.agents/skills/stellar`, with its
-project lock at `$STELLAR_RECOVERY/skills-lock.json`; the current global install
-and its lock are retained. Use absolute report paths with the recovered runner
-after comparing its files to the recorded hashes.
-If the original files cannot be recovered, disclose that original-renderer
-verification is unavailable. Generate and verify a separate new report with the
-current runner if needed; keep the original HTML and its verification history.
+Hashes identify files, not Git provenance. If verifying an older HTML report
+fails or its renderer is unavailable, read
+[renderer recovery](recovery.md#renderer-mismatch-or-missing-renderer-evidence).
 
 ## Check the final artifacts
+
+Validate and render the selected final map from the operation route:
+
+```sh
+node "$STELLAR_ROOT/bin/stellar.mjs" validate "$RUN/work-map.json"
+node "$STELLAR_ROOT/bin/stellar.mjs" render "$RUN/work-map.json" "$RUN/stellar.html"
+```
+
+If the matching capture or renderer evidence is missing, follow
+[recovery](recovery.md) and disclose checks that cannot be performed. Do not
+invent or replace evidence merely to run the following command.
 
 From the task directory, select the matching native capture, map and HTML using
 absolute paths, adding the actual state path when one exists:
@@ -242,10 +171,8 @@ The checks are:
   encoded as UTF-8 for that map. Decoding for JSON inspection is separate and
   cannot hide invalid UTF-8 bytes. A report from another renderer may fail this
   check; a mismatch alone does not distinguish an update from altered HTML.
-  Use the [recorded renderer identity](#record-renderer-identity) to recover and
-  verify with the original files when available. Otherwise generate a separate
-  new report, preserving the old one; verifying the new report does not verify
-  the original HTML. Supplied HTML is never executed.
+  Follow [renderer recovery](recovery.md#renderer-mismatch-or-missing-renderer-evidence)
+  when verifying an older report. Supplied HTML is never executed.
 - `stateMap`: the optional state validates and its map equals the final map.
   Without a state it is `not-provided`, not a pass.
 
@@ -263,3 +190,17 @@ separately. Exercise interactions only with allowed browser tools; report an
 unavailable visual check without bypassing host restrictions. Canonical maps
 authored for providers without a native capture normalizer use `validate` and
 `render` and disclose that this capture comparison was not performed.
+
+## Deliver the result
+
+With allowed browser tools, exercise the header, source identities, grouping tree,
+issue neighbors, search and filters. Report generation, interaction checks and
+visual inspection separately. If the host blocks that surface, disclose the
+limit; do not bypass it or repeat the blocked navigation for each output.
+
+Return clickable local HTML and saved-state paths, plus a concise account of
+assigned/context counts, registered relations, purpose groups, freshness and
+lookup limits. For continuation, identify the selected final stage and preserved
+user choices, pending reviews and not-observed issues as applicable. HTML embeds
+issue data. Do not upload reports, commit user data, alter source issues or claim
+complete collection from a sample.

@@ -37,7 +37,7 @@ the original relation and reuse that object as one deduplicated context record
 before normalization. Incomplete endpoint metadata stays a reference, not a
 claim of full detail or an observed source status in the map.
 
-Follow [response retention](runs.md#prepare-and-retain-evidence) before querying.
+Follow [response retention](collection.md) before querying.
 The selected issue count does not bound the number or size of direct endpoints.
 Record list-only observations and omitted/failed detail lookups honestly; do not
 claim a full detail query occurred merely because normalized metadata is present.
