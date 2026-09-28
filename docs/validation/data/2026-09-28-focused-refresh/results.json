@@ -2,7 +2,7 @@
   "scope": "Same six-issue workload, including changed user-owned evidence. Pretty JSON UTF-8 bytes plus newline; common index and full taxonomy included in both totals. In-process serialization, not model telemetry or hosted tool-call measurement.",
   "previousHash": "68ff3dfef21a061c81f505a4044ac8bf61d046dc4a967efc893116793cce92d3",
   "captureHash": "897ba6d88c21786fd9916a05a1b800112dc8cdd4e0b72fa448859fa6b156ed84",
-  "readerHash": "8e4b805e4d17a1f9a53a86c3ed13b7b4880951dd78ca4f2c1e54f10ada508535",
+  "readerHash": "d6ae77893b50ef529416bdf5326dc70201cebab57e3875a5035a5f9100e2caa4",
   "commonBytes": 3901,
   "rows": [
     {

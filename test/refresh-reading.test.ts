@@ -253,6 +253,7 @@ void test('source and bundled refresh readers preserve files and match from an u
       ['', 'taxonomy'],
       ['SYN-6', 'focus'],
       ['SYN-7', 'full'],
+      ['SYN-8', 'focus'],
     ]) {
       const result = spawnSync(
         process.execPath,
@@ -337,4 +338,130 @@ void test('unqueried pending context exposes old evidence without presenting it 
   assert.ok(result.items.every((i) => i.side === 'before'));
   assert.equal(result.reviewReason, 'purpose-text-changed');
   assert.ok(result.items.some((i) => i.text === issue.description));
+});
+
+void test('saved null evidence does not manufacture user attention after context or absence', () => {
+  for (const route of ['context', 'absent']) {
+    const capture = mixedCapture();
+    must(capture.records[3]).data.body = null;
+    const map = mixedMap(capture),
+      issue = must(map.issues[3]);
+    let previous = rememberMap(map);
+    previous = applyChoices(
+      previous,
+      {
+        issues: [
+          {
+            issueId: issue.id,
+            classification: {
+              category: 'delivery',
+              rationale: 'Pinned by user',
+            },
+          },
+        ],
+      },
+      'user',
+    );
+    const intermediate = structuredClone(capture);
+    intermediate.records.splice(3, 1);
+    if (route === 'absent')
+      intermediate.records = intermediate.records.filter(
+        (r) => r.sourceId === 'linear-observatory',
+      );
+    const middle = refreshState(previous, intermediate);
+    assert.equal(
+      middle.map.issues.find((i) => i.nativeId === issue.nativeId)?.detail,
+      route === 'context' ? 'unqueried' : undefined,
+    );
+    const inputs = structuredClone({ middle, capture });
+    assert.equal(readRefresh(middle, capture).total, 0);
+    // Actual body text must still surface, including empty string versus null.
+    for (const body of ['', 'Changed purpose']) {
+      const changed = structuredClone(capture);
+      must(changed.records[3]).data.body = body;
+      const result = evidence(middle, changed, issue.id);
+      assert.equal(result.attention, 'preserved-user-evidence-changed');
+      assert.equal(
+        must(result.fields.find((f) => f.field === 'description')).changed,
+        true,
+      );
+    }
+    assert.deepEqual({ middle, capture }, inputs);
+  }
+  // The same comparison must not invent a body change during a title review.
+  const capture = mixedCapture();
+  must(capture.records[3]).data.body = null;
+  const previous = rememberMap(mixedMap(capture)),
+    issue = must(previous.map.issues[3]);
+  must(capture.records[3]).data.title = 'A different title';
+  const result = evidence(previous, capture, issue.id);
+  const body = must(result.fields.find((f) => f.field === 'description'));
+  assert.equal(body.changed, false);
+  assert.equal(body.before.presence, 'omitted');
+  assert.equal(body.after.presence, 'null');
+});
+
+void test('unavailable comparisons and unclassified baselines do not assert a change or a decision', () => {
+  const capture = mixedCapture(),
+    previous = rememberMap(mixedMap(capture));
+  const issue = must(previous.map.issues[3]);
+  const unknown = structuredClone(capture);
+  unknown.records.splice(3, 1);
+  const context = rememberMap(mixedMap(unknown));
+  const contextIssue = must(
+    context.map.issues.find((i) => i.nativeId === issue.nativeId),
+  );
+  const user = applyChoices(
+    context,
+    {
+      issues: [
+        {
+          issueId: contextIssue.id,
+          classification: {
+            category: 'delivery',
+            rationale: 'User chose while unqueried',
+          },
+        },
+      ],
+    },
+    'user',
+  );
+  const first = evidence(user, capture, issue.id);
+  assert.equal(first.attention, 'preserved-user-evidence-available');
+  assert.equal(first.baseline, 'unavailable');
+  assert.ok(first.fields.every((f) => f.changed === null));
+  assert.ok(first.items.length > 0);
+  assert.ok(first.items.every((i) => i.side === 'after'));
+  assert.equal(first.previousDecision?.classification?.origin, 'user');
+  assert.equal(readRefresh(user, unknown).total, 0);
+  assert.equal(readRefresh(refreshState(user, capture), capture).total, 0);
+
+  must(capture.records[3]).data.body = 'Changed actual purpose';
+  const pending = refreshState(previous, capture);
+  const index = readRefresh(pending, unknown);
+  assert.equal(index.kind, 'refresh-index');
+  if (index.kind !== 'refresh-index') return;
+  const item = must(
+    index.items.find((i) => i.identity.nativeId === issue.nativeId),
+  );
+  const unavailable = evidence(pending, unknown, item.id);
+  assert.equal(unavailable.reviewReason, 'purpose-text-changed');
+  assert.ok(unavailable.fields.every((f) => f.changed === null));
+  assert.ok(unavailable.items.length > 0);
+  assert.ok(unavailable.items.every((i) => i.side === 'before'));
+
+  const fresh = refreshFixture();
+  const added = evidence(fresh.previous, fresh.capture, 'SYN-8');
+  assert.ok(added.fields.every((f) => f.changed === null));
+  const repeated = evidence(
+    refreshState(fresh.previous, fresh.capture),
+    fresh.capture,
+    'SYN-8',
+  );
+  assert.equal(repeated.baseline, 'saved-observation');
+  assert.equal(repeated.previousDecision?.classification, null);
+  assert.equal(repeated.reviewReason, 'new-issue');
+  assert.ok(repeated.fields.every((f) => f.changed === false));
+  assert.ok(repeated.items.some((i) => i.side === 'before'));
+  assert.ok(repeated.items.some((i) => i.side === 'after'));
 });

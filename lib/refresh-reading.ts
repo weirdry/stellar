@@ -28,6 +28,20 @@ const textOf = (issue: Pick<Issue, 'title' | 'description'>) => ({
     : {}),
 });
 type Evidence = NonNullable<Memory['evidence']>;
+const FIELDS = ['title', 'description'] as const;
+function fieldChanged(
+  before: Evidence | undefined,
+  after: Evidence | undefined,
+  field: (typeof FIELDS)[number],
+  savedBaseline: boolean,
+): boolean | null {
+  if (before === undefined || after === undefined) return null;
+  // Saved memory collapses null descriptions to omission. Compare at that
+  // fidelity without changing the exact presence, hashes or text we expose.
+  return savedBaseline && field === 'description'
+    ? !equal(before[field] ?? undefined, after[field] ?? undefined)
+    : !equal(before[field], after[field]);
+}
 function fail(path: string, message: string, fix: string): never {
   throw new WorkMapError([{ code: 'refresh-reading', path, message, fix }]);
 }
@@ -175,11 +189,15 @@ export function readRefresh(
     const before = useObservation ? textOf(observed) : saved?.evidence;
     const after = issue.detail === 'full' ? textOf(issue) : undefined;
     const reason = reviews.get(issue.id);
+    const userObservation =
+      saved?.classification?.origin === 'user' && after !== undefined;
     const changedUser =
-      saved?.classification?.origin === 'user' &&
-      after !== undefined &&
-      !equal(before, after);
-    if (!reason && !changedUser) return [];
+      userObservation &&
+      FIELDS.some(
+        (field) => fieldChanged(before, after, field, !useObservation) === true,
+      );
+    const availableUser = userObservation && before === undefined;
+    if (!reason && !changedUser && !availableUser) return [];
     return [
       {
         issue,
@@ -191,11 +209,15 @@ export function readRefresh(
         baseline: useObservation
           ? 'previous-full-observation'
           : before
-            ? 'saved-decision-evidence'
+            ? saved?.classification
+              ? 'saved-decision-evidence'
+              : 'saved-observation'
             : 'unavailable',
         attention: changedUser
           ? 'preserved-user-evidence-changed'
-          : 'pending-classification',
+          : availableUser
+            ? 'preserved-user-evidence-available'
+            : 'pending-classification',
       },
     ];
   });
@@ -243,12 +265,15 @@ export function readRefresh(
     );
   const { issue, identity, saved, before, after, reason, attention, baseline } =
     selected;
-  const fields = (['title', 'description'] as const).map((field) => {
+  const fields = FIELDS.map((field) => {
     const left = Array.from(before?.[field] ?? ''),
       right = Array.from(after?.[field] ?? '');
-    const changed =
-      !equal(before?.[field], after?.[field]) ||
-      (before === undefined) !== (after === undefined);
+    const changed = fieldChanged(
+      before,
+      after,
+      field,
+      baseline !== 'previous-full-observation',
+    );
     const ranges = windows(left, right);
     const side = (
       name: 'before' | 'after',
@@ -299,7 +324,10 @@ export function readRefresh(
     return {
       field,
       changed,
-      sides: [side('before', before, left), side('after', after, right)],
+      sides: [
+        side('before', before, left),
+        side('after', after, right),
+      ] as const,
     };
   });
   // Count chunk descriptors, then materialize only this page's exact text.
@@ -361,7 +389,8 @@ export function readRefresh(
     fields: fields.map(({ field, changed, sides }) => ({
       field,
       changed,
-      ...Object.fromEntries(sides.map(({ name, summary }) => [name, summary])),
+      before: sides[0].summary,
+      after: sides[1].summary,
     })),
     ...chunkPage,
     items: chunkPage.items.map(({ points, ...chunk }) => ({

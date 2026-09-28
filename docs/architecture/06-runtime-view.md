@@ -193,8 +193,12 @@ The read-only [refresh reader](../../lib/refresh-reading.ts) takes the previous
 state and the same fresh capture as `refresh`, invoking its existing policy in
 memory without writing a run. Its attention index includes pending classification
 and changed full observations for preserved user decisions, which may sit outside
-`changes.review`. It never resolves a review or changes a choice. The evidence
-view retains previous classification/rationale, targets and category basis, with
+`changes.review`. A full observation without a retained user baseline is labeled
+newly available, not changed. Field comparisons are unknown when either side is
+unavailable; comparisons against saved memory respect its null/omitted equivalence
+while preserving exact presence metadata. Retained unclassified observations are
+distinguished from decision evidence. It never resolves a review or changes a
+choice. The evidence view retains previous classification/rationale, targets and category basis, with
 exact before/after text windows, explicit omitted ranges and full-view expansion.
 An exact common prefix/suffix bounds one changed region per field, with 160 code
 points of surrounding context; distant edits can retain the entire middle.

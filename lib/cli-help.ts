@@ -212,7 +212,7 @@ export const commands: Record<string, CommandInfo> = {
       'OFFSET  Item offset in this exact index, taxonomy, or evidence view; default 0.',
     ],
     output:
-      'JSON pages of up to 20 entries. Evidence chunks contain up to 4,000 Unicode code points each with exact field-relative offsets, omitted ranges, previous decision and category basis. Pending reviews and changed user-owned observations remain distinct. No files or decisions are written.',
+      'JSON pages of up to 20 entries. Evidence chunks contain up to 4,000 Unicode code points each with exact field-relative offsets, omitted ranges, previous decision and category basis. Pending reviews, changed user evidence and newly available user evidence remain distinct; unavailable comparisons have changed: null. No files or decisions are written.',
     example:
       'read-refresh previous/state.json fresh-capture.json ISSUE_ID focus 0',
   },
