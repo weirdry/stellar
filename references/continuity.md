@@ -278,8 +278,11 @@ node "$STELLAR_ROOT/bin/stellar.mjs" read-refresh "$PREVIOUS/state.json" "$CAPTU
 The index contains `pending-classification` entries with the authoritative
 `reviewReason`, plus `preserved-user-evidence-changed` entries for changed full
 observations under user classifications. The latter are **not** pending agent
-classification: report the tension and retain the user's decision. Unchanged and
-status-only classified issues do not enter the index unless an unresolved review
+classification: report the tension and retain the user's decision.
+`preserved-user-evidence-available` instead means a full observation is now
+available under a user decision with no retained baseline. Inspect the new
+evidence while preserving the decision; this label does not assert a change.
+Unchanged and status-only classified issues do not enter the index unless an unresolved review
 already exists. Identity-uncertain entries never borrow a previous decision by
 visible identifier. Absent issues remain in saved memory and are not current
 reading candidates. Unqueried context cannot establish changed purpose; a pending
@@ -299,19 +302,31 @@ Baseline provenance is explicit:
   map observation is preferred when full detail exists, retaining null/omitted
   distinctions. It is the latest observed text, not necessarily the text from
   when the user originally made the decision.
-- `saved-decision-evidence`: otherwise, retained memory evidence supplies the
-  baseline, including across repeated pending reviews and temporary absence.
+- `saved-decision-evidence`: retained memory evidence for an existing
+  classification supplies the baseline, including across repeated pending reviews
+  and temporary absence.
   This evidence may predate the previous map. The existing saved format does not
   retain its acquisition timestamp and may omit an originally null description;
   `presence: omitted` describes this retained record, not proof of a source omission.
+- `saved-observation`: retained memory evidence without a classification, such
+  as the first sighting of a still-pending new issue. This is an observation,
+  not evidence supporting a saved classification. It has the same timestamp and
+  null-presence limitations as other saved memory evidence.
 - `unavailable`: no baseline or no current full observation exists. Missing
   evidence is never represented as a known empty observation. New/unclassified
   issues include all available text in focus mode, with continuation as needed.
 
 Each title/description field reports `changed`, side-specific availability,
 recorded presence, code-point length, exact selected range, omitted ranges and a
-hash. The hash is SHA-256 of UTF-8 `JSON.stringify({ field, value })`, omitting
-`value` when the retained field is absent; unavailable evidence has null hash.
+hash. `changed` is `null` (unknown) when either observation is unavailable;
+available text is still emitted. Otherwise it is a boolean. Comparisons against
+saved memory treat null and omitted descriptions as equivalent because that
+format collapses them; an empty string remains distinct. Comparing two full
+user observations retains exact null/omitted differences. Presence and hashes
+always describe the exact retained representations, even when comparison treats
+them as equivalent. The hash is SHA-256 of UTF-8
+`JSON.stringify({ field, value })`, omitting `value` when the retained field is
+absent; unavailable evidence has null hash.
 It identifies that retained field representation, not semantic meaning or a
 snapshot of the whole source. Description null/omitted equivalence in the existing
 classification policy is unchanged; the reader can still disclose exact recorded

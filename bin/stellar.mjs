@@ -9390,6 +9390,10 @@ var init_evidence = __esm({
 import { createHash as createHash4 } from "node:crypto";
 import { readFile as readFile6 } from "node:fs/promises";
 import { isDeepStrictEqual as equal3 } from "node:util";
+function fieldChanged(before, after, field, savedBaseline) {
+  if (before === void 0 || after === void 0) return null;
+  return savedBaseline && field === "description" ? !equal3(before[field] ?? void 0, after[field] ?? void 0) : !equal3(before[field], after[field]);
+}
 function fail4(path, message, fix) {
   throw new WorkMapError([{ code: "refresh-reading", path, message, fix }]);
 }
@@ -9506,8 +9510,12 @@ function readRefresh(input, capture, selector = "", view = "focus", offsetInput 
     const before2 = useObservation ? textOf(observed) : saved2?.evidence;
     const after2 = issue2.detail === "full" ? textOf(issue2) : void 0;
     const reason2 = reviews.get(issue2.id);
-    const changedUser = saved2?.classification?.origin === "user" && after2 !== void 0 && !equal3(before2, after2);
-    if (!reason2 && !changedUser) return [];
+    const userObservation = saved2?.classification?.origin === "user" && after2 !== void 0;
+    const changedUser = userObservation && FIELDS.some(
+      (field) => fieldChanged(before2, after2, field, !useObservation) === true
+    );
+    const availableUser = userObservation && before2 === void 0;
+    if (!reason2 && !changedUser && !availableUser) return [];
     return [
       {
         issue: issue2,
@@ -9516,8 +9524,8 @@ function readRefresh(input, capture, selector = "", view = "focus", offsetInput 
         before: before2,
         after: after2,
         reason: reason2,
-        baseline: useObservation ? "previous-full-observation" : before2 ? "saved-decision-evidence" : "unavailable",
-        attention: changedUser ? "preserved-user-evidence-changed" : "pending-classification"
+        baseline: useObservation ? "previous-full-observation" : before2 ? saved2?.classification ? "saved-decision-evidence" : "saved-observation" : "unavailable",
+        attention: changedUser ? "preserved-user-evidence-changed" : availableUser ? "preserved-user-evidence-available" : "pending-classification"
       }
     ];
   });
@@ -9562,9 +9570,14 @@ function readRefresh(input, capture, selector = "", view = "focus", offsetInput 
       "Use an issue from the refresh index; read other observations with the existing map readers."
     );
   const { issue, identity: identity2, saved, before, after, reason, attention, baseline } = selected;
-  const fields = ["title", "description"].map((field) => {
+  const fields = FIELDS.map((field) => {
     const left = Array.from(before?.[field] ?? ""), right = Array.from(after?.[field] ?? "");
-    const changed = !equal3(before?.[field], after?.[field]) || before === void 0 !== (after === void 0);
+    const changed = fieldChanged(
+      before,
+      after,
+      field,
+      baseline !== "previous-full-observation"
+    );
     const ranges = windows(left, right);
     const side = (name, evidence2, points) => {
       const value = evidence2?.[field];
@@ -9589,7 +9602,10 @@ function readRefresh(input, capture, selector = "", view = "focus", offsetInput 
     return {
       field,
       changed,
-      sides: [side("before", before, left), side("after", after, right)]
+      sides: [
+        side("before", before, left),
+        side("after", after, right)
+      ]
     };
   });
   const chunks = fields.flatMap(
@@ -9640,7 +9656,8 @@ function readRefresh(input, capture, selector = "", view = "focus", offsetInput 
     fields: fields.map(({ field, changed, sides }) => ({
       field,
       changed,
-      ...Object.fromEntries(sides.map(({ name, summary }) => [name, summary]))
+      before: sides[0].summary,
+      after: sides[1].summary
     })),
     ...chunkPage,
     items: chunkPage.items.map(({ points, ...chunk }) => ({
@@ -9649,7 +9666,7 @@ function readRefresh(input, capture, selector = "", view = "focus", offsetInput 
     }))
   };
 }
-var PAGE2, CHUNK2, CONTEXT, key2, sourceOf, identityOf, textOf;
+var PAGE2, CHUNK2, CONTEXT, key2, sourceOf, identityOf, textOf, FIELDS;
 var init_refresh_reading = __esm({
   "lib/refresh-reading.ts"() {
     "use strict";
@@ -9673,6 +9690,7 @@ var init_refresh_reading = __esm({
       title: issue.title,
       ...issue.description !== void 0 ? { description: issue.description } : {}
     });
+    FIELDS = ["title", "description"];
   }
 });
 
@@ -10028,7 +10046,7 @@ var commands = {
       "VIEW  focus (default), full, or taxonomy. Full requires an issue; taxonomy requires an empty issue.",
       "OFFSET  Item offset in this exact index, taxonomy, or evidence view; default 0."
     ],
-    output: "JSON pages of up to 20 entries. Evidence chunks contain up to 4,000 Unicode code points each with exact field-relative offsets, omitted ranges, previous decision and category basis. Pending reviews and changed user-owned observations remain distinct. No files or decisions are written.",
+    output: "JSON pages of up to 20 entries. Evidence chunks contain up to 4,000 Unicode code points each with exact field-relative offsets, omitted ranges, previous decision and category basis. Pending reviews, changed user evidence and newly available user evidence remain distinct; unavailable comparisons have changed: null. No files or decisions are written.",
     example: "read-refresh previous/state.json fresh-capture.json ISSUE_ID focus 0"
   },
   refresh: {

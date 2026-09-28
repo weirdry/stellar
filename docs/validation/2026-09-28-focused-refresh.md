@@ -35,9 +35,25 @@ review remains pending. Source and delivered CLI outputs match from an unrelated
 working directory, inputs stay byte-identical and unreadable paths stay private.
 The CLI diagnostic matrix includes mixed-help rejection for the new command.
 
-Seven focused tests passed. Type checking and type-aware lint passed. The skill
-entry validator passed. Complete local and hosted gate results are recorded
+Nine focused tests passed after the review corrections below. Type checking and
+type-aware lint passed. The skill entry validator passed. Complete local and hosted gate results are recorded
 against the final PR head; these do not imply publication or installation.
+
+Independent review identified false attention for unchanged null descriptions
+after a context-only or absent run, and change/provenance labels that exceeded
+the available evidence. Two added regressions failed on the original reader and
+passed after correction. They cover both return paths, actual empty/text changes,
+an agent title review with an unchanged null body, unavailable current evidence,
+a user's first full observation and repeated unclassified new-issue evidence.
+The existing full-observation null/omitted tests retain exact presence comparison;
+source/bundle parity also includes a new issue with unknown change status.
+
+Saved-memory comparison now uses null/omitted equivalence without altering
+presence, hashes or text. Missing observations yield `changed: null`; newly
+available user evidence and saved unclassified observations have distinct labels.
+These correct the unreleased reader in place and do not alter stored schemas,
+classification authority or user data. The comparison receipt was regenerated
+against the corrected reader; workload hashes and byte totals remain unchanged.
 
 ## Synthetic workflow and semantic review
 
