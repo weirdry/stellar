@@ -199,6 +199,23 @@ export const commands: Record<string, CommandInfo> = {
       'Writes work-map.json, state.json, and changes.json; prints a JSON run summary. Report-relative references are refused.',
     example: 'remember work-map.json remembered-run',
   },
+  'read-refresh': {
+    usage: 'read-refresh STATE.json CAPTURE.json [ISSUE [VIEW [OFFSET]]]',
+    summary: 'Read focused refresh evidence without changing saved decisions.',
+    min: 2,
+    max: 5,
+    arguments: [
+      'STATE.json  Previous saved state, before applying this capture.',
+      'CAPTURE.json  Retained fresh capture used by refresh.',
+      'ISSUE  Canonical id or unique display identifier from the index; omit or use an empty string for index/taxonomy.',
+      'VIEW  focus (default), full, or taxonomy. Full requires an issue; taxonomy requires an empty issue.',
+      'OFFSET  Item offset in this exact index, taxonomy, or evidence view; default 0.',
+    ],
+    output:
+      'JSON pages of up to 20 entries. Evidence chunks contain up to 4,000 Unicode code points each with exact field-relative offsets, omitted ranges, previous decision and category basis. Pending reviews and changed user-owned observations remain distinct. No files or decisions are written.',
+    example:
+      'read-refresh previous/state.json fresh-capture.json ISSUE_ID focus 0',
+  },
   refresh: {
     usage: 'refresh STATE.json CAPTURE.json RUN_DIR',
     summary:

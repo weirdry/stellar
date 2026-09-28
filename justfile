@@ -82,6 +82,10 @@ retain-response input output:
 inspect input issue="" offset="0":
     mise exec --locked -- node bin/stellar.ts inspect {{ quote(input) }} {{ quote(issue) }} {{ quote(offset) }}
 
+# Read focused refresh evidence while preserving saved decisions.
+read-refresh state capture issue="" view="focus" offset="0":
+    mise exec --locked -- node bin/stellar.ts read-refresh {{ quote(state) }} {{ quote(capture) }} {{ quote(issue) }} {{ quote(view) }} {{ quote(offset) }}
+
 # Read explicit body/block requests with shared issue metadata.
 read-batch input requests offset="0":
     mise exec --locked -- node bin/stellar.ts read-batch {{ quote(input) }} {{ quote(requests) }} {{ quote(offset) }}
@@ -131,6 +135,10 @@ build-runner: build-viewer
 # Compare in memory; never rewrite the installed artifact from a quality gate.
 bundle-check: viewer-check
     mise exec --locked -- node scripts/build-runner.ts --check
+
+# Compare focused and full refresh evidence on the same invented workload.
+refresh-reading-comparison output:
+    mise exec --locked -- node scripts/bench/refresh-reading.ts --output {{ quote(output) }}
 
 # Compare batch/individual reader payloads and fresh-process costs on invented inputs.
 batch-reading-benchmark output trials="5": bundle-check

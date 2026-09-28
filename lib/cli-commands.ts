@@ -13,6 +13,7 @@ import {
   readReadingMap,
 } from './reading.ts';
 import { retainResponse } from './evidence.ts';
+import { readRefresh, readRefreshInput } from './refresh-reading.ts';
 import {
   rememberMap,
   classifyDraft,
@@ -30,6 +31,20 @@ export async function runCommand(command: string, args: string[]) {
   try {
     if (command === 'retain-response') {
       console.log(JSON.stringify(await retainResponse(input, second())));
+    } else if (command === 'read-refresh') {
+      console.log(
+        JSON.stringify(
+          readRefresh(
+            await readRefreshInput(input, 'state'),
+            await readRefreshInput(second(), 'capture'),
+            extra[0],
+            extra[1],
+            extra[2],
+          ),
+          null,
+          2,
+        ),
+      );
     } else if (command === 'inspect') {
       console.log(
         JSON.stringify(

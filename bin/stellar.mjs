@@ -28,9 +28,9 @@ var __export = (target, all) => {
 };
 var __copyProps = (to, from, except, desc) => {
   if (from && typeof from === "object" || typeof from === "function") {
-    for (let key2 of __getOwnPropNames(from))
-      if (!__hasOwnProp.call(to, key2) && key2 !== except)
-        __defProp(to, key2, { get: () => from[key2], enumerable: !(desc = __getOwnPropDesc(from, key2)) || desc.enumerable });
+    for (let key3 of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key3) && key3 !== except)
+        __defProp(to, key3, { get: () => from[key3], enumerable: !(desc = __getOwnPropDesc(from, key3)) || desc.enumerable });
   }
   return to;
 };
@@ -69,8 +69,8 @@ function isObject(value) {
 function isArray(value) {
   return Array.isArray(value);
 }
-function property(value, key2) {
-  return isObject(value) ? value[key2] : void 0;
+function property(value, key3) {
+  return isObject(value) ? value[key3] : void 0;
 }
 function loadSchema(url) {
   const value = JSON.parse(readFileSync(url, "utf8"));
@@ -362,15 +362,15 @@ var require_code = __commonJS({
       return JSON.stringify(x).replace(/\u2028/g, "\\u2028").replace(/\u2029/g, "\\u2029");
     }
     exports.safeStringify = safeStringify;
-    function getProperty(key2) {
-      return typeof key2 == "string" && exports.IDENTIFIER.test(key2) ? new _Code(`.${key2}`) : _`[${key2}]`;
+    function getProperty(key3) {
+      return typeof key3 == "string" && exports.IDENTIFIER.test(key3) ? new _Code(`.${key3}`) : _`[${key3}]`;
     }
     exports.getProperty = getProperty;
-    function getEsmExportName(key2) {
-      if (typeof key2 == "string" && exports.IDENTIFIER.test(key2)) {
-        return new _Code(`${key2}`);
+    function getEsmExportName(key3) {
+      if (typeof key3 == "string" && exports.IDENTIFIER.test(key3)) {
+        return new _Code(`${key3}`);
       }
-      throw new Error(`CodeGen: invalid export name: ${key2}, use explicit $id name mapping`);
+      throw new Error(`CodeGen: invalid export name: ${key3}, use explicit $id name mapping`);
     }
     exports.getEsmExportName = getEsmExportName;
     function regexpCode(rx) {
@@ -997,11 +997,11 @@ var require_codegen = __commonJS({
       // returns code for object literal for the passed argument list of key-value pairs
       object(...keyValues) {
         const code = ["{"];
-        for (const [key2, value] of keyValues) {
+        for (const [key3, value] of keyValues) {
           if (code.length > 1)
             code.push(",");
-          code.push(key2);
-          if (key2 !== value || this.opts.es5) {
+          code.push(key3);
+          if (key3 !== value || this.opts.es5) {
             code.push(":");
             (0, code_1.addCodeArg)(code, value);
           }
@@ -1276,17 +1276,17 @@ var require_util = __commonJS({
       if (typeof schema3 === "boolean")
         return;
       const rules = self.RULES.keywords;
-      for (const key2 in schema3) {
-        if (!rules[key2])
-          checkStrictMode(it, `unknown keyword: "${key2}"`);
+      for (const key3 in schema3) {
+        if (!rules[key3])
+          checkStrictMode(it, `unknown keyword: "${key3}"`);
       }
     }
     exports.checkUnknownRules = checkUnknownRules;
     function schemaHasRules(schema3, rules) {
       if (typeof schema3 == "boolean")
         return !schema3;
-      for (const key2 in schema3)
-        if (rules[key2])
+      for (const key3 in schema3)
+        if (rules[key3])
           return true;
       return false;
     }
@@ -1294,8 +1294,8 @@ var require_util = __commonJS({
     function schemaHasRulesButRef(schema3, RULES) {
       if (typeof schema3 == "boolean")
         return !schema3;
-      for (const key2 in schema3)
-        if (key2 !== "$ref" && RULES.all[key2])
+      for (const key3 in schema3)
+        if (key3 !== "$ref" && RULES.all[key3])
           return true;
       return false;
     }
@@ -1873,8 +1873,8 @@ var require_defaults = __commonJS({
     function assignDefaults(it, ty) {
       const { properties, items } = it.schema;
       if (ty === "object" && properties) {
-        for (const key2 in properties) {
-          assignDefault(it, key2, properties[key2].default);
+        for (const key3 in properties) {
+          assignDefault(it, key3, properties[key3].default);
         }
       } else if (ty === "array" && Array.isArray(items)) {
         items.forEach((sch, i) => assignDefault(it, i, sch.default));
@@ -2237,7 +2237,7 @@ var require_subschema = __commonJS({
 var require_fast_deep_equal = __commonJS({
   "node_modules/.pnpm/fast-deep-equal@3.1.3/node_modules/fast-deep-equal/index.js"(exports, module) {
     "use strict";
-    module.exports = function equal3(a, b) {
+    module.exports = function equal4(a, b) {
       if (a === b) return true;
       if (a && b && typeof a == "object" && typeof b == "object") {
         if (a.constructor !== b.constructor) return false;
@@ -2246,7 +2246,7 @@ var require_fast_deep_equal = __commonJS({
           length = a.length;
           if (length != b.length) return false;
           for (i = length; i-- !== 0; )
-            if (!equal3(a[i], b[i])) return false;
+            if (!equal4(a[i], b[i])) return false;
           return true;
         }
         if (a.constructor === RegExp) return a.source === b.source && a.flags === b.flags;
@@ -2258,8 +2258,8 @@ var require_fast_deep_equal = __commonJS({
         for (i = length; i-- !== 0; )
           if (!Object.prototype.hasOwnProperty.call(b, keys[i])) return false;
         for (i = length; i-- !== 0; ) {
-          var key2 = keys[i];
-          if (!equal3(a[key2], b[key2])) return false;
+          var key3 = keys[i];
+          if (!equal4(a[key3], b[key3])) return false;
         }
         return true;
       }
@@ -2331,20 +2331,20 @@ var require_json_schema_traverse = __commonJS({
     function _traverse(opts, pre, post, schema3, jsonPtr, rootSchema, parentJsonPtr, parentKeyword, parentSchema, keyIndex) {
       if (schema3 && typeof schema3 == "object" && !Array.isArray(schema3)) {
         pre(schema3, jsonPtr, rootSchema, parentJsonPtr, parentKeyword, parentSchema, keyIndex);
-        for (var key2 in schema3) {
-          var sch = schema3[key2];
+        for (var key3 in schema3) {
+          var sch = schema3[key3];
           if (Array.isArray(sch)) {
-            if (key2 in traverse.arrayKeywords) {
+            if (key3 in traverse.arrayKeywords) {
               for (var i = 0; i < sch.length; i++)
-                _traverse(opts, pre, post, sch[i], jsonPtr + "/" + key2 + "/" + i, rootSchema, jsonPtr, key2, schema3, i);
+                _traverse(opts, pre, post, sch[i], jsonPtr + "/" + key3 + "/" + i, rootSchema, jsonPtr, key3, schema3, i);
             }
-          } else if (key2 in traverse.propsKeywords) {
+          } else if (key3 in traverse.propsKeywords) {
             if (sch && typeof sch == "object") {
               for (var prop in sch)
-                _traverse(opts, pre, post, sch[prop], jsonPtr + "/" + key2 + "/" + escapeJsonPtr(prop), rootSchema, jsonPtr, key2, schema3, prop);
+                _traverse(opts, pre, post, sch[prop], jsonPtr + "/" + key3 + "/" + escapeJsonPtr(prop), rootSchema, jsonPtr, key3, schema3, prop);
             }
-          } else if (key2 in traverse.keywords || opts.allKeys && !(key2 in traverse.skipKeywords)) {
-            _traverse(opts, pre, post, sch, jsonPtr + "/" + key2, rootSchema, jsonPtr, key2, schema3);
+          } else if (key3 in traverse.keywords || opts.allKeys && !(key3 in traverse.skipKeywords)) {
+            _traverse(opts, pre, post, sch, jsonPtr + "/" + key3, rootSchema, jsonPtr, key3, schema3);
           }
         }
         post(schema3, jsonPtr, rootSchema, parentJsonPtr, parentKeyword, parentSchema, keyIndex);
@@ -2363,7 +2363,7 @@ var require_resolve = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getSchemaRefs = exports.resolveUrl = exports.normalizeId = exports._getFullPath = exports.getFullPath = exports.inlineRef = void 0;
     var util_1 = require_util();
-    var equal3 = require_fast_deep_equal();
+    var equal4 = require_fast_deep_equal();
     var traverse = require_json_schema_traverse();
     var SIMPLE_INLINED = /* @__PURE__ */ new Set([
       "type",
@@ -2401,10 +2401,10 @@ var require_resolve = __commonJS({
       "$dynamicAnchor"
     ]);
     function hasRef(schema3) {
-      for (const key2 in schema3) {
-        if (REF_KEYWORDS.has(key2))
+      for (const key3 in schema3) {
+        if (REF_KEYWORDS.has(key3))
           return true;
-        const sch = schema3[key2];
+        const sch = schema3[key3];
         if (Array.isArray(sch) && sch.some(hasRef))
           return true;
         if (typeof sch == "object" && hasRef(sch))
@@ -2414,14 +2414,14 @@ var require_resolve = __commonJS({
     }
     function countKeys(schema3) {
       let count = 0;
-      for (const key2 in schema3) {
-        if (key2 === "$ref")
+      for (const key3 in schema3) {
+        if (key3 === "$ref")
           return Infinity;
         count++;
-        if (SIMPLE_INLINED.has(key2))
+        if (SIMPLE_INLINED.has(key3))
           continue;
-        if (typeof schema3[key2] == "object") {
-          (0, util_1.eachItem)(schema3[key2], (sch) => count += countKeys(sch));
+        if (typeof schema3[key3] == "object") {
+          (0, util_1.eachItem)(schema3[key3], (sch) => count += countKeys(sch));
         }
         if (count === Infinity)
           return Infinity;
@@ -2501,7 +2501,7 @@ var require_resolve = __commonJS({
       });
       return localRefs;
       function checkAmbiguosRef(sch1, sch2, ref) {
-        if (sch2 !== void 0 && !equal3(sch1, sch2))
+        if (sch2 !== void 0 && !equal4(sch1, sch2))
           throw ambiguos(ref);
       }
       function ambiguos(ref) {
@@ -2610,8 +2610,8 @@ var require_validate = __commonJS({
     function schemaCxtHasRules({ schema: schema3, self }) {
       if (typeof schema3 == "boolean")
         return !schema3;
-      for (const key2 in schema3)
-        if (self.RULES.all[key2])
+      for (const key3 in schema3)
+        if (self.RULES.all[key3])
           return true;
       return false;
     }
@@ -4120,7 +4120,7 @@ var require_fast_uri = __commonJS({
       target.fragment = relative.fragment;
       return target;
     }
-    function equal3(uriA, uriB, options) {
+    function equal4(uriA, uriB, options) {
       const normalizedA = normalizeComparableURI(uriA, options);
       const normalizedB = normalizeComparableURI(uriB, options);
       return normalizedA !== void 0 && normalizedB !== void 0 && normalizedA === normalizedB;
@@ -4404,7 +4404,7 @@ var require_fast_uri = __commonJS({
       normalize,
       resolve: resolve3,
       resolveComponent,
-      equal: equal3,
+      equal: equal4,
       serialize,
       parse
     };
@@ -4649,7 +4649,7 @@ var require_core = __commonJS({
         }
       }
       // Adds schema to the instance
-      addSchema(schema3, key2, _meta, _validateSchema = this.opts.validateSchema) {
+      addSchema(schema3, key3, _meta, _validateSchema = this.opts.validateSchema) {
         if (Array.isArray(schema3)) {
           for (const sch of schema3)
             this.addSchema(sch, void 0, _meta, _validateSchema);
@@ -4663,15 +4663,15 @@ var require_core = __commonJS({
             throw new Error(`schema ${schemaId} must be string`);
           }
         }
-        key2 = (0, resolve_1.normalizeId)(key2 || id);
-        this._checkUnique(key2);
-        this.schemas[key2] = this._addSchema(schema3, _meta, key2, _validateSchema, true);
+        key3 = (0, resolve_1.normalizeId)(key3 || id);
+        this._checkUnique(key3);
+        this.schemas[key3] = this._addSchema(schema3, _meta, key3, _validateSchema, true);
         return this;
       }
       // Add schema that will be used to validate other schemas
       // options in META_IGNORE_OPTIONS are alway set to false
-      addMetaSchema(schema3, key2, _validateSchema = this.opts.validateSchema) {
-        this.addSchema(schema3, key2, true, _validateSchema);
+      addMetaSchema(schema3, key3, _validateSchema = this.opts.validateSchema) {
+        this.addSchema(schema3, key3, true, _validateSchema);
         return this;
       }
       //  Validate schema against its meta-schema
@@ -4827,14 +4827,14 @@ var require_core = __commonJS({
           let keywords = metaSchema;
           for (const seg of segments)
             keywords = keywords[seg];
-          for (const key2 in rules) {
-            const rule = rules[key2];
+          for (const key3 in rules) {
+            const rule = rules[key3];
             if (typeof rule != "object")
               continue;
             const { $data } = rule.definition;
-            const schema3 = keywords[key2];
+            const schema3 = keywords[key3];
             if ($data && schema3)
-              keywords[key2] = schemaOrData(schema3);
+              keywords[key3] = schemaOrData(schema3);
           }
         }
         return metaSchema;
@@ -4907,10 +4907,10 @@ var require_core = __commonJS({
     Ajv4.MissingRefError = ref_error_1.default;
     exports.default = Ajv4;
     function checkOptions(checkOpts, options, msg, log = "error") {
-      for (const key2 in checkOpts) {
-        const opt = key2;
+      for (const key3 in checkOpts) {
+        const opt = key3;
         if (opt in options)
-          this.logger[log](`${msg}: option ${key2}. ${checkOpts[opt]}`);
+          this.logger[log](`${msg}: option ${key3}. ${checkOpts[opt]}`);
       }
     }
     function getSchEnv(keyRef) {
@@ -4924,8 +4924,8 @@ var require_core = __commonJS({
       if (Array.isArray(optsSchemas))
         this.addSchema(optsSchemas);
       else
-        for (const key2 in optsSchemas)
-          this.addSchema(optsSchemas[key2], key2);
+        for (const key3 in optsSchemas)
+          this.addSchema(optsSchemas[key3], key3);
     }
     function addInitialFormats() {
       for (const name in this.opts.formats) {
@@ -5494,9 +5494,9 @@ var require_equal = __commonJS({
   "node_modules/.pnpm/ajv@8.20.0/node_modules/ajv/dist/runtime/equal.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var equal3 = require_fast_deep_equal();
-    equal3.code = 'require("ajv/dist/runtime/equal").default';
-    exports.default = equal3;
+    var equal4 = require_fast_deep_equal();
+    equal4.code = 'require("ajv/dist/runtime/equal").default';
+    exports.default = equal4;
   }
 });
 
@@ -5973,11 +5973,11 @@ var require_dependencies = __commonJS({
     function splitDependencies({ schema: schema3 }) {
       const propertyDeps = {};
       const schemaDeps = {};
-      for (const key2 in schema3) {
-        if (key2 === "__proto__")
+      for (const key3 in schema3) {
+        if (key3 === "__proto__")
           continue;
-        const deps = Array.isArray(schema3[key2]) ? propertyDeps : schemaDeps;
-        deps[key2] = schema3[key2];
+        const deps = Array.isArray(schema3[key3]) ? propertyDeps : schemaDeps;
+        deps[key3] = schema3[key3];
       }
       return [propertyDeps, schemaDeps];
     }
@@ -6054,13 +6054,13 @@ var require_propertyNames = __commonJS({
         if ((0, util_1.alwaysValidSchema)(it, schema3))
           return;
         const valid = gen.name("valid");
-        gen.forIn("key", data, (key2) => {
-          cxt.setParams({ propertyName: key2 });
+        gen.forIn("key", data, (key3) => {
+          cxt.setParams({ propertyName: key3 });
           cxt.subschema({
             keyword: "propertyNames",
-            data: key2,
+            data: key3,
             dataTypes: ["string"],
-            propertyName: key2,
+            propertyName: key3,
             compositeRule: true
           }, valid);
           gen.if((0, codegen_1.not)(valid), () => {
@@ -6109,38 +6109,38 @@ var require_additionalProperties = __commonJS({
         checkAdditionalProperties();
         cxt.ok((0, codegen_1._)`${errsCount} === ${names_1.default.errors}`);
         function checkAdditionalProperties() {
-          gen.forIn("key", data, (key2) => {
+          gen.forIn("key", data, (key3) => {
             if (!props.length && !patProps.length)
-              additionalPropertyCode(key2);
+              additionalPropertyCode(key3);
             else
-              gen.if(isAdditional(key2), () => additionalPropertyCode(key2));
+              gen.if(isAdditional(key3), () => additionalPropertyCode(key3));
           });
         }
-        function isAdditional(key2) {
+        function isAdditional(key3) {
           let definedProp;
           if (props.length > 8) {
             const propsSchema = (0, util_1.schemaRefOrVal)(it, parentSchema.properties, "properties");
-            definedProp = (0, code_1.isOwnProperty)(gen, propsSchema, key2);
+            definedProp = (0, code_1.isOwnProperty)(gen, propsSchema, key3);
           } else if (props.length) {
-            definedProp = (0, codegen_1.or)(...props.map((p) => (0, codegen_1._)`${key2} === ${p}`));
+            definedProp = (0, codegen_1.or)(...props.map((p) => (0, codegen_1._)`${key3} === ${p}`));
           } else {
             definedProp = codegen_1.nil;
           }
           if (patProps.length) {
-            definedProp = (0, codegen_1.or)(definedProp, ...patProps.map((p) => (0, codegen_1._)`${(0, code_1.usePattern)(cxt, p)}.test(${key2})`));
+            definedProp = (0, codegen_1.or)(definedProp, ...patProps.map((p) => (0, codegen_1._)`${(0, code_1.usePattern)(cxt, p)}.test(${key3})`));
           }
           return (0, codegen_1.not)(definedProp);
         }
-        function deleteAdditional(key2) {
-          gen.code((0, codegen_1._)`delete ${data}[${key2}]`);
+        function deleteAdditional(key3) {
+          gen.code((0, codegen_1._)`delete ${data}[${key3}]`);
         }
-        function additionalPropertyCode(key2) {
+        function additionalPropertyCode(key3) {
           if (opts.removeAdditional === "all" || opts.removeAdditional && schema3 === false) {
-            deleteAdditional(key2);
+            deleteAdditional(key3);
             return;
           }
           if (schema3 === false) {
-            cxt.setParams({ additionalProperty: key2 });
+            cxt.setParams({ additionalProperty: key3 });
             cxt.error();
             if (!allErrors)
               gen.break();
@@ -6149,22 +6149,22 @@ var require_additionalProperties = __commonJS({
           if (typeof schema3 == "object" && !(0, util_1.alwaysValidSchema)(it, schema3)) {
             const valid = gen.name("valid");
             if (opts.removeAdditional === "failing") {
-              applyAdditionalSchema(key2, valid, false);
+              applyAdditionalSchema(key3, valid, false);
               gen.if((0, codegen_1.not)(valid), () => {
                 cxt.reset();
-                deleteAdditional(key2);
+                deleteAdditional(key3);
               });
             } else {
-              applyAdditionalSchema(key2, valid);
+              applyAdditionalSchema(key3, valid);
               if (!allErrors)
                 gen.if((0, codegen_1.not)(valid), () => gen.break());
             }
           }
         }
-        function applyAdditionalSchema(key2, valid, errors) {
+        function applyAdditionalSchema(key3, valid, errors) {
           const subschema = {
             keyword: "additionalProperties",
-            dataProp: key2,
+            dataProp: key3,
             dataPropType: util_1.Type.Str
           };
           if (errors === false) {
@@ -6289,19 +6289,19 @@ var require_patternProperties = __commonJS({
           }
         }
         function validateProperties(pat) {
-          gen.forIn("key", data, (key2) => {
-            gen.if((0, codegen_1._)`${(0, code_1.usePattern)(cxt, pat)}.test(${key2})`, () => {
+          gen.forIn("key", data, (key3) => {
+            gen.if((0, codegen_1._)`${(0, code_1.usePattern)(cxt, pat)}.test(${key3})`, () => {
               const alwaysValid = alwaysValidPatterns.includes(pat);
               if (!alwaysValid) {
                 cxt.subschema({
                   keyword: "patternProperties",
                   schemaProp: pat,
-                  dataProp: key2,
+                  dataProp: key3,
                   dataPropType: util_2.Type.Str
                 }, valid);
               }
               if (it.opts.unevaluated && props !== true) {
-                gen.assign((0, codegen_1._)`${props}[${key2}]`, true);
+                gen.assign((0, codegen_1._)`${props}[${key3}]`, true);
               } else if (!alwaysValid && !it.allErrors) {
                 gen.if((0, codegen_1.not)(valid), () => gen.break());
               }
@@ -7450,15 +7450,15 @@ function evaluateWorkMap(data) {
         "GitHub namespace must be lowercase host/owner/repository.",
         "Use the canonical repository namespace, without a scheme or trailing slash."
       );
-    const key2 = JSON.stringify([source.provider, source.namespace]);
-    if (namespaces.has(key2))
+    const key3 = JSON.stringify([source.provider, source.namespace]);
+    if (namespaces.has(key3))
       add(
         "duplicate-source",
         `/sources/${n}/namespace`,
         "This provider namespace has already been declared.",
         "Combine captures from the same workspace or repository into one source."
       );
-    namespaces.add(key2);
+    namespaces.add(key3);
   });
   data.categories.forEach((category, n) => {
     if (!domains.has(category.domain))
@@ -7526,11 +7526,11 @@ function evaluateWorkMap(data) {
   const seen = /* @__PURE__ */ new Set(), parents = /* @__PURE__ */ new Map(), parentPaths = /* @__PURE__ */ new Map();
   data.relations.forEach((edge, n) => {
     const path = `/relations/${n}`;
-    for (const key2 of ["source", "target"])
-      if (!issues.has(edge[key2]))
+    for (const key3 of ["source", "target"])
+      if (!issues.has(edge[key3]))
         add(
           "unknown-endpoint",
-          path + "/" + key2,
+          path + "/" + key3,
           "Relation endpoint does not exist.",
           "Declare the context issue explicitly; use detail unqueried and status unknown when not fetched."
         );
@@ -7692,11 +7692,11 @@ async function renderWorkMap(input) {
       throw new Error("Viewer template must contain each slot exactly once.");
   return shell.replace(
     /__TITLE__|__LOCALE__|__CSS__|__JS__|__DATA__|__MESSAGES__|__LOGO__|__FAVICON__|\{\{ui\.([\w.]+)\}\}/g,
-    (token, key2) => {
-      if (!key2) return required(values[token], "Viewer slot is declared.");
-      if (typeof messages[key2] !== "string")
-        throw new Error(`Missing UI message: ${key2}`);
-      return escapeHTML(messages[key2]);
+    (token, key3) => {
+      if (!key3) return required(values[token], "Viewer slot is declared.");
+      if (typeof messages[key3] !== "string")
+        throw new Error(`Missing UI message: ${key3}`);
+      return escapeHTML(messages[key3]);
     }
   );
 }
@@ -7794,14 +7794,14 @@ function normalizeCapture(capture) {
   const aliasKey = (source, native) => JSON.stringify([source.id, String(native)]);
   const bind = (source, alias, id, path) => {
     if (!nonblank(alias)) return;
-    const key2 = aliasKey(source, alias);
-    if (aliases.has(key2) && aliases.get(key2) !== id)
+    const key3 = aliasKey(source, alias);
+    if (aliases.has(key3) && aliases.get(key3) !== id)
       fail(
         path,
         "Native identity and identifier disagree: conflicting issues.",
         "Resolve conflicting captures against the source; do not merge different issues."
       );
-    aliases.set(key2, id);
+    aliases.set(key3, id);
   };
   for (const [n, entry] of capture.records.entries()) {
     const path = `/records/${n}`, source = sources.get(entry.sourceId), raw = entry.data;
@@ -8055,12 +8055,12 @@ function normalizeCapture(capture) {
   const addEdge = (kind, source, target, path) => {
     const ends = [source, target];
     if (kind === "related") ends.sort();
-    const key2 = JSON.stringify([kind, ...ends]);
-    if (!edges.has(key2)) {
+    const key3 = JSON.stringify([kind, ...ends]);
+    if (!edges.has(key3)) {
       origins.set(`/relations/${map.relations.length}`, path);
       map.relations.push({ kind, source: ends[0], target: ends[1] });
     }
-    edges.add(key2);
+    edges.add(key3);
   };
   for (const { identity: identity2, relations } of records)
     for (const { kind, reverse, identity: other, path } of relations)
@@ -8748,11 +8748,11 @@ function difference(expected, actual, path = "") {
   if (equal2(expected, actual)) return null;
   if (isObject(expected) && isObject(actual) && Array.isArray(expected) === Array.isArray(actual)) {
     const keys = /* @__PURE__ */ new Set([...Object.keys(expected), ...Object.keys(actual)]);
-    for (const key2 of keys) {
-      if (!Object.hasOwn(expected, key2)) return path || "/";
-      const at = `${path}/${escapePointer(key2)}`;
-      if (!Object.hasOwn(actual, key2)) return at;
-      const found = difference(expected[key2], actual[key2], at);
+    for (const key3 of keys) {
+      if (!Object.hasOwn(expected, key3)) return path || "/";
+      const at = `${path}/${escapePointer(key3)}`;
+      if (!Object.hasOwn(actual, key3)) return at;
+      const found = difference(expected[key3], actual[key3], at);
       if (found) return found;
     }
   }
@@ -8761,7 +8761,7 @@ function difference(expected, actual, path = "") {
 function sourceIssue(issue) {
   const result = Object.fromEntries(
     Object.entries(issue).filter(
-      ([key2]) => !["classification", "classificationEvidence", "targets"].includes(key2)
+      ([key3]) => !["classification", "classificationEvidence", "targets"].includes(key3)
     )
   );
   if (issue.detail === "unqueried")
@@ -8903,7 +8903,7 @@ var init_verify = __esm({
     init_continuity();
     init_validate();
     init_render();
-    escapePointer = (key2) => String(key2).replace(/~/g, "~0").replace(/\//g, "~1");
+    escapePointer = (key3) => String(key3).replace(/~/g, "~0").replace(/\//g, "~1");
     relationKey = ({ kind, source, target }) => JSON.stringify([
       kind,
       ...kind === "related" ? [source, target].sort() : [source, target]
@@ -9158,7 +9158,7 @@ function readBatch(input, requests, offset = 0) {
   const plan = requests.map((request, index) => {
     const path = `/requests/${index}`;
     if (!isObject(request) || isArray(request) || Object.keys(request).some(
-      (key2) => !["issue", "block", "offset"].includes(key2)
+      (key3) => !["issue", "block", "offset"].includes(key3)
     ))
       fail3(
         path,
@@ -9179,11 +9179,11 @@ function readBatch(input, requests, offset = 0) {
         "Issue selection is missing or ambiguous.",
         "Inspect the map and use its canonical issue id."
       );
-    const integer = (key2) => {
-      const value = request[key2];
+    const integer = (key3) => {
+      const value = request[key3];
       if (typeof value !== "number" || !Number.isSafeInteger(value) || value < 0)
         fail3(
-          `${path}/${key2}`,
+          `${path}/${key3}`,
           "Expected a non-negative integer number.",
           "Use a numeric block from inspect or an offset returned by the reader."
         );
@@ -9386,6 +9386,296 @@ var init_evidence = __esm({
   }
 });
 
+// lib/refresh-reading.ts
+import { createHash as createHash4 } from "node:crypto";
+import { readFile as readFile6 } from "node:fs/promises";
+import { isDeepStrictEqual as equal3 } from "node:util";
+function fail4(path, message, fix) {
+  throw new WorkMapError([{ code: "refresh-reading", path, message, fix }]);
+}
+async function readRefreshInput(path, role) {
+  let text;
+  try {
+    text = await readFile6(path, "utf8");
+  } catch {
+    fail4(
+      `/${role}`,
+      "Refresh input could not be read.",
+      "Use an accessible previous state and the retained fresh capture."
+    );
+  }
+  try {
+    const value = JSON.parse(text);
+    return value;
+  } catch {
+    fail4(
+      `/${role}`,
+      "Refresh input is not valid JSON.",
+      "Repair the input JSON without replacing retained evidence."
+    );
+  }
+}
+function offsetOf(value) {
+  if (!/^(0|[1-9]\d*)$/.test(String(value)) || !Number.isSafeInteger(Number(value)))
+    fail4(
+      "/offset",
+      "Expected a non-negative integer.",
+      "Use the nextOffset returned for this view."
+    );
+  return Number(value);
+}
+function page2(items, offset) {
+  if (offset > items.length)
+    fail4(
+      "/offset",
+      "Offset is beyond this view.",
+      "Restart at offset 0 with unchanged inputs and view."
+    );
+  const end = Math.min(items.length, offset + PAGE2);
+  return {
+    total: items.length,
+    offset,
+    nextOffset: end < items.length ? end : null,
+    items: items.slice(offset, end)
+  };
+}
+function windows(before, after) {
+  let start = 0;
+  while (start < before.length && start < after.length && before[start] === after[start])
+    start++;
+  let left = before.length, right = after.length;
+  while (left > start && right > start && before[left - 1] === after[right - 1]) {
+    left--;
+    right--;
+  }
+  return {
+    before: {
+      start: Math.max(0, start - CONTEXT),
+      end: Math.min(before.length, left + CONTEXT)
+    },
+    after: {
+      start: Math.max(0, start - CONTEXT),
+      end: Math.min(after.length, right + CONTEXT)
+    }
+  };
+}
+function readRefresh(input, capture, selector = "", view = "focus", offsetInput = 0) {
+  const offset = offsetOf(offsetInput);
+  if (!["focus", "full", "taxonomy"].includes(view))
+    fail4(
+      "/view",
+      "Unknown refresh reading view.",
+      "Choose focus, full, or taxonomy."
+    );
+  const previous = assertState(input);
+  const current = refreshState(previous, capture);
+  if (view === "taxonomy") {
+    if (selector)
+      fail4(
+        "/issue",
+        "Taxonomy view does not take an issue.",
+        "Use an empty issue selector for taxonomy paging."
+      );
+    return {
+      kind: "refresh-taxonomy",
+      ...page2(
+        previous.map.categories.map((category2) => ({
+          ...category2,
+          domain: previous.map.domains.find(
+            (domain) => domain.id === category2.domain
+          )
+        })),
+        offset
+      )
+    };
+  }
+  const memories = new Map(previous.memory.map((entry) => [key2(entry), entry]));
+  const observations = new Map(
+    previous.map.issues.map((issue2) => [
+      key2(identityOf(previous.map, issue2)),
+      issue2
+    ])
+  );
+  const reviews = new Map(
+    current.changes.review.map((entry) => [entry.issueId, entry.reason])
+  );
+  const candidates = current.map.issues.flatMap((issue2) => {
+    const identity3 = identityOf(current.map, issue2), stable = key2(identity3);
+    const saved2 = memories.get(stable), observed = observations.get(stable);
+    const useObservation = saved2?.classification?.origin === "user" && observed?.detail === "full";
+    const before2 = useObservation ? textOf(observed) : saved2?.evidence;
+    const after2 = issue2.detail === "full" ? textOf(issue2) : void 0;
+    const reason2 = reviews.get(issue2.id);
+    const changedUser = saved2?.classification?.origin === "user" && after2 !== void 0 && !equal3(before2, after2);
+    if (!reason2 && !changedUser) return [];
+    return [
+      {
+        issue: issue2,
+        identity: identity3,
+        saved: saved2,
+        before: before2,
+        after: after2,
+        reason: reason2,
+        baseline: useObservation ? "previous-full-observation" : before2 ? "saved-decision-evidence" : "unavailable",
+        attention: changedUser ? "preserved-user-evidence-changed" : "pending-classification"
+      }
+    ];
+  });
+  if (!selector) {
+    if (view !== "focus")
+      fail4(
+        "/issue",
+        "Full evidence requires an issue.",
+        "Choose an issue from the focus index."
+      );
+    return {
+      kind: "refresh-index",
+      ...page2(
+        candidates.map(({ issue: issue2, identity: identity3, reason: reason2, attention: attention2 }) => ({
+          id: issue2.id,
+          identifier: issue2.identifier,
+          identity: identity3,
+          scope: issue2.scope,
+          detail: issue2.detail,
+          titlePreview: Array.from(issue2.title).slice(0, 80).join(""),
+          titleTruncated: Array.from(issue2.title).length > 80,
+          attention: attention2,
+          reviewReason: reason2 ?? null
+        })),
+        offset
+      )
+    };
+  }
+  const exact = current.map.issues.find((issue2) => issue2.id === selector);
+  const matches = exact ? [exact] : current.map.issues.filter((issue2) => issue2.identifier === selector);
+  if (matches.length !== 1)
+    fail4(
+      "/issue",
+      "Issue selection is missing or ambiguous.",
+      "Use the canonical issue id from the refresh index."
+    );
+  const selected = candidates.find(({ issue: issue2 }) => issue2.id === matches[0]?.id);
+  if (!selected)
+    fail4(
+      "/issue",
+      "Issue has no focused refresh attention.",
+      "Use an issue from the refresh index; read other observations with the existing map readers."
+    );
+  const { issue, identity: identity2, saved, before, after, reason, attention, baseline } = selected;
+  const fields = ["title", "description"].map((field) => {
+    const left = Array.from(before?.[field] ?? ""), right = Array.from(after?.[field] ?? "");
+    const changed = !equal3(before?.[field], after?.[field]) || before === void 0 !== (after === void 0);
+    const ranges = windows(left, right);
+    const side = (name, evidence2, points) => {
+      const value = evidence2?.[field];
+      const range = view === "full" || !saved?.classification || before === void 0 || after === void 0 ? { start: 0, end: points.length } : changed ? ranges[name] : { start: 0, end: 0 };
+      return {
+        name,
+        points,
+        range,
+        summary: {
+          available: evidence2 !== void 0,
+          presence: evidence2 === void 0 ? "unavailable" : value === void 0 ? "omitted" : value === null ? "null" : "text",
+          characters: points.length,
+          hash: evidence2 === void 0 ? null : createHash4("sha256").update(JSON.stringify({ field, value })).digest("hex"),
+          selected: range,
+          omitted: [
+            ...range.start ? [{ start: 0, end: range.start }] : [],
+            ...range.end < points.length ? [{ start: range.end, end: points.length }] : []
+          ]
+        }
+      };
+    };
+    return {
+      field,
+      changed,
+      sides: [side("before", before, left), side("after", after, right)]
+    };
+  });
+  const chunks = fields.flatMap(
+    ({ field, sides }) => sides.flatMap(({ name, points, range }) => {
+      const entries = [];
+      for (let at = range.start; at < range.end; at += CHUNK2)
+        entries.push({
+          field,
+          side: name,
+          points,
+          start: at,
+          end: Math.min(at + CHUNK2, range.end)
+        });
+      return entries;
+    })
+  );
+  const chunkPage = page2(chunks, offset);
+  const category = previous.map.categories.find(
+    (entry) => entry.id === saved?.classification?.category
+  );
+  return {
+    kind: "refresh-evidence",
+    view,
+    issue: {
+      id: issue.id,
+      identifier: issue.identifier,
+      identity: identity2,
+      scope: issue.scope,
+      detail: issue.detail,
+      status: issue.status
+    },
+    source: sourceOf(current.map, issue),
+    attention,
+    reviewReason: reason ?? null,
+    previousDecision: saved ? {
+      classification: saved.classification ?? null,
+      targets: saved.targets,
+      targetsOrigin: saved.targetsOrigin
+    } : null,
+    category: category ? {
+      ...category,
+      domain: previous.map.domains.find(
+        (domain) => domain.id === category.domain
+      )
+    } : null,
+    baseline,
+    currentEvidence: after ? "current-full-observation" : "unavailable",
+    fields: fields.map(({ field, changed, sides }) => ({
+      field,
+      changed,
+      ...Object.fromEntries(sides.map(({ name, summary }) => [name, summary]))
+    })),
+    ...chunkPage,
+    items: chunkPage.items.map(({ points, ...chunk }) => ({
+      ...chunk,
+      text: points.slice(chunk.start, chunk.end).join("")
+    }))
+  };
+}
+var PAGE2, CHUNK2, CONTEXT, key2, sourceOf, identityOf, textOf;
+var init_refresh_reading = __esm({
+  "lib/refresh-reading.ts"() {
+    "use strict";
+    init_continuity();
+    init_contracts();
+    init_validate();
+    PAGE2 = 20;
+    CHUNK2 = 4e3;
+    CONTEXT = 160;
+    key2 = ({ provider, namespace, nativeId }) => JSON.stringify([provider, namespace, nativeId]);
+    sourceOf = (map, issue) => required(
+      map.sources.find((source) => source.id === issue.sourceId),
+      "Validated source exists."
+    );
+    identityOf = (map, issue) => ({
+      provider: sourceOf(map, issue).provider,
+      namespace: sourceOf(map, issue).namespace,
+      nativeId: issue.nativeId
+    });
+    textOf = (issue) => ({
+      title: issue.title,
+      ...issue.description !== void 0 ? { description: issue.description } : {}
+    });
+  }
+});
+
 // lib/cli-commands.ts
 var cli_commands_exports = {};
 __export(cli_commands_exports, {
@@ -9399,6 +9689,20 @@ async function runCommand(command2, args2) {
   try {
     if (command2 === "retain-response") {
       console.log(JSON.stringify(await retainResponse(input, second())));
+    } else if (command2 === "read-refresh") {
+      console.log(
+        JSON.stringify(
+          readRefresh(
+            await readRefreshInput(input, "state"),
+            await readRefreshInput(second(), "capture"),
+            extra[0],
+            extra[1],
+            extra[2]
+          ),
+          null,
+          2
+        )
+      );
     } else if (command2 === "inspect") {
       console.log(
         JSON.stringify(
@@ -9513,6 +9817,7 @@ var init_cli_commands = __esm({
     init_verify();
     init_reading();
     init_evidence();
+    init_refresh_reading();
     init_continuity();
   }
 });
@@ -9710,6 +10015,21 @@ var commands = {
     ],
     output: "Writes work-map.json, state.json, and changes.json; prints a JSON run summary. Report-relative references are refused.",
     example: "remember work-map.json remembered-run"
+  },
+  "read-refresh": {
+    usage: "read-refresh STATE.json CAPTURE.json [ISSUE [VIEW [OFFSET]]]",
+    summary: "Read focused refresh evidence without changing saved decisions.",
+    min: 2,
+    max: 5,
+    arguments: [
+      "STATE.json  Previous saved state, before applying this capture.",
+      "CAPTURE.json  Retained fresh capture used by refresh.",
+      "ISSUE  Canonical id or unique display identifier from the index; omit or use an empty string for index/taxonomy.",
+      "VIEW  focus (default), full, or taxonomy. Full requires an issue; taxonomy requires an empty issue.",
+      "OFFSET  Item offset in this exact index, taxonomy, or evidence view; default 0."
+    ],
+    output: "JSON pages of up to 20 entries. Evidence chunks contain up to 4,000 Unicode code points each with exact field-relative offsets, omitted ranges, previous decision and category basis. Pending reviews and changed user-owned observations remain distinct. No files or decisions are written.",
+    example: "read-refresh previous/state.json fresh-capture.json ISSUE_ID focus 0"
   },
   refresh: {
     usage: "refresh STATE.json CAPTURE.json RUN_DIR",
