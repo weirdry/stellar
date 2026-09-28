@@ -19,7 +19,8 @@ request/response contract. Up to 20 requests are returned, each with up to 4,000
 code points. Top-level continuation pages the request list; item continuation
 expands that body or block. Page-local metadata indices resolve to canonical IDs
 and description hashes. All requests are validated before output, including
-later pages; invalid requests produce indexed diagnostics with no partial stdout.
+later pages; the first invalid request produces an indexed diagnostic with no
+partial stdout. Request errors are not aggregated.
 Maps and request plans must remain unchanged while paging; no persistent cache
 or snapshot locking is introduced.
 
@@ -87,8 +88,18 @@ medians across five measured trials. [Full receipt](data/2026-09-28-batch-readin
 
 Shared metadata reduces the selective-block response from 5,592 to 3,636 bytes
 (35.0%). Distinct short bodies grow from 3,340 to 3,942 bytes (18.0%): there is no
-repeated metadata to remove and the batch envelope adds overhead. Both scenarios
-use fewer CLI processes, but that does not guarantee fewer host/model calls or
+repeated metadata to remove, and the batch envelope and deeper indentation add
+overhead. Most of this increase comes from whitespace in pretty-printed JSON.
+
+Re-serializing the same retained trial outputs as compact UTF-8 JSON, with no
+insignificant whitespace or trailing newline, gives 4,530 to 2,515 bytes for
+selective blocks (44.5% smaller) and 2,770 to 2,955 bytes for distinct short bodies
+(6.7% larger). This is an explanatory comparison, not a change to CLI formatting
+or the measured receipt. The requested source text totals only 201 and 400 UTF-8
+bytes respectively; metadata dominates these fixtures. These percentages do not
+generalize to realistic body sizes or different selection patterns.
+
+Both scenarios use fewer CLI processes, but that does not guarantee fewer host/model calls or
 lower billed tokens. Prefer individual direct reads for isolated short bodies;
 use batching where shared evidence or avoided repeated processing is useful.
 Full evidence and explicit expansion remain available in either route.

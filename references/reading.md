@@ -176,10 +176,12 @@ end-of-list offset return empty arrays with null continuation.
 The map is read, parsed and validated once per invocation. Selection lookup and
 code-point/block preparation are shared by canonical issue ID; returned metadata
 and its hash are computed once per issue on that page. The complete request plan
-is validated before output, including selections on later pages. Any invalid
-request fails the invocation without partial stdout, with indexed `/requests/N`
-diagnostics; unreadable or malformed request files use `/requests`. Fix the plan
-before retrying. Neither input file is modified. This is not partial-success processing.
+is validated before output, including selections on later pages. Validation stops
+at the first invalid request and fails the invocation without partial stdout,
+with one diagnostic indexed under `/requests/N`. Fixing it may expose another
+invalid request on the next attempt; errors are not aggregated. Unreadable or
+malformed request files use `/requests`. Neither input file is modified. This is
+not partial-success processing.
 
 Keep the map and request file unchanged while paging. Metadata is self-contained
 on each page; compare description hashes/presence across reads and restart after

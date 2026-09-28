@@ -165,7 +165,9 @@ shared per-issue preparation. Each page contains up to 20 chunks and emits each
 issue's metadata once, referenced by page-local indices. Items retain request
 indices, exact offsets and text continuation; top-level continuation instead pages
 the request list. The entire plan is checked before any result is returned, so
-invalid requests on later pages also fail without partial stdout. The inputs stay
+invalid requests on later pages also fail without partial stdout. Validation stops
+at the first invalid request and reports its indexed diagnostic; it does not
+aggregate request errors. The inputs stay
 unchanged and no cache survives the invocation. See the [batch contract](../../references/reading.md#batch-selected-evidence)
 and [regression tests](../../test/reading-batch.test.ts).
 Reader and response-retention errors use the canonical diagnostic `fix` field.
