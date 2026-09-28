@@ -65,8 +65,12 @@ Node runner and browser assets have read-only drift checks.
 
 State: **As-built**
 
-[SKILL.md](../../SKILL.md) owns common collection, classification, repair and
-handoff guidance. Source-specific references define host retrieval and capture
+[SKILL.md](../../SKILL.md) owns common invariants and operation selection.
+Its first-report, remember, refresh and revise routes load only their required
+references. [Run guidance](../../references/runs.md) owns shared preparation and
+delivery; collection retention and conditional recovery have separate owners.
+The [reading-path validation](../validation/2026-09-29-operation-guidance.md)
+records controlled route loads and their limits. Source-specific references define host retrieval and capture
 boundaries. [normalize.ts](../../lib/normalize.ts) translates native facts into
 one canonical work-map draft; [classification guidance](../../references/classification.md)
 keeps judgment with the agent. [continuity.ts](../../lib/continuity.ts) owns

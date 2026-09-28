@@ -203,7 +203,7 @@ exact before/after text windows, explicit omitted ranges and full-view expansion
 An exact common prefix/suffix bounds one changed region per field, with 160 code
 points of surrounding context; distant edits can retain the entire middle.
 All pages contain up to 20 entries and evidence chunks up to 4,000 code points.
-The [focused refresh contract](../../references/continuity.md#read-focused-refresh-evidence)
+The [focused refresh contract](../../references/refresh-reading.md)
 owns baseline provenance, unavailable observations, pagination and usage limits.
 
 ![Refresh separates classification review from preserved matched target tags](diagrams/refresh-continuity.svg)

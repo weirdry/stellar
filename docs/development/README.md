@@ -29,6 +29,10 @@ generator dependency's type constraint while keeping strict library checking.
 
 ## Commands
 
+`just instruction-reading-comparison NEW_DIRECTORY` records controlled before/after
+operation reading paths and hashes. See the [dated validation](../validation/2026-09-29-operation-guidance.md)
+for scope, the fixed baseline and the distinction from model-token telemetry.
+
 Canonical authoring follows the [documentation policy](documentation.md).
 Use `just diagrams-build` with a reviewed `ARCHIFY_ROOT` for explicit generation;
 `just diagrams-check` is read-only and included in CI. The
