@@ -7,8 +7,11 @@ This local walkthrough uses only the invented observatory in
 [mixed-choices.json](mixed-choices.json). It makes no source requests and is not
 an anonymized real capture. The example taxonomy is one interpretation, not a
 required vocabulary. See the [artifact ownership view](../docs/architecture/05-building-block-view.md#artifact-ownership-and-continuation)
-for file responsibilities and the [continuity guide](../references/continuity.md)
-for the complete contract.
+for file responsibilities. [Continuity](../references/continuity.md) owns shared
+state/run rules, and [choices](../references/choices.md) owns decision authoring.
+Follow the [first-report](../references/first-report.md),
+[user-correction](../references/revise.md) and [refresh](../references/refresh.md)
+guides for the operation-specific procedures used below.
 
 Run these blocks in order in one shell from a prepared repository checkout
 ([setup](../CONTRIBUTING.md#development-setup-and-quality-gates)). They use
