@@ -8914,6 +8914,18 @@ var init_verify = __esm({
 // lib/reading.ts
 import { readFile as readFile4 } from "node:fs/promises";
 import { createHash as createHash2 } from "node:crypto";
+function codePointLength(text) {
+  let length = text.length;
+  for (let index = 0; index < text.length - 1; index++) {
+    const code = text.charCodeAt(index);
+    const next = text.charCodeAt(index + 1);
+    if (code >= 55296 && code <= 56319 && next >= 56320 && next <= 57343) {
+      length--;
+      index++;
+    }
+  }
+  return length;
+}
 function fail3(path, message, fix) {
   throw new WorkMapError([{ path, code: "reading", message, fix }]);
 }
@@ -8961,7 +8973,7 @@ function metadata(issue, length) {
     detail: issue.detail,
     status: issue.status,
     descriptionPresent: issue.description !== void 0,
-    descriptionCharacters: length ?? characters(body).length,
+    descriptionCharacters: length ?? codePointLength(body),
     descriptionHash: createHash2("sha256").update(JSON.stringify(body)).digest("hex")
   };
 }
@@ -9008,7 +9020,7 @@ function bodyBlocks(text) {
   let position = 0;
   return blocks.map((block, index) => {
     const start = position;
-    position += characters(block.text).length;
+    position += codePointLength(block.text);
     return {
       block: index,
       kind: block.kind,
@@ -9193,12 +9205,14 @@ function readBatch(input, requests, offset = 0) {
     const at = request["offset"] === void 0 ? 0 : integer("offset");
     let prepared = cache.get(issue.id);
     if (!prepared) {
-      prepared = { issue, points: characters(issue.description ?? "") };
+      prepared = { issue, length: codePointLength(issue.description ?? "") };
       cache.set(issue.id, prepared);
     }
-    let start = 0, length = prepared.points.length;
+    let start = 0, length = prepared.length;
     if (block !== void 0) {
-      prepared.blocks ??= bodyBlocks(issue.description ?? "");
+      prepared.blocks ??= bodyBlocks(issue.description ?? "").map(
+        ({ start: start2, end }) => ({ start: start2, end })
+      );
       const selected2 = prepared.blocks[block];
       if (!selected2)
         fail3(
@@ -9220,13 +9234,15 @@ function readBatch(input, requests, offset = 0) {
   const selected = page(plan, offset);
   const issues = [];
   const indices = /* @__PURE__ */ new Map();
+  const points = [];
   const items = selected.items.map(
     ({ request, prepared, block, at, start, length }) => {
       let issueIndex = indices.get(prepared.issue.id);
       if (issueIndex === void 0) {
         issueIndex = issues.length;
         indices.set(prepared.issue.id, issueIndex);
-        issues.push(metadata(prepared.issue, prepared.points.length));
+        issues.push(metadata(prepared.issue, prepared.length));
+        points.push(characters(prepared.issue.description ?? ""));
       }
       const end = Math.min(at + CHUNK, length);
       return {
@@ -9238,7 +9254,7 @@ function readBatch(input, requests, offset = 0) {
         end: start + end,
         offset: at,
         nextOffset: end < length ? end : null,
-        text: prepared.points.slice(start + at, start + end).join("")
+        text: required(points[issueIndex], "Returned issue text is prepared.").slice(start + at, start + end).join("")
       };
     }
   );

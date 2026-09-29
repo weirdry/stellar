@@ -161,6 +161,11 @@ The optional `just batch-reading-benchmark NEW_DIRECTORY [TRIALS]` compares
 individual and batch reads of identical invented evidence. It records payload
 bytes, CLI invocation counts and fresh-process wall/CPU/peak-RSS observations;
 it does not measure model tokens or impose a timing gate.
+`just batch-memory-benchmark NEW_DIRECTORY [BASELINE_REVISION] [TRIALS] [ISSUES]`
+measures fresh-process peak RSS, wall and CPU time for large invented multi-page
+plans, optionally alternating with the runtime recorded at an earlier revision;
+every output must match the individual readers first. Unavailable baseline
+history is a usage error before the output directory is created.
 
 `just refresh-reading-comparison NEW_DIRECTORY` retains an invented refresh
 workload and compares serialized focus/full evidence including the same
