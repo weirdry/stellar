@@ -25,6 +25,9 @@ was required for saved maps, corrections and refresh; run guidance included both
 collection detail and renderer-recovery installation commands. First generation
 could read only the linked first-classification section of continuity; the
 comparison uses that narrower path rather than counting the entire document.
+The decision-authoring paths also read the choices contract and the work-map
+schema it references. The controlled baseline loads both schema files in full;
+remembering an unchanged map does not author choices and excludes those reads.
 The remaining instructions selected capture and evidence-reading references
 when collecting/classifying. These are instructed paths, not proof that every
 historical host followed them or loaded every link.
@@ -47,7 +50,8 @@ The fixed baseline must exist locally; the command does not fetch it. Inspect
 its `*-before.md` and `*-after.md` files alongside the receipt to audit the loads.
 Each independent scenario counts a document/section once; shared content is not
 charged repeatedly inside one route. The fixed scenarios use supplied native
-captures, valid existing artifacts, and choices covered by the inline format.
+captures, valid existing artifacts, and revised choices covered by the inline
+format, including the domain definitions needed by a normalized first draft.
 Provider guides, recovery and direct canonical-map authoring are conditional
 branches excluded on both sides. Source JSON, choices data, CLI output, system
 instructions and host framing are not included in instruction bytes. The example
@@ -55,13 +59,14 @@ choices remain illustrative data, not semantic classification proof.
 
 | Scenario                              | Before bytes | After bytes | Reduction | Selected reads before / after |
 | ------------------------------------- | -----------: | ----------: | --------: | ----------------------------: |
-| First report from supplied capture    |       66,562 |      51,694 |     22.3% |                         7 / 9 |
+| First report from supplied capture    |       79,918 |      52,076 |     34.8% |                         9 / 9 |
 | Remember completed map                |       67,631 |      19,238 |     71.6% |                         5 / 4 |
-| Refresh with supplied capture         |       85,962 |      63,292 |     26.4% |                        7 / 10 |
-| Explicit correction to existing group |       67,631 |      21,121 |     68.8% |                         5 / 5 |
+| Refresh with supplied capture         |       99,318 |      63,674 |     35.9% |                        9 / 10 |
+| Explicit correction to existing group |       80,987 |      21,503 |     73.4% |                         7 / 5 |
 
-The revised first/refresh paths load more, smaller documents. This can increase
-file-read/tool overhead even while selected content shrinks; no call-count,
+The revised refresh path loads more, smaller documents; first generation has the
+same selected file count. Splitting guidance can increase file-read/tool overhead
+even while selected content shrinks; no call-count,
 latency, billing, cached-input or model-token benefit is established. Refresh
 conservatively includes the general reader, even though the focused reader may
 suffice. Remember and simple correction no longer load unrelated collection,
@@ -70,6 +75,33 @@ adds classification/reading guidance; a direct authored map adds the work-map
 contract; failures add relevant recovery sections. Those additional branches
 can reduce or erase savings. A host may batch reads or retain already-loaded
 references, so neither file count nor repository-wide bytes is actual model input.
+The baseline's whole-schema reads are an explicit selection, not a claim that
+every host reads the entire referenced schema rather than selected definitions.
+
+### Self-review correction
+
+The original receipt at `5bc731e` omitted domain authoring from the inline choices
+example and omitted the required schema reads from the baseline decision paths.
+A normalized native capture has no domains or categories, so the original
+first-generation scenario could not stay within the claimed inline contract.
+The corrected example includes domain definitions and tells existing-state
+operations to omit unchanged taxonomy. The receipt now counts the baseline's
+choices contract and referenced work-map schema, while the revised paths cover
+the exercised fields inline. These larger baseline totals correct the reading
+inventory; the changed percentages do not represent additional runtime savings.
+The revised choices guide itself grew by 382 bytes.
+
+A focused synthetic replay extracted the JSON fence from the old and corrected
+choices guides, substituting the normalized issue ID and an evidence-grounded
+rationale for one invented reusable-tooling issue. The old example fails with
+`Category domain is undeclared` and creates no output run. The corrected example
+completes `classify-draft`; its map/state/HTML pass `validate`, `render` and
+`verify-run`. Separate remember, explicit user correction without taxonomy
+upserts, and refresh stages also pass those checks and preserve the user
+classification and intentionally empty targets. All 20 delivered-CLI invocations
+return their expected exit codes. This is a manual behavior probe, not a
+wording test or an independent model trial; it supplements the earlier workflow
+below without changing its recorded 47-call result.
 
 ## Preservation review
 

@@ -15,6 +15,13 @@ const oldCommon = paths(
   'references/classification.md',
   'references/runs.md',
 );
+// The old decision-authoring instructions require the choices contract; its
+// domain/category/issue definitions reference the work-map schema. Count both
+// complete files for these selected baseline paths, but not for unchanged maps.
+const oldChoices = paths(
+  'schemas/choices.schema.json',
+  'schemas/work-map.schema.json',
+);
 const common = paths(
   'SKILL.md',
   'references/runs.md',
@@ -28,6 +35,7 @@ const scenarios = [
       ...oldCommon,
       ...paths('references/capture.md', 'references/reading.md'),
       { path: 'references/continuity.md', section: 'Classify a first draft' },
+      ...oldChoices,
     ],
     after: [
       ...common,
@@ -54,6 +62,7 @@ const scenarios = [
         'references/capture.md',
         'references/reading.md',
       ),
+      ...oldChoices,
     ],
     // Include the general reader conservatively, as in the explicit replay.
     after: [
@@ -70,7 +79,7 @@ const scenarios = [
   },
   {
     name: 'revise-existing-group',
-    before: [...oldCommon, ...paths('references/continuity.md')],
+    before: [...oldCommon, ...paths('references/continuity.md'), ...oldChoices],
     after: [
       ...common,
       ...paths('references/revise.md', 'references/choices.md'),
@@ -128,7 +137,7 @@ const rows = scenarios.map(({ name, before, after }) => {
 const result = {
   baseline,
   method:
-    'Explicit selected reading paths, each unique document/section loaded once per independent scenario. Supplied captures; no recovery, live provider or direct-map authoring branch. Before follows mandatory read instructions, using only the anchored first-classification section for first generation. After follows operation routing; refresh conservatively includes the general reader. Choices fit the inline contract; data/examples and executable output are not instruction bytes. This is a controlled document-load comparison, not automatic host tracing, actual model input/token usage, or autonomous task-quality evidence.',
+    'Explicit selected reading paths, each unique document/section loaded once per independent scenario. Supplied captures; no recovery, live provider or direct-map authoring branch. Before follows mandatory read instructions, using only the anchored first-classification section for first generation, plus the full choices and referenced work-map schemas when authoring decisions. After follows operation routing; refresh conservatively includes the general reader. Revised choices fit the inline contract, including domains for first generation; data/examples and executable output are not instruction bytes. Schema files are counted in full on the selected baseline paths, not as a claim that every host reads whole files. This is a controlled document-load comparison, not automatic host tracing, actual model input/token usage, or autonomous task-quality evidence.',
   rows,
 };
 writeJSON(join(output, 'results.json'), result);
