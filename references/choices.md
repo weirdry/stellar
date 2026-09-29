@@ -10,6 +10,13 @@ when authoring fields beyond this example or diagnosing a shape error.
 
 ```json
 {
+  "domains": [
+    {
+      "id": "research",
+      "label": "Research",
+      "description": "Research outcomes and supporting capabilities"
+    }
+  ],
   "categories": [
     {
       "id": "research-tools",
@@ -31,6 +38,9 @@ when authoring fields beyond this example or diagnosing a shape error.
 }
 ```
 
+Normalization produces an empty taxonomy. For a first draft, supply the domains
+referenced by the new categories as well as the categories and issue decisions.
+For an existing taxonomy, omit unchanged domain/category definitions.
 Use actual IDs and domains; these are illustrative names. Omitted classification
 or targets stay unchanged. Domains/categories are upserted by ID. Changing a
 group definition affects all remembered issues using it, including absent ones.
