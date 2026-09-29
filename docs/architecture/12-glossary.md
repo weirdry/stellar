@@ -49,6 +49,9 @@ State: **As-built**
 
 The [artifact ownership view](05-building-block-view.md#artifact-ownership-and-continuation)
 connects these files. Exact fields belong to the [contract guide](../../schemas/README.md)
-and schemas; operations belong to the [continuity guide](../../references/continuity.md).
+and schemas; operation selection belongs to [SKILL.md](../../SKILL.md), which
+links the first-report, remember, refresh and revise procedures. Shared state
+rules belong to [continuity](../../references/continuity.md), and authored decisions
+to [choices](../../references/choices.md).
 Architecture and ADR state vocabularies are defined in the
 [documentation index](../README.md).

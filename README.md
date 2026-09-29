@@ -124,10 +124,10 @@ These helpers do not fetch data or turn a model-authored copy into source proof.
 
 For saved-state refresh, `just read-refresh STATE CAPTURE` lists pending decisions
 and changed user-owned observations. Select an issue for focused before/after
-evidence or full expansion; see [refresh reading](references/continuity.md#read-focused-refresh-evidence).
+evidence or full expansion; see [refresh reading](references/refresh-reading.md).
 
 For a native capture, write agent decisions in the
-[choices format](references/continuity.md#classify-a-first-draft), then use
+[choices format](references/choices.md), then use
 `just classify-draft DRAFT.json CHOICES.json NEW_RUN`. The runner applies the
 decisions and creates a complete map with refresh state; it does not propose
 classifications. A runnable synthetic example is:
@@ -192,7 +192,8 @@ node "$STELLAR_ROOT/bin/stellar.mjs" classify \
 
 Each command writes a new private run directory; render its `work-map.json` and
 keep its `state.json` for the next run. See the
-[continuity workflow](references/continuity.md) for rules and choices examples.
+[shared state rules](references/continuity.md), [choices examples](references/choices.md),
+and the [refresh](references/refresh.md) and [user-correction](references/revise.md) routes.
 Pending review survives context/absence until an explicit classification. Web
 references are retained; report-relative references are rejected before a new run
 is written, since local reference bundling is not implemented.

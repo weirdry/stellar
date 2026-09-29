@@ -1,6 +1,6 @@
 {
   "baseline": "e76de76589ba914cd265d7f13ff4f8a16f176cef",
-  "method": "Explicit selected reading paths, each unique document/section loaded once per independent scenario. Supplied captures; no recovery, live provider or direct-map authoring branch. Before follows mandatory read instructions, using only the anchored first-classification section for first generation, plus the full choices and referenced work-map schemas when authoring decisions. After follows operation routing; refresh conservatively includes the general reader. Revised choices fit the inline contract, including domains for first generation; data/examples and executable output are not instruction bytes. Schema files are counted in full on the selected baseline paths, not as a claim that every host reads whole files. This is a controlled document-load comparison, not automatic host tracing, actual model input/token usage, or autonomous task-quality evidence.",
+  "method": "Explicit example-led reading paths, each unique document/section/excerpt loaded once per independent scenario. Supplied captures; no recovery, live provider or direct-map authoring branch. Both sides consult additional schema definitions only for fields absent from their inline example. Baseline first generation includes the first-classification section, its referenced correction/example section, and only the domain definition at pinned schema lines 39-62. Refresh and revise use existing taxonomy and their inline examples on both sides; neither is charged whole-schema reads. After follows operation routing; refresh conservatively includes the general reader. Embedded examples count as instructions; separate fixture data and executable output do not. This is a controlled selected-content comparison, not a mandatory minimum, automatic host tracing, actual model input/token usage, or autonomous task-quality evidence. Per-file hashes identify measured content; provenance.json separately records the after checkout HEAD and dirty status before output creation.",
   "rows": [
     {
       "name": "first-supplied-capture",
@@ -45,17 +45,19 @@
               "sha256": "66f9151267e66b8daf94a4db0e49d7d1d8be1f6b7f09deb8a6160f5fd8fac982"
             },
             {
-              "path": "schemas/choices.schema.json",
-              "bytes": 2120,
-              "sha256": "16ae73eda989bc277767c972d06254471a248d6c02a4defc1ee066e4c8672ea4"
+              "path": "references/continuity.md",
+              "section": "Apply a user's correction",
+              "bytes": 1590,
+              "sha256": "536ee6499e9c9ab3093e7213765106d18a536608bc793ab17d4b8675de56f6e0"
             },
             {
               "path": "schemas/work-map.schema.json",
-              "bytes": 11236,
-              "sha256": "c78a5500f4428e90ee42da3972c7aaf08ea19cf3e47cbb69d6b4ab7661a0d3fa"
+              "lines": [39, 62],
+              "bytes": 586,
+              "sha256": "16c7ee93f02de25bda11fe541117bacfc7b92f9d9a6f9a8ffa4e465d97886418"
             }
           ],
-          "bytes": 79918
+          "bytes": 68738
         },
         {
           "mode": "after",
@@ -82,8 +84,8 @@
             },
             {
               "path": "references/choices.md",
-              "bytes": 1986,
-              "sha256": "05f7fd857574ec380553e8aa9ba577dfb69dfadf160a35460125bc1a4605455b"
+              "bytes": 2121,
+              "sha256": "84ecffe7603bb20c8dd6b0ff5a05e057df42cd8c00173dd10024fcdb8a629097"
             },
             {
               "path": "references/classification.md",
@@ -106,7 +108,7 @@
               "sha256": "d13279c7541413b04eefb371159c709520ed02dc19a23a92551a8ed29343b550"
             }
           ],
-          "bytes": 52076
+          "bytes": 52211
         }
       ]
     },
@@ -212,19 +214,9 @@
               "path": "references/reading.md",
               "bytes": 11067,
               "sha256": "584a18bd58b784433e7cda75cb501d428fb3098de2af63b0897adf596d0b5eaf"
-            },
-            {
-              "path": "schemas/choices.schema.json",
-              "bytes": 2120,
-              "sha256": "16ae73eda989bc277767c972d06254471a248d6c02a4defc1ee066e4c8672ea4"
-            },
-            {
-              "path": "schemas/work-map.schema.json",
-              "bytes": 11236,
-              "sha256": "c78a5500f4428e90ee42da3972c7aaf08ea19cf3e47cbb69d6b4ab7661a0d3fa"
             }
           ],
-          "bytes": 99318
+          "bytes": 85962
         },
         {
           "mode": "after",
@@ -251,8 +243,8 @@
             },
             {
               "path": "references/choices.md",
-              "bytes": 1986,
-              "sha256": "05f7fd857574ec380553e8aa9ba577dfb69dfadf160a35460125bc1a4605455b"
+              "bytes": 2121,
+              "sha256": "84ecffe7603bb20c8dd6b0ff5a05e057df42cd8c00173dd10024fcdb8a629097"
             },
             {
               "path": "references/refresh-reading.md",
@@ -280,7 +272,7 @@
               "sha256": "d13279c7541413b04eefb371159c709520ed02dc19a23a92551a8ed29343b550"
             }
           ],
-          "bytes": 63674
+          "bytes": 63809
         }
       ]
     },
@@ -314,19 +306,9 @@
               "path": "references/continuity.md",
               "bytes": 21638,
               "sha256": "374bca0115e5f95089a4721408a5e5d9b44a933c8e82beeb7b323dd48ce93e3f"
-            },
-            {
-              "path": "schemas/choices.schema.json",
-              "bytes": 2120,
-              "sha256": "16ae73eda989bc277767c972d06254471a248d6c02a4defc1ee066e4c8672ea4"
-            },
-            {
-              "path": "schemas/work-map.schema.json",
-              "bytes": 11236,
-              "sha256": "c78a5500f4428e90ee42da3972c7aaf08ea19cf3e47cbb69d6b4ab7661a0d3fa"
             }
           ],
-          "bytes": 80987
+          "bytes": 67631
         },
         {
           "mode": "after",
@@ -353,11 +335,11 @@
             },
             {
               "path": "references/choices.md",
-              "bytes": 1986,
-              "sha256": "05f7fd857574ec380553e8aa9ba577dfb69dfadf160a35460125bc1a4605455b"
+              "bytes": 2121,
+              "sha256": "84ecffe7603bb20c8dd6b0ff5a05e057df42cd8c00173dd10024fcdb8a629097"
             }
           ],
-          "bytes": 21503
+          "bytes": 21638
         }
       ]
     }

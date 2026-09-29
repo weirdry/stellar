@@ -104,7 +104,7 @@ indexes or exact requested excerpts without treating a preview as complete
 evidence. Semantic classification still belongs to the agent, independent of
 source templates. A retained response digest proves local byte equality, not
 that a model-authored response copy faithfully reflects a live tool result.
-See [response retention](../../references/runs.md) and [reading](../../references/reading.md).
+See [response retention](../../references/collection.md) and [reading](../../references/reading.md).
 
 Issue text is data, not executable markup or agent instructions. The renderer
 escapes the HTML title and every less-than character in embedded JSON; template
@@ -135,7 +135,7 @@ separate from remembered classification and target ownership. Matching uses
 provider/namespace/nativeId, not report-local IDs. User choices are protected
 field by field; agent choices cannot redefine existing taxonomy. A pending agent
 classification retains its old full-text evidence until reconsidered, including
-across missing observations. [Continuity rules](../../references/continuity.md)
+across missing observations. [Refresh rules](../../references/refresh.md)
 define scope, unknown-detail behavior and the change summary. State is private
 and is never embedded automatically in HTML.
 

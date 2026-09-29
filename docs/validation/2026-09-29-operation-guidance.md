@@ -22,15 +22,24 @@ No CLI behavior, schema, bundle, viewer, installation or release changes.
 At baseline `e76de76589ba914cd265d7f13ff4f8a16f176cef`, SKILL.md unconditionally
 instructed reading the work-map contract and classification guidance. Continuity
 was required for saved maps, corrections and refresh; run guidance included both
-collection detail and renderer-recovery installation commands. First generation
-could read only the linked first-classification section of continuity; the
-comparison uses that narrower path rather than counting the entire document.
-The decision-authoring paths also read the choices contract and the work-map
-schema it references. The controlled baseline loads both schema files in full;
-remembering an unchanged map does not author choices and excludes those reads.
-The remaining instructions selected capture and evidence-reading references
-when collecting/classifying. These are instructed paths, not proof that every
-historical host followed them or loaded every link.
+collection detail and renderer-recovery installation commands.
+
+The comparison applies the same example-led authoring rule to both sides: use
+the loaded inline example for covered fields, and consult schema definitions
+only for fields missing from it. Baseline first generation includes the anchored
+first-classification section **and** the correction section containing its
+referenced “example below”. That example covers categories, classification and
+targets, but not domain definitions; the baseline also reads exactly lines 39–62
+of `work-map.schema.json`, containing the domain definition. These lines are
+pinned to the baseline, copied literally, and individually hashed in the receipt.
+The revised example includes domains, so it needs no schema excerpt for this
+scenario. Refresh and correction reuse existing taxonomy and have sufficient
+inline examples on both sides; neither baseline loads additional schemas.
+
+This is one explicit, executable reading strategy, not a mandatory minimum or
+proof of historical host behavior. Following every schema link, selecting finer
+snippets, or using prior knowledge would produce different totals. The earlier
+whole-schema baseline charges are not used as acceptance evidence.
 
 The author read these sources, implemented the router, then explicitly exercised
 the revised routes below. The [comparison script](../../scripts/bench/instruction-reading.ts)
@@ -46,23 +55,29 @@ Run from this checkout:
 just instruction-reading-comparison NEW_UNUSED_DIRECTORY
 ```
 
-The fixed baseline must exist locally; the command does not fetch it. Inspect
+The fixed baseline must exist locally; the command does not fetch it. A missing
+baseline produces a concise usage error before creating output, so the same path
+can be retried after obtaining the history. `provenance.json` records the after
+checkout HEAD and dirty status before output creation; it is separate from the
+reproducible content receipt. Per-selection hashes identify the actual loaded
+working-tree content even when it differs from that HEAD. Inspect
 its `*-before.md` and `*-after.md` files alongside the receipt to audit the loads.
-Each independent scenario counts a document/section once; shared content is not
+Each independent scenario counts a document/section/excerpt once; shared content is not
 charged repeatedly inside one route. The fixed scenarios use supplied native
 captures, valid existing artifacts, and revised choices covered by the inline
 format, including the domain definitions needed by a normalized first draft.
 Provider guides, recovery and direct canonical-map authoring are conditional
-branches excluded on both sides. Source JSON, choices data, CLI output, system
-instructions and host framing are not included in instruction bytes. The example
-choices remain illustrative data, not semantic classification proof.
+branches excluded on both sides. Separate source/choices fixture data, CLI output, system instructions and host
+framing are not included in instruction bytes. Inline examples inside selected
+guidance are counted. Examples illustrate authoring shapes, not semantic
+classification proof.
 
 | Scenario                              | Before bytes | After bytes | Reduction | Selected reads before / after |
 | ------------------------------------- | -----------: | ----------: | --------: | ----------------------------: |
-| First report from supplied capture    |       79,918 |      52,076 |     34.8% |                         9 / 9 |
+| First report from supplied capture    |       68,738 |      52,211 |     24.0% |                         9 / 9 |
 | Remember completed map                |       67,631 |      19,238 |     71.6% |                         5 / 4 |
-| Refresh with supplied capture         |       99,318 |      63,674 |     35.9% |                        9 / 10 |
-| Explicit correction to existing group |       80,987 |      21,503 |     73.4% |                         7 / 5 |
+| Refresh with supplied capture         |       85,962 |      63,809 |     25.8% |                        7 / 10 |
+| Explicit correction to existing group |       67,631 |      21,638 |     68.0% |                         5 / 5 |
 
 The revised refresh path loads more, smaller documents; first generation has the
 same selected file count. Splitting guidance can increase file-read/tool overhead
@@ -75,21 +90,34 @@ adds classification/reading guidance; a direct authored map adds the work-map
 contract; failures add relevant recovery sections. Those additional branches
 can reduce or erase savings. A host may batch reads or retain already-loaded
 references, so neither file count nor repository-wide bytes is actual model input.
-The baseline's whole-schema reads are an explicit selection, not a claim that
-every host reads the entire referenced schema rather than selected definitions.
 
-### Self-review correction
+### Review corrections
 
-The original receipt at `5bc731e` omitted domain authoring from the inline choices
-example and omitted the required schema reads from the baseline decision paths.
-A normalized native capture has no domains or categories, so the original
-first-generation scenario could not stay within the claimed inline contract.
-The corrected example includes domain definitions and tells existing-state
-operations to omit unchanged taxonomy. The receipt now counts the baseline's
-choices contract and referenced work-map schema, while the revised paths cover
-the exercised fields inline. These larger baseline totals correct the reading
-inventory; the changed percentages do not represent additional runtime savings.
-The revised choices guide itself grew by 382 bytes.
+The original inline example at `5bc731e` omitted domain definitions needed for
+an empty normalized taxonomy. `df54ece` corrected that example, but charged full
+schemas only to baseline decision paths and excluded the baseline's referenced
+example section from first generation. Independent review identified that uneven
+comparison. The current receipt supersedes both earlier tables, using the same
+example-led rule on both sides and only the missing domain definition for the
+first baseline. The new percentages correct the methodology; they do not measure
+an additional runtime optimization.
+
+The shared choices guide now explicitly distinguishes `targets: []` (an
+intentionally empty list, user-owned when supplied through `revise`) from omitted
+targets (unchanged). Canonical references point directly to choices, operation,
+collection and recovery owners rather than describing the continuity hub as
+containing those procedures. A regression test exercises unavailable baseline
+history twice against the same output path, requiring a usage error, no stack
+trace, and no created output; help remains usable without baseline history.
+The previous script was run as a negative control in a repository without that
+history: it exits 1 and leaves the output directory. Independent recomputation
+matches every selected byte count, hash and total in the new receipt, and the
+domain excerpt parses to the baseline schema's exact domain definition.
+The baseline example plus that definition supports the same valid first-draft
+choices as the revised inline example, confirmed through `classify-draft` and
+`validate` on an invented tooling issue.
+A targeted `revise` probe confirms that omitting targets retains the prior values
+and agent ownership, while `targets: []` records an empty user-owned list.
 
 A focused synthetic replay extracted the JSON fence from the old and corrected
 choices guides, substituting the normalized issue ID and an evidence-grounded

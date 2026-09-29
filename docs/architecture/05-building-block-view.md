@@ -106,14 +106,17 @@ Each operation writes another fresh run, not back into the selected state.
 
 For a first run with no assigned issues and no decisions to apply, validate the
 draft and render it directly. If saved state is needed for continuation, use
-[`remember`](../../references/continuity.md#start-from-a-completed-map) to create
+[`remember`](../../references/remember.md) to create
 the initial run, then render its `work-map.json`. An empty choices object is
 rejected, so this case does not require `classify-draft` or invented categories.
 
 The [schemas](../../schemas/README.md) own exact fields and validation. The
 [run guide](../../references/runs.md) owns filenames, retained evidence and
-handoff contents; the [continuity guide](../../references/continuity.md) owns
-command semantics. The [synthetic walkthrough](../../examples/continuity-walkthrough.md)
+handoff contents. [Shared state rules](../../references/continuity.md) own lineage
+and run boundaries; [choices](../../references/choices.md) owns decision authoring.
+The [first-report](../../references/first-report.md), [remember](../../references/remember.md),
+[refresh](../../references/refresh.md) and [revise](../../references/revise.md) routes
+own their command procedures. The [synthetic walkthrough](../../examples/continuity-walkthrough.md)
 connects these artifacts through first generation, a user correction and refresh.
 All data-bearing derivatives need the privacy treatment of their inputs.
 
