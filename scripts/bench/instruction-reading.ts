@@ -2,11 +2,43 @@
 import { createHash } from 'node:crypto';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
-import { repo, fresh, option, options, join, writeJSON } from './common.ts';
+import {
+  repo,
+  fresh,
+  option,
+  options,
+  join,
+  writeJSON,
+  usageError,
+} from './common.ts';
 
 const baseline = 'e76de76589ba914cd265d7f13ff4f8a16f176cef';
-const output = fresh(option(options(['output']), 'output'));
-type Reading = { path: string; section?: string };
+const outputPath = option(options(['output']), 'output');
+try {
+  execFileSync('git', ['cat-file', '-e', `${baseline}^{commit}`], {
+    cwd: repo,
+    stdio: 'ignore',
+  });
+} catch {
+  usageError(
+    `Baseline ${baseline} is unavailable; fetch its history before rerunning. No output directory was created.`,
+  );
+}
+// Keep checkout provenance separate from the reproducible content receipt.
+// Inspect status before creating output so this run does not dirty its own input.
+const provenance = {
+  head: execFileSync('git', ['rev-parse', 'HEAD'], {
+    cwd: repo,
+    encoding: 'utf8',
+  }).trim(),
+  dirty:
+    execFileSync('git', ['status', '--porcelain', '--untracked-files=normal'], {
+      cwd: repo,
+      encoding: 'utf8',
+    }).trim() !== '',
+};
+const output = fresh(outputPath);
+type Reading = { path: string; section?: string; lines?: [number, number] };
 const paths = (...names: string[]): Reading[] =>
   names.map((path) => ({ path }));
 const oldCommon = paths(
@@ -15,27 +47,27 @@ const oldCommon = paths(
   'references/classification.md',
   'references/runs.md',
 );
-// The old decision-authoring instructions require the choices contract; its
-// domain/category/issue definitions reference the work-map schema. Count both
-// complete files for these selected baseline paths, but not for unchanged maps.
-const oldChoices = paths(
-  'schemas/choices.schema.json',
-  'schemas/work-map.schema.json',
-);
 const common = paths(
   'SKILL.md',
   'references/runs.md',
   'references/continuity.md',
 );
 const collection = paths('references/collection.md', 'references/capture.md');
-const scenarios = [
+const scenarios: { name: string; before: Reading[]; after: Reading[] }[] = [
   {
     name: 'first-supplied-capture',
     before: [
       ...oldCommon,
       ...paths('references/capture.md', 'references/reading.md'),
       { path: 'references/continuity.md', section: 'Classify a first draft' },
-      ...oldChoices,
+      // The linked first-draft section refers to the example in this section.
+      {
+        path: 'references/continuity.md',
+        section: "Apply a user's correction",
+      },
+      // Only domains are absent from that inline example. These exact lines
+      // at the pinned baseline define domains, without unrelated source fields.
+      { path: 'schemas/work-map.schema.json', lines: [39, 62] },
     ],
     after: [
       ...common,
@@ -62,7 +94,6 @@ const scenarios = [
         'references/capture.md',
         'references/reading.md',
       ),
-      ...oldChoices,
     ],
     // Include the general reader conservatively, as in the explicit replay.
     after: [
@@ -79,7 +110,7 @@ const scenarios = [
   },
   {
     name: 'revise-existing-group',
-    before: [...oldCommon, ...paths('references/continuity.md'), ...oldChoices],
+    before: [...oldCommon, ...paths('references/continuity.md')],
     after: [
       ...common,
       ...paths('references/revise.md', 'references/choices.md'),
@@ -93,6 +124,15 @@ function load(reading: Reading, before: boolean) {
         encoding: 'utf8',
       })
     : readFileSync(join(repo, reading.path), 'utf8');
+  if (reading.lines) {
+    const [start, end] = reading.lines;
+    return (
+      source
+        .split('\n')
+        .slice(start - 1, end)
+        .join('\n') + '\n'
+    );
+  }
   if (!reading.section) return source;
   const marker = `## ${reading.section}\n`,
     start = source.indexOf(marker);
@@ -117,7 +157,7 @@ const rows = scenarios.map(({ name, before, after }) => {
       loaded
         .map(
           (r) =>
-            `<!-- ${r.path}${r.section ? '#' + r.section : ''} -->\n${r.text}`,
+            `<!-- ${r.path}${r.section ? '#' + r.section : ''}${r.lines ? ':' + r.lines.join('-') : ''} -->\n${r.text}`,
         )
         .join('\n'),
     );
@@ -137,8 +177,9 @@ const rows = scenarios.map(({ name, before, after }) => {
 const result = {
   baseline,
   method:
-    'Explicit selected reading paths, each unique document/section loaded once per independent scenario. Supplied captures; no recovery, live provider or direct-map authoring branch. Before follows mandatory read instructions, using only the anchored first-classification section for first generation, plus the full choices and referenced work-map schemas when authoring decisions. After follows operation routing; refresh conservatively includes the general reader. Revised choices fit the inline contract, including domains for first generation; data/examples and executable output are not instruction bytes. Schema files are counted in full on the selected baseline paths, not as a claim that every host reads whole files. This is a controlled document-load comparison, not automatic host tracing, actual model input/token usage, or autonomous task-quality evidence.',
+    'Explicit example-led reading paths, each unique document/section/excerpt loaded once per independent scenario. Supplied captures; no recovery, live provider or direct-map authoring branch. Both sides consult additional schema definitions only for fields absent from their inline example. Baseline first generation includes the first-classification section, its referenced correction/example section, and only the domain definition at pinned schema lines 39-62. Refresh and revise use existing taxonomy and their inline examples on both sides; neither is charged whole-schema reads. After follows operation routing; refresh conservatively includes the general reader. Embedded examples count as instructions; separate fixture data and executable output do not. This is a controlled selected-content comparison, not a mandatory minimum, automatic host tracing, actual model input/token usage, or autonomous task-quality evidence. Per-file hashes identify measured content; provenance.json separately records the after checkout HEAD and dirty status before output creation.',
   rows,
 };
 writeJSON(join(output, 'results.json'), result);
+writeJSON(join(output, 'provenance.json'), provenance);
 console.log(JSON.stringify(result, null, 2));

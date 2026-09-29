@@ -42,7 +42,9 @@ Normalization produces an empty taxonomy. For a first draft, supply the domains
 referenced by the new categories as well as the categories and issue decisions.
 For an existing taxonomy, omit unchanged domain/category definitions.
 Use actual IDs and domains; these are illustrative names. Omitted classification
-or targets stay unchanged. Domains/categories are upserted by ID. Changing a
+or targets stay unchanged. Supplying `targets: []` records an intentionally empty
+target list; through `revise`, that empty list becomes an explicit user choice.
+Domains/categories are upserted by ID. Changing a
 group definition affects all remembered issues using it, including absent ones.
 There is no deletion, history pruning or identity-rebinding operation.
 
