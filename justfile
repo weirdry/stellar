@@ -148,6 +148,10 @@ instruction-reading-comparison output:
 batch-reading-benchmark output trials="5": bundle-check
     mise exec --locked -- node scripts/bench/batch-reading.ts --output {{ quote(output) }} --trials {{ quote(trials) }}
 
+# Compare large invented batch plans' peak RSS with an optional earlier revision.
+batch-memory-benchmark output baseline="" trials="3" issues="2000": bundle-check
+    mise exec --locked -- node scripts/bench/batch-memory.ts --output {{ quote(output) }} {{ if baseline == "" { "" } else { "--baseline " + quote(baseline) } }} --trials {{ quote(trials) }} --issues {{ quote(issues) }}
+
 # Optional synthetic CLI measurements (macOS/Linux, system time); fresh output.
 benchmark output reference="" sizes="1000,10000,50000" trials="3": bundle-check
     mise exec --locked -- node scripts/bench/benchmark.ts --node "$(mise exec --locked -- node -p process.execPath)" --output {{ quote(output) }} {{ if reference == "" { "" } else { "--reference " + quote(reference) } }} --sizes {{ quote(sizes) }} --trials {{ quote(trials) }}

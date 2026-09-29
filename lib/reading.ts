@@ -9,6 +9,20 @@ const PAGE = 20;
 const PREVIEW = 80;
 const CHUNK = 4000;
 const characters = (text: string) => Array.from(text);
+// Equals characters(text).length, including lone surrogates, without
+// allocating one string per code point.
+function codePointLength(text: string) {
+  let length = text.length;
+  for (let index = 0; index < text.length - 1; index++) {
+    const code = text.charCodeAt(index);
+    const next = text.charCodeAt(index + 1);
+    if (code >= 0xd800 && code <= 0xdbff && next >= 0xdc00 && next <= 0xdfff) {
+      length--;
+      index++;
+    }
+  }
+  return length;
+}
 const preview = (text: string) => {
   const points = characters(text);
   return {
@@ -71,7 +85,7 @@ function metadata(issue: Issue, length?: number) {
     detail: issue.detail,
     status: issue.status,
     descriptionPresent: issue.description !== undefined,
-    descriptionCharacters: length ?? characters(body).length,
+    descriptionCharacters: length ?? codePointLength(body),
     descriptionHash: createHash('sha256')
       .update(JSON.stringify(body))
       .digest('hex'),
@@ -143,7 +157,7 @@ export function bodyBlocks(text: string) {
   let position = 0;
   return blocks.map((block, index) => {
     const start = position;
-    position += characters(block.text).length;
+    position += codePointLength(block.text);
     return {
       block: index,
       kind: block.kind,
@@ -318,13 +332,14 @@ export function readBatch(
     string,
     {
       issue: Issue;
-      points: string[];
-      blocks?: ReturnType<typeof bodyBlocks>;
+      length: number;
+      blocks?: { start: number; end: number }[];
     }
   >();
 
   // Validate the entire plan before returning any evidence, including later pages.
-  // Only returned chunks are materialized; preparation is shared by canonical ID.
+  // Whole-plan preparation, shared by canonical ID, retains only code-point
+  // lengths and block boundaries; returned-page issues are materialized below.
   const plan = requests.map((request, index) => {
     const path = `/requests/${index}`;
     if (
@@ -371,13 +386,15 @@ export function readBatch(
     const at = request['offset'] === undefined ? 0 : integer('offset');
     let prepared = cache.get(issue.id);
     if (!prepared) {
-      prepared = { issue, points: characters(issue.description ?? '') };
+      prepared = { issue, length: codePointLength(issue.description ?? '') };
       cache.set(issue.id, prepared);
     }
     let start = 0,
-      length = prepared.points.length;
+      length = prepared.length;
     if (block !== undefined) {
-      prepared.blocks ??= bodyBlocks(issue.description ?? '');
+      prepared.blocks ??= bodyBlocks(issue.description ?? '').map(
+        ({ start, end }) => ({ start, end }),
+      );
       const selected = prepared.blocks[block];
       if (!selected)
         fail(
@@ -400,13 +417,17 @@ export function readBatch(
   const selected = page(plan, offset);
   const issues: ReturnType<typeof metadata>[] = [];
   const indices = new Map<string, number>();
+  // At most one code-point array per returned issue, shared by repeated
+  // selections on this page and released with the invocation.
+  const points: string[][] = [];
   const items = selected.items.map(
     ({ request, prepared, block, at, start, length }) => {
       let issueIndex = indices.get(prepared.issue.id);
       if (issueIndex === undefined) {
         issueIndex = issues.length;
         indices.set(prepared.issue.id, issueIndex);
-        issues.push(metadata(prepared.issue, prepared.points.length));
+        issues.push(metadata(prepared.issue, prepared.length));
+        points.push(characters(prepared.issue.description ?? ''));
       }
       const end = Math.min(at + CHUNK, length);
       return {
@@ -418,7 +439,9 @@ export function readBatch(
         end: start + end,
         offset: at,
         nextOffset: end < length ? end : null,
-        text: prepared.points.slice(start + at, start + end).join(''),
+        text: required(points[issueIndex], 'Returned issue text is prepared.')
+          .slice(start + at, start + end)
+          .join(''),
       };
     },
   );

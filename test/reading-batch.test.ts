@@ -67,6 +67,151 @@ void test('batch pages preserve exact individual results, order and source-quali
   assert.deepEqual(readBatch(draft, requests, requests.length).items, []);
 });
 
+void test('multi-page plans reuse issues across pages with exact individual text, lengths and astral/lone-surrogate offsets', () => {
+  const map = mixedMap();
+  const bodies = [
+    '# 🪐 Heading\n\n' + '🪐測é '.repeat(1500) + '\n\n- item\n  more\n',
+    'lone \ud800 high, lone \udc00 low, reversed \udc00\ud800, pair 🪐\ud83e',
+    '',
+    null,
+    undefined,
+  ];
+  const issues = map.issues.slice(0, bodies.length);
+  assert.equal(issues.length, bodies.length);
+  for (const [index, issue] of issues.entries()) {
+    const body = bodies[index];
+    if (body === undefined) delete issue.description;
+    else issue.description = body;
+  }
+  const unique = (issue: (typeof issues)[number]) =>
+    map.issues.filter((other) => other.identifier === issue.identifier)
+      .length === 1
+      ? issue.identifier
+      : issue.id;
+  const requests: Request[] = [];
+  for (let round = 0; round < 3; round++)
+    for (const issue of issues) {
+      const text = issue.description ?? '';
+      const length = Array.from(text).length;
+      requests.push(
+        { issue: issue.id },
+        { issue: unique(issue), offset: length },
+        { issue: issue.id, offset: Math.min(4000, length) },
+      );
+      for (const { block, text: blockText } of bodyBlocks(text))
+        requests.push(
+          { issue: issue.id, block },
+          { issue: issue.id, block, offset: Array.from(blockText).length },
+        );
+    }
+  const before = structuredClone({ map, requests });
+  let offset: number | null = 0,
+    seen = 0;
+  do {
+    const batch = readBatch(map, requests, offset);
+    for (const metadata of batch.issues) {
+      const source = must(issues.find((issue) => issue.id === metadata.id));
+      assert.equal(
+        metadata.descriptionCharacters,
+        Array.from(source.description ?? '').length,
+      );
+    }
+    for (const { request, result } of expanded(batch)) {
+      assert.equal(request, seen++);
+      const r = must(requests[request]);
+      assert.deepEqual(
+        result,
+        r.block === undefined
+          ? readBody(map, r.issue, r.offset)
+          : readIssue(map, r.issue, r.block, r.offset),
+      );
+    }
+    offset = batch.nextOffset;
+  } while (offset !== null);
+  assert.equal(seen, requests.length);
+  assert.ok(requests.length > 40);
+  assert.deepEqual({ map, requests }, before);
+  // Block boundaries count code points exactly, including unpaired surrogates.
+  for (const issue of issues) {
+    let position = 0;
+    for (const block of bodyBlocks(issue.description ?? '')) {
+      assert.equal(block.start, position);
+      position += Array.from(block.text).length;
+      assert.equal(block.end, position);
+    }
+  }
+});
+
+void test('off-page selections are validated against exact code-point lengths before any page is returned', () => {
+  const map = mixedMap(),
+    [a, b] = map.issues;
+  const first = must(a),
+    second = must(b);
+  first.description = '🪐'.repeat(5000) + '\n\n# Later 🪐\n';
+  second.description = 'short 🪐 \ud800';
+  const bodyLength = Array.from(first.description).length;
+  const blocks = bodyBlocks(first.description);
+  const lastBlock = must(blocks.at(-1));
+  const blockLength = Array.from(lastBlock.text).length;
+  const page = Array.from({ length: 20 }, () => ({ issue: second.id }));
+  const valid: Request[] = [
+    ...page,
+    { issue: first.id, offset: bodyLength },
+    { issue: first.id, block: lastBlock.block, offset: blockLength },
+    { issue: second.id, offset: 9 },
+  ];
+  // Exact code-point ends are accepted even when they are off the returned page.
+  assert.equal(readBatch(map, valid).items.length, 20);
+  assert.deepEqual(
+    readBatch(map, valid, 20).items.map((item) => [item.text, item.nextOffset]),
+    [
+      ['', null],
+      ['', null],
+      ['', null],
+    ],
+  );
+  const cases: [Request[], string][] = [
+    // UTF-16 lengths would accept these offsets; code-point lengths do not.
+    [
+      [...page, { issue: first.id, offset: bodyLength + 1 }],
+      '/requests/20/offset',
+    ],
+    [
+      [
+        ...page,
+        { issue: first.id, block: lastBlock.block, offset: blockLength + 1 },
+      ],
+      '/requests/20/offset',
+    ],
+    [[...page, { issue: second.id, offset: 10 }], '/requests/20/offset'],
+    [
+      [...page, { issue: first.id, block: blocks.length }],
+      '/requests/20/block',
+    ],
+    // The first invalid request is reported, even when later ones also fail.
+    [
+      [
+        ...page,
+        { issue: first.id, block: 0 },
+        { issue: second.id, offset: 99 },
+        { issue: 'missing' },
+      ],
+      '/requests/21/offset',
+    ],
+  ];
+  for (const [requests, path] of cases)
+    for (const offset of [0, 20])
+      assert.throws(
+        () => readBatch(map, requests, offset),
+        (error: unknown) => {
+          const diagnostics = getDiagnostics(error);
+          assert.equal(diagnostics.length, 1);
+          assert.equal(must(diagnostics[0]).path, path);
+          return true;
+        },
+      );
+});
+
 void test('batch body and block continuation reconstruct complete text including chunk-edge CRLF and Unicode', () => {
   const map = mixedMap(),
     issue = must(map.issues[0]);

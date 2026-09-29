@@ -174,8 +174,11 @@ end-of-list offset return empty arrays with null continuation.
   existing individual reader, retaining its issue and optional block.
 
 The map is read, parsed and validated once per invocation. Selection lookup and
-code-point/block preparation are shared by canonical issue ID; returned metadata
-and its hash are computed once per issue on that page. The complete request plan
+preparation are shared by canonical issue ID. Validating the whole plan retains
+only each selected issue's code-point length and, for block requests, block
+boundaries; code-point text is prepared only for issues on the returned page,
+once per issue. Returned metadata and its hash are computed once per issue on
+that page. Memory still grows with the map and plan size. The complete request plan
 is validated before output, including selections on later pages. Validation stops
 at the first invalid request and fails the invocation without partial stdout,
 with one diagnostic indexed under `/requests/N`. Fixing it may expose another

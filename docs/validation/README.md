@@ -4,6 +4,7 @@ Dated records identify the source or artifact, commands, observed result, and
 untested scope. They support the architecture without silently changing its
 meaning.
 
+- [2026-09-29 batch reader preparation memory](2026-09-29-batch-reader-memory.md)
 - [2026-09-29 operation-specific instruction loading](2026-09-29-operation-guidance.md)
 - [2026-09-28 focused refresh evidence](2026-09-28-focused-refresh.md)
 - [2026-09-28 batch reading](2026-09-28-batch-reading.md)

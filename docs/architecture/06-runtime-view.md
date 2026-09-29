@@ -167,8 +167,10 @@ indices, exact offsets and text continuation; top-level continuation instead pag
 the request list. The entire plan is checked before any result is returned, so
 invalid requests on later pages also fail without partial stdout. Validation stops
 at the first invalid request and reports its indexed diagnostic; it does not
-aggregate request errors. The inputs stay
-unchanged and no cache survives the invocation. See the [batch contract](../../references/reading.md#batch-selected-evidence)
+aggregate request errors. Plan validation retains code-point lengths and block
+boundaries, not text; only returned-page issues are expanded to code points
+([measurements](../validation/2026-09-29-batch-reader-memory.md)).
+The inputs stay unchanged and no cache survives the invocation. See the [batch contract](../../references/reading.md#batch-selected-evidence)
 and [regression tests](../../test/reading-batch.test.ts).
 Reader and response-retention errors use the canonical diagnostic `fix` field.
 Both body-index and search previews explicitly report truncation.
